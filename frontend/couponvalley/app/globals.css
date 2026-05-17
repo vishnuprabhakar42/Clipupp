@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ──────────────────────────────────────────────────────────────────────
+       CouponValley 3-color "Vivid" brand palette.
+       Single source of truth: every brand surface across the site —
+       buttons, gradients, badges, charts, OG images, admin chrome —
+       maps to one of these roles. Adding a new role is a design
+       decision, not a free-form choice.
+
+         Primary  Violet   trust, CTAs, links, primary buttons, focus rings
+         Accent   Orange   savings urgency, badges, deals, hot-deal state
+         Success  Emerald  approved, verified, "live" pills, success toasts
+         Danger   Red      errors, destructive actions, validation
+         Neutral  Slate    chrome, typography, borders, page background
+       ──────────────────────────────────────────────────────────────────── */
+
+    --cv-primary:        #5B21B6;
+    --cv-primary-strong: #4C1D95;
+    --cv-primary-soft:   #F5F3FF;
+    --cv-primary-fg:     #ffffff;
+
+    --cv-accent:         #F97316;
+    --cv-accent-strong:  #EA580C;
+    --cv-accent-soft:    #FFF7ED;
+    --cv-accent-fg:      #ffffff;
+
+    --cv-success:        #10b981;
+    --cv-success-strong: #059669;
+    --cv-success-soft:   #ecfdf5;
+    --cv-success-fg:     #ffffff;
+
+    --cv-danger:         #DC2626;
+    --cv-danger-strong:  #B91C1C;
+    --cv-danger-soft:    #fef2f2;
+    --cv-danger-fg:      #ffffff;
+
+    /* Slate neutral scale — chrome, text, borders */
+    --cv-neutral-50:  #f8fafc;
+    --cv-neutral-100: #f1f5f9;
+    --cv-neutral-200: #e2e8f0;
+    --cv-neutral-300: #cbd5e1;
+    --cv-neutral-400: #94a3b8;
+    --cv-neutral-500: #64748b;
+    --cv-neutral-600: #475569;
+    --cv-neutral-700: #334155;
+    --cv-neutral-800: #1e293b;
+    --cv-neutral-900: #0f172a;
+
+    /* ── shadcn semantic tokens, re-pointed to the 5-color palette so every
+          primitive in components/ui/* re-skins automatically. Values are
+          HSL because shadcn wraps with hsl() at the consumption site. */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 263 69% 42%;          /* violet #5B21B6 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 30% 96%;
+    --secondary-foreground: 263 50% 20%;
+    --muted: 270 30% 96%;
+    --muted-foreground: 263 16% 47%;
+    --accent: 24 95% 53%;            /* orange #F97316 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;        /* red #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 263 20% 91%;
+    --input: 263 20% 91%;
+    --ring: 263 69% 42%;
+    --radius: 0.5rem;
+
+    /* Sticky header offset — used by scroll-padding so anchored links don't hide under it. */
+    --header-h: 64px;
+    --header-h-lg: 112px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    /* Sticky header does not hide #anchor scroll targets. */
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+  @media (min-width: 1024px) {
+    html {
+      scroll-padding-top: calc(var(--header-h-lg) + 16px);
+    }
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Honor reduced-motion across our animations. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  /* High-contrast focus ring for keyboard users. */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  /* Better default for selection — violet primary at 18% opacity. */
+  ::selection {
+    background: rgba(91, 33, 182, 0.18);
+  }
+}
+
+.rtl {
+  direction: rtl;
+}
+
+@layer components {
+  /* Brand-coloured gradient text used for hero headlines. Violet → orange. */
+  .cv-gradient-text {
+    @apply bg-gradient-to-r from-[var(--cv-primary)] to-[var(--cv-accent)] bg-clip-text text-transparent;
+  }
+  /* Standard primary button — solid violet with a darker hover. */
+  .cv-btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-[var(--cv-primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[var(--cv-primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary-strong)] disabled:opacity-60 disabled:pointer-events-none;
+  }
+  /* Outlined button — soft violet tint on hover. */
+  .cv-btn-ghost {
+    @apply inline-flex items-center justify-center rounded-md border border-[#5B21B626] bg-transparent px-4 py-2 text-sm font-medium text-[var(--cv-primary)] transition hover:bg-[var(--cv-primary-soft)];
+  }
+  .cv-card {
+    @apply rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md;
+  }
+  .cv-skeleton {
+    @apply relative overflow-hidden rounded-md bg-muted/50 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent;
+  }
+  /* Hide scrollbar cross-browser */
+  .cv-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .cv-no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  /* Section heading used across the homepage */
+  .cv-section-title {
+    @apply text-[22px] sm:text-2xl font-extrabold tracking-tight text-[var(--cv-neutral-900)];
+  }
+  /* "See all" link used in section headers — primary navy, underlines on hover. */
+  .cv-section-link {
+    @apply text-sm font-semibold text-[var(--cv-primary)] hover:underline;
+  }
+  /* Coloured accent strip used to mark sections — violet → orange → emerald (the 3 brand roles). */
+  .cv-color-strip {
+    @apply h-1 w-12 rounded-full bg-gradient-to-r from-[var(--cv-primary)] via-[var(--cv-accent)] to-[var(--cv-success)];
+  }
+  /* Vibrant pill used for category tags / badges */
+  .cv-pill {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cv-fade-in-up {
+  animation: fadeInUp 0.5s ease-out both;
+}
