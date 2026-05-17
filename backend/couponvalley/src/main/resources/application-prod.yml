@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
+
+logging:
+  level:
+    root: WARN
+    com.couponvalley: INFO
+  pattern:
+    console: '{"ts":"%d{yyyy-MM-dd''T''HH:mm:ss.SSSXXX}","level":"%level","logger":"%logger{36}","traceId":"%X{traceId:-}","msg":"%msg","ex":"%replace(%ex){''[\r\n]'',''\\\\n''}"}%n'
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ps *)",
+      "Bash(kill 24112 *)",
+      "Bash(lsof *)"
+    ]
+  }
+}

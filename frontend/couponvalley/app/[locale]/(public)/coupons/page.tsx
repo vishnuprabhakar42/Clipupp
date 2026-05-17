@@ -1,0 +1,84 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { couponsApi } from "@/lib/api/coupons";
+import { isApiError } from "@/lib/api/errors";
+import { CouponList } from "@/features/catalog/components/CouponList";
+
+export const metadata: Metadata = {
+  title: "Coupons & Promo Codes",
+  description:
+    "Active coupon codes from top stores. Verified daily — copy and paste at checkout to save.",
+};
+
+export const revalidate = 30;
+
+type SearchParams = Promise<{
+  category?: string;
+  storeId?: string;
+  cursor?: string;
+}>;
+
+export default async function CouponsListPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  let coupons: Awaited<ReturnType<typeof couponsApi.list>>["data"] = [];
+  let nextCursor: string | null = null;
+  let hadError = false;
+
+  try {
+    const page = await couponsApi.list({
+      storeId: sp.storeId,
+      category: sp.category,
+      cursor: sp.cursor,
+      limit: 24,
+    });
+    coupons = page.data;
+    nextCursor = page.page.nextCursor;
+  } catch (err) {
+    hadError = !(isApiError(err) && err.status === 404);
+  }
+
+  return (
+    <div className="container py-8 md:py-12">
+      <header className="mb-8 max-w-3xl">
+        <h1 className="bg-gradient-to-r from-cv-primary to-cv-primary-strong bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
+          Active coupons
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Verified discount codes you can paste at checkout, ranked by recent activity.
+        </p>
+      </header>
+
+      {hadError ? (
+        <p className="text-sm text-destructive">
+          We couldn&apos;t load coupons right now. Please try again in a moment.
+        </p>
+      ) : (
+        <>
+          <CouponList coupons={coupons} emptyLabel="No coupons match your filters yet." />
+
+          {nextCursor && (
+            <div className="mt-10 text-center">
+              <Link
+                href={{
+                  pathname: "/coupons",
+                  query: {
+                    ...(sp.category ? { category: sp.category } : {}),
+                    ...(sp.storeId ? { storeId: sp.storeId } : {}),
+                    cursor: nextCursor,
+                  },
+                }}
+                className="inline-flex items-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+              >
+                Load more
+              </Link>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
