@@ -162,16 +162,17 @@ function BrandCard({ store }: { store: Store }) {
   return (
     <Link
       href={`/stores/${store.slug}`}
-      // overflow-hidden + capped max-w/max-h on the <img> below keep every
-      // brand tile a uniform size regardless of source image dimensions.
-      className="group relative flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-white px-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
+      // p-6 carves out uniform breathing room; h-full w-full + object-contain
+      // on the <img> below normalizes every logo regardless of source aspect
+      // (square vs landscape vs portrait all fit within the same inner box).
+      className="group relative flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
       aria-label={store.name}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={store.logoUrl}
         alt={store.name}
-        className="max-h-[55%] max-w-[70%] object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+        className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
         loading="lazy"
         decoding="async"
       />

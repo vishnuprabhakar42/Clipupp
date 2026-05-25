@@ -67,12 +67,15 @@ export default async function SearchPage({
             <Link
               key={hit.id}
               href={`/coupons/${hit.slug}`}
-              className="rounded-lg border bg-card p-4 hover:bg-accent"
+              className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             >
-              <p className="font-medium line-clamp-1">{hit.title}</p>
+              <p className="line-clamp-1 font-medium">{hit.title}</p>
               {hit.snippet && (
-                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{hit.snippet}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{hit.snippet}</p>
               )}
+              <span className="mt-auto pt-3 text-xs font-semibold text-cv-primary">
+                View coupon →
+              </span>
             </Link>
           ))}
         </Section>
@@ -84,24 +87,24 @@ export default async function SearchPage({
             <Link
               key={hit.id}
               href={`/stores/${hit.slug}`}
-              className="flex items-center gap-3 rounded-lg border bg-card p-4 hover:bg-accent"
+              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
             >
               {hit.imageUrl && (
-                <div className="relative h-10 w-10 overflow-hidden rounded bg-muted p-1">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted p-1.5">
                   <Image
                     src={hit.imageUrl}
                     alt={hit.title}
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                     className="h-full w-full object-contain"
                     unoptimized
                   />
                 </div>
               )}
-              <div>
-                <p className="font-medium">{hit.title}</p>
+              <div className="min-w-0">
+                <p className="truncate font-medium">{hit.title}</p>
                 {hit.snippet && (
-                  <p className="text-xs text-muted-foreground line-clamp-1">{hit.snippet}</p>
+                  <p className="line-clamp-1 text-xs text-muted-foreground">{hit.snippet}</p>
                 )}
               </div>
             </Link>
@@ -135,8 +138,8 @@ function Section({
 }) {
   return (
     <section className="mb-10">
-      <h2 className="mb-3 text-lg font-semibold">{title}</h2>
-      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+      <h2 className="mb-4 text-lg font-semibold">{title}</h2>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
     </section>
   );
 }

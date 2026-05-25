@@ -40,9 +40,9 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
       </div>
 
       {!preloaded && q.isLoading ? (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <li key={i} className="cv-skeleton h-[260px] rounded-md" />
+        <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <li key={i} className="cv-skeleton h-[300px] rounded-xl" />
           ))}
         </ul>
       ) : (coupons?.length ?? 0) === 0 ? (
@@ -50,8 +50,8 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
           No active deals right now — check back soon.
         </p>
       ) : (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {coupons!.map((c) => (
+        <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          {coupons!.slice(0, 8).map((c) => (
             <li key={c.id}>
               <DealCard coupon={c} />
             </li>
@@ -75,17 +75,18 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col overflow-hidden rounded-md border border-gray-200 bg-white transition hover:shadow-md"
+      className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
     >
-      {/* Brand-color top with logo. overflow-hidden enforces the 120 px frame
-          no matter how large the source image is. */}
+      {/* Brand-color top with logo. p-6 carves uniform breathing room so
+          every logo (square Apple / landscape Decathlon / portrait) fits the
+          same inner box at a consistent visible size. */}
       <div
-        className="relative flex h-[120px] items-center justify-center overflow-hidden"
+        className="relative flex h-[140px] items-center justify-center overflow-hidden p-6"
         style={{ backgroundColor: bg }}
       >
-        {/* Savings pill — top-left */}
+        {/* Savings pill — top-right per design spec */}
         {savings && (
-          <div className="absolute left-2 top-2 inline-flex items-center gap-0.5 rounded-md bg-white px-1.5 py-0.5 text-[11px] font-bold shadow-sm">
+          <div className="absolute right-2 top-2 inline-flex items-center gap-0.5 rounded-md bg-white px-1.5 py-0.5 text-[11px] font-bold shadow-sm">
             <Tag className="h-2.5 w-2.5 text-cv-accent" aria-hidden />
             <span className="text-gray-900">
               {savings}
@@ -101,7 +102,7 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
             <img
               src={coupon.storeLogoUrl}
               alt={coupon.storeName ?? ""}
-              className="max-h-[55%] max-w-[75%] object-contain"
+              className="h-full w-full object-contain"
               loading="lazy"
             />
           </>
@@ -110,10 +111,11 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
         )}
       </div>
 
-      {/* White bottom */}
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
+      {/* White bottom — flex-col so the CTA pins to the bottom regardless of
+          how long the title runs (line-clamp-2 caps it at 2 lines). */}
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
         {coupon.storeName && (
-          <p className="line-clamp-1 text-[11px] font-bold uppercase tracking-wide text-gray-700">
+          <p className="truncate text-[11px] font-bold uppercase tracking-wide text-gray-700">
             {coupon.storeName}
           </p>
         )}
@@ -121,20 +123,7 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
           {coupon.title}
         </p>
 
-        <div className="mt-auto flex items-center gap-1.5 pt-1">
-          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-700">
-            {isCode ? (
-              <>
-                <Tag className="h-2.5 w-2.5" aria-hidden />
-                Coupon code
-              </>
-            ) : (
-              <>
-                <Tag className="h-2.5 w-2.5" aria-hidden />
-                Sale
-              </>
-            )}
-          </span>
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
           {coupon.verified && (
             <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-cv-success-strong">
               <CheckCircle2 className="h-2.5 w-2.5" aria-hidden />
@@ -148,6 +137,12 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
             </span>
           )}
         </div>
+
+        {/* CTA — always pinned at the bottom via mt-auto */}
+        <span className="mt-auto inline-flex w-full items-center justify-center gap-1 rounded-md bg-cv-primary px-3 py-2 text-[12px] font-bold uppercase tracking-wide text-white transition group-hover:bg-cv-primary-strong">
+          <Tag className="h-3 w-3" aria-hidden />
+          {isCode ? "Get Code" : "Get Deal"}
+        </span>
       </div>
     </Link>
   );
