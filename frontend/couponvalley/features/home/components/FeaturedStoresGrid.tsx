@@ -84,7 +84,7 @@ export function FeaturedStoresGrid({
       ) : stores.length === 0 ? (
         <p className="text-sm text-cv-neutral-500">No featured stores yet.</p>
       ) : (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
           {stores.map((s, i) => (
             <li key={s.id}>
               <StoreCard store={s} index={i} />
@@ -113,20 +113,21 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
   return (
     <Link
       href={`/stores/${store.slug}`}
-      className="cv-rise group flex h-full flex-col overflow-hidden rounded-md border border-gray-100 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_24px_48px_-12px_rgba(0,0,0,0.14)]"
+      className="cv-rise group flex h-full flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_4px_8px_rgba(0,0,0,0.06),0_24px_48px_-12px_rgba(0,0,0,0.14)]"
       style={{ animationDelay: `${index * 60}ms` }}
       aria-label={store.name}
     >
-      {/* Brand panel — full-bleed colour, logo centered */}
+      {/* Brand panel — full-bleed colour, logo centered with uniform padding
+          so square / landscape / portrait logos all read at the same size. */}
       <div
-        className="relative flex aspect-[5/3] items-center justify-center overflow-hidden"
+        className="relative flex aspect-[5/3] items-center justify-center overflow-hidden p-6"
         style={{ backgroundColor: bg }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={store.logoUrl}
           alt={store.name}
-          className="max-h-[58%] max-w-[68%] object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
+          className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.06]"
           loading={index < 4 ? "eager" : "lazy"}
           decoding="async"
         />
@@ -160,9 +161,9 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
 
 function SkeletonGrid() {
   return (
-    <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <li key={i} className="h-[210px] animate-pulse rounded-md bg-gray-100" />
+        <li key={i} className="h-[240px] animate-pulse rounded-xl bg-gray-100" />
       ))}
     </ul>
   );

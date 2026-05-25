@@ -49,7 +49,7 @@ export function SavedCouponCard({ item }: { item: SavedCouponItem }) {
   }
 
   return (
-    <li className="group relative overflow-hidden rounded-md border border-gray-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-cv-accent/30 hover:shadow-md">
+    <li className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-cv-accent/30 hover:shadow-lg">
       <button
         type="button"
         aria-label="Remove from saved"

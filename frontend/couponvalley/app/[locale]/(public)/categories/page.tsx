@@ -58,7 +58,7 @@ export default async function CategoriesPage({
       ) : tree.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("emptyState")}</p>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {/* Tile backgrounds cycle through 4 brand-role soft tints (primary,
               accent, success, neutral). Danger is skipped — destructive red
               isn't a decorative colour. Adjacent tiles may repeat; tiles are
@@ -66,14 +66,14 @@ export default async function CategoriesPage({
           {tree.map((cat, i) => (
             <li
               key={cat.id}
-              className="cv-card overflow-hidden p-5"
+              className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-100 p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
               style={{
                 background: ["var(--cv-primary-soft)", "var(--cv-accent-soft)", "var(--cv-success-soft)", "var(--cv-neutral-100)"][i % 4],
               }}
             >
               <Link
                 href={`/categories/${cat.slug}`}
-                className="block font-semibold text-cv-primary hover:underline"
+                className="truncate text-base font-bold text-cv-primary hover:underline"
               >
                 {cat.title}
               </Link>
@@ -96,6 +96,12 @@ export default async function CategoriesPage({
                   ))}
                 </ul>
               )}
+              <Link
+                href={`/categories/${cat.slug}`}
+                className="mt-auto inline-flex w-full items-center justify-center gap-1 rounded-md bg-cv-primary px-3 py-2 pt-2 text-[12px] font-bold uppercase tracking-wide text-white transition hover:bg-cv-primary-strong"
+              >
+                View deals →
+              </Link>
             </li>
           ))}
         </ul>

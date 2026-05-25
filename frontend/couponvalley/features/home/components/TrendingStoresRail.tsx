@@ -141,14 +141,14 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
                   aria-label={`${s.name} — ${dealLabel}`}
                 >
                   <div
-                    className="flex h-[88px] items-center justify-center overflow-hidden rounded-md transition group-hover:opacity-95"
+                    className="flex h-[88px] items-center justify-center overflow-hidden rounded-md p-4 transition group-hover:opacity-95"
                     style={{ backgroundColor: bg }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={s.logoUrl}
                       alt={s.name}
-                      className="max-h-[55%] max-w-[78%] object-contain"
+                      className="h-full w-full object-contain"
                       loading="lazy"
                     />
                   </div>
