@@ -1,29 +1,29 @@
-"use client";
-
 import Image from "next/image";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { blogApi } from "@/lib/api/blog";
+import type { ArticleSummary } from "@/lib/api/blog";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 /**
  * Editorial / blog section. Title comes from the homepage layout config when
- * supplied; the article list is fetched from /api/v1/blog. Flat cards on a
- * neutral surface, single shadow level, 16:9 hero images.
+ * supplied; the article list is server-fetched from /api/v1/blog. Flat cards
+ * on a neutral surface, single shadow level, 16:9 hero images.
  */
-export function BlogSection({ section }: { section?: HomepageSectionPayload | null } = {}) {
+export async function BlogSection({
+  section,
+}: { section?: HomepageSectionPayload | null } = {}) {
   const limit = section?.itemLimit ?? 4;
   const heading = section?.title ?? "The Real Deal";
   const subtitle = section?.subtitle ?? "by CouponValley";
 
-  const q = useQuery({
-    queryKey: ["home", "blog-feed", limit],
-    queryFn: () => blogApi.list({ limit }),
-    staleTime: 5 * 60_000,
-  });
-
-  const articles = q.data?.data ?? [];
+  let articles: ArticleSummary[] = [];
+  try {
+    const page = await blogApi.list({ limit });
+    articles = (page?.data ?? []) as ArticleSummary[];
+  } catch {
+    articles = [];
+  }
 
   return (
     <section aria-labelledby="blog-section-heading">
@@ -42,16 +42,7 @@ export function BlogSection({ section }: { section?: HomepageSectionPayload | nu
         </Link>
       </div>
 
-      {q.isLoading ? (
-        <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-          <div className="cv-skeleton h-[360px] rounded-lg" />
-          <div className="space-y-4">
-            <div className="cv-skeleton h-[105px] rounded-lg" />
-            <div className="cv-skeleton h-[105px] rounded-lg" />
-            <div className="cv-skeleton h-[105px] rounded-lg" />
-          </div>
-        </div>
-      ) : articles.length === 0 ? (
+      {articles.length === 0 ? (
         <p className="cv-meta text-center">New stories coming soon.</p>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -67,7 +58,7 @@ export function BlogSection({ section }: { section?: HomepageSectionPayload | nu
   );
 }
 
-type Article = { slug: string; title: string; excerpt: string; heroImageUrl: string | null };
+type Article = Pick<ArticleSummary, "slug" | "title" | "excerpt" | "heroImageUrl">;
 
 function FeaturedArticle({ a }: { a: Article }) {
   return (

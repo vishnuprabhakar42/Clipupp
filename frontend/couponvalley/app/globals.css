@@ -49,6 +49,41 @@
     --cv-neutral-800: #1e293b;
     --cv-neutral-900: #0f172a;
 
+    /* RGB triplets — required by Tailwind to support the /opacity modifier
+       on cv-* utility classes (e.g. text-cv-primary/40, ring-cv-accent/30,
+       bg-cv-primary/10). The hex vars above are kept verbatim so OG image
+       edge routes and inline-style consumers don't need to change. */
+    --cv-primary-rgb:        59, 130, 246;
+    --cv-primary-strong-rgb: 29, 78, 216;
+    --cv-primary-soft-rgb:   219, 234, 254;
+    --cv-primary-fg-rgb:     255, 255, 255;
+
+    --cv-accent-rgb:         249, 115, 22;
+    --cv-accent-strong-rgb:  234, 88, 12;
+    --cv-accent-soft-rgb:    255, 247, 237;
+    --cv-accent-fg-rgb:      255, 255, 255;
+
+    --cv-success-rgb:        16, 185, 129;
+    --cv-success-strong-rgb: 5, 150, 105;
+    --cv-success-soft-rgb:   236, 253, 245;
+    --cv-success-fg-rgb:     255, 255, 255;
+
+    --cv-danger-rgb:         220, 38, 38;
+    --cv-danger-strong-rgb:  185, 28, 28;
+    --cv-danger-soft-rgb:    254, 242, 242;
+    --cv-danger-fg-rgb:      255, 255, 255;
+
+    --cv-neutral-50-rgb:  248, 250, 252;
+    --cv-neutral-100-rgb: 241, 245, 249;
+    --cv-neutral-200-rgb: 226, 232, 240;
+    --cv-neutral-300-rgb: 203, 213, 225;
+    --cv-neutral-400-rgb: 148, 163, 184;
+    --cv-neutral-500-rgb: 100, 116, 139;
+    --cv-neutral-600-rgb: 71, 85, 105;
+    --cv-neutral-700-rgb: 51, 65, 85;
+    --cv-neutral-800-rgb: 30, 41, 59;
+    --cv-neutral-900-rgb: 15, 23, 42;
+
     /* ── shadcn semantic tokens, re-pointed to the 5-color palette so every
           primitive in components/ui/* re-skins automatically. */
     --background: 0 0% 100%;

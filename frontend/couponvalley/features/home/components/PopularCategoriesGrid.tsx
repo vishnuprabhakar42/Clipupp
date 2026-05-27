@@ -1,7 +1,4 @@
-"use client";
-
 import { Link } from "@/lib/i18n/navigation";
-import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   BookOpen,
@@ -21,55 +18,35 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 type CategoryTile = { id: string; slug: string; title: string; childrenCount: number };
 
-/**
- * Eye-catching "Popular Categories" — colored icon cards. Each tile gets:
- *   • Pastel-tinted background with a coordinated icon-circle
- *   • Bold category title + short hook ("X stores", "Y deals")
- * The flat 4-column text list previously here looked like a sitemap, not a
- * shoppable section — these tiles fix that.
- */
-
 const CATEGORY_THEMES: Array<{
   match: string[];
   icon: LucideIcon;
-  bg: string;
-  iconBg: string;
-  iconColor: string;
 }> = [
-  { match: ["electron", "tech", "gadget"], icon: Laptop,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["fashion", "cloth", "apparel"], icon: Shirt,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["food", "grocery", "dining"], icon: UtensilsCrossed,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["travel", "flight", "hotel"], icon: Plane,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["beauty", "health", "wellness"], icon: Sparkles,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["sport", "fitness"], icon: Dumbbell,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["home", "kitchen", "furniture"], icon: Home,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["book", "education"], icon: BookOpen,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
-  { match: ["finance", "card", "bank"], icon: CreditCard,
-    bg: "bg-cv-primary-soft", iconBg: "bg-cv-primary", iconColor: "text-white" },
+  { match: ["electron", "tech", "gadget"], icon: Laptop },
+  { match: ["fashion", "cloth", "apparel"], icon: Shirt },
+  { match: ["food", "grocery", "dining"], icon: UtensilsCrossed },
+  { match: ["travel", "flight", "hotel"], icon: Plane },
+  { match: ["beauty", "health", "wellness"], icon: Sparkles },
+  { match: ["sport", "fitness"], icon: Dumbbell },
+  { match: ["home", "kitchen", "furniture"], icon: Home },
+  { match: ["book", "education"], icon: BookOpen },
+  { match: ["finance", "card", "bank"], icon: CreditCard },
 ];
 
-function styleFor(slug: string, title: string) {
+function styleFor(slug: string, title: string): LucideIcon {
   const text = `${slug} ${title}`.toLowerCase();
   for (const t of CATEGORY_THEMES) {
-    if (t.match.some((m) => text.includes(m))) return t;
+    if (t.match.some((m) => text.includes(m))) return t.icon;
   }
-  return {
-    icon: Tag,
-    bg: "bg-cv-primary-soft",
-    iconBg: "bg-cv-primary",
-    iconColor: "text-white",
-  };
+  return Tag;
 }
 
-export function PopularCategoriesGrid({
+/**
+ * "Popular Categories" — iconic tile grid. Server-rendered. Prefers
+ * `section.categories` from the homepage payload; falls back to
+ * `categoriesApi.tree()` when no admin pins exist.
+ */
+export async function PopularCategoriesGrid({
   section,
 }: {
   section?: HomepageSectionPayload | null;
@@ -78,16 +55,27 @@ export function PopularCategoriesGrid({
   const limit = section?.itemLimit ?? 10;
   const featured = section?.categories;
 
-  const q = useQuery({
-    queryKey: ["home", "popular-categories"],
-    queryFn: () => categoriesApi.tree(),
-    staleTime: 10 * 60_000,
-    enabled: !featured || featured.length === 0,
-  });
-
-  const cats: CategoryTile[] = featured && featured.length > 0
-    ? featured.map((c) => ({ id: c.slug, slug: c.slug, title: c.title, childrenCount: 0 }))
-    : (q.data ?? []).map((c) => ({ id: c.id, slug: c.slug, title: c.title, childrenCount: c.children.length }));
+  let cats: CategoryTile[] = [];
+  if (featured && featured.length > 0) {
+    cats = featured.map((c) => ({
+      id: c.slug,
+      slug: c.slug,
+      title: c.title,
+      childrenCount: 0,
+    }));
+  } else {
+    try {
+      const tree = await categoriesApi.tree();
+      cats = (tree ?? []).map((c) => ({
+        id: c.id,
+        slug: c.slug,
+        title: c.title,
+        childrenCount: c.children.length,
+      }));
+    } catch {
+      cats = [];
+    }
+  }
 
   return (
     <section aria-labelledby="popular-categories-heading">
@@ -100,18 +88,12 @@ export function PopularCategoriesGrid({
         </Link>
       </div>
 
-      {!featured && q.isLoading ? (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {Array.from({ length: limit }).map((_, i) => (
-            <li key={i} className="cv-skeleton h-28 rounded-lg" />
-          ))}
-        </ul>
-      ) : cats.length === 0 ? (
+      {cats.length === 0 ? (
         <p className="cv-meta">No categories yet.</p>
       ) : (
         <ul className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {cats.slice(0, limit).map((c) => {
-            const { icon: Icon } = styleFor(c.slug, c.title);
+            const Icon = styleFor(c.slug, c.title);
             return (
               <li key={c.id} className="h-full">
                 <Link
