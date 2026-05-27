@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import type { CouponSummary, CouponType } from "@/lib/api/types";
 import { storesApi } from "@/lib/api/stores";
-import { StoreCouponCard } from "./StoreCouponCard";
+import { CouponSavingsRowCard } from "./CouponSavingsRowCard";
 
 type TabId = "ALL" | CouponType;
 
@@ -106,7 +106,7 @@ export function StoreTypeTabs({
         <ul className="space-y-4">
           {filtered.map((c) => (
             <li key={c.id}>
-              <StoreCouponCard coupon={c} />
+              <CouponSavingsRowCard coupon={c} />
             </li>
           ))}
         </ul>
