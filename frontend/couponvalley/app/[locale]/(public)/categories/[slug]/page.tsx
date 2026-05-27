@@ -13,12 +13,33 @@ import {
 } from "@/lib/seo/schemas";
 import { buildMetadata } from "@/lib/seo/meta";
 import { canonicalFor } from "@/lib/seo/urls";
-import { type Locale } from "@/lib/i18n/config";
+import { locales, type Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
 
 type Params = Promise<{ locale: Locale; slug: string }>;
 type SearchParams = Promise<{ cursor?: string }>;
+
+/**
+ * Pre-render every category at build time (small set — full enumeration).
+ * The tree includes both top-level and nested categories; we flatten and
+ * emit one params entry per slug per locale.
+ */
+export async function generateStaticParams() {
+  try {
+    const tree = await categoriesApi.tree();
+    const slugs = new Set<string>();
+    for (const node of tree ?? []) {
+      slugs.add(node.slug);
+      for (const child of node.children ?? []) slugs.add(child.slug);
+    }
+    return locales.flatMap((locale) =>
+      Array.from(slugs).map((slug) => ({ locale, slug }))
+    );
+  } catch {
+    return [];
+  }
+}
 
 async function loadCategory(slug: string) {
   try {

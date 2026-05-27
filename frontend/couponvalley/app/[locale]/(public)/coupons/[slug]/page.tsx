@@ -16,11 +16,27 @@ import {
 } from "@/lib/seo/schemas";
 import { buildMetadata } from "@/lib/seo/meta";
 import { canonicalFor } from "@/lib/seo/urls";
-import { type Locale } from "@/lib/i18n/config";
+import { locales, type Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
 
 type Params = Promise<{ locale: Locale; slug: string }>;
+
+/**
+ * Pre-render the top-200 coupons at build time for every locale. Anything
+ * outside this list still works on-demand via ISR — this just warms Googlebot's
+ * crawler against the highest-traffic pages so first-crawl hits a ready cache.
+ */
+export async function generateStaticParams() {
+  try {
+    const slugs = await couponsApi.topSlugs(200);
+    return locales.flatMap((locale) =>
+      slugs.map((slug) => ({ locale, slug }))
+    );
+  } catch {
+    return [];
+  }
+}
 
 async function load(slug: string) {
   try {

@@ -44,6 +44,13 @@ export const couponsApi = {
     apiClient.get<CouponSummary[]>(`/api/v1/coupons/top?limit=${limit}`, {
       anonymous: true,
     }),
+
+  /** Top-N coupon slugs by popularity. Used at build time by
+   *  `generateStaticParams` to pre-render the highest-traffic coupon pages. */
+  topSlugs: (limit = 200) =>
+    apiClient.get<string[]>(`/api/v1/coupons/top-slugs?limit=${limit}`, {
+      anonymous: true,
+    }),
 };
 
 export const offersApi = {

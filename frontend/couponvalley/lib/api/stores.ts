@@ -46,4 +46,12 @@ export const storesApi = {
       `/api/v1/stores/${encodeURIComponent(slug)}/similar${qs({ limit })}`,
       { anonymous: true }
     ),
+
+  /** Top-N store slugs by popularity. Used at build time by
+   *  `generateStaticParams` to pre-render the highest-traffic store pages. */
+  topSlugs: (limit = 100) =>
+    apiClient.get<string[]>(
+      `/api/v1/stores/top-slugs${qs({ limit })}`,
+      { anonymous: true }
+    ),
 };

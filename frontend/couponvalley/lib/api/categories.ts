@@ -4,6 +4,7 @@ import type {
   CategoryNode,
   CouponSummary,
   CursorPage,
+  StoreSummary,
 } from "./types";
 
 export const categoriesApi = {
@@ -25,4 +26,12 @@ export const categoriesApi = {
       { anonymous: true }
     );
   },
+
+  /** Top-N stores in a category by popularity. Used by the
+   *  TopStoresInCategoryRail on category detail pages (Phase 3). */
+  topStores: (slug: string, limit = 8) =>
+    apiClient.get<StoreSummary[]>(
+      `/api/v1/categories/${encodeURIComponent(slug)}/top-stores?limit=${limit}`,
+      { anonymous: true }
+    ),
 };
