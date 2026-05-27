@@ -1,4 +1,4 @@
-import { Search, Tag } from "lucide-react";
+import { CheckCircle2, Search, ShieldCheck, Sparkles, Tag } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { categoriesApi } from "@/lib/api/categories";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
@@ -33,7 +33,7 @@ export async function HeroSearchSection({
           <p className="cv-tag bg-transparent px-0 text-cv-primary">
             Save smarter, not harder
           </p>
-          <h1 id="hero-search-heading" className="cv-h1 mt-3">
+          <h1 id="hero-search-heading" className="cv-display-hero mt-3">
             {heading}
           </h1>
           <p className="cv-body mx-auto mt-4 max-w-2xl text-cv-neutral-600">
@@ -88,6 +88,28 @@ export async function HeroSearchSection({
               ))}
             </div>
           )}
+
+          {/* Hero trust microcopy — 4 inline value props in a single
+              strip. No own card; blends into the hero band. Anchors the
+              promise without dragging the eye away from the search box. */}
+          <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-cv-neutral-600">
+            <li className="inline-flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-cv-success-strong" aria-hidden />
+              <span><span className="font-semibold text-cv-neutral-900">10,000+</span> coupons</span>
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <Tag className="h-4 w-4 text-cv-primary" aria-hidden />
+              <span><span className="font-semibold text-cv-neutral-900">500+</span> stores</span>
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-cv-success-strong" aria-hidden />
+              <span>Verified daily</span>
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-cv-accent" aria-hidden />
+              <span>Free forever</span>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
