@@ -5,6 +5,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
+import { CategoryHero } from "@/features/catalog/components/CategoryHero";
+import { TopStoresInCategoryRail } from "@/features/catalog/components/TopStoresInCategoryRail";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import {
   breadcrumbSchema,
@@ -101,7 +103,7 @@ export default async function CategoryPage({
   const categoriesUrl = canonicalFor("/categories", locale);
 
   return (
-    <div className="container py-8 md:py-12">
+    <>
       <JsonLd
         id="ld-collectionpage"
         data={collectionPageSchema({
@@ -133,36 +135,52 @@ export default async function CategoryPage({
         ])}
       />
 
-      <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">Home</Link>
-        <span aria-hidden>›</span>
-        <Link href="/categories" className="hover:text-foreground">{t("listTitle")}</Link>
-        <span aria-hidden>›</span>
-        <span className="font-medium text-foreground">{cat.title}</span>
-      </nav>
-
-      <header className="mb-8 max-w-3xl">
-        <h1 className="cv-h1 text-cv-primary">{cat.title}</h1>
-        {cat.description && (
-          <p className="mt-2 text-muted-foreground">{cat.description}</p>
-        )}
-      </header>
-
-      <CouponList
-        coupons={coupons}
-        emptyLabel={t("noCouponsInCategory", { category: cat.title })}
+      {/* Phase 3 — hero band with icon, H1, description, stat chips. */}
+      <CategoryHero
+        category={{ title: cat.title, slug: cat.slug, description: cat.description }}
+        stats={
+          coupons.length > 0
+            ? [
+                { label: `active coupon${coupons.length === 1 ? "" : "s"}`, value: coupons.length },
+                { label: "verified daily", value: "Tested" },
+              ]
+            : undefined
+        }
       />
 
-      {nextCursor && (
-        <div className="mt-10 text-center">
-          <Link
-            href={{ pathname: `/categories/${slug}`, query: { cursor: nextCursor } }}
-            className="inline-flex items-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
-          >
-            {tCommon("loadMore")}
-          </Link>
-        </div>
-      )}
-    </div>
+      <div className="container py-8 md:py-12">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground"
+        >
+          <Link href="/" className="hover:text-foreground">Home</Link>
+          <span aria-hidden>›</span>
+          <Link href="/categories" className="hover:text-foreground">{t("listTitle")}</Link>
+          <span aria-hidden>›</span>
+          <span className="font-medium text-foreground">{cat.title}</span>
+        </nav>
+
+        <CouponList
+          coupons={coupons}
+          emptyLabel={t("noCouponsInCategory", { category: cat.title })}
+        />
+
+        {nextCursor && (
+          <div className="mt-10 text-center">
+            <Link
+              href={{ pathname: `/categories/${slug}`, query: { cursor: nextCursor } }}
+              className="inline-flex items-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
+            >
+              {tCommon("loadMore")}
+            </Link>
+          </div>
+        )}
+
+        {/* Phase 3 — top stores in this category, server-fetched via the new
+            /api/v1/categories/{slug}/top-stores endpoint. Renders nothing if
+            the backend returns 0 stores. */}
+        <TopStoresInCategoryRail slug={cat.slug} categoryTitle={cat.title} limit={8} />
+      </div>
+    </>
   );
 }

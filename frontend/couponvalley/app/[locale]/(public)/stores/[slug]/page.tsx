@@ -21,6 +21,8 @@ import {
 import { storesApi } from "@/lib/api/stores";
 import { isApiError } from "@/lib/api/errors";
 import { StoreTypeTabs } from "@/features/catalog/components/StoreTypeTabs";
+import { StoreHero } from "@/features/catalog/components/StoreHero";
+import { RelatedStoresRail } from "@/features/catalog/components/RelatedStoresRail";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import {
   breadcrumbSchema,
@@ -148,6 +150,24 @@ export default async function StoreDetailPage({
           { name: t("listTitle"), url: storesUrl },
           { name: detail.name, url },
         ])}
+      />
+
+      {/* Phase 3 hero band — sits above the two-column grid. Logo, H1
+          ({Store} Coupons & Promo Codes — Month Year), rating row, stat
+          chips, "Visit brand" CTA. Replaces the duplicated identity card
+          + headline scattered across the old layout. */}
+      <StoreHero
+        store={{
+          name: detail.name,
+          slug: detail.slug,
+          logoUrl: detail.logoUrl,
+          shortDescription: detail.shortDescription,
+          rating: detail.rating,
+          reviewCount: detail.reviewCount,
+          primaryUrl: detail.primaryUrl,
+        }}
+        stats={detail.stats}
+        visitUrl={detail.primaryUrl}
       />
 
       <div className="container max-w-7xl py-5">
@@ -920,6 +940,23 @@ export default async function StoreDetailPage({
             </div>
           </main>
         </div>
+
+        {/* Phase 3 — related-stores rail at the bottom of <main> column.
+            Promotes the old sidebar text list into a scannable horizontal
+            rail. Each card is its own SEO-weighted internal link. */}
+        {similar.length > 0 && (
+          <RelatedStoresRail
+            heading={`Stores similar to ${detail.name}`}
+            subheading="Shoppers who saved here also browsed these brands."
+            stores={similar.map((s) => ({
+              id: s.id,
+              slug: s.slug,
+              name: s.name,
+              logoUrl: s.logoUrl,
+              cashbackRate: s.cashbackRate,
+            }))}
+          />
+        )}
       </div>
     </>
   );

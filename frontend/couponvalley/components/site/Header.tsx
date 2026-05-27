@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { storesApi } from "@/lib/api/stores";
 import { categoriesApi } from "@/lib/api/categories";
 import { AnnouncementBar } from "@/features/home/components/AnnouncementBar";
@@ -19,7 +20,14 @@ export async function Header() {
   const [stores, categories] = await Promise.all([safeStores(), safeCategories()]);
   return (
     <>
-      <AnnouncementBar />
+      {/* AnnouncementBar reads the dismiss cookie via cookies(), which is a
+          dynamic API and forces the entire enclosing route to be dynamically
+          rendered. Wrapping in <Suspense fallback={null}> lets the static
+          shell of every page pre-render while the bar streams in at request
+          time as a dynamic hole — keeping SSG benefits for the body. */}
+      <Suspense fallback={null}>
+        <AnnouncementBar />
+      </Suspense>
       <HeaderClient stores={stores} categories={categories} />
     </>
   );
