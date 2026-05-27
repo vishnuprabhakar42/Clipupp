@@ -91,6 +91,17 @@ public class CouponService {
         return couponRepo.findHomepageTop(OffsetDateTime.now(), PageRequest.of(0, limit));
     }
 
+    /**
+     * Top-N active coupon slugs by popularity. Slug-only projection —
+     * consumed by the frontend's generateStaticParams at build time to
+     * pre-render the highest-traffic coupon-detail pages.
+     */
+    @Transactional(readOnly = true)
+    public List<String> topSlugs(int limit) {
+        int capped = Math.max(1, Math.min(limit, 1000));
+        return couponRepo.findTopSlugs(OffsetDateTime.now(), PageRequest.of(0, capped));
+    }
+
     /** Same as {@link #homepageTop(int)} but with stores eagerly batched in for card rendering. */
     @Transactional(readOnly = true)
     public List<CouponWithStore> homepageTopWithStores(int limit) {

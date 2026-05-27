@@ -61,6 +61,20 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
            """)
     java.util.List<Store> findFeatured();
 
+    /**
+     * Slug-only projection of the top-N active stores by popularity. Used at
+     * Next.js build time by `generateStaticParams` on `/stores/[slug]` —
+     * pre-renders the highest-traffic store pages so Googlebot hits a warm
+     * cache on every crawl.
+     */
+    @Query("""
+           select s.slug from Store s
+           where s.deletedAt is null
+             and s.status = 'ACTIVE'
+           order by s.popularityScore desc, s.name asc
+           """)
+    java.util.List<String> findTopSlugs(Pageable pageable);
+
     @Query("""
            select s from Store s
            where (:q is null or lower(s.name) like concat('%', :q, '%') or lower(s.slug) like concat('%', :q, '%'))

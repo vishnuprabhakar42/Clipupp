@@ -108,6 +108,31 @@ public class StoreService {
         return storeRepo.findSimilarTo(excludeId, StoreStatus.ACTIVE, PageRequest.of(0, limit)).getContent();
     }
 
+    /**
+     * Top-N active store slugs by popularity. Slug-only projection — fast,
+     * tiny payload, consumed by the frontend's generateStaticParams at build
+     * time. Cap clamped server-side to keep build pre-renders bounded.
+     */
+    @Transactional(readOnly = true)
+    public List<String> topSlugs(int limit) {
+        int capped = Math.max(1, Math.min(limit, 500));
+        return storeRepo.findTopSlugs(PageRequest.of(0, capped));
+    }
+
+    /**
+     * Top-N stores within a category, ordered by popularity. Reuses the
+     * existing `listByCategorySlug` query (already filters ACTIVE +
+     * non-deleted, orders by popularity DESC). Used by the
+     * TopStoresInCategoryRail on category detail pages.
+     */
+    @Transactional(readOnly = true)
+    public List<Store> topStoresInCategory(String categorySlug, int limit) {
+        int capped = Math.max(1, Math.min(limit, 50));
+        return storeRepo
+                .listByCategorySlug(categorySlug, null, PageRequest.of(0, capped))
+                .getContent();
+    }
+
     // ---- Stats helper consumed by store-detail builder + admin ------------
 
     @Transactional(readOnly = true)

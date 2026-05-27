@@ -96,4 +96,14 @@ public class PublicStoresController {
                 .cacheControl(CacheControl.maxAge(Duration.ofMinutes(2)).cachePublic())
                 .body(similar.stream().map(StoreSummary::from).toList());
     }
+
+    @GetMapping("/top-slugs")
+    @Operation(summary = "Top-N store slugs by popularity (for SSG pre-render at build time)")
+    public ResponseEntity<List<String>> topSlugs(@RequestParam(defaultValue = "100") int limit) {
+        List<String> slugs = storeService.topSlugs(limit);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(Duration.ofHours(1)).cachePublic()
+                        .staleWhileRevalidate(Duration.ofHours(6)))
+                .body(slugs);
+    }
 }

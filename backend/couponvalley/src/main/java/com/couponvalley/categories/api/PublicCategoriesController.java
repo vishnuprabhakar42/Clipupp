@@ -6,6 +6,8 @@ import com.couponvalley.common.error.ApiException;
 import com.couponvalley.common.pagination.CursorPage;
 import com.couponvalley.coupons.api.dto.CouponSummary;
 import com.couponvalley.coupons.application.CouponService;
+import com.couponvalley.stores.api.dto.StoreSummary;
+import com.couponvalley.stores.application.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,10 +29,14 @@ public class PublicCategoriesController {
 
     private final CategoryService categoryService;
     private final CouponService couponService;
+    private final StoreService storeService;
 
-    public PublicCategoriesController(CategoryService categoryService, CouponService couponService) {
+    public PublicCategoriesController(CategoryService categoryService,
+                                      CouponService couponService,
+                                      StoreService storeService) {
         this.categoryService = categoryService;
         this.couponService = couponService;
+        this.storeService = storeService;
     }
 
     @GetMapping
@@ -68,6 +74,20 @@ public class PublicCategoriesController {
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(java.time.Duration.ofSeconds(60)).cachePublic()
                         .staleWhileRevalidate(java.time.Duration.ofMinutes(5)))
+                .body(body);
+    }
+
+    @GetMapping("/{slug}/top-stores")
+    @Operation(summary = "Top-N stores in this category, ordered by popularity")
+    public ResponseEntity<List<StoreSummary>> topStores(
+            @PathVariable String slug,
+            @RequestParam(defaultValue = "8") int limit) {
+        categoryService.findBySlug(slug).orElseThrow(() -> ApiException.notFound("Category not found"));
+        List<StoreSummary> body = storeService.topStoresInCategory(slug, limit).stream()
+                .map(StoreSummary::from).toList();
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(java.time.Duration.ofMinutes(5)).cachePublic()
+                        .staleWhileRevalidate(java.time.Duration.ofMinutes(30)))
                 .body(body);
     }
 }
