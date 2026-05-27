@@ -7,6 +7,7 @@ import { SignInForm } from "@/features/auth/components/SignInForm";
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in to your CouponValley account.",
+  robots: { index: false, follow: true },
 };
 
 export default function SignInPage() {

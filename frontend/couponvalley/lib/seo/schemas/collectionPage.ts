@@ -1,6 +1,4 @@
-import { JsonLd } from "./JsonLd";
-
-export function CollectionPageSchema({
+export function collectionPageSchema({
   url,
   name,
   description,
@@ -10,7 +8,7 @@ export function CollectionPageSchema({
   name: string;
   description?: string | null;
   itemCount?: number;
-}) {
+}): object {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -25,5 +23,5 @@ export function CollectionPageSchema({
       numberOfItems: itemCount,
     };
   }
-  return <JsonLd id="ld-collectionpage" data={data} />;
+  return data;
 }

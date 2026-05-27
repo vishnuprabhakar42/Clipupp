@@ -7,6 +7,7 @@ import { ForgotPasswordForm } from "@/features/auth/components/ForgotPasswordFor
 export const metadata: Metadata = {
   title: "Forgot your password?",
   description: "Enter your email and we'll send you a reset link.",
+  robots: { index: false, follow: true },
 };
 
 export default function ForgotPasswordPage() {

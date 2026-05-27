@@ -1,9 +1,7 @@
-import { JsonLd } from "./JsonLd";
-
 export type Crumb = { name: string; url: string };
 
-export function BreadcrumbSchema({ items, id }: { items: Crumb[]; id?: string }) {
-  const data = {
+export function breadcrumbSchema(items: Crumb[]): object {
+  return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((c, i) => ({
@@ -13,5 +11,4 @@ export function BreadcrumbSchema({ items, id }: { items: Crumb[]; id?: string })
       item: c.url,
     })),
   };
-  return <JsonLd id={id ?? "ld-breadcrumb"} data={data} />;
 }

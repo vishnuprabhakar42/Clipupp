@@ -5,6 +5,7 @@ import { VerifyEmailRunner } from "@/features/auth/components/VerifyEmailRunner"
 export const metadata: Metadata = {
   title: "Verify your email",
   description: "Confirm your CouponValley email address.",
+  robots: { index: false, follow: false },
 };
 
 export default function VerifyEmailPage() {

@@ -3,6 +3,7 @@ import { PreferencesForm } from "@/features/auth/components/PreferencesForm";
 
 export const metadata: Metadata = {
   title: "Preferences",
+  robots: { index: false, follow: false },
 };
 
 export default function PreferencesPage() {

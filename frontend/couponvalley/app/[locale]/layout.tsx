@@ -11,8 +11,8 @@ import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { GoogleOAuthProvider } from "@/components/providers/GoogleOAuthProvider";
 import { getServerSession } from "@/lib/auth/server";
 import { Toaster } from "@/components/ui/sonner";
-import { OrganizationSchema } from "@/components/seo/OrganizationSchema";
-import { WebSiteSchema } from "@/components/seo/WebSiteSchema";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { organizationSchema, webSiteSchema } from "@/lib/seo/schemas";
 import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
@@ -47,6 +47,14 @@ export async function generateMetadata({
     description: t("description"),
     metadataBase: new URL(SITE_URL),
     applicationName: "CouponValley",
+    // Explicit icon links — Next 15's file-convention picker handles
+    // `app/icon.svg` but not `app/apple-icon.svg` reliably (apple-icon
+    // is expected to be PNG by the convention). Declare both manually
+    // so the link tags definitely render.
+    icons: {
+      icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+      apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+    },
     appleWebApp: {
       capable: true,
       title: "CouponValley",
@@ -132,8 +140,8 @@ export default async function LocaleLayout({
             </ReactQueryProvider>
           </LanguageProvider>
         </NextIntlClientProvider>
-        <OrganizationSchema siteUrl={SITE_URL} />
-        <WebSiteSchema siteUrl={SITE_URL} />
+        <JsonLd id="ld-organization" data={organizationSchema(SITE_URL)} />
+        <JsonLd id="ld-website" data={webSiteSchema(SITE_URL)} />
       </body>
     </html>
   );

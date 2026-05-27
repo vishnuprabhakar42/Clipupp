@@ -1,13 +1,12 @@
-import { JsonLd } from "./JsonLd";
 import type { StoreDetail } from "@/lib/api/types";
 
-export function StoreSchema({
+export function storeSchema({
   store,
   url,
 }: {
   store: StoreDetail;
   url: string;
-}) {
+}): object {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Store",
@@ -36,5 +35,5 @@ export function StoreSchema({
   if (store.phone) {
     data.telephone = store.phone;
   }
-  return <JsonLd id="ld-store" data={data} />;
+  return data;
 }

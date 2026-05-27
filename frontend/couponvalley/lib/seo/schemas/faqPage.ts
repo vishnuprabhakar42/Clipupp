@@ -1,10 +1,8 @@
-import { JsonLd } from "./JsonLd";
-
 export type FaqItem = { question: string; answer: string };
 
-export function FAQPageSchema({ items }: { items: FaqItem[] }) {
+export function faqPageSchema(items: FaqItem[]): object | null {
   if (!items || items.length === 0) return null;
-  const data = {
+  return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: items.map((f) => ({
@@ -16,5 +14,4 @@ export function FAQPageSchema({ items }: { items: FaqItem[] }) {
       },
     })),
   };
-  return <JsonLd id="ld-faqpage" data={data} />;
 }
