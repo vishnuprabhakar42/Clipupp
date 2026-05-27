@@ -1,6 +1,15 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import nextBundleAnalyzer from "@next/bundle-analyzer";
 
 const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
+
+// Opt-in bundle visualizer. Run `npm run analyze` to produce static reports
+// under .next/analyze and open them in a browser. Off by default — wraps to
+// a no-op when ANALYZE is unset, so production builds are unaffected.
+const withBundleAnalyzer = nextBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+  openAnalyzer: false,
+});
 
 // Where the proxy forwards to. BACKEND_URL is the single source of truth —
 // NEXT_PUBLIC_API_BASE_URL is deliberately ignored here so browser fetches
@@ -134,4 +143,4 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withBundleAnalyzer(withNextIntl(nextConfig));

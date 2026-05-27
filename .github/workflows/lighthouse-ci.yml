@@ -1,50 +1,51 @@
-name: lighthouse-ci
+name: Lighthouse CI
 
 on:
   pull_request:
+    branches: [main]
     paths:
-      - 'frontend/couponvalley/**'
-      - '.github/workflows/lighthouse-ci.yml'
+      - "frontend/couponvalley/**"
+      - ".github/workflows/lighthouse-ci.yml"
 
-defaults:
-  run:
-    working-directory: frontend/couponvalley
+# Scopes the workflow's GITHUB_TOKEN to read-only (it's used by the
+# temporary-public-storage uploader, not by anything that writes).
+permissions:
+  contents: read
 
 jobs:
   lighthouse:
+    name: Audit Lighthouse score budgets
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend/couponvalley
+    env:
+      # Lighthouse needs a backend so detail pages render — without it the
+      # SSR fetch fails and the page falls through to the error boundary,
+      # which would tank the run. Until the backend is reachable from CI
+      # (Docker compose stack, deploy-preview, etc.), the workflow audits
+      # only static-shell routes (/, /stores, /coupons, /categories, /blog).
+      BACKEND_URL: http://localhost:8080
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Use Node 20
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: npm
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: frontend/couponvalley/package-lock.json
 
-      - name: Install
+      - name: Install deps
         run: npm ci
 
-      - name: Build
+      - name: Build (production)
         run: npm run build
-        env:
-          NEXT_PUBLIC_SITE_URL: http://localhost:3000
-          NEXT_PUBLIC_API_BASE_URL: http://localhost:8080
-
-      - name: Start Next.js
-        run: |
-          npm run start &
-          npx wait-on -t 60000 http://localhost:3000
 
       - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v12
-        with:
-          urls: |
-            http://localhost:3000/
-            http://localhost:3000/coupons
-            http://localhost:3000/stores
-            http://localhost:3000/categories
-          configPath: ./.lighthouserc.json
-          uploadArtifacts: true
-          temporaryPublicStorage: true
+        run: npm run lhci
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
