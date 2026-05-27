@@ -30,7 +30,7 @@ import { getPublicSettings, asString } from "@/lib/api/settings";
 export async function Footer() {
   const [settings, storesPage, categoryTree] = await Promise.all([
     getPublicSettings(),
-    storesApi.list({ limit: 6 }).catch(() => null),
+    storesApi.list({ limit: 10 }).catch(() => null),
     categoriesApi.tree().catch(() => null),
   ]);
 
@@ -67,8 +67,11 @@ export async function Footer() {
     asString(settings["contact.address_line3"]),
   ].filter(Boolean);
 
-  const stores = storesPage?.data?.slice(0, 6) ?? [];
-  const categories = categoryTree?.slice(0, 6) ?? [];
+  // Bumped 6 → 10 in Phase 4 — more internal links for crawler weight,
+  // higher chance a visitor finds the brand they were looking for from
+  // any page on the site.
+  const stores = storesPage?.data?.slice(0, 10) ?? [];
+  const categories = categoryTree?.slice(0, 10) ?? [];
 
   return (
     <footer className="mt-20 bg-cv-neutral-900 text-gray-300" role="contentinfo">

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { SignInForm } from "@/features/auth/components/SignInForm";
+import { AuthLayout } from "@/features/auth/components/AuthLayout";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -12,33 +12,11 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cv-neutral-50 px-4 py-10">
-      <div className="w-full max-w-[440px] space-y-6">
-        {/* Brand header */}
-        <div className="text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5 font-bold text-cv-primary"
-            aria-label="CouponValley home"
-          >
-            <span className="grid h-10 w-10 place-items-center rounded-md bg-cv-primary text-white">
-              <ShoppingBag className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="text-xl">CouponValley</span>
-          </Link>
-          <h1 className="cv-h1 mt-5 text-[1.75rem]">Welcome back</h1>
-          <p className="cv-body mt-1.5 text-cv-neutral-600">
-            Sign in to save coupons and track your savings.
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-cv-neutral-200 bg-white p-6 shadow-card">
-          <Suspense>
-            <SignInForm />
-          </Suspense>
-        </div>
-
-        <p className="cv-meta text-center">
+    <AuthLayout
+      heading="Welcome back"
+      subheading="Sign in to save coupons and track your savings."
+      footer={
+        <>
           By signing in you agree to our{" "}
           <Link href="/terms" className="underline hover:text-cv-neutral-900">
             Terms
@@ -48,8 +26,12 @@ export default function SignInPage() {
             Privacy Policy
           </Link>
           .
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <Suspense>
+        <SignInForm />
+      </Suspense>
+    </AuthLayout>
   );
 }
