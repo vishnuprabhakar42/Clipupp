@@ -6,7 +6,10 @@ import { offersApi } from "@/lib/api/coupons";
 import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
 import { CouponFilters } from "@/features/catalog/components/CouponFilters";
-import { canonicalFor, hreflangAlternates } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { itemListSchema } from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
 
 export const revalidate = 30;
@@ -21,14 +24,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.offers" });
-  return {
+  return buildMetadata({
     title: t("title"),
     description: t("description"),
-    alternates: {
-      canonical: canonicalFor("/offers", locale),
-      languages: hreflangAlternates("/offers"),
-    },
-  };
+    path: "/offers",
+    locale,
+  });
 }
 
 export default async function OffersPage({
@@ -59,8 +60,23 @@ export default async function OffersPage({
     hadError = !(isApiError(err) && err.status === 404);
   }
 
+  const listUrl = canonicalFor("/offers", locale);
+
   return (
     <div className="container py-8 md:py-12">
+      {offers.length > 0 && (
+        <JsonLd
+          id="ld-itemlist"
+          data={itemListSchema({
+            url: listUrl,
+            name: t("listTitle"),
+            entries: offers.map((o) => ({
+              url: canonicalFor(`/coupons/${o.slug}`, locale),
+              name: o.title,
+            })),
+          })}
+        />
+      )}
       <header className="mb-6 max-w-3xl">
         <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
           {t("listTitle")}

@@ -21,10 +21,14 @@ import {
 import { storesApi } from "@/lib/api/stores";
 import { isApiError } from "@/lib/api/errors";
 import { StoreTypeTabs } from "@/features/catalog/components/StoreTypeTabs";
-import { StoreSchema } from "@/components/seo/StoreSchema";
-import { FAQPageSchema } from "@/components/seo/FAQPageSchema";
-import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
-import { canonicalFor, hreflangAlternates, siteUrl } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import {
+  breadcrumbSchema,
+  faqPageSchema,
+  storeSchema,
+} from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import { type Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
@@ -55,28 +59,13 @@ export async function generateMetadata({
     detail.metaDescription ??
     detail.shortDescription ??
     `Save with verified ${detail.name} coupons, promo codes, and exclusive deals — tested and updated regularly.`;
-  return {
+  return buildMetadata({
     title,
     description,
-    alternates: {
-      canonical: canonicalFor(path, locale),
-      languages: hreflangAlternates(path),
-    },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonicalFor(path, locale),
-      images: [
-        {
-          url: `${siteUrl()}/og/store/${detail.slug}`,
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: { card: "summary_large_image" },
-  };
+    path,
+    locale,
+    image: `/og/store/${detail.slug}`,
+  });
 }
 
 export default async function StoreDetailPage({
@@ -127,21 +116,20 @@ export default async function StoreDetailPage({
 
   return (
     <>
-      <StoreSchema store={detail} url={url} />
-      {detail.faqs.length > 0 && (
-        <FAQPageSchema
-          items={detail.faqs.map((f) => ({
-            question: f.question,
-            answer: f.answer,
-          }))}
-        />
-      )}
-      <BreadcrumbSchema
-        items={[
+      <JsonLd id="ld-store" data={storeSchema({ store: detail, url })} />
+      {detail.faqs.length > 0 && (() => {
+        const faq = faqPageSchema(
+          detail.faqs.map((f) => ({ question: f.question, answer: f.answer }))
+        );
+        return faq ? <JsonLd id="ld-faqpage" data={faq} /> : null;
+      })()}
+      <JsonLd
+        id="ld-breadcrumb"
+        data={breadcrumbSchema([
           { name: "Home", url: homeUrl },
           { name: t("listTitle"), url: storesUrl },
           { name: detail.name, url },
-        ]}
+        ])}
       />
 
       <div className="container max-w-7xl py-5">

@@ -4,33 +4,37 @@ import Image from "next/image";
 import { CalendarIcon, ArrowRight } from "lucide-react";
 import { blogApi } from "@/lib/api/blog";
 import { isApiError } from "@/lib/api/errors";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { itemListSchema } from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
+import type { Locale } from "@/lib/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Blog · Money-saving tips & shopping guides | CouponValley",
-  description:
-    "Smart shopping guides, money-saving strategies, and store deep-dives from the CouponValley editorial team. Updated weekly.",
-  alternates: {
-    canonical: "/blog",
-    languages: { en: "/blog", hi: "/hi/blog", "x-default": "/blog" },
-  },
-  openGraph: {
-    type: "website",
-    url: "/blog",
-    title: "CouponValley Blog — Money-saving tips",
+type Params = Promise<{ locale: Locale }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildMetadata({
+    title: "Blog — Money-saving tips & shopping guides",
     description:
-      "Smart shopping guides, money-saving strategies, and store deep-dives. Updated weekly.",
-    siteName: "CouponValley",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "CouponValley Blog",
-    description: "Smart shopping guides + money-saving strategies.",
-  },
-};
+      "Smart shopping guides, money-saving strategies, and store deep-dives from the CouponValley editorial team. Updated weekly.",
+    path: "/blog",
+    locale,
+  });
+}
 
 export const revalidate = 300;
 
-export default async function BlogPage() {
+export default async function BlogPage({
+  params,
+}: {
+  params: Params;
+}) {
+  const { locale } = await params;
   let articles: Awaited<ReturnType<typeof blogApi.list>>["data"] = [];
   let hadError = false;
   try {
@@ -40,8 +44,23 @@ export default async function BlogPage() {
     hadError = !(isApiError(err) && err.status === 404);
   }
 
+  const listUrl = canonicalFor("/blog", locale);
+
   return (
     <div className="container py-8 md:py-12">
+      {articles.length > 0 && (
+        <JsonLd
+          id="ld-itemlist"
+          data={itemListSchema({
+            url: listUrl,
+            name: "Blog articles",
+            entries: articles.map((a) => ({
+              url: canonicalFor(`/blog/${a.slug}`, locale),
+              name: a.title,
+            })),
+          })}
+        />
+      )}
       <header className="mx-auto mb-10 max-w-3xl text-center">
         <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
           Blog
@@ -67,7 +86,6 @@ export default async function BlogPage() {
               href={`/blog/${article.slug}`}
               className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
             >
-              {/* Hero image — fixed 16:9 aspect, object-cover for atmospheric photos. */}
               <div className="relative aspect-video w-full overflow-hidden bg-cv-neutral-100">
                 {article.heroImageUrl ? (
                   <Image
@@ -85,7 +103,6 @@ export default async function BlogPage() {
                 )}
               </div>
 
-              {/* Body — flex-col so the "Read more" CTA pins to bottom. */}
               <div className="flex flex-1 flex-col gap-2 p-5">
                 {article.publishedAt && (
                   <div className="flex items-center gap-1 text-xs text-cv-neutral-500">

@@ -1,7 +1,5 @@
-import { JsonLd } from "./JsonLd";
-
-export function WebSiteSchema({ siteUrl }: { siteUrl: string }) {
-  const data = {
+export function webSiteSchema(siteUrl: string): object {
+  return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "CouponValley",
@@ -15,5 +13,4 @@ export function WebSiteSchema({ siteUrl }: { siteUrl: string }) {
       "query-input": "required name=search_term_string",
     },
   };
-  return <JsonLd id="ld-website" data={data} />;
 }

@@ -1,13 +1,12 @@
-import { JsonLd } from "./JsonLd";
 import type { CouponDetail } from "@/lib/api/types";
 
-export function OfferSchema({
+export function offerSchema({
   coupon,
   url,
 }: {
   coupon: CouponDetail;
   url: string;
-}) {
+}): object {
   const data: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Offer",
@@ -52,5 +51,5 @@ export function OfferSchema({
       priceCurrency: "USD",
     };
   }
-  return <JsonLd id="ld-offer" data={data} />;
+  return data;
 }

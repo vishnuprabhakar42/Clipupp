@@ -8,9 +8,14 @@ import { couponsApi } from "@/lib/api/coupons";
 import { isApiError } from "@/lib/api/errors";
 import { CouponReveal } from "@/features/catalog/components/CouponReveal";
 import { SaveCouponButton } from "@/features/savedcoupons/components/SaveCouponButton";
-import { OfferSchema } from "@/components/seo/OfferSchema";
-import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
-import { canonicalFor, hreflangAlternates, siteUrl } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import {
+  breadcrumbSchema,
+  offerSchema,
+  productSchema,
+} from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import { type Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
@@ -39,22 +44,16 @@ export async function generateMetadata({
     detail.metaTitle ??
     `${detail.title}${detail.store ? ` — ${detail.store.name} Promo Code` : ""}`;
   const description = detail.metaDescription ?? detail.description.slice(0, 160);
-  return {
+  return buildMetadata({
     title,
     description,
-    alternates: {
-      canonical: canonicalFor(path, locale),
-      languages: hreflangAlternates(path),
-    },
-    openGraph: {
-      type: "website",
-      title,
-      description,
-      url: canonicalFor(path, locale),
-      images: [{ url: `${siteUrl()}/og/coupon/${detail.slug}`, width: 1200, height: 630 }],
-    },
-    twitter: { card: "summary_large_image" },
-  };
+    path,
+    locale,
+    // Product rich-result eligibility comes from the Product JSON-LD on the
+    // page (see <JsonLd id="ld-product" />), not from og:type — Next's
+    // Metadata.OpenGraph type doesn't accept "product".
+    image: `/og/coupon/${detail.slug}`,
+  });
 }
 
 export default async function CouponDetailPage({
@@ -77,13 +76,15 @@ export default async function CouponDetailPage({
 
   return (
     <div className="container max-w-3xl py-8 md:py-12">
-      <OfferSchema coupon={detail} url={url} />
-      <BreadcrumbSchema
-        items={[
+      <JsonLd id="ld-offer" data={offerSchema({ coupon: detail, url })} />
+      <JsonLd id="ld-product" data={productSchema({ coupon: detail, url })} />
+      <JsonLd
+        id="ld-breadcrumb"
+        data={breadcrumbSchema([
           { name: "Home", url: homeUrl },
           { name: t("listTitle"), url: couponsUrl },
           { name: detail.title, url },
-        ]}
+        ])}
       />
 
       {detail.store && (

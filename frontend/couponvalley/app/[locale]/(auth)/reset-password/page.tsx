@@ -7,6 +7,7 @@ import { ResetPasswordForm } from "@/features/auth/components/ResetPasswordForm"
 export const metadata: Metadata = {
   title: "Reset password",
   description: "Set a new password for your CouponValley account.",
+  robots: { index: false, follow: false },
 };
 
 export default function ResetPasswordPage() {

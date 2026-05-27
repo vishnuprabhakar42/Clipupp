@@ -3,7 +3,10 @@ import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
-import { canonicalFor, hreflangAlternates } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { itemListSchema } from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
@@ -17,14 +20,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.categories" });
-  return {
+  return buildMetadata({
     title: t("title"),
     description: t("description"),
-    alternates: {
-      canonical: canonicalFor("/categories", locale),
-      languages: hreflangAlternates("/categories"),
-    },
-  };
+    path: "/categories",
+    locale,
+  });
 }
 
 export default async function CategoriesPage({
@@ -44,8 +45,23 @@ export default async function CategoriesPage({
     hadError = !(isApiError(err) && err.status === 404);
   }
 
+  const listUrl = canonicalFor("/categories", locale);
+
   return (
     <div className="container py-8 md:py-12">
+      {tree.length > 0 && (
+        <JsonLd
+          id="ld-itemlist"
+          data={itemListSchema({
+            url: listUrl,
+            name: t("listTitle"),
+            entries: tree.map((c) => ({
+              url: canonicalFor(`/categories/${c.slug}`, locale),
+              name: c.title,
+            })),
+          })}
+        />
+      )}
       <header className="mx-auto mb-10 max-w-3xl text-center">
         <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
           {t("listTitle")}

@@ -5,9 +5,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
-import { CollectionPageSchema } from "@/components/seo/CollectionPageSchema";
-import { BreadcrumbSchema } from "@/components/seo/BreadcrumbSchema";
-import { canonicalFor, hreflangAlternates } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import {
+  breadcrumbSchema,
+  collectionPageSchema,
+  itemListSchema,
+} from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import { type Locale } from "@/lib/i18n/config";
 
 export const revalidate = 60;
@@ -33,15 +38,15 @@ export async function generateMetadata({
   const cat = await loadCategory(slug);
   if (!cat) return { title: "Category not found", robots: { index: false } };
   const path = `/categories/${cat.slug}`;
-  return {
+  return buildMetadata({
     title: cat.metaTitle ?? `${cat.title} Coupons & Deals`,
     description:
-      cat.metaDescription ?? cat.description ?? `Latest coupons and deals in ${cat.title}.`,
-    alternates: {
-      canonical: canonicalFor(path, locale),
-      languages: hreflangAlternates(path),
-    },
-  };
+      cat.metaDescription ??
+      cat.description ??
+      `Latest coupons and deals in ${cat.title}.`,
+    path,
+    locale,
+  });
 }
 
 export default async function CategoryPage({
@@ -76,18 +81,35 @@ export default async function CategoryPage({
 
   return (
     <div className="container py-8 md:py-12">
-      <CollectionPageSchema
-        url={url}
-        name={cat.title}
-        description={cat.description}
-        itemCount={coupons.length}
+      <JsonLd
+        id="ld-collectionpage"
+        data={collectionPageSchema({
+          url,
+          name: cat.title,
+          description: cat.description,
+          itemCount: coupons.length,
+        })}
       />
-      <BreadcrumbSchema
-        items={[
+      {coupons.length > 0 && (
+        <JsonLd
+          id="ld-itemlist"
+          data={itemListSchema({
+            url,
+            name: `${cat.title} coupons`,
+            entries: coupons.map((c) => ({
+              url: canonicalFor(`/coupons/${c.slug}`, locale),
+              name: c.title,
+            })),
+          })}
+        />
+      )}
+      <JsonLd
+        id="ld-breadcrumb"
+        data={breadcrumbSchema([
           { name: "Home", url: homeUrl },
           { name: t("listTitle"), url: categoriesUrl },
           { name: cat.title, url },
-        ]}
+        ])}
       />
 
       <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1.5 text-xs text-muted-foreground">

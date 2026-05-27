@@ -6,6 +6,7 @@ import { SignUpForm } from "@/features/auth/components/SignUpForm";
 export const metadata: Metadata = {
   title: "Create an account",
   description: "Join CouponValley to save coupons and get the best deals first.",
+  robots: { index: false, follow: true },
 };
 
 export default function SignUpPage() {

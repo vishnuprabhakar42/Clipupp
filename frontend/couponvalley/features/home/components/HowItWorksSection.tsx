@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { MousePointerClick, Search, Tag } from "lucide-react";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { howToSchema } from "@/lib/seo/schemas";
 
 /**
  * 3-step explainer. Clean, restrained cards in the Stripe / Linear /
@@ -18,6 +20,14 @@ export async function HowItWorksSection() {
   ];
   return (
     <section id="how-it-works" className="scroll-mt-24 bg-cv-neutral-50">
+      <JsonLd
+        id="ld-howto"
+        data={howToSchema({
+          name: t("title"),
+          description: t("subtitle"),
+          steps: steps.map((s) => ({ name: s.title, text: s.description })),
+        })}
+      />
       <div className="cv-container cv-section">
         {/* Section header — eyebrow / title / subtitle */}
         <div className="mx-auto max-w-2xl text-center">

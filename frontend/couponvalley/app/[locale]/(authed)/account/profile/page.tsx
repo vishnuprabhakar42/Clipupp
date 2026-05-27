@@ -4,6 +4,7 @@ import { ChangePasswordForm } from "@/features/auth/components/ChangePasswordFor
 
 export const metadata: Metadata = {
   title: "Profile",
+  robots: { index: false, follow: false },
 };
 
 export default function ProfilePage() {

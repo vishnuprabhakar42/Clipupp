@@ -7,7 +7,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { storesApi } from "@/lib/api/stores";
 import { isApiError } from "@/lib/api/errors";
 import { StoreFilters } from "@/features/catalog/components/StoreFilters";
-import { canonicalFor, hreflangAlternates } from "@/lib/seo/urls";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { itemListSchema } from "@/lib/seo/schemas";
+import { buildMetadata } from "@/lib/seo/meta";
+import { canonicalFor } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
 
 export const revalidate = 30;
@@ -26,14 +29,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata.stores" });
-  return {
+  return buildMetadata({
     title: t("title"),
     description: t("description"),
-    alternates: {
-      canonical: canonicalFor("/stores", locale),
-      languages: hreflangAlternates("/stores"),
-    },
-  };
+    path: "/stores",
+    locale,
+  });
 }
 
 export default async function StoresPage({
@@ -65,8 +66,23 @@ export default async function StoresPage({
     hadError = !(isApiError(err) && err.status === 404);
   }
 
+  const listUrl = canonicalFor("/stores", locale);
+
   return (
     <div className="container py-8 md:py-12">
+      {stores.length > 0 && (
+        <JsonLd
+          id="ld-itemlist"
+          data={itemListSchema({
+            url: listUrl,
+            name: t("listTitle"),
+            entries: stores.map((s) => ({
+              url: canonicalFor(`/stores/${s.slug}`, locale),
+              name: s.name,
+            })),
+          })}
+        />
+      )}
       <header className="mx-auto mb-6 max-w-3xl text-center">
         <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
           {t("listTitle")}
