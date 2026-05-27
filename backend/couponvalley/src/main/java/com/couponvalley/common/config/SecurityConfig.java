@@ -50,6 +50,28 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(Customizer.withDefaults())
+            // Spring Security's default CacheControlHeadersWriter unconditionally
+            // sets `Cache-Control: no-cache, no-store, max-age=0, must-revalidate`
+            // on every response — even when the controller has already set
+            // `Cache-Control: max-age=60, stale-while-revalidate=5m`. That
+            // silently undoes the public-catalog SWR caching strategy.
+            //
+            // Fix: disable the default writer, then add a conditional one that
+            // only injects no-store when the response doesn't already carry a
+            // Cache-Control header. Controllers (public stores/coupons/etc.)
+            // that explicitly set caching keep their headers; everything else
+            // (admin/auth/account) still gets the protective no-store default.
+            .headers(h -> h
+                .cacheControl(c -> c.disable())
+                .addHeaderWriter((req, res) -> {
+                    if (!res.containsHeader("Cache-Control")) {
+                        res.setHeader("Cache-Control",
+                                "no-cache, no-store, max-age=0, must-revalidate");
+                        res.setHeader("Pragma", "no-cache");
+                        res.setHeader("Expires", "0");
+                    }
+                })
+            )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Return 401 (not the Spring default 403) when a protected
             // endpoint is hit without authentication. The frontend's auto-
