@@ -79,4 +79,14 @@ public class PublicCouponsController {
                         .staleWhileRevalidate(java.time.Duration.ofMinutes(5)))
                 .body(enriched.stream().map(e -> CouponSummary.from(e.coupon(), e.store())).toList());
     }
+
+    @GetMapping("/top-slugs")
+    @Operation(summary = "Top-N coupon slugs by popularity (for SSG pre-render at build time)")
+    public ResponseEntity<java.util.List<String>> topSlugs(@RequestParam(defaultValue = "200") int limit) {
+        java.util.List<String> slugs = couponService.topSlugs(limit);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(java.time.Duration.ofHours(1)).cachePublic()
+                        .staleWhileRevalidate(java.time.Duration.ofHours(6)))
+                .body(slugs);
+    }
 }

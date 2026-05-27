@@ -119,6 +119,21 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
            """)
     List<Coupon> findFeatured(@Param("now") OffsetDateTime now);
 
+    /**
+     * Slug-only projection of the top-N active, non-expired coupons by
+     * popularity. Used at Next.js build time by `generateStaticParams` on
+     * `/coupons/[slug]` — pre-renders the highest-traffic coupon pages so
+     * Googlebot hits a warm cache on every crawl.
+     */
+    @Query("""
+           select c.slug from Coupon c
+           where c.deletedAt is null
+             and c.status = 'ACTIVE'
+             and (c.expiresAt is null or c.expiresAt > :now)
+           order by c.popularityScore desc, c.createdAt desc
+           """)
+    List<String> findTopSlugs(@Param("now") OffsetDateTime now, Pageable pageable);
+
     @EntityGraph(attributePaths = "categories")
     @Query("""
            select c from Coupon c
