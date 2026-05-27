@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Sparkles, Tag } from "lucide-react";
 import { couponsApi } from "@/lib/api/coupons";
 import type { CouponSummary } from "@/lib/api/types";
@@ -10,28 +7,28 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 /**
  * "Top Deals" — coupon card grid. Follows the platform coupon card contract:
- *   • Logo (40×40 white tile with 1px border)
+ *   • Logo (40x40 white tile with 1px border)
  *   • Headline (max 2 lines)
  *   • Savings badge
  *   • Verified/exclusive meta
  *   • One full-width CTA pinned at the bottom (`mt-auto`)
  *
- * 1 → 2 → 3 → 4 cols. Cards stretch via `items-stretch` so a row never has
+ * 1 -> 2 -> 3 -> 4 cols. Cards stretch via `items-stretch` so a row never has
  * different heights regardless of how long any single headline runs.
+ *
+ * Server-rendered: prefers `section.coupons` from the homepage payload; falls
+ * back to `couponsApi.top(limit)` only when the admin hasn't pinned items.
  */
-export function TopDealsSection({ section }: { section?: HomepageSectionPayload | null }) {
+export async function TopDealsSection({
+  section,
+}: {
+  section?: HomepageSectionPayload | null;
+}) {
   const limit = section?.itemLimit ?? 10;
   const heading = section?.title ?? "Top Deals";
-  const preloaded = section?.coupons as CouponSummary[] | null | undefined;
+  const preloaded = (section?.coupons as CouponSummary[] | null | undefined) ?? null;
 
-  const q = useQuery({
-    queryKey: ["home", "top-deals", limit],
-    queryFn: () => couponsApi.top(limit),
-    staleTime: 60_000,
-    enabled: !preloaded,
-  });
-
-  const coupons = preloaded ?? q.data ?? null;
+  const coupons: CouponSummary[] = preloaded ?? (await safeFetch(limit));
 
   return (
     <section aria-labelledby="top-deals-heading">
@@ -47,17 +44,11 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
         </Link>
       </div>
 
-      {!preloaded && q.isLoading ? (
-        <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <li key={i} className="cv-skeleton h-[280px] rounded-lg" />
-          ))}
-        </ul>
-      ) : (coupons?.length ?? 0) === 0 ? (
+      {coupons.length === 0 ? (
         <p className="cv-meta">No active deals right now — check back soon.</p>
       ) : (
         <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
-          {coupons!.slice(0, 8).map((c) => (
+          {coupons.slice(0, 8).map((c) => (
             <li key={c.id} className="h-full">
               <DealCard coupon={c} />
             </li>
@@ -66,6 +57,14 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
       )}
     </section>
   );
+}
+
+async function safeFetch(limit: number): Promise<CouponSummary[]> {
+  try {
+    return await couponsApi.top(limit);
+  } catch {
+    return [];
+  }
 }
 
 function DealCard({ coupon }: { coupon: CouponSummary }) {
@@ -81,9 +80,6 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
       className="group flex h-full min-h-[260px] flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
     >
       <div className="flex items-start gap-3 p-4">
-        {/* 40×40 logo tile per image render contract — sized image (not
-            `fill`) + single padding level so logos render at readable size
-            instead of collapsing into the tile padding. */}
         <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-md border border-cv-neutral-200 bg-white">
           {coupon.storeLogoUrl ? (
             <Image
@@ -139,7 +135,6 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
         </div>
       </div>
 
-      {/* Single CTA — full-width, pinned to the bottom via mt-auto */}
       <span className="mt-auto inline-flex items-center justify-center gap-1.5 bg-cv-primary px-3 py-3 text-sm font-semibold text-white transition-colors group-hover:bg-cv-primary-strong">
         <Tag className="h-3.5 w-3.5" aria-hidden />
         {isCode ? "Get code" : "Get deal"}

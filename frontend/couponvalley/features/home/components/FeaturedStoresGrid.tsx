@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { storesApi } from "@/lib/api/stores";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
@@ -24,8 +21,11 @@ type Store = {
  * 2 / 3 / 4-column responsive layout. Logos sit in a white tile with a
  * neutral border so each card scans the same regardless of source brand
  * colour. Single shadow level, no hover lift.
+ *
+ * Server-rendered. Prefers `section.stores` from the homepage payload; falls
+ * back to `storesApi.list({ limit })` when the admin hasn't pinned items.
  */
-export function FeaturedStoresGrid({
+export async function FeaturedStoresGrid({
   section,
 }: {
   section?: HomepageSectionPayload | null;
@@ -34,16 +34,9 @@ export function FeaturedStoresGrid({
   const subtitle =
     section?.subtitle ?? "Hand-picked stores with the best coupons this week";
   const limit = section?.itemLimit ?? 8;
-  const preloaded = section?.stores as Store[] | null | undefined;
+  const preloaded = (section?.stores as Store[] | null | undefined) ?? null;
 
-  const q = useQuery({
-    queryKey: ["home", "featured-stores", limit],
-    queryFn: () => storesApi.list({ limit }),
-    staleTime: 5 * 60_000,
-    enabled: !preloaded,
-  });
-
-  const stores = (preloaded ?? (q.data?.data as Store[] | undefined) ?? []).slice(0, limit);
+  const stores: Store[] = (preloaded ?? (await safeFetch(limit))).slice(0, limit);
 
   return (
     <section aria-labelledby="featured-stores-heading">
@@ -65,9 +58,7 @@ export function FeaturedStoresGrid({
         </Link>
       </div>
 
-      {!preloaded && q.isLoading ? (
-        <SkeletonGrid />
-      ) : stores.length === 0 ? (
+      {stores.length === 0 ? (
         <p className="cv-meta">No featured stores yet.</p>
       ) : (
         <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
@@ -82,6 +73,15 @@ export function FeaturedStoresGrid({
   );
 }
 
+async function safeFetch(limit: number): Promise<Store[]> {
+  try {
+    const page = await storesApi.list({ limit });
+    return (page.data ?? []) as Store[];
+  } catch {
+    return [];
+  }
+}
+
 function StoreCard({ store, index }: { store: Store; index: number }) {
   const dealLabel = store.cashbackRate ?? "View coupons";
   return (
@@ -90,10 +90,6 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
       className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
       aria-label={store.name}
     >
-      {/* Logo tile — flat white, contained image. Aspect ratio reserves
-          space so the card never shifts as the image loads. Single padding
-          level (p-6) on the wrapper; the image is sized, not `fill`, so
-          padding doesn't compound and tiny placeholder text isn't lost. */}
       <div className="flex aspect-[5/3] items-center justify-center overflow-hidden border-b border-cv-neutral-200 bg-white p-6">
         {store.logoUrl ? (
           <Image
@@ -133,15 +129,5 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
         </div>
       </div>
     </Link>
-  );
-}
-
-function SkeletonGrid() {
-  return (
-    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <li key={i} className="cv-skeleton h-[240px] rounded-lg" />
-      ))}
-    </ul>
   );
 }

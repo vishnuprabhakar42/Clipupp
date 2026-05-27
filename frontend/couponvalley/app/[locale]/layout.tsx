@@ -13,9 +13,7 @@ import { getServerSession } from "@/lib/auth/server";
 import { Toaster } from "@/components/ui/sonner";
 import { OrganizationSchema } from "@/components/seo/OrganizationSchema";
 import { WebSiteSchema } from "@/components/seo/WebSiteSchema";
-import { CookieBanner } from "@/components/site/CookieBanner";
-import { FirstVisitModal } from "@/components/site/FirstVisitModal";
-import { WebVitalsReporter } from "@/components/site/WebVitalsReporter";
+import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
 // Typography: Apple San Francisco everywhere via the system font stack
@@ -23,6 +21,10 @@ import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 // Apple platforms, native fallbacks elsewhere. Tailwind's `font-sans` and
 // `font-display` both resolve to this stack, so existing class usages keep
 // working without modification.
+//
+// CookieBanner, FirstVisitModal, and WebVitalsReporter are lazy-loaded in
+// DeferredClientWidgets (client component) so they don't ship in the initial
+// SSR HTML and hydrate after first paint.
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -44,6 +46,17 @@ export async function generateMetadata({
     },
     description: t("description"),
     metadataBase: new URL(SITE_URL),
+    applicationName: "CouponValley",
+    appleWebApp: {
+      capable: true,
+      title: "CouponValley",
+      statusBarStyle: "default",
+    },
+    formatDetection: {
+      telephone: false,
+      address: false,
+      email: false,
+    },
     alternates: {
       canonical: locale === "en" ? "/" : `/${locale}`,
       languages: {
@@ -62,6 +75,17 @@ export async function generateMetadata({
   };
 }
 
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#3B82F6" },
+    { media: "(prefers-color-scheme: dark)", color: "#1D4ED8" },
+  ],
+  colorScheme: "light" as const,
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
+
 export default async function LocaleLayout({
   children,
   params,
@@ -79,6 +103,15 @@ export default async function LocaleLayout({
 
   return (
     <html lang={localeToBcp47[localeTyped]} dir={dirFor(localeTyped)}>
+      <head>
+        {/* Preconnect to the image origins we use most so the first <Image>
+            on the page doesn't pay the TCP+TLS handshake cost. */}
+        <link rel="preconnect" href="https://logo.clearbit.com" />
+        <link rel="preconnect" href="https://placehold.co" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://api.dicebear.com" />
+        <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
+      </head>
       <body className="font-sans">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <LanguageProvider>
@@ -92,9 +125,7 @@ export default async function LocaleLayout({
                   Skip to content
                 </a>
                 {children}
-                <CookieBanner />
-                <FirstVisitModal />
-                <WebVitalsReporter />
+                <DeferredClientWidgets />
               </AuthProvider>
               </GoogleOAuthProvider>
               <Toaster />
