@@ -1,13 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, X } from "lucide-react";
+import { cookies } from "next/headers";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { bannersApi, type BannerDetail } from "@/lib/api/banners";
 import { campaignsApi, type CampaignDetail } from "@/lib/api/campaigns";
-
-const STORAGE_KEY = "cv:announcement-dismissed";
+import { AnnouncementDismissButton } from "./AnnouncementDismissButton";
+import { ANNOUNCEMENT_COOKIE } from "./announcementConstants";
 
 type Resolved = {
   id: string;            // unique key for dismiss state
@@ -20,60 +17,20 @@ type Resolved = {
 /**
  * Slim dismissible announcement bar above the header. An active campaign
  * (window-bound, with a hero/cta defined) takes precedence over the
- * banner-driven default. State persists in localStorage keyed by id so a
- * new announcement / campaign re-shows itself.
+ * banner-driven default.
+ *
+ * Server-rendered. Dismissal state persists in a cookie keyed by announcement
+ * id (cv_announcement_dismissed) so a new announcement / campaign re-shows
+ * itself. The dismiss button is a small client island (form action ->
+ * server action that sets the cookie + revalidates).
  */
-export function AnnouncementBar() {
-  const campaign = useQuery({
-    queryKey: ["campaigns", "active"],
-    queryFn: () => campaignsApi.getActive(),
-    staleTime: 60_000,
-  });
-
-  const banners = useQuery({
-    queryKey: ["banners", "top-bar"],
-    queryFn: () => bannersApi.list({ placement: "TOP_BAR" }),
-    staleTime: 5 * 60_000,
-    enabled: !campaign.isLoading && !campaign.data,
-  });
-
-  const resolved: Resolved | null = (() => {
-    const c: CampaignDetail | null = campaign.data ?? null;
-    if (c && (c.heroTitle || c.ctaLabel)) {
-      return {
-        id: `campaign:${c.id}`,
-        title: c.heroTitle ?? c.name,
-        subtitle: c.ctaLabel,
-        linkUrl: c.ctaUrl,
-        themeColor: c.themeColor,
-      };
-    }
-    const b: BannerDetail | undefined = banners.data?.[0];
-    if (b) {
-      return {
-        id: b.id,
-        title: b.title,
-        subtitle: b.subtitle,
-        linkUrl: b.linkUrl,
-      };
-    }
-    return null;
-  })();
-
-  const [dismissed, setDismissed] = useState<string | null>(null);
-
-  useEffect(() => {
-    setDismissed(typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null);
-  }, []);
-
+export async function AnnouncementBar() {
+  const resolved = await resolveAnnouncement();
   if (!resolved) return null;
-  if (dismissed === resolved.id) return null;
 
-  function dismiss() {
-    if (!resolved) return;
-    localStorage.setItem(STORAGE_KEY, resolved.id);
-    setDismissed(resolved.id);
-  }
+  const jar = await cookies();
+  const dismissedId = jar.get(ANNOUNCEMENT_COOKIE)?.value;
+  if (dismissedId === resolved.id) return null;
 
   // Flat campaign background — theme colour or default primary. No gradients.
   const accent = resolved.themeColor ?? "var(--cv-primary)";
@@ -102,14 +59,41 @@ export function AnnouncementBar() {
           )}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={dismiss}
-        aria-label="Dismiss announcement"
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
-      >
-        <X className="h-4 w-4" />
-      </button>
+      <AnnouncementDismissButton id={resolved.id} />
     </div>
   );
+}
+
+async function resolveAnnouncement(): Promise<Resolved | null> {
+  let campaign: CampaignDetail | null = null;
+  try {
+    campaign = await campaignsApi.getActive();
+  } catch {
+    campaign = null;
+  }
+  if (campaign && (campaign.heroTitle || campaign.ctaLabel)) {
+    return {
+      id: `campaign:${campaign.id}`,
+      title: campaign.heroTitle ?? campaign.name,
+      subtitle: campaign.ctaLabel,
+      linkUrl: campaign.ctaUrl,
+      themeColor: campaign.themeColor,
+    };
+  }
+  let topBanner: BannerDetail | undefined;
+  try {
+    const banners = await bannersApi.list({ placement: "TOP_BAR" });
+    topBanner = banners?.[0];
+  } catch {
+    topBanner = undefined;
+  }
+  if (topBanner) {
+    return {
+      id: topBanner.id,
+      title: topBanner.title,
+      subtitle: topBanner.subtitle,
+      linkUrl: topBanner.linkUrl,
+    };
+  }
+  return null;
 }
