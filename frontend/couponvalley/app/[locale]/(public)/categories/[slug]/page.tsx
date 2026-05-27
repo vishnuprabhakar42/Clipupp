@@ -7,6 +7,9 @@ import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
 import { CategoryHero } from "@/features/catalog/components/CategoryHero";
 import { TopStoresInCategoryRail } from "@/features/catalog/components/TopStoresInCategoryRail";
+import { SubcategoryChips } from "@/features/catalog/components/SubcategoryChips";
+import { CategoryEditorialBlock } from "@/features/catalog/components/CategoryEditorialBlock";
+import { SiblingCategoriesRail } from "@/features/catalog/components/SiblingCategoriesRail";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import {
   breadcrumbSchema,
@@ -85,18 +88,25 @@ export default async function CategoryPage({
   const tCommon = await getTranslations({ locale, namespace: "common" });
 
   const sp = await searchParams;
-  const cat = await loadCategory(slug);
+  // Parallel fetches: category detail + coupons + full tree (for child
+  // chips). SiblingCategoriesRail fetches the tree itself — the backend
+  // SWR cache (5m + 30m) makes the duplicate cheap.
+  const [cat, couponsResult, tree] = await Promise.all([
+    loadCategory(slug),
+    safeListCoupons(slug, sp.cursor),
+    safeTree(),
+  ]);
   if (!cat) notFound();
 
-  let coupons: Awaited<ReturnType<typeof categoriesApi.coupons>>["data"] = [];
-  let nextCursor: string | null = null;
-  try {
-    const page = await categoriesApi.coupons(slug, sp.cursor, 24);
-    coupons = page.data;
-    nextCursor = page.page.nextCursor;
-  } catch {
-    // Empty state below if backend errors
-  }
+  const coupons = couponsResult.data;
+  const nextCursor = couponsResult.nextCursor;
+
+  // Locate the current category's children (if it's a top-level node) for
+  // the SubcategoryChips row. In-memory walk over the cached tree.
+  const childrenOfCurrent =
+    tree
+      .find((n) => n.slug === slug)
+      ?.children?.map((c) => ({ id: c.id, slug: c.slug, title: c.title })) ?? [];
 
   const url = canonicalFor(`/categories/${cat.slug}`, locale);
   const homeUrl = canonicalFor("/", locale);
@@ -160,10 +170,15 @@ export default async function CategoryPage({
           <span className="font-medium text-foreground">{cat.title}</span>
         </nav>
 
-        <CouponList
-          coupons={coupons}
-          emptyLabel={t("noCouponsInCategory", { category: cat.title })}
-        />
+        {/* Phase 3 W3 — pill row of child categories (skipped when no children). */}
+        <SubcategoryChips parentTitle={cat.title} subcategories={childrenOfCurrent} />
+
+        <div className="mt-6">
+          <CouponList
+            coupons={coupons}
+            emptyLabel={t("noCouponsInCategory", { category: cat.title })}
+          />
+        </div>
 
         {nextCursor && (
           <div className="mt-10 text-center">
@@ -180,7 +195,36 @@ export default async function CategoryPage({
             /api/v1/categories/{slug}/top-stores endpoint. Renders nothing if
             the backend returns 0 stores. */}
         <TopStoresInCategoryRail slug={cat.slug} categoryTitle={cat.title} limit={8} />
+
+        {/* Phase 3 W3 — long-form prose for SEO and E-E-A-T. Only renders
+            when cat.description is meaningfully long. */}
+        <CategoryEditorialBlock
+          categoryTitle={cat.title}
+          description={cat.description}
+        />
+
+        {/* Phase 3 W3 — sibling categories at the bottom (siblings of either
+            top-level or child categories, depending on where this one sits
+            in the tree). */}
+        <SiblingCategoriesRail currentSlug={cat.slug} />
       </div>
     </>
   );
+}
+
+async function safeListCoupons(slug: string, cursor: string | undefined) {
+  try {
+    const page = await categoriesApi.coupons(slug, cursor, 24);
+    return { data: page.data, nextCursor: page.page.nextCursor };
+  } catch {
+    return { data: [], nextCursor: null as string | null };
+  }
+}
+
+async function safeTree() {
+  try {
+    return (await categoriesApi.tree()) ?? [];
+  } catch {
+    return [];
+  }
 }

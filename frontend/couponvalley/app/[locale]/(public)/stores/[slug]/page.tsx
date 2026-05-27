@@ -198,100 +198,39 @@ export default async function StoreDetailPage({
         */}
         <div className="flex flex-col-reverse gap-8 lg:grid lg:grid-cols-[320px_1fr] lg:items-start">
 
-          {/* ── LEFT SIDEBAR ─────────────────────────────────────────── */}
+          {/* ── LEFT SIDEBAR (6-card cap per Phase 3 plan) ───────────── */}
+          {/* Identity (logo + name + rating + Visit CTA) and the stats grid
+              are intentionally NOT in the sidebar — both are covered by
+              StoreHero above. Similar stores is also dropped here because
+              RelatedStoresRail at the bottom of <main> handles it with
+              more visual weight. Remaining cards: top offers, content
+              writer, featured articles, why trust us, about, popular. */}
           <aside
             className="space-y-4"
             aria-label={`${detail.name} store information`}
           >
-            {/* Store identity card */}
-            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border border-cv-neutral-200 bg-white p-1.5">
-                  <Image
-                    src={detail.logoUrl || "/placeholder.svg"}
-                    alt={detail.name}
-                    width={56}
-                    height={56}
-                    className="h-full w-full object-contain"
-                    priority
-                    unoptimized
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-base font-bold text-gray-900">
-                    {detail.name}
-                  </h2>
-                  {detail.rating && (
-                    <div className="mt-0.5 flex items-center gap-1 text-xs">
-                      <StarRow rating={Number(detail.rating)} />
-                      <span className="font-semibold text-gray-700">
-                        {detail.rating}
-                      </span>
-                      {detail.reviewCount > 0 && (
-                        <span className="text-gray-400">
-                          ({detail.reviewCount.toLocaleString()})
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
+            {/* 1. Today's top offers (curated bullet list) */}
+            {detail.topOffers.length > 0 && (
+              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
+                <h3 className="mb-3 text-sm font-bold text-gray-900">
+                  Today&apos;s top {detail.name} offers:
+                </h3>
+                <ul className="space-y-2">
+                  {detail.topOffers.slice(0, 5).map((offer) => (
+                    <li
+                      key={offer}
+                      className="flex items-start gap-2 text-sm text-gray-700"
+                    >
+                      <Tag
+                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-cv-primary"
+                        aria-hidden
+                      />
+                      {offer}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <a
-                href={detail.primaryUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-cv-primary py-2 text-sm font-bold text-white transition hover:bg-cv-primary-strong"
-              >
-                Visit {detail.name}
-                <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-              </a>
-            </div>
-
-            {/* Top offers + Stats */}
-            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
-              {detail.topOffers.length > 0 && (
-                <>
-                  <h3 className="mb-3 text-sm font-bold text-gray-900">
-                    Today&apos;s top {detail.name} offers:
-                  </h3>
-                  <ul className="mb-4 space-y-2">
-                    {detail.topOffers.slice(0, 5).map((offer) => (
-                      <li
-                        key={offer}
-                        className="flex items-start gap-2 text-sm text-gray-700"
-                      >
-                        <Tag
-                          className="mt-0.5 h-3.5 w-3.5 shrink-0 text-cv-primary"
-                          aria-hidden
-                        />
-                        {offer}
-                      </li>
-                    ))}
-                  </ul>
-                  <hr className="mb-4 border-gray-100" />
-                </>
-              )}
-              {detail.stats && (
-                <dl className="grid grid-cols-2 gap-2.5">
-                  <StatBox
-                    label="Total Offers"
-                    value={detail.stats.totalOffers}
-                  />
-                  <StatBox
-                    label="Coupon Codes"
-                    value={detail.stats.couponCodes}
-                  />
-                  <StatBox
-                    label="In-Store Coupons"
-                    value={detail.stats.inStoreCoupons}
-                  />
-                  <StatBox
-                    label="Free Shipping Deals"
-                    value={detail.stats.freeShippingDeals}
-                  />
-                </dl>
-              )}
-            </div>
+            )}
 
             {/* Content writer */}
             {detail.contentWriter && (
@@ -458,34 +397,10 @@ export default async function StoreDetailPage({
               )}
             </div>
 
-            {/* Similar stores */}
-            {similar.length > 0 && (
-              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
-                <h3 className="mb-3 text-sm font-bold text-gray-900">
-                  Similar Stores
-                </h3>
-                <ul className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                  {similar.slice(0, 18).map((s) => (
-                    <li key={s.id}>
-                      <Link
-                        href={`/stores/${s.slug}`}
-                        className="text-xs font-medium text-cv-primary hover:underline"
-                      >
-                        {s.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                {similar.length > 18 && (
-                  <Link
-                    href="/stores"
-                    className="mt-3 block text-xs font-semibold text-cv-primary hover:underline"
-                  >
-                    View All →
-                  </Link>
-                )}
-              </div>
-            )}
+            {/* Similar stores card removed — replaced by the horizontal
+                RelatedStoresRail rendered at the bottom of the page. The
+                rail's larger logo tiles drive more clicks than a flat
+                two-column text list. */}
 
             {/* Popular stores */}
             {popularStores.length > 0 && (
@@ -517,15 +432,11 @@ export default async function StoreDetailPage({
 
           {/* ── RIGHT MAIN ───────────────────────────────────────────── */}
           <main className="min-w-0">
-            {/* H1 + SEO intro */}
-            <div className="mb-6">
-              <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
-                {detail.name} Coupons &amp; Promo Codes for {monthYear}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-                {introText}
-              </p>
-            </div>
+            {/* SEO intro paragraph — no H1 here (StoreHero owns the page H1
+                so the page stays single-H1 per SEO best practice). */}
+            <p className="mb-6 max-w-2xl text-sm leading-relaxed text-cv-neutral-600">
+              {introText}
+            </p>
 
             {/* Coupon tabs + list */}
             <StoreTypeTabs
