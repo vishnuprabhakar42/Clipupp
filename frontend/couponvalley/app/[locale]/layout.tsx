@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { organizationSchema, webSiteSchema } from "@/lib/seo/schemas";
 import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
+import { HindiBetaMarker } from "@/components/site/HindiBetaMarker";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
 // Typography: Apple San Francisco everywhere via the system font stack
@@ -80,6 +81,13 @@ export async function generateMetadata({
     },
     twitter: { card: "summary_large_image" },
     robots: { index: true, follow: true },
+    // Phase 5 — flag Hindi pages as beta in metadata so monitoring tools and
+    // (eventually) translation QA pipelines can pick them out. Custom meta
+    // names are emitted as <meta name="..."> tags by Next.
+    other:
+      locale === "hi"
+        ? { "x-translation-status": "beta" }
+        : undefined,
   };
 }
 
@@ -132,6 +140,7 @@ export default async function LocaleLayout({
                 >
                   Skip to content
                 </a>
+                {locale === "hi" && <HindiBetaMarker />}
                 {children}
                 <DeferredClientWidgets />
               </AuthProvider>
