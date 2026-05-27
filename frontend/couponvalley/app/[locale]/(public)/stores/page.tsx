@@ -84,22 +84,18 @@ export default async function StoresPage({
         <p className="text-center text-muted-foreground">{t("emptyState")}</p>
       ) : (
         <>
-          <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:gap-5">
             {stores.map((store) => (
-              <li key={store.id}>
+              <li key={store.id} className="h-full">
                 <Link
                   href={`/stores/${store.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                  className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
                 >
-                  {/* Brand-colour image panel — fixed aspect, padding-normalised
-                      so logos of any source aspect render the same visible size. */}
-                  <div
-                    className="relative flex aspect-[5/3] items-center justify-center overflow-hidden p-6"
-                    style={{ backgroundColor: store.brandColor || "#1f2937" }}
-                  >
-                    {/* Discount badge — top-right */}
+                  {/* Logo tile — flat white, contained image. Aspect ratio
+                      reserves space so the card never shifts. */}
+                  <div className="relative flex aspect-[5/3] items-center justify-center overflow-hidden border-b border-cv-neutral-200 bg-white p-6">
                     {store.cashbackRate && (
-                      <div className="absolute right-2 top-2 inline-flex items-center rounded-md bg-white px-1.5 py-0.5 text-[11px] font-bold text-cv-accent-strong shadow-sm">
+                      <div className="absolute right-2 top-2 inline-flex items-center rounded-sm bg-cv-accent-soft px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-accent-strong">
                         {store.cashbackRate}
                       </div>
                     )}

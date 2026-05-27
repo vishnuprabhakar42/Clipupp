@@ -67,7 +67,7 @@ export default async function SearchPage({
             <Link
               key={hit.id}
               href={`/coupons/${hit.slug}`}
-              className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="flex h-full flex-col rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
             >
               <p className="line-clamp-1 font-medium">{hit.title}</p>
               {hit.snippet && (
@@ -87,7 +87,7 @@ export default async function SearchPage({
             <Link
               key={hit.id}
               href={`/stores/${hit.slug}`}
-              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="flex items-center gap-3 rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
             >
               {hit.imageUrl && (
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted p-1.5">

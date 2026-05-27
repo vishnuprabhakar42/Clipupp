@@ -22,6 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
+  BadgeCheck,
   BookOpen,
   ChevronUp,
   Clock,
@@ -30,19 +31,24 @@ import {
   ExternalLink,
   Flame,
   GripVertical,
+  HelpCircle,
   Images,
   LayoutGrid,
+  Lightbulb,
   Mail,
   Pencil,
   Hash,
   MessageSquareQuote,
   Pin,
   RotateCcw,
+  Search,
+  ShieldCheck,
   Sparkles,
   Type,
   Star,
   Store,
   TicketPercent,
+  TrendingUp,
   X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -69,6 +75,10 @@ type Theme = {
 };
 
 const THEMES: Record<string, Theme> = {
+  hero_search: {
+    Icon: Search, accent: "primary",
+    description: "Top-of-page search hero with category quick-jumps.",
+  },
   trending_stores: {
     Icon: Flame, accent: "primary",
     description: "Horizontal store rail above the fold.",
@@ -78,10 +88,19 @@ const THEMES: Record<string, Theme> = {
     Icon: Images, accent: "primary",
     description: "Two-up promo banner carousel.",
   },
+  savings_stats: {
+    Icon: TrendingUp, accent: "success",
+    description: "Four large numeric stat tiles (social proof).",
+  },
   featured_stores: {
     Icon: Star, accent: "primary",
     description: "Editorial featured-stores grid.",
     featuredType: "stores",
+  },
+  daily_picks: {
+    Icon: Sparkles, accent: "accent",
+    description: "Editor's picks — 1 featured + 3 small deal cards.",
+    featuredType: "coupons",
   },
   top_deals: {
     Icon: TicketPercent, accent: "primary",
@@ -101,6 +120,18 @@ const THEMES: Record<string, Theme> = {
     Icon: Pin, accent: "primary",
     description: "Brand logo carousel.",
     featuredType: "stores",
+  },
+  editorial_tips: {
+    Icon: Lightbulb, accent: "primary",
+    description: "Editorial 'how to save' tip tiles.",
+  },
+  guarantees: {
+    Icon: ShieldCheck, accent: "success",
+    description: "Four-up trust strip (verified, free, no spam, curated).",
+  },
+  faq: {
+    Icon: HelpCircle, accent: "neutral",
+    description: "FAQ accordion with FAQPage JSON-LD for rich results.",
   },
   newsletter: {
     Icon: Mail, accent: "primary",
@@ -125,7 +156,7 @@ const ACCENT_STYLES: Record<Theme["accent"], {
 }> = {
   primary: { bar: "bg-cv-primary", iconBg: "bg-cv-primary-soft", iconColor: "text-cv-primary", chip: "bg-cv-primary-soft text-cv-primary-strong", ring: "ring-cv-primary/30", border: "border-cv-primary", borderDark: "border-cv-primary-strong",
              gradient: "linear-gradient(120deg,var(--cv-primary) 0%,var(--cv-primary-strong) 100%)",
-             panelBg:  "radial-gradient(70% 50% at 100% 0%, rgba(91,33,182,0.07) 0%, transparent 70%)" },
+             panelBg:  "radial-gradient(70% 50% at 100% 0%, rgba(59,130,246,0.07) 0%, transparent 70%)" },
   accent:  { bar: "bg-cv-accent",  iconBg: "bg-cv-accent-soft",  iconColor: "text-cv-accent",  chip: "bg-cv-accent-soft text-cv-accent-strong",  ring: "ring-cv-accent/30",  border: "border-cv-accent",  borderDark: "border-cv-accent-strong",
              gradient: "linear-gradient(120deg,var(--cv-accent) 0%,var(--cv-accent-strong) 100%)",
              panelBg:  "radial-gradient(70% 50% at 100% 0%, rgba(249,115,22,0.07) 0%, transparent 70%)" },

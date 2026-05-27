@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -16,13 +17,18 @@ type Store = {
 };
 
 /**
- * "Explore online promo codes from brands you trust" — a clean white-card
- * logo carousel. Native scroll + scroll-snap (no JS-driven animation), with
- * arrow buttons that scroll a viewport-width at a time and pagination dots
- * that reflect the current page.
+ * "Explore online promo codes from brands you trust" — flat white logo tiles
+ * in a horizontally scrolling rail. Native scroll + scroll-snap; arrow
+ * buttons + pagination dots reflect scroll position.
  *
- * Data preloaded from /api/v1/homepage when wired through the layout API.
- * Falls back to a client fetch only for legacy callers.
+ * Image render contract (same as TrendingStoresRail for visual consistency):
+ *   • Fixed-aspect parent (110px tall × responsive width) with `relative`,
+ *     `overflow-hidden`, 1px border, white background, 12px radius.
+ *   • Single padding level — `p-4` on the parent, no compounding padding on
+ *     the image itself.
+ *   • Sized <Image> (not `fill`) with object-contain so logos render at a
+ *     readable size regardless of source aspect ratio.
+ *   • Missing-logo fallback: store initial in a primary-coloured circle.
  */
 export function TrustedBrandsRail({
   section,
@@ -48,7 +54,6 @@ export function TrustedBrandsRail({
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
 
-  // Keep page count + arrow visibility in sync with scroll position.
   useEffect(() => {
     const el = railRef.current;
     if (!el) return;
@@ -86,26 +91,21 @@ export function TrustedBrandsRail({
 
   return (
     <section aria-labelledby="trusted-brands-heading">
-      <h2
-        id="trusted-brands-heading"
-        className="font-serif text-3xl font-bold leading-tight tracking-tight text-cv-neutral-800 sm:text-4xl"
-      >
+      <h2 id="trusted-brands-heading" className="cv-h2">
         {heading}
       </h2>
 
       <div className="relative mt-6">
-        {/* Left arrow — outline style, mirrors the reference exactly */}
         <button
           type="button"
           aria-label="Previous brands"
           onClick={() => scrollByPage("left")}
           disabled={!canLeft}
-          className="absolute left-0 top-1/2 z-10 hidden h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white text-cv-neutral-400 shadow-sm transition hover:border-gray-300 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid"
+          className="absolute left-0 top-1/2 z-dropdown hidden h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid"
         >
           <ArrowLeft className="h-5 w-5" aria-hidden />
         </button>
 
-        {/* The rail */}
         <div
           ref={railRef}
           className="cv-no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-2"
@@ -115,25 +115,23 @@ export function TrustedBrandsRail({
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[110px] w-[calc((100%-3rem)/2)] shrink-0 animate-pulse snap-start rounded-md bg-gray-100 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
+                  className="cv-skeleton h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start rounded-lg sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
                 />
               ))
             : stores.map((s) => <BrandCard key={s.id} store={s} />)}
         </div>
 
-        {/* Right arrow — dark filled, matches the reference */}
         <button
           type="button"
           aria-label="Next brands"
           onClick={() => scrollByPage("right")}
           disabled={!canRight}
-          className="absolute right-0 top-1/2 z-10 hidden h-12 w-12 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-cv-neutral-800 text-white shadow-md transition hover:bg-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-30 md:grid"
+          className="absolute right-0 top-1/2 z-dropdown hidden h-11 w-11 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid"
         >
           <ArrowRight className="h-5 w-5" aria-hidden />
         </button>
       </div>
 
-      {/* Pagination dots */}
       {pages > 1 && (
         <div className="mt-4 flex items-center justify-center gap-2">
           {Array.from({ length: pages }).map((_, i) => (
@@ -145,8 +143,8 @@ export function TrustedBrandsRail({
               onClick={() => goTo(i)}
               className={`h-2 rounded-full transition-all ${
                 i === page
-                  ? "w-6 bg-cv-neutral-800"
-                  : "w-2 bg-gray-300 hover:bg-gray-400"
+                  ? "w-6 bg-cv-primary"
+                  : "w-2 bg-cv-neutral-300 hover:bg-cv-neutral-400"
               }`}
             />
           ))}
@@ -156,26 +154,32 @@ export function TrustedBrandsRail({
   );
 }
 
-/* ─────────────────────────────  Brand card  ─────────────────────────────── */
-
 function BrandCard({ store }: { store: Store }) {
+  const initial = (store.name || "?").trim().charAt(0).toUpperCase();
+  const hasLogo = Boolean(store.logoUrl);
   return (
     <Link
       href={`/stores/${store.slug}`}
-      // p-6 carves out uniform breathing room; h-full w-full + object-contain
-      // on the <img> below normalizes every logo regardless of source aspect
-      // (square vs landscape vs portrait all fit within the same inner box).
-      className="group relative flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden rounded-md border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
+      className="flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden rounded-lg border border-cv-neutral-200 bg-white p-4 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
       aria-label={store.name}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={store.logoUrl}
-        alt={store.name}
-        className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-105"
-        loading="lazy"
-        decoding="async"
-      />
+      {hasLogo ? (
+        <Image
+          src={store.logoUrl}
+          alt={store.name}
+          width={188}
+          height={72}
+          sizes="(min-width: 1024px) 188px, (min-width: 640px) 33vw, 50vw"
+          className="max-h-full w-auto max-w-full object-contain"
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="grid h-14 w-14 place-items-center rounded-full bg-cv-primary text-xl font-semibold text-white"
+        >
+          {initial}
+        </span>
+      )}
     </Link>
   );
 }

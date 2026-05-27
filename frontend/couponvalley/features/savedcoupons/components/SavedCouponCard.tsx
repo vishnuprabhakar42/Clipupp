@@ -42,14 +42,14 @@ export function SavedCouponCard({ item }: { item: SavedCouponItem }) {
 
   if (!item.couponSlug) {
     return (
-      <li className="rounded-md border border-gray-100 bg-gray-50 p-4 text-xs text-cv-neutral-500">
+      <li className="rounded-md border border-cv-neutral-200 bg-cv-neutral-50 p-4 text-xs text-cv-neutral-500">
         This coupon was removed from the catalog.
       </li>
     );
   }
 
   return (
-    <li className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-cv-accent/30 hover:shadow-lg">
+    <li className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card">
       <button
         type="button"
         aria-label="Remove from saved"
@@ -70,7 +70,7 @@ export function SavedCouponCard({ item }: { item: SavedCouponItem }) {
 
         <div className="flex flex-wrap items-center gap-1.5">
           {item.savingsLabel && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-cv-accent to-cv-accent px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-sm bg-cv-accent px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-white">
               <Sparkles className="h-2.5 w-2.5" aria-hidden />
               {item.savingsLabel}
             </span>

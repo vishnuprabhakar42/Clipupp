@@ -28,7 +28,9 @@ public class SiteSettingService {
             "contact.email", "contact.phone",
             "contact.address_line1", "contact.address_line2", "contact.address_line3",
             "newsletter.headline", "newsletter.subheadline", "newsletter.cta",
-            "seo.default_title_template", "seo.default_description", "seo.og_image"
+            "seo.default_title_template", "seo.default_description", "seo.og_image",
+            // Savings stats strip (V029) — rendered on the public homepage.
+            "stats.coupons", "stats.stores", "stats.verified", "stats.savings"
     );
 
     private final SiteSettingRepository repo;

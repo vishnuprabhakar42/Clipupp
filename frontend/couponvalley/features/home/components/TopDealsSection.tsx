@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Sparkles, Tag } from "lucide-react";
@@ -8,8 +9,15 @@ import type { CouponSummary } from "@/lib/api/types";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 /**
- * "Top Deals" deal cards — uses pinned coupons from the homepage layout
- * payload when supplied, otherwise falls back to the popularity-sorted top.
+ * "Top Deals" — coupon card grid. Follows the platform coupon card contract:
+ *   • Logo (40×40 white tile with 1px border)
+ *   • Headline (max 2 lines)
+ *   • Savings badge
+ *   • Verified/exclusive meta
+ *   • One full-width CTA pinned at the bottom (`mt-auto`)
+ *
+ * 1 → 2 → 3 → 4 cols. Cards stretch via `items-stretch` so a row never has
+ * different heights regardless of how long any single headline runs.
  */
 export function TopDealsSection({ section }: { section?: HomepageSectionPayload | null }) {
   const limit = section?.itemLimit ?? 10;
@@ -27,32 +35,30 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
 
   return (
     <section aria-labelledby="top-deals-heading">
-      <div className="mb-5 flex items-end justify-between gap-3">
-        <h2 id="top-deals-heading" className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <h2 id="top-deals-heading" className="cv-h2">
           {heading}
         </h2>
         <Link
           href="/coupons"
           className="text-sm font-semibold text-cv-primary hover:underline"
         >
-          See all deals
+          See all deals →
         </Link>
       </div>
 
       {!preloaded && q.isLoading ? (
-        <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
           {Array.from({ length: 8 }).map((_, i) => (
-            <li key={i} className="cv-skeleton h-[300px] rounded-xl" />
+            <li key={i} className="cv-skeleton h-[280px] rounded-lg" />
           ))}
         </ul>
       ) : (coupons?.length ?? 0) === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          No active deals right now — check back soon.
-        </p>
+        <p className="cv-meta">No active deals right now — check back soon.</p>
       ) : (
-        <ul className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
           {coupons!.slice(0, 8).map((c) => (
-            <li key={c.id}>
+            <li key={c.id} className="h-full">
               <DealCard coupon={c} />
             </li>
           ))}
@@ -63,11 +69,8 @@ export function TopDealsSection({ section }: { section?: HomepageSectionPayload 
 }
 
 function DealCard({ coupon }: { coupon: CouponSummary }) {
-  const bg = coupon.storeBrandColor || "#1f2937";
   const href = `/coupons/${coupon.slug}`;
   const isCode = coupon.type === "CODE";
-  // Strip trailing "off"/"back" from the API label and always render "Off"
-  // — cashback is Phase 2; today every deal is just a discount.
   const savings = coupon.savingsLabel
     ? coupon.savingsLabel.replace(/\s*(off|back)\s*$/i, "").trim()
     : null;
@@ -75,75 +78,72 @@ function DealCard({ coupon }: { coupon: CouponSummary }) {
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+      className="group flex h-full min-h-[260px] flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
     >
-      {/* Brand-color top with logo. p-6 carves uniform breathing room so
-          every logo (square Apple / landscape Decathlon / portrait) fits the
-          same inner box at a consistent visible size. */}
-      <div
-        className="relative flex h-[140px] items-center justify-center overflow-hidden p-6"
-        style={{ backgroundColor: bg }}
-      >
-        {/* Savings pill — top-right per design spec */}
-        {savings && (
-          <div className="absolute right-2 top-2 inline-flex items-center gap-0.5 rounded-md bg-white px-1.5 py-0.5 text-[11px] font-bold shadow-sm">
-            <Tag className="h-2.5 w-2.5 text-cv-accent" aria-hidden />
-            <span className="text-gray-900">
-              {savings}
-              <span className="ml-0.5 text-cv-neutral-500"> Off</span>
-            </span>
-          </div>
-        )}
-
-        {/* Logo */}
-        {coupon.storeLogoUrl ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+      <div className="flex items-start gap-3 p-4">
+        {/* 40×40 logo tile per image render contract — sized image (not
+            `fill`) + single padding level so logos render at readable size
+            instead of collapsing into the tile padding. */}
+        <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-md border border-cv-neutral-200 bg-white">
+          {coupon.storeLogoUrl ? (
+            <Image
               src={coupon.storeLogoUrl}
               alt={coupon.storeName ?? ""}
-              className="h-full w-full object-contain"
-              loading="lazy"
+              width={36}
+              height={36}
+              sizes="40px"
+              className="max-h-full w-auto max-w-full object-contain"
             />
-          </>
-        ) : (
-          <span className="text-base font-bold text-white">{coupon.storeName ?? "Deal"}</span>
-        )}
+          ) : (
+            <span className="text-[11px] font-semibold uppercase text-cv-neutral-500">
+              {(coupon.storeName ?? "?").trim().charAt(0).toUpperCase()}
+            </span>
+          )}
+        </span>
+
+        <div className="min-w-0 flex-1">
+          {coupon.storeName && (
+            <p className="truncate text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
+              {coupon.storeName}
+            </p>
+          )}
+          {savings && (
+            <p className="mt-0.5 font-display text-lg font-bold text-cv-primary tabular-nums">
+              {savings}
+              <span className="ml-1 text-xs font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
+                Off
+              </span>
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* White bottom — flex-col so the CTA pins to the bottom regardless of
-          how long the title runs (line-clamp-2 caps it at 2 lines). */}
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        {coupon.storeName && (
-          <p className="truncate text-[11px] font-bold uppercase tracking-wide text-gray-700">
-            {coupon.storeName}
-          </p>
-        )}
-        <p className="line-clamp-2 min-h-[40px] text-sm leading-snug text-gray-900">
+      <div className="flex flex-1 flex-col gap-2 px-4">
+        <p className="line-clamp-2 min-h-[40px] cv-body text-cv-neutral-900">
           {coupon.title}
         </p>
 
-        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+        <div className="flex flex-wrap items-center gap-3">
           {coupon.verified && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-cv-success-strong">
-              <CheckCircle2 className="h-2.5 w-2.5" aria-hidden />
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-cv-success-strong">
+              <CheckCircle2 className="h-3 w-3" aria-hidden />
               Verified
             </span>
           )}
           {coupon.exclusive && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-cv-accent-strong">
-              <Sparkles className="h-2.5 w-2.5" aria-hidden />
+            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-cv-accent-strong">
+              <Sparkles className="h-3 w-3" aria-hidden />
               Exclusive
             </span>
           )}
         </div>
-
-        {/* CTA — always pinned at the bottom via mt-auto */}
-        <span className="mt-auto inline-flex w-full items-center justify-center gap-1 rounded-md bg-cv-primary px-3 py-2 text-[12px] font-bold uppercase tracking-wide text-white transition group-hover:bg-cv-primary-strong">
-          <Tag className="h-3 w-3" aria-hidden />
-          {isCode ? "Get Code" : "Get Deal"}
-        </span>
       </div>
+
+      {/* Single CTA — full-width, pinned to the bottom via mt-auto */}
+      <span className="mt-auto inline-flex items-center justify-center gap-1.5 bg-cv-primary px-3 py-3 text-sm font-semibold text-white transition-colors group-hover:bg-cv-primary-strong">
+        <Tag className="h-3.5 w-3.5" aria-hidden />
+        {isCode ? "Get code" : "Get deal"}
+      </span>
     </Link>
   );
 }

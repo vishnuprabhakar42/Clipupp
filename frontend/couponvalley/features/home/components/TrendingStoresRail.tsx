@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -8,9 +9,17 @@ import { storesApi } from "@/lib/api/stores";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 /**
- * Horizontal rail of store cards. Title + item set come from the homepage
- * layout API (admin-managed). Native scroll-snap; arrow buttons + edge fades
- * appear only when the rail can actually scroll in that direction.
+ * Horizontal rail of store logo tiles. Title + item set come from the
+ * homepage layout API (admin-managed). Native scroll-snap; arrow buttons
+ * appear only when the rail can scroll in that direction.
+ *
+ * Logo tile contract:
+ *   • Fixed-aspect parent (88px × 220px) with `relative`, `overflow-hidden`,
+ *     1px neutral border, white background, 12px radius — single shadow level.
+ *   • Inside, EITHER a sized `<Image>` (object-contain, h-full w-full) OR a
+ *     centered fallback that shows the store initial in the brand colour.
+ *   • Outer padding `p-4` is the ONLY padding — no compounding `p-N` on the
+ *     image itself, which was previously shrinking logos to ~20px visible.
  */
 export function TrendingStoresRail({ section }: { section?: HomepageSectionPayload | null }) {
   const railRef = useRef<HTMLDivElement>(null);
@@ -30,7 +39,6 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
 
   const stores = preloaded ?? q.data?.data ?? [];
 
-  // Track scroll position so we can fade arrows + edge gradients at the ends.
   useEffect(() => {
     const el = railRef.current;
     if (!el) return;
@@ -58,44 +66,24 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
   return (
     <section aria-labelledby="trending-stores-heading" className="relative">
       <div className="mb-6 flex items-end justify-between gap-3">
-        <h2
-          id="trending-stores-heading"
-          className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl"
-        >
+        <h2 id="trending-stores-heading" className="cv-h2">
           {heading}
         </h2>
         <Link
           href="/stores"
           className="text-sm font-semibold text-cv-primary hover:underline"
         >
-          See All
+          See all →
         </Link>
       </div>
 
       <div className="relative">
-        {/* Edge fades — only when there's content to scroll into */}
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-y-0 left-0 z-[5] w-16 bg-gradient-to-r from-white via-white/80 to-transparent transition-opacity duration-300 ${
-            canLeft ? "opacity-100" : "opacity-0"
-          }`}
-        />
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-y-0 right-0 z-[5] w-16 bg-gradient-to-l from-white via-white/80 to-transparent transition-opacity duration-300 ${
-            canRight ? "opacity-100" : "opacity-0"
-          }`}
-        />
-
-        {/* Arrows — faded by default, sharpen on hover. Disabled at ends. */}
         <button
           type="button"
           aria-label="Scroll left"
           onClick={() => scroll("left")}
           disabled={!canLeft}
-          className={`absolute -left-3 top-[44px] z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white/85 text-cv-neutral-500 shadow-md backdrop-blur transition-all duration-300 hover:bg-white hover:text-gray-900 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-0 md:grid ${
-            canLeft ? "opacity-100" : ""
-          }`}
+          className="absolute -left-3 top-[44px] z-dropdown hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -104,9 +92,7 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
           aria-label="Scroll right"
           onClick={() => scroll("right")}
           disabled={!canRight}
-          className={`absolute -right-3 top-[44px] z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-gray-200 bg-white/85 text-cv-neutral-500 shadow-md backdrop-blur transition-all duration-300 hover:bg-white hover:text-gray-900 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-0 md:grid ${
-            canRight ? "opacity-100" : ""
-          }`}
+          className="absolute -right-3 top-[44px] z-dropdown hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
@@ -115,24 +101,23 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
           <div className="flex gap-5 overflow-hidden">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="shrink-0">
-                <div className="cv-skeleton h-[88px] w-[220px] rounded-md" />
+                <div className="cv-skeleton h-[88px] w-[220px] rounded-lg" />
                 <div className="cv-skeleton mt-3 h-4 w-32 rounded" />
               </div>
             ))}
           </div>
         ) : stores.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No stores yet.</p>
+          <p className="cv-meta">No stores yet.</p>
         ) : (
           <div
             ref={railRef}
             className="cv-no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2"
           >
-            {stores.map((s) => {
-              const bg = s.brandColor || "#1f2937";
-              // `cashbackRate` on the DTO is now a generic discount label
-              // — admins fill it with coupon copy like "Up to 50% off".
+            {stores.map((s, i) => {
               const dealLabel = s.cashbackRate ?? "View coupons";
               const prev = s.previousCashbackRate;
+              const initial = (s.name || "?").trim().charAt(0).toUpperCase();
+              const hasLogo = Boolean(s.logoUrl);
               return (
                 <Link
                   key={s.id}
@@ -140,17 +125,25 @@ export function TrendingStoresRail({ section }: { section?: HomepageSectionPaylo
                   className="group block w-[220px] shrink-0 snap-start"
                   aria-label={`${s.name} — ${dealLabel}`}
                 >
-                  <div
-                    className="flex h-[88px] items-center justify-center overflow-hidden rounded-md p-4 transition group-hover:opacity-95"
-                    style={{ backgroundColor: bg }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={s.logoUrl}
-                      alt={s.name}
-                      className="h-full w-full object-contain"
-                      loading="lazy"
-                    />
+                  <div className="flex h-[88px] w-[220px] items-center justify-center overflow-hidden rounded-lg border border-cv-neutral-200 bg-white p-4">
+                    {hasLogo ? (
+                      <Image
+                        src={s.logoUrl}
+                        alt={s.name}
+                        width={188}
+                        height={56}
+                        priority={i < 6}
+                        sizes="188px"
+                        className="max-h-full w-auto max-w-full object-contain"
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="grid h-14 w-14 place-items-center rounded-full bg-cv-primary text-xl font-semibold text-white"
+                      >
+                        {initial}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-2.5 text-[13px] leading-snug">
                     <span className="font-semibold text-cv-primary underline decoration-1 underline-offset-2 group-hover:no-underline">

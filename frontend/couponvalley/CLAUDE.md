@@ -41,7 +41,7 @@ No test suite is configured. `next.config.mjs` sets `typescript.ignoreBuildError
 - `auth/` — SignInForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ChangePasswordForm, ProfileForm, PreferencesForm + Zod schemas
 - `catalog/` — CouponList, StoreFilters, CouponReveal, CouponCountdown, CouponShareMenu, HeaderSearch, CouponSavingsCard
 - `admin/` — NewStoreForm, NewCouponForm, NewCategoryForm, NewNetworkForm, NewMerchantLinkForm, NewBannerForm, AdminPageHeader, AdminNavLink, UserRoleControls, **AnalyticsDashboard** (KPI tiles + Recharts area/bar/pie, server-renders 7 fetches via `Promise.all`), **HomepageSectionsEditor** (drag-reorder 8 home sections via `@dnd-kit`, expand-to-edit, `ACCENT_STYLES` map keyed by the 5 brand roles), **BannersReorderEditor** (drag-reorder list, posts to `/api/v1/admin/banners/reorder`), **FeaturedItemsEditor**, **CampaignForm**, **CouponImportWizard**, **SettingsForm**, ImageUploader (uploads via `mediaApi.upload` → R2)
-- `home/` — **TrendingStoresRail** (sign-in only, server-rendered at top of home page when `getServerSession()` returns a user), **PromoBannersCarousel** (2-up sliding track with edge-fade arrows + N/total counter, served from `/api/v1/banners` with no placement filter), FeaturedStoresGrid, TopDealsSection, TrustedBrandsRail, PopularCategoriesGrid, BlogSection, NewsletterBar, AnnouncementBar
+- `home/` — **TrendingStoresRail** (sign-in only, server-rendered at top of home page when `getServerSession()` returns a user), **PromoBannersCarousel** (2-up sliding track with edge-fade arrows + N/total counter, served from `/api/v1/banners` with no placement filter), FeaturedStoresGrid, TopDealsSection, TrustedBrandsRail, PopularCategoriesGrid, BlogSection, NewsletterBar, AnnouncementBar. **V029 added 6 more sections**: **HeroSearchSection** (top-of-page flat search hero with category quick-jumps), **SavingsStatsStrip** (4 numeric tiles from `stats.*` settings), **DailyPicksSection** (editor's-picks 1+3 asymmetric layout), **EditorialTipsSection** (4-tile "how to save" content), **GuaranteeStrip** (4-up trust strip), **FaqSection** (native `<details>` accordion + FAQPage JSON-LD). All 6 are wired into `SECTION_RENDERERS` in `app/[locale]/(public)/page.tsx` and have `homepage_section` rows so the admin can re-order/toggle them at `/admin/homepage`.
 - `newsletter/`, `savedcoupons/` (SaveCouponButton, SavedCouponCard, AccountNavLink), `site/` (InfoPageShell)
 
 **Authentication (backend-driven JWT, NOT NextAuth):**
@@ -70,15 +70,19 @@ No test suite is configured. `next.config.mjs` sets `typescript.ignoreBuildError
 
 **UI:** shadcn/ui (`components/ui/`) + Tailwind CSS + Framer Motion + Embla Carousel. Dark mode is scaffolded (`darkMode: ["class"]` in tailwind config) but no `next-themes` provider is wired — site is effectively **light mode only**.
 
+**Typography:** Fredoka (geometric sans, headings) + Nunito (humanist sans, body), both loaded via `next/font/google` in `app/[locale]/layout.tsx`. Exposed as CSS vars `--font-display` (Fredoka) and `--font-sans` (Nunito). Use Tailwind `font-display` class on headings; body defaults to `font-sans` (Nunito).
+
+**Fixed homepage sections:** `HowItWorksSection` (below admin sections, before newsletter) is a non-admin-managed component in `features/home/components/`. It sits outside the `SECTION_RENDERERS` map and isn't reorderable in `/admin/homepage`.
+
 **Path alias:** `@/*` → project root (`frontend/couponvalley/`), not `src/`.
 
-## Design system — 3-color "Vivid" theme
+## Design system — 3-color "Clean Blue" theme (uupm.cc-inspired)
 
-The site uses a strict **3-color "Vivid" palette** defined in `app/globals.css` `:root` as CSS variables, with matching Tailwind aliases in `tailwind.config.ts`. Adding a new role is a design decision, not a free-form choice.
+The site uses a strict **3-color "Clean Blue" palette** defined in `app/globals.css` `:root` as CSS variables, with matching Tailwind aliases in `tailwind.config.ts`. Adding a new role is a design decision, not a free-form choice.
 
 | Role | Name | Mid | Strong | Soft | Foreground | Tailwind aliases |
 |---|---|---|---|---|---|---|
-| Primary | Violet | `#5B21B6` | `#4C1D95` | `#F5F3FF` | `#ffffff` | `cv-primary`, `cv-primary-strong`, `cv-primary-soft`, `cv-primary-fg` |
+| Primary | Blue | `#3B82F6` | `#1D4ED8` | `#DBEAFE` | `#ffffff` | `cv-primary`, `cv-primary-strong`, `cv-primary-soft`, `cv-primary-fg` |
 | Accent | Orange | `#F97316` | `#EA580C` | `#FFF7ED` | `#ffffff` | `cv-accent`, `cv-accent-strong`, `cv-accent-soft`, `cv-accent-fg` |
 | Success | Emerald | `#10b981` | `#059669` | `#ecfdf5` | `#ffffff` | `cv-success`, `cv-success-strong`, `cv-success-soft`, `cv-success-fg` |
 | Danger | Red | `#DC2626` | `#B91C1C` | `#fef2f2` | `#ffffff` | `cv-danger`, `cv-danger-strong`, `cv-danger-soft`, `cv-danger-fg` |
@@ -88,8 +92,8 @@ The site uses a strict **3-color "Vivid" palette** defined in `app/globals.css` 
 - Use `bg-cv-primary` / `text-cv-accent-strong` / `border-cv-neutral-200` everywhere. **Do not introduce raw hex.**
 - Helper utility classes: `.cv-btn-primary`, `.cv-btn-ghost`, `.cv-gradient-text`, `.cv-color-strip`, `.cv-section-title`, `.cv-section-link`, `.cv-card`, `.cv-skeleton`, `.cv-pill`.
 - Two **legitimate hex exceptions** (both documented inline with a "Mirror of `--cv-*`" comment):
-  1. `app/og/{coupon,store}/[slug]/route.tsx` — edge runtime cannot read CSS variables; each route has a `CV = { primary: "#5B21B6", primaryStrong: "#4C1D95", accent: "#F97316" } as const` block at the top mirroring the palette.
-  2. `features/admin/components/AnalyticsDashboard.tsx` — Recharts SVG `<Cell fill>` and `<stopColor>` props don't resolve CSS vars at render. `PIE_COLORS = ["#5B21B6","#F97316","#10b981","#DC2626","#475569"]`, the `accentMetric` map, and the bar/area `<linearGradient>` stops are inline literal hex.
+  1. `app/og/{coupon,store}/[slug]/route.tsx` — edge runtime cannot read CSS variables; each route has a `CV = { primary: "#3B82F6", primaryStrong: "#1D4ED8", accent: "#F97316" } as const` block at the top mirroring the palette.
+  2. `features/admin/components/AnalyticsDashboard.tsx` — Recharts SVG `<Cell fill>` and `<stopColor>` props don't resolve CSS vars at render. `PIE_COLORS = ["#3B82F6","#F97316","#10b981","#DC2626","#475569"]`, the `accentMetric` map, and the bar/area `<linearGradient>` stops are inline literal hex.
 
 **`HomepageSectionsEditor` accent contract:** `ACCENT_STYLES` is keyed by `"primary" | "accent" | "success" | "danger" | "neutral"` — exactly the 5 brand roles. When adding a new homepage section type, choose one of these 5 — don't introduce a 6th hue.
 
@@ -120,4 +124,4 @@ BACKEND_URL                  # server-side API base URL
 
 `next.config.mjs` rewrites `/api/v1/:path*`, `/r/:path*`, `/postback/:path*`, `/v3/api-docs/:path*`, `/swagger-ui/:path*`, `/actuator/:path*` to `BACKEND_URL` so the browser always sees same-origin requests (critical for the `cv_rt` cookie path).
 
-Image remote patterns in `next.config.mjs`: `*.r2.dev`, `*.r2.cloudflarestorage.com`, `**.cloudfront.net`, `logo.clearbit.com`, `images.unsplash.com`, `api.dicebear.com`, `upload.wikimedia.org`. Add new hosts here before using `next/image` against them.
+Image remote patterns in `next.config.mjs`: `*.r2.dev`, `*.r2.cloudflarestorage.com`, `**.cloudfront.net`, `logo.clearbit.com`, `images.unsplash.com`, `api.dicebear.com`, `upload.wikimedia.org`, `placehold.co`. Add new hosts here before using `next/image` against them.

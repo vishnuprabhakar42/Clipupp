@@ -43,7 +43,7 @@ export function CookieBanner() {
       role="dialog"
       aria-live="polite"
       aria-label="Cookie consent"
-      className="fixed inset-x-0 bottom-4 z-50 mx-auto w-[calc(100%-1.5rem)] max-w-2xl rounded-md border bg-card p-5 shadow-2xl ring-1 ring-black/5 sm:bottom-6"
+      className="fixed inset-x-0 bottom-4 z-modal mx-auto w-[calc(100%-1.5rem)] max-w-2xl rounded-lg border border-cv-neutral-200 bg-card p-5 shadow-card sm:bottom-6"
     >
       <button
         onClick={() => setOpen(false)}

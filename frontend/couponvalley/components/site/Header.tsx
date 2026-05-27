@@ -10,15 +10,16 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  DollarSign,
   Dumbbell,
   Film,
   Flame,
   Footprints,
   Gamepad2,
+  Gem,
   Gift,
   Heart,
   Home,
-  Landmark,
   Laptop,
   Leaf,
   LogIn,
@@ -26,11 +27,13 @@ import {
   LayoutGrid,
   Menu,
   Music,
+  PawPrint,
   Percent,
   Plane,
   Search,
   Shirt,
   ShoppingBag,
+  ShoppingCart,
   Sparkles,
   Tag,
   UtensilsCrossed,
@@ -55,42 +58,58 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { storesApi } from "@/lib/api/stores";
 import { categoriesApi } from "@/lib/api/categories";
 
-// ─── Category icon + colour map ────────────────────────────────────────────
-const CAT_ICON_MAP: Array<{
-  match: string[];
-  icon: LucideIcon;
-  bg: string;
-  color: string;
-}> = [
-  { match: ["electron", "tech", "gadget", "computer", "mobile", "phone"], icon: Laptop, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["fashion", "cloth", "apparel", "wear", "dress"], icon: Shirt, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["food", "dining", "restaurant", "grocery", "eat", "snack"], icon: UtensilsCrossed, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["travel", "flight", "hotel", "vacation", "holiday"], icon: Plane, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["beauty", "cosmetic", "skincare", "makeup", "hair"], icon: Sparkles, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["home", "furniture", "decor", "kitchen", "appliance"], icon: Home, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["sport", "fitness", "gym", "outdoor", "exercise", "yoga"], icon: Dumbbell, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["book", "education", "learning", "course", "study"], icon: BookOpen, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["health", "wellness", "pharmacy", "medical", "medicine"], icon: Heart, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["gift", "present", "occasion"], icon: Gift, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["bank", "finance", "insurance", "money", "invest", "credit"], icon: Landmark, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["game", "gaming", "toy", "play"], icon: Gamepad2, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["shoe", "footwear", "boot", "sandal"], icon: Footprints, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["accessory", "accessories", "watch", "jewel", "bag", "purse"], icon: Watch, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["pet", "animal"], icon: Heart, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["baby", "kid", "children", "toddler", "infant"], icon: Baby, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["garden", "plant", "flower", "lawn"], icon: Leaf, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["auto", "car", "vehicle", "motor", "bike"], icon: Car, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["movie", "film", "cinema", "entertain", "stream"], icon: Film, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["music", "audio", "concert", "headphone"], icon: Music, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
-  { match: ["coupon", "percent", "discount", "saving", "deal"], icon: Percent, bg: "bg-cv-primary-soft dark:bg-cv-primary/20", color: "text-cv-primary dark:text-cv-primary" },
+// ─── Category icon map ───────────────────────────────────────────────────
+// Every category maps to one meaningful Lucide icon. Backgrounds + text
+// colours are uniform brand-primary across the strip so the rail reads
+// consistently. The first matching keyword wins; more-specific entries
+// (e.g. "grocer" before "food") come first.
+const CAT_ICON_MAP: Array<{ match: string[]; icon: LucideIcon }> = [
+  { match: ["grocer", "supermarket"], icon: ShoppingCart },
+  { match: ["pet", "animal"], icon: PawPrint },
+  { match: ["jewel", "gem", "ring"], icon: Gem },
+  { match: ["electron", "tech", "gadget", "computer", "mobile", "phone"], icon: Laptop },
+  { match: ["fashion", "cloth", "apparel", "wear", "dress"], icon: Shirt },
+  { match: ["food", "dining", "restaurant", "eat", "snack"], icon: UtensilsCrossed },
+  { match: ["travel", "flight", "hotel", "vacation", "holiday"], icon: Plane },
+  { match: ["beauty", "cosmetic", "skincare", "makeup", "hair"], icon: Sparkles },
+  { match: ["home", "furniture", "decor", "kitchen", "appliance"], icon: Home },
+  { match: ["sport", "fitness", "gym", "outdoor", "exercise", "yoga"], icon: Dumbbell },
+  { match: ["book", "education", "learning", "course", "study"], icon: BookOpen },
+  { match: ["health", "wellness", "pharmacy", "medical", "medicine"], icon: Heart },
+  { match: ["gift", "present", "occasion"], icon: Gift },
+  { match: ["bank", "finance", "financial", "insurance", "money", "invest", "credit"], icon: DollarSign },
+  { match: ["game", "gaming", "toy", "play"], icon: Gamepad2 },
+  { match: ["shoe", "footwear", "boot", "sandal"], icon: Footprints },
+  { match: ["accessory", "accessories", "watch", "bag", "purse"], icon: Watch },
+  { match: ["baby", "kid", "children", "toddler", "infant"], icon: Baby },
+  { match: ["garden", "plant", "flower", "lawn"], icon: Leaf },
+  { match: ["auto", "car", "vehicle", "motor", "bike"], icon: Car },
+  { match: ["movie", "film", "cinema", "entertain", "stream"], icon: Film },
+  { match: ["music", "audio", "concert", "headphone"], icon: Music },
+  { match: ["coupon", "percent", "discount", "saving", "deal"], icon: Percent },
 ];
 
-function getCatIcon(slug: string, title: string) {
+function getCatIcon(slug: string, title: string): LucideIcon {
   const text = `${slug} ${title}`.toLowerCase();
   for (const entry of CAT_ICON_MAP) {
-    if (entry.match.some((m) => text.includes(m))) return entry;
+    if (entry.match.some((m) => text.includes(m))) return entry.icon;
   }
-  return { icon: Tag, bg: "bg-cv-primary-soft", color: "text-cv-primary" };
+  return Tag;
+}
+
+/**
+ * Collapse multi-word category names to a single word. Splits on `&`,
+ * `/`, or " and ", then takes the first word of what remains.
+ *
+ *   "Food & Dining"          → "Food"
+ *   "Books and Education"    → "Books"
+ *   "Beauty / Personal Care" → "Beauty"
+ *   "Automotive"             → "Automotive"
+ */
+function toSingleWord(label: string): string {
+  if (!label) return "";
+  const beforeJoiner = label.split(/\s*(?:&|\band\b|\/)\s*/i)[0]!.trim();
+  return beforeJoiner.split(/\s+/)[0] ?? beforeJoiner;
 }
 
 // ─── Main Header ───────────────────────────────────────────────────────────
@@ -154,8 +173,8 @@ export function Header() {
     <>
     <header
       className={
-        "sticky top-0 z-40 w-full bg-background transition-shadow " +
-        (scrolled ? "shadow-md" : "")
+        "sticky top-0 z-sticky w-full bg-background transition-shadow " +
+        (scrolled ? "shadow-card" : "")
       }
       role="banner"
     >
@@ -188,17 +207,17 @@ export function Header() {
             aria-label="CouponValley home"
             className="flex shrink-0 items-center gap-2 font-bold text-cv-primary"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-cv-primary to-cv-primary-strong text-white shadow-sm">
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-cv-primary text-white">
               <ShoppingBag className="h-4 w-4" aria-hidden />
             </span>
-            <span className="hidden text-base font-extrabold sm:inline-block">CouponValley</span>
+            <span className="hidden text-base font-bold tracking-tight sm:inline-block">CouponValley</span>
           </Link>
 
           {/* Categories dropdown — desktop */}
           <div className="hidden lg:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-foreground/80 transition hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cv-primary-strong)]">
+                <button className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-semibold text-cv-neutral-700 transition-colors hover:bg-cv-neutral-100 hover:text-cv-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary">
                   <LayoutGrid className="h-4 w-4" aria-hidden />
                   Categories
                   <ChevronDown className="h-3.5 w-3.5" aria-hidden />
@@ -270,7 +289,7 @@ export function Header() {
             {/* Saved (icon-only on small/medium, with text on lg+) */}
             <Link
               href="/account/saved-coupons"
-              className="hidden items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-foreground/80 transition hover:bg-accent hover:text-foreground sm:inline-flex"
+              className="hidden items-center gap-1 rounded-md px-2 py-1.5 text-sm font-semibold text-cv-neutral-700 transition-colors hover:bg-cv-neutral-100 hover:text-cv-neutral-900 sm:inline-flex"
               aria-label="Saved coupons"
             >
               <Bookmark className="h-4 w-4" aria-hidden />
@@ -295,7 +314,8 @@ export function Header() {
                 <Button
                   asChild
                   size="sm"
-                  className="cv-btn-primary hidden px-4 sm:inline-flex"
+                  variant="primary"
+                  className="hidden px-4 sm:inline-flex"
                 >
                   <Link href="/sign-up">Get started</Link>
                 </Button>
@@ -335,46 +355,40 @@ export function Header() {
             ref={stripRef}
             className="cv-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"
           >
-            {/* Pinned shortcuts */}
+            {/* Pinned shortcuts — keep their two-word labels (design exception) */}
             <CategoryChip
               href="/offers"
               label="Hot Deals"
               icon={Flame}
-              bg="bg-cv-accent-soft dark:bg-cv-accent/20"
-              color="text-cv-accent"
+              tone="accent"
             />
             <CategoryChip
               href="/coupons"
-              label="All Coupons"
+              label="Coupons"
               icon={Percent}
-              bg="bg-cv-success-soft dark:bg-cv-success/20"
-              color="text-cv-success dark:text-cv-success"
+              tone="success"
             />
 
-            {/* Dynamic categories */}
+            {/* Dynamic categories — one-word labels for visual rhythm. */}
             {categories.isLoading
               ? Array.from({ length: 12 }).map((_, i) => (
                   <div
                     key={i}
-                    className="flex shrink-0 flex-col items-center gap-1.5 px-3 py-1"
+                    className="flex shrink-0 flex-col items-center gap-2 px-3 py-1"
                   >
-                    <div className="cv-skeleton h-12 w-12 rounded-full" />
+                    <div className="cv-skeleton h-11 w-11 rounded-full" />
                     <div className="cv-skeleton h-2.5 w-14 rounded" />
                   </div>
                 ))
-              : stripCategories.map((cat) => {
-                  const { icon, bg, color } = getCatIcon(cat.slug, cat.title);
-                  return (
-                    <CategoryChip
-                      key={cat.id}
-                      href={`/categories/${cat.slug}`}
-                      label={cat.title}
-                      icon={icon}
-                      bg={bg}
-                      color={color}
-                    />
-                  );
-                })}
+              : stripCategories.map((cat) => (
+                  <CategoryChip
+                    key={cat.id}
+                    href={`/categories/${cat.slug}`}
+                    label={toSingleWord(cat.title)}
+                    icon={getCatIcon(cat.slug, cat.title)}
+                    tone="primary"
+                  />
+                ))}
           </div>
 
           {/* Left chevron — visible only when the strip is scrolled right */}
@@ -383,7 +397,7 @@ export function Header() {
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute left-2 top-0 flex h-full items-center bg-gradient-to-r from-background via-background/80 to-transparent pl-2 pr-6 text-muted-foreground transition hover:text-foreground"
+              className="absolute left-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -395,7 +409,7 @@ export function Header() {
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute right-2 top-0 flex h-full items-center bg-gradient-to-l from-background via-background/80 to-transparent pl-6 pr-2 text-muted-foreground transition hover:text-foreground"
+              className="absolute right-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -407,30 +421,45 @@ export function Header() {
 }
 
 // ─── Category chip ─────────────────────────────────────────────────────────
+/**
+ * CategoryChip — fixed-size icon tile + uppercase tag label below.
+ *   • 44px circular icon container (WCAG tap target)
+ *   • 20px icon
+ *   • 11px uppercase 0.04em label, single line, max-width caps long words
+ * `tone` controls the brand role: primary (default), accent (hot/urgent),
+ * success (verified/coupons). No decorative motion on hover — colour shift
+ * only.
+ */
+type ChipTone = "primary" | "accent" | "success";
+const TONE_STYLES: Record<ChipTone, { bg: string; icon: string }> = {
+  primary: { bg: "bg-cv-primary-soft", icon: "text-cv-primary" },
+  accent: { bg: "bg-cv-accent-soft", icon: "text-cv-accent" },
+  success: { bg: "bg-cv-success-soft", icon: "text-cv-success-strong" },
+};
+
 function CategoryChip({
   href,
   label,
   icon: Icon,
-  bg,
-  color,
+  tone = "primary",
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
-  bg: string;
-  color: string;
+  tone?: ChipTone;
 }) {
+  const styles = TONE_STYLES[tone];
   return (
     <Link
       href={href}
-      className="group flex shrink-0 flex-col items-center gap-1 rounded-lg px-2.5 py-1 text-center transition hover:bg-accent"
+      className="group flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-lg px-2 py-2 text-center transition-colors hover:bg-cv-neutral-100"
     >
       <span
-        className={`grid h-9 w-9 place-items-center rounded-full transition group-hover:scale-110 ${bg}`}
+        className={`grid h-11 w-11 place-items-center rounded-full transition-colors ${styles.bg}`}
       >
-        <Icon className={`h-4 w-4 ${color}`} aria-hidden />
+        <Icon className={`h-5 w-5 ${styles.icon}`} aria-hidden strokeWidth={1.75} />
       </span>
-      <span className="line-clamp-1 max-w-[72px] text-[10px] leading-tight text-foreground/75 group-hover:text-foreground">
+      <span className="line-clamp-1 max-w-full text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-700 group-hover:text-cv-neutral-900">
         {label}
       </span>
     </Link>
@@ -456,7 +485,7 @@ function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-cv-primary to-cv-primary-strong text-sm font-semibold text-white shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cv-primary-strong)] focus-visible:ring-offset-2"
+          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-cv-primary text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary focus-visible:ring-offset-2"
           aria-label="Open account menu"
         >
           {initial}
@@ -526,8 +555,8 @@ function MobileMenu({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b px-5 py-4">
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-cv-primary to-cv-primary-strong text-white">
+      <div className="flex items-center gap-3 border-b border-cv-neutral-200 px-5 py-4">
+        <span className="grid h-8 w-8 place-items-center rounded-md bg-cv-primary text-white">
           <ShoppingBag className="h-4 w-4" aria-hidden />
         </span>
         <span className="text-base font-semibold">CouponValley</span>
@@ -602,7 +631,7 @@ function MobileMenu({
               href="/account"
               className="flex items-center gap-3 rounded-md p-2 transition hover:bg-accent"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-cv-primary to-cv-primary-strong text-sm font-semibold text-white">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-cv-primary text-sm font-semibold text-white">
                 {(user.name || user.email)[0]?.toUpperCase()}
               </span>
               <span className="min-w-0 text-sm">
@@ -625,10 +654,10 @@ function MobileMenu({
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <Button asChild className="cv-btn-primary">
+            <Button asChild variant="primary">
               <Link href="/sign-up">Create account</Link>
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="secondary">
               <Link href="/sign-in">Sign in</Link>
             </Button>
           </div>
@@ -650,7 +679,7 @@ function MobileNavLink({
     <li>
       <Link
         href={href}
-        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition hover:bg-accent"
+        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-cv-neutral-100"
       >
         {children}
         <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />

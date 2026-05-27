@@ -3,22 +3,45 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+// Badges: 6px radius (small interactive), 11px uppercase 0.04em, weight 600.
+// Five real variants matching the 5 brand roles. Legacy default/secondary/
+// destructive/outline kept as aliases so existing call sites don't break.
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-sm px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] transition-colors",
   {
     variants: {
       variant: {
+        neutral:
+          "bg-cv-neutral-100 text-cv-neutral-700",
+        primary:
+          "bg-cv-primary text-cv-primary-fg",
+        "primary-soft":
+          "bg-cv-primary-soft text-cv-primary-strong",
+        accent:
+          "bg-cv-accent text-cv-accent-fg",
+        "accent-soft":
+          "bg-cv-accent-soft text-cv-accent-strong",
+        success:
+          "bg-cv-success text-cv-success-fg",
+        "success-soft":
+          "bg-cv-success-soft text-cv-success-strong",
+        danger:
+          "bg-cv-danger text-cv-danger-fg",
+        "danger-soft":
+          "bg-cv-danger-soft text-cv-danger-strong",
+        // Legacy aliases — preserve existing usages.
         default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+          "bg-cv-primary text-cv-primary-fg",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-cv-primary-soft text-cv-primary-strong",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+          "bg-cv-danger text-cv-danger-fg",
+        outline:
+          "border border-cv-neutral-200 bg-transparent text-cv-neutral-700",
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: "neutral",
     },
   }
 )

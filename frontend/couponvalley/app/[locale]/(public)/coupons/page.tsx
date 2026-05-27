@@ -44,9 +44,7 @@ export default async function CouponsListPage({
   return (
     <div className="container py-8 md:py-12">
       <header className="mb-8 max-w-3xl">
-        <h1 className="bg-gradient-to-r from-cv-primary to-cv-primary-strong bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-          Active coupons
-        </h1>
+        <h1 className="cv-h1 text-cv-primary">Active coupons</h1>
         <p className="mt-2 text-muted-foreground">
           Verified discount codes you can paste at checkout, ranked by recent activity.
         </p>

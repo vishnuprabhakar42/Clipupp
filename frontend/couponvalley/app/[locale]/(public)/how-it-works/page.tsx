@@ -45,7 +45,7 @@ export default function HowItWorksPage() {
         {STEPS.map((step, i) => (
           <li key={step.title} className="rounded-md border bg-card p-6">
             <div className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-cv-primary to-cv-primary-strong text-white">
+              <span className="grid h-9 w-9 place-items-center rounded-md bg-cv-primary text-white">
                 {step.icon}
               </span>
               <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

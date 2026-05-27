@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 px-4 py-10">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-cv-neutral-50 px-4 py-10">
+      <div className="w-full max-w-[440px] space-y-6">
         {/* Brand header */}
         <div className="text-center">
           <Link
@@ -20,30 +20,30 @@ export default function SignInPage() {
             className="inline-flex items-center gap-2.5 font-bold text-cv-primary"
             aria-label="CouponValley home"
           >
-            <span className="grid h-10 w-10 place-items-center rounded-md bg-gradient-to-br from-cv-primary to-cv-primary-strong text-white shadow-md">
+            <span className="grid h-10 w-10 place-items-center rounded-md bg-cv-primary text-white">
               <ShoppingBag className="h-5 w-5" aria-hidden />
             </span>
             <span className="text-xl">CouponValley</span>
           </Link>
-          <h1 className="mt-5 text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="mt-1.5 text-sm text-muted-foreground">
+          <h1 className="cv-h1 mt-5 text-[1.75rem]">Welcome back</h1>
+          <p className="cv-body mt-1.5 text-cv-neutral-600">
             Sign in to save coupons and track your savings.
           </p>
         </div>
 
-        <div className="rounded-md border bg-card p-6 shadow-sm">
+        <div className="rounded-lg border border-cv-neutral-200 bg-white p-6 shadow-card">
           <Suspense>
             <SignInForm />
           </Suspense>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="cv-meta text-center">
           By signing in you agree to our{" "}
-          <Link href="/terms" className="underline hover:text-foreground">
+          <Link href="/terms" className="underline hover:text-cv-neutral-900">
             Terms
           </Link>{" "}
           and{" "}
-          <Link href="/privacy" className="underline hover:text-foreground">
+          <Link href="/privacy" className="underline hover:text-cv-neutral-900">
             Privacy Policy
           </Link>
           .

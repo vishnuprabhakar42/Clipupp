@@ -99,9 +99,7 @@ export default async function CategoryPage({
       </nav>
 
       <header className="mb-8 max-w-3xl">
-        <h1 className="bg-gradient-to-r from-cv-primary to-cv-primary-strong bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-          {cat.title}
-        </h1>
+        <h1 className="cv-h1 text-cv-primary">{cat.title}</h1>
         {cat.description && (
           <p className="mt-2 text-muted-foreground">{cat.description}</p>
         )}

@@ -44,7 +44,7 @@ export function StoreCouponCard({ coupon }: { coupon: CouponSummary }) {
 
   return (
     <article
-      className={`overflow-hidden rounded-xl border-2 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md ${borderCls}`}
+      className={`overflow-hidden rounded-lg border-2 bg-white shadow-card ${borderCls}`}
     >
       {/* ── Coloured header strip ──────────────────────────────────── */}
       {(isRecommended || isFlashDeal) && (
