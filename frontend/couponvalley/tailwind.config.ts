@@ -93,10 +93,74 @@ const config = {
           900: "var(--cv-neutral-900)",
         },
       },
+      fontFamily: {
+        // Single Apple San Francisco system stack across the platform. Body,
+        // display, and any direct `font-sans` / `font-display` class usage
+        // resolve to the exact same font — SF on Apple platforms, native
+        // fallbacks elsewhere. CSS var defined in app/globals.css.
+        sans: [
+          "var(--font-sans)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Display",
+          "SF Pro Text",
+          "Helvetica Neue",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+        display: [
+          "var(--font-display)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Display",
+          "SF Pro Text",
+          "Helvetica Neue",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+        mono: [
+          "var(--font-mono)",
+          "ui-monospace",
+          "SFMono-Regular",
+          "SF Mono",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "monospace",
+        ],
+      },
+      // Radius scale by component type. Tags 6, buttons/inputs 8, cards 12,
+      // modals 16. Never mix radii randomly within a component class.
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "6px",
+        md: "8px",
+        lg: "12px",
+        xl: "16px",
+        "2xl": "16px",
+        full: "9999px",
+      },
+      boxShadow: {
+        // Single shadow level across the app — anything bigger reads as
+        // decorative. Modals reuse this, no second tier.
+        card: "var(--cv-shadow-card)",
+        "card-hover": "var(--cv-shadow-card-hover)",
+      },
+      zIndex: {
+        dropdown: "var(--z-dropdown)",
+        sticky: "var(--z-sticky)",
+        "modal-backdrop": "var(--z-modal-backdrop)",
+        modal: "var(--z-modal)",
+        toast: "var(--z-toast)",
+      },
+      maxWidth: {
+        container: "1280px",
+        prose: "680px",
       },
       keyframes: {
         "accordion-down": {

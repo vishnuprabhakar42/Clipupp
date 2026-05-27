@@ -27,6 +27,9 @@ const nextConfig = {
       { protocol: "https", hostname: "api.dicebear.com" },
       // Common host for Wikimedia-served brand assets (some seeds use it)
       { protocol: "https", hostname: "upload.wikimedia.org" },
+      // Placeholder image generator — V027 seed reverted store logos to
+      // placehold.co tiles after Clearbit/Unsplash URLs proved unreliable.
+      { protocol: "https", hostname: "placehold.co" },
     ],
   },
   /**

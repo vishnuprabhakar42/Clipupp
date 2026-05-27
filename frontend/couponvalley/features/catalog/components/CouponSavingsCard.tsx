@@ -26,7 +26,7 @@ export function CouponSavingsCard({
   const href = `/coupons/${coupon.slug}`;
   return (
     <article
-      className="cv-card group relative flex h-full flex-col overflow-hidden rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-within:ring-2 focus-within:ring-[var(--cv-primary-strong)]/40"
+      className="cv-card group relative flex h-full flex-col overflow-hidden focus-within:ring-2 focus-within:ring-cv-primary"
       aria-label={`${coupon.title} — ${storeName ?? "deal"}`}
     >
       <Link

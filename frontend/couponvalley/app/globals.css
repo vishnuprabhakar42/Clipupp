@@ -5,22 +5,21 @@
 @layer base {
   :root {
     /* ──────────────────────────────────────────────────────────────────────
-       CouponValley 3-color "Vivid" brand palette.
-       Single source of truth: every brand surface across the site —
-       buttons, gradients, badges, charts, OG images, admin chrome —
-       maps to one of these roles. Adding a new role is a design
-       decision, not a free-form choice.
+       CouponValley 5-color "Clean Blue" brand palette. Single source of
+       truth: every brand surface across the site — buttons, badges, charts,
+       OG images, admin chrome — maps to one of these roles. Adding a new
+       role is a design decision, not a free-form choice.
 
-         Primary  Violet   trust, CTAs, links, primary buttons, focus rings
+         Primary  Blue     trust, CTAs, links, primary buttons, focus rings
          Accent   Orange   savings urgency, badges, deals, hot-deal state
          Success  Emerald  approved, verified, "live" pills, success toasts
          Danger   Red      errors, destructive actions, validation
          Neutral  Slate    chrome, typography, borders, page background
        ──────────────────────────────────────────────────────────────────── */
 
-    --cv-primary:        #5B21B6;
-    --cv-primary-strong: #4C1D95;
-    --cv-primary-soft:   #F5F3FF;
+    --cv-primary:        #3B82F6;
+    --cv-primary-strong: #1D4ED8;
+    --cv-primary-soft:   #DBEAFE;
     --cv-primary-fg:     #ffffff;
 
     --cv-accent:         #F97316;
@@ -51,32 +50,61 @@
     --cv-neutral-900: #0f172a;
 
     /* ── shadcn semantic tokens, re-pointed to the 5-color palette so every
-          primitive in components/ui/* re-skins automatically. Values are
-          HSL because shadcn wraps with hsl() at the consumption site. */
+          primitive in components/ui/* re-skins automatically. */
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 263 69% 42%;          /* violet #5B21B6 */
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 270 30% 96%;
-    --secondary-foreground: 263 50% 20%;
-    --muted: 270 30% 96%;
-    --muted-foreground: 263 16% 47%;
-    --accent: 24 95% 53%;            /* orange #F97316 */
+    --secondary: 214 95% 93%;
+    --secondary-foreground: 224 76% 28%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 24 95% 53%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;        /* red #DC2626 */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 263 20% 91%;
-    --input: 263 20% 91%;
-    --ring: 263 69% 42%;
+    --border: 215 28% 89%;
+    --input: 215 28% 89%;
+    --ring: 217 91% 60%;
     --radius: 0.5rem;
 
     /* Sticky header offset — used by scroll-padding so anchored links don't hide under it. */
     --header-h: 64px;
     --header-h-lg: 112px;
+
+    /* ── Apple San Francisco font stack ───────────────────────────────────
+       Single typeface across the entire platform — no Google Font load,
+       zero network cost. Renders as SF on macOS/iOS/iPadOS, Segoe UI on
+       Windows, Roboto on Android, system on Linux. `--font-display` is an
+       alias so existing `font-display` classes keep their semantic meaning
+       in markup while resolving to the same family. */
+    --font-sans:
+      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "Helvetica Neue", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+      "Open Sans", "Helvetica", Arial, sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji";
+    --font-display: var(--font-sans);
+    --font-mono:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+
+    /* Single shadow level across the entire app. Anything bigger reads as
+       decorative and breaks the calm grid. */
+    --cv-shadow-card: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --cv-shadow-card-hover: 0 2px 8px rgba(15, 23, 42, 0.08);
+
+    /* Z-index scale. Layout the stacking order explicitly so portals,
+       toasts, and stickies never collide. */
+    --z-base: 0;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal-backdrop: 300;
+    --z-modal: 400;
+    --z-toast: 500;
   }
 }
 
@@ -85,8 +113,12 @@
     @apply border-border;
   }
   html {
-    /* Sticky header does not hide #anchor scroll targets. */
     scroll-padding-top: calc(var(--header-h) + 16px);
+    /* Force SF (or the platform fallback) on every element on the page.
+       Inheritance does the rest — no descendant rule can break this
+       without re-declaring font-family explicitly. */
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
   }
   @media (min-width: 1024px) {
     html {
@@ -98,7 +130,6 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  /* Honor reduced-motion across our animations. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -109,15 +140,17 @@
       scroll-behavior: auto !important;
     }
   }
-  /* High-contrast focus ring for keyboard users. */
   :focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
     border-radius: 6px;
   }
-  /* Better default for selection — violet primary at 18% opacity. */
   ::selection {
-    background: rgba(91, 33, 182, 0.18);
+    background: rgba(59, 130, 246, 0.18);
+  }
+  /* Headings get text-wrap: balance to avoid orphan words. */
+  h1, h2 {
+    text-wrap: balance;
   }
 }
 
@@ -126,24 +159,80 @@
 }
 
 @layer components {
-  /* Brand-coloured gradient text used for hero headlines. Violet → orange. */
-  .cv-gradient-text {
-    @apply bg-gradient-to-r from-[var(--cv-primary)] to-[var(--cv-accent)] bg-clip-text text-transparent;
+  /* Single shadow level. Use on cards, modals, dropdowns. */
+  .cv-shadow-card {
+    box-shadow: var(--cv-shadow-card);
   }
-  /* Standard primary button — solid violet with a darker hover. */
-  .cv-btn-primary {
-    @apply inline-flex items-center justify-center rounded-md bg-[var(--cv-primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[var(--cv-primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--cv-primary-strong)] disabled:opacity-60 disabled:pointer-events-none;
+  .cv-shadow-card-hover {
+    box-shadow: var(--cv-shadow-card-hover);
   }
-  /* Outlined button — soft violet tint on hover. */
-  .cv-btn-ghost {
-    @apply inline-flex items-center justify-center rounded-md border border-[#5B21B626] bg-transparent px-4 py-2 text-sm font-medium text-[var(--cv-primary)] transition hover:bg-[var(--cv-primary-soft)];
+
+  /* Layout primitives — drive the 8px / container-1280 / section-rhythm rules. */
+  .cv-container {
+    @apply mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-20;
   }
+  .cv-section {
+    @apply py-12 lg:py-20;
+  }
+  .cv-prose {
+    @apply mx-auto max-w-[680px];
+  }
+
+  /* Typography hierarchy. Use these instead of ad-hoc text-* combos so the
+     three-weight rule (400/600/700) and balance / line-height are enforced. */
+  .cv-h1 {
+    @apply font-display text-[2.25rem] leading-[1.15] font-bold tracking-tight text-cv-neutral-900 sm:text-[2.75rem] lg:text-[3rem];
+    text-wrap: balance;
+  }
+  .cv-h2 {
+    @apply font-display text-[1.5rem] leading-[1.2] font-semibold tracking-tight text-cv-neutral-900 lg:text-[1.75rem];
+    text-wrap: balance;
+  }
+  .cv-h3 {
+    @apply font-display text-[1rem] leading-[1.3] font-semibold text-cv-neutral-900 lg:text-[1.125rem];
+  }
+  .cv-meta {
+    @apply text-[0.8125rem] leading-[1.5] text-cv-neutral-500;
+  }
+  .cv-body {
+    @apply text-[0.9375rem] leading-[1.6] text-cv-neutral-700;
+  }
+  .cv-price {
+    @apply font-display text-[1.25rem] font-bold text-cv-primary tabular-nums lg:text-[1.5rem];
+  }
+  .cv-tag {
+    @apply inline-flex items-center rounded-sm bg-cv-neutral-100 px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-cv-neutral-700;
+  }
+  .cv-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Card primitives — single shadow, neutral border, no hover lift. */
   .cv-card {
-    @apply rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md;
+    @apply rounded-lg border border-cv-neutral-200 bg-card text-card-foreground;
+    box-shadow: var(--cv-shadow-card);
   }
+
+  /* Skeleton — pure neutral, no coloured shimmer. Matches card radius. */
   .cv-skeleton {
-    @apply relative overflow-hidden rounded-md bg-muted/50 before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent;
+    @apply relative overflow-hidden rounded-lg bg-cv-neutral-100;
   }
+  .cv-skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: shimmer 1.4s infinite;
+  }
+
+  /* Section heading legacy helpers — kept for back-compat with current pages,
+     point to the new typography scale. */
+  .cv-section-title {
+    @apply cv-h2;
+  }
+  .cv-section-link {
+    @apply text-sm font-semibold text-cv-primary hover:underline;
+  }
+
   /* Hide scrollbar cross-browser */
   .cv-no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -152,21 +241,48 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  /* Section heading used across the homepage */
-  .cv-section-title {
-    @apply text-[22px] sm:text-2xl font-extrabold tracking-tight text-[var(--cv-neutral-900)];
+
+  /* Legacy buttons — keep selectors stable but force them onto the new
+     primary button look (solid, flat, no gradient, h-11 tap target). */
+  .cv-btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-cv-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cv-primary-strong disabled:opacity-40 disabled:pointer-events-none;
+    min-height: 44px;
   }
-  /* "See all" link used in section headers — primary navy, underlines on hover. */
-  .cv-section-link {
-    @apply text-sm font-semibold text-[var(--cv-primary)] hover:underline;
+  .cv-btn-ghost {
+    @apply inline-flex items-center justify-center rounded-md border-[1.5px] border-cv-primary bg-transparent px-4 py-2.5 text-sm font-semibold text-cv-primary transition-colors hover:bg-cv-primary-soft;
+    min-height: 44px;
   }
-  /* Coloured accent strip used to mark sections — violet → orange → emerald (the 3 brand roles). */
+
+  /* Headline accent — solid primary colour, replaces the old
+     .cv-gradient-text. Kept as an alias so existing callers don't break
+     until the consumer-page sweep in Phase 2 retires them. */
+  .cv-headline-accent {
+    color: var(--cv-primary);
+  }
+  .cv-gradient-text {
+    color: var(--cv-primary);
+  }
+
+  /* Flat accent strip — replaces the old three-stop gradient strip but
+     preserves the helper name so existing usages don't break. */
   .cv-color-strip {
-    @apply h-1 w-12 rounded-full bg-gradient-to-r from-[var(--cv-primary)] via-[var(--cv-accent)] to-[var(--cv-success)];
+    @apply h-1 w-12 rounded-full bg-cv-primary;
   }
+
   /* Vibrant pill used for category tags / badges */
   .cv-pill {
     @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold;
+  }
+
+  /* Form input baseline — referenced by .cv-input helpers across pages
+     during the Phase 2 sweep. Mirrors the Input primitive contract. */
+  .cv-input {
+    @apply flex h-11 w-full rounded-md border-[1.5px] border-cv-neutral-200 bg-white px-3 text-[15px] text-cv-neutral-900 placeholder:text-cv-neutral-400 focus:border-cv-primary focus:outline-none focus:ring-2 focus:ring-cv-primary/30 disabled:opacity-40;
+  }
+
+  /* Admin table zebra striping. Opt-in via data-zebra on the <table>. */
+  .cv-table-zebra tbody tr:nth-child(even) {
+    background: var(--cv-neutral-50);
   }
 }
 

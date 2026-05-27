@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { isLocale } from "@/lib/i18n/config";
@@ -19,7 +18,11 @@ import { FirstVisitModal } from "@/components/site/FirstVisitModal";
 import { WebVitalsReporter } from "@/components/site/WebVitalsReporter";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+// Typography: Apple San Francisco everywhere via the system font stack
+// (see `--font-sans` in app/globals.css). No webfont network load — SF on
+// Apple platforms, native fallbacks elsewhere. Tailwind's `font-sans` and
+// `font-display` both resolve to this stack, so existing class usages keep
+// working without modification.
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -76,7 +79,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={localeToBcp47[localeTyped]} dir={dirFor(localeTyped)}>
-      <body className={inter.className}>
+      <body className="font-sans">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <LanguageProvider>
             <ReactQueryProvider>

@@ -75,34 +75,28 @@ export function AnnouncementBar() {
     setDismissed(resolved.id);
   }
 
-  // Theme: campaign theme color tints the gradient; otherwise default purple.
+  // Flat campaign background — theme colour or default primary. No gradients.
   const accent = resolved.themeColor ?? "var(--cv-primary)";
-  const dark = darken(accent);
 
   return (
-    <div
-      className="relative text-white"
-      style={{
-        background: `linear-gradient(90deg, ${dark} 0%, ${accent} 50%, ${dark} 100%)`,
-      }}
-    >
+    <div className="relative text-white" style={{ backgroundColor: accent }}>
       <div className="container flex items-center justify-center gap-4 px-12 py-2.5 text-center text-sm">
         <p className="line-clamp-1 text-white">
-          <span className="font-medium">{resolved.title}</span>
+          <span className="font-semibold">{resolved.title}</span>
           {resolved.subtitle && (
             <>
               {" "}
-              <span className="mx-2 text-white/50">|</span>
+              <span className="mx-2 text-white/60">|</span>
               {resolved.linkUrl ? (
                 <Link
                   href={resolved.linkUrl}
-                  className="inline-flex items-center gap-1 font-semibold text-cv-accent underline-offset-2 hover:underline"
+                  className="inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline"
                 >
                   {resolved.subtitle}
                   <ArrowRight className="h-3.5 w-3.5" aria-hidden />
                 </Link>
               ) : (
-                <span className="font-semibold text-cv-accent">{resolved.subtitle}</span>
+                <span className="font-semibold">{resolved.subtitle}</span>
               )}
             </>
           )}
@@ -112,20 +106,10 @@ export function AnnouncementBar() {
         type="button"
         onClick={dismiss}
         aria-label="Dismiss announcement"
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-white/80 transition hover:bg-white/15 hover:text-white"
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-white/80 transition-colors hover:bg-white/15 hover:text-white"
       >
         <X className="h-4 w-4" />
       </button>
     </div>
   );
-}
-
-/** Quick darken (mix toward black 35%) for the gradient stops. */
-function darken(hex: string): string {
-  if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return "#3B1576";
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const f = (n: number) => Math.max(0, Math.round(n * 0.65)).toString(16).padStart(2, "0");
-  return `#${f(r)}${f(g)}${f(b)}`;
 }

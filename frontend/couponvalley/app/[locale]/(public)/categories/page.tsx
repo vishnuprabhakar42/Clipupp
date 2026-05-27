@@ -66,7 +66,7 @@ export default async function CategoriesPage({
           {tree.map((cat, i) => (
             <li
               key={cat.id}
-              className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-100 p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 p-5 shadow-card"
               style={{
                 background: ["var(--cv-primary-soft)", "var(--cv-accent-soft)", "var(--cv-success-soft)", "var(--cv-neutral-100)"][i % 4],
               }}

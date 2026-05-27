@@ -68,10 +68,10 @@ export function StoreTypeTabs({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 rounded-full px-5 py-2 text-sm font-bold transition-all duration-150 ${
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
               activeTab === tab.id
-                ? "bg-cv-primary text-white shadow-md"
-                : "bg-cv-neutral-100 text-gray-600 hover:bg-cv-primary-soft hover:text-cv-primary"
+                ? "bg-cv-primary text-white"
+                : "bg-cv-neutral-100 text-cv-neutral-700 hover:bg-cv-primary-soft hover:text-cv-primary"
             }`}
           >
             {tab.label}

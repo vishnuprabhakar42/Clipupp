@@ -78,15 +78,12 @@ export async function Footer() {
         <div>
           <Link href="/" className="inline-flex items-center gap-2" style={{ color: accent }}>
             <span
-              className="grid h-9 w-9 place-items-center rounded-lg shadow-sm"
-              style={{
-                backgroundImage: `linear-gradient(to bottom right, ${accent}, var(--cv-accent))`,
-                color: "#ffffff",
-              }}
+              className="grid h-9 w-9 place-items-center rounded-md text-white"
+              style={{ backgroundColor: accent }}
             >
               <ShoppingBag className="h-5 w-5" aria-hidden />
             </span>
-            <span className="text-xl font-extrabold">{brandName}</span>
+            <span className="text-xl font-bold">{brandName}</span>
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-cv-neutral-400">{tagline}</p>
 
@@ -226,7 +223,7 @@ export async function Footer() {
           </ul>
           <Link
             href="/contact"
-            className="mt-5 inline-flex items-center gap-2 rounded-lg bg-cv-primary-strong px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-cv-primary"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-cv-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong"
           >
             <Headphones className="h-4 w-4" aria-hidden />
             Contact Us
@@ -251,11 +248,8 @@ export async function Footer() {
       <div className="border-t border-white/10">
         <div className="container py-7 text-center">
           <p
-            className="bg-clip-text text-3xl font-extrabold tracking-tight text-transparent sm:text-4xl"
-            style={{
-              backgroundImage: `linear-gradient(to right, ${accent}, var(--cv-accent), ${accent})`,
-              fontFamily: "'Inter', system-ui, sans-serif",
-            }}
+            className="font-display text-3xl font-bold tracking-tight sm:text-4xl"
+            style={{ color: accent }}
           >
             {hashtag}
           </p>
@@ -343,8 +337,8 @@ function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="grid h-8 w-8 place-items-center rounded-full text-white shadow-sm transition hover:scale-110"
-      style={{ backgroundColor: color }}
+      className="grid h-8 w-8 place-items-center rounded-md border border-white/10 text-cv-neutral-300 transition-colors hover:text-white"
+      style={{ ["--social-hover-bg" as never]: color }}
     >
       {children}
     </a>

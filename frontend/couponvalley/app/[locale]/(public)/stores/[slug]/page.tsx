@@ -178,9 +178,9 @@ export default async function StoreDetailPage({
             aria-label={`${detail.name} store information`}
           >
             {/* Store identity card */}
-            <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
               <div className="mb-4 flex items-center gap-3">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border bg-white p-1.5 shadow-sm">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md border border-cv-neutral-200 bg-white p-1.5">
                   <Image
                     src={detail.logoUrl || "/placeholder.svg"}
                     alt={detail.name}
@@ -222,7 +222,7 @@ export default async function StoreDetailPage({
             </div>
 
             {/* Top offers + Stats */}
-            <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
               {detail.topOffers.length > 0 && (
                 <>
                   <h3 className="mb-3 text-sm font-bold text-gray-900">
@@ -269,7 +269,7 @@ export default async function StoreDetailPage({
 
             {/* Content writer */}
             {detail.contentWriter && (
-              <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                 <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   This page has been updated by
                 </p>
@@ -308,7 +308,7 @@ export default async function StoreDetailPage({
 
             {/* Featured articles */}
             {detail.featuredArticles.length > 0 && (
-              <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                 <h3 className="mb-3 text-sm font-bold text-gray-900">
                   {detail.name} Featured Articles
                 </h3>
@@ -335,7 +335,7 @@ export default async function StoreDetailPage({
             )}
 
             {/* Why trust us */}
-            <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
               <h3 className="mb-2 flex items-center gap-1.5 text-sm font-bold text-gray-900">
                 <Shield
                   className="h-4 w-4 text-cv-primary"
@@ -369,7 +369,7 @@ export default async function StoreDetailPage({
             </div>
 
             {/* About store: contact + description + FAQs */}
-            <div className="rounded-xl border bg-white p-5 shadow-sm">
+            <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
               <h3 className="mb-3 text-sm font-bold text-gray-900">
                 About {detail.name}
               </h3>
@@ -434,7 +434,7 @@ export default async function StoreDetailPage({
 
             {/* Similar stores */}
             {similar.length > 0 && (
-              <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                 <h3 className="mb-3 text-sm font-bold text-gray-900">
                   Similar Stores
                 </h3>
@@ -463,7 +463,7 @@ export default async function StoreDetailPage({
 
             {/* Popular stores */}
             {popularStores.length > 0 && (
-              <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                 <h3 className="mb-3 text-sm font-bold text-gray-900">
                   Popular Stores
                 </h3>
@@ -516,7 +516,7 @@ export default async function StoreDetailPage({
                 <h2 className="mb-3 text-lg font-bold text-gray-900">
                   Current {detail.name} Coupon Codes &amp; Deals
                 </h2>
-                <div className="overflow-x-auto rounded-xl border shadow-sm">
+                <div className="overflow-x-auto rounded-lg border border-cv-neutral-200 shadow-card">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-cv-primary-soft">
@@ -616,7 +616,7 @@ export default async function StoreDetailPage({
                     {detail.faqs.map((faq) => (
                       <div
                         key={faq.id}
-                        className="rounded-xl border bg-white p-4 shadow-sm"
+                        className="rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
                       >
                         <h3 className="mb-1.5 text-sm font-bold text-gray-900">
                           {faq.question}
@@ -628,7 +628,7 @@ export default async function StoreDetailPage({
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-xl border bg-white p-5 shadow-sm">
+                  <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                     {(detail.phone || detail.address) && (
                       <ul className="space-y-2 text-sm text-gray-700">
                         {detail.phone && (
@@ -665,7 +665,7 @@ export default async function StoreDetailPage({
                   {detail.topOffers.map((offer, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 rounded-xl border bg-white p-4 shadow-sm"
+                      className="flex items-start gap-3 rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
                     >
                       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-cv-primary-soft">
                         <Tag className="h-3.5 w-3.5 text-cv-primary" aria-hidden />
@@ -685,7 +685,7 @@ export default async function StoreDetailPage({
                 <h2 className="mb-4 text-lg font-bold text-gray-900">
                   About {detail.name}
                 </h2>
-                <div className="rounded-xl border bg-white p-6 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-6 shadow-card">
                   <p className="text-sm leading-7 text-gray-600">
                     {detail.description}
                   </p>
@@ -719,7 +719,7 @@ export default async function StoreDetailPage({
                   {detail.featuredArticles.map((a) => (
                     <li
                       key={a.id}
-                      className="rounded-xl border bg-white p-5 shadow-sm"
+                      className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card"
                     >
                       <p className="font-semibold leading-snug text-gray-900">
                         {a.title}
@@ -749,7 +749,7 @@ export default async function StoreDetailPage({
                 <h2 className="mb-4 text-lg font-bold text-gray-900">
                   {detail.name} Frequently Asked Questions
                 </h2>
-                <div className="rounded-xl border bg-white shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white shadow-card">
                   <Accordion type="multiple">
                     {detail.faqs.map((faq) => (
                       <AccordionItem
@@ -772,7 +772,7 @@ export default async function StoreDetailPage({
 
             {/* 7. Content writer full card */}
             {detail.contentWriter && (
-              <div className="mt-10 flex items-start gap-4 rounded-xl border bg-white p-6 shadow-sm">
+              <div className="mt-10 flex items-start gap-4 rounded-lg border border-cv-neutral-200 bg-white p-6 shadow-card">
                 {detail.contentWriter.imageUrl && (
                   <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-cv-primary-soft bg-cv-primary-soft">
                     <Image
@@ -811,7 +811,7 @@ export default async function StoreDetailPage({
             <div className="mt-10 space-y-5 lg:hidden">
               {/* Mobile stats */}
               {detail.stats && (
-                <div className="rounded-xl border bg-white p-5 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                   <h3 className="mb-3 text-sm font-bold text-gray-900">
                     Offer Statistics
                   </h3>
@@ -838,7 +838,7 @@ export default async function StoreDetailPage({
 
               {/* Mobile FAQs */}
               {detail.faqs.length > 0 && (
-                <div className="rounded-xl border bg-white p-5 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                   <h2 className="mb-3 text-sm font-bold text-gray-900">
                     {t("faqs")}
                   </h2>
@@ -859,7 +859,7 @@ export default async function StoreDetailPage({
 
               {/* Mobile about */}
               {detail.description && (
-                <div className="rounded-xl border bg-white p-5 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                   <h2 className="mb-2 text-sm font-bold text-gray-900">
                     About {detail.name}
                   </h2>
@@ -871,7 +871,7 @@ export default async function StoreDetailPage({
 
               {/* Mobile similar */}
               {similar.length > 0 && (
-                <div className="rounded-xl border bg-white p-5 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                   <h2 className="mb-3 text-sm font-bold text-gray-900">
                     Similar Stores
                   </h2>
@@ -892,7 +892,7 @@ export default async function StoreDetailPage({
 
               {/* Mobile content writer */}
               {detail.contentWriter && (
-                <div className="rounded-xl border bg-white p-5 shadow-sm">
+                <div className="rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card">
                   <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     Page updated by
                   </p>

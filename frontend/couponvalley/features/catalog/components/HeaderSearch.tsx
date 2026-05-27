@@ -93,7 +93,7 @@ export function HeaderSearch({ variant = "default" }: HeaderSearchProps) {
           </div>
         </form>
         {open && results.length > 0 && (
-          <div className="absolute left-0 right-0 z-50 mt-1.5 max-h-96 overflow-y-auto rounded-md border bg-popover p-1 shadow-xl">
+          <div className="absolute left-0 right-0 z-dropdown mt-1.5 max-h-96 overflow-y-auto rounded-md border border-cv-neutral-200 bg-popover p-1 shadow-card">
             {loading && (
               <p className="px-3 py-2 text-xs text-muted-foreground">Searching…</p>
             )}
@@ -132,7 +132,7 @@ export function HeaderSearch({ variant = "default" }: HeaderSearchProps) {
         </div>
       </form>
       {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 z-50 mt-1 max-h-96 overflow-y-auto rounded-md border bg-popover p-1 shadow-lg">
+        <div className="absolute left-0 right-0 z-dropdown mt-1 max-h-96 overflow-y-auto rounded-md border border-cv-neutral-200 bg-popover p-1 shadow-card">
           {loading && (
             <p className="px-3 py-2 text-xs text-muted-foreground">Searching…</p>
           )}

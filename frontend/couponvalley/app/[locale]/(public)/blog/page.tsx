@@ -65,7 +65,7 @@ export default async function BlogPage() {
             <Link
               key={article.id}
               href={`/blog/${article.slug}`}
-              className="group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+              className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
             >
               {/* Hero image — fixed 16:9 aspect, object-cover for atmospheric photos. */}
               <div className="relative aspect-video w-full overflow-hidden bg-cv-neutral-100">

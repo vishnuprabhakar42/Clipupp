@@ -64,7 +64,7 @@ export function FirstVisitModal() {
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4 backdrop-blur-sm" role="dialog" aria-modal="true">
-      <div className="relative w-full max-w-md overflow-hidden rounded-md border bg-card shadow-2xl">
+      <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-cv-neutral-200 bg-card shadow-card">
         <button
           onClick={dismiss}
           aria-label="Close"
@@ -73,7 +73,7 @@ export function FirstVisitModal() {
           <X className="h-4 w-4" aria-hidden />
         </button>
 
-        <div className="bg-gradient-to-br from-cv-primary to-cv-primary-strong p-6 text-white">
+        <div className="bg-cv-primary p-6 text-white">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
             Welcome to CouponValley

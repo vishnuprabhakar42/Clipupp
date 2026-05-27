@@ -91,53 +91,46 @@ export function PopularCategoriesGrid({
 
   return (
     <section aria-labelledby="popular-categories-heading">
-      <div className="mb-5 flex items-end justify-between gap-3">
-        <h2
-          id="popular-categories-heading"
-          className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl"
-        >
+      <div className="mb-6 flex items-end justify-between gap-3">
+        <h2 id="popular-categories-heading" className="cv-h2">
           {heading}
         </h2>
         <Link href="/categories" className="text-sm font-semibold text-cv-primary hover:underline">
-          See all
+          See all →
         </Link>
       </div>
 
       {!featured && q.isLoading ? (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {Array.from({ length: limit }).map((_, i) => (
-            <li key={i} className="cv-skeleton h-28 rounded-md" />
+            <li key={i} className="cv-skeleton h-28 rounded-lg" />
           ))}
         </ul>
       ) : cats.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No categories yet.</p>
+        <p className="cv-meta">No categories yet.</p>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <ul className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {cats.slice(0, limit).map((c) => {
-            const { icon: Icon, bg, iconBg, iconColor } = styleFor(c.slug, c.title);
+            const { icon: Icon } = styleFor(c.slug, c.title);
             return (
-              <li key={c.id}>
+              <li key={c.id} className="h-full">
                 <Link
                   href={`/categories/${c.slug}`}
-                  className={`group flex h-full items-center gap-3 rounded-md border border-transparent p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${bg}`}
+                  className="group flex h-full flex-col items-center gap-3 rounded-lg border border-cv-neutral-200 bg-white p-4 text-center shadow-card transition-colors hover:border-cv-primary"
                 >
-                  <span
-                    className={`grid h-11 w-11 shrink-0 place-items-center rounded-md shadow-sm transition group-hover:scale-110 ${iconBg}`}
-                  >
-                    <Icon className={`h-5 w-5 ${iconColor}`} aria-hidden />
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-cv-primary-soft">
+                    <Icon className="h-5 w-5 text-cv-primary" aria-hidden />
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="line-clamp-1 text-sm font-bold text-gray-900">
-                      {c.title}
-                    </p>
-                    <p className="mt-0.5 line-clamp-1 text-[11px] text-gray-600">
+                  <div className="min-w-0">
+                    <p className="cv-h3 line-clamp-1">{c.title}</p>
+                    <p className="cv-meta mt-0.5 line-clamp-1">
                       {c.childrenCount > 0
                         ? `${c.childrenCount} subcategor${c.childrenCount === 1 ? "y" : "ies"}`
                         : "Coupons & deals"}
                     </p>
                   </div>
                   <ArrowRight
-                    className="h-4 w-4 shrink-0 text-cv-neutral-400 transition group-hover:translate-x-0.5 group-hover:text-gray-700"
+                    className="ml-auto mt-auto h-4 w-4 shrink-0 text-cv-neutral-300 group-hover:text-cv-primary"
                     aria-hidden
                   />
                 </Link>

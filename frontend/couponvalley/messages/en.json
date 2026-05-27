@@ -12,6 +12,12 @@
     "signIn": "Sign in",
     "account": "My Account"
   },
+  "mobileNav": {
+    "home": "Home",
+    "browse": "Browse",
+    "saved": "Saved",
+    "account": "Account"
+  },
   "common": {
     "loading": "Loading…",
     "loadMore": "Load more",
@@ -284,5 +290,23 @@
     "home": "Home",
     "copyright": "© 2025 CouponValley. All rights reserved.",
     "noCouponsFound": "No coupons found"
+  },
+  "home": {
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Three simple steps between you and a discount.",
+      "step1": {
+        "title": "Find a coupon",
+        "description": "Browse hundreds of active coupons across 50+ stores. Filter by category or search by brand."
+      },
+      "step2": {
+        "title": "Click through",
+        "description": "Tap the code to copy it, then jump to the store with one click."
+      },
+      "step3": {
+        "title": "Save at checkout",
+        "description": "Paste the code at checkout to apply your discount instantly."
+      }
+    }
   }
 }
