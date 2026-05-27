@@ -50,7 +50,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LanguageToggle } from "@/components/language-toggle";
+import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
 
@@ -270,7 +270,7 @@ export function HeaderClient({
             </Button>
 
             <span className="hidden lg:inline-flex">
-              <LanguageToggle />
+              <LocaleSwitcher variant="pill" />
             </span>
 
             <Link
@@ -578,7 +578,16 @@ function MobileMenu({
         )}
       </nav>
 
-      <div className="border-t p-4">
+      <div className="space-y-3 border-t p-4">
+        {/* Locale switcher first — both signed-in and signed-out users need
+            an accessible way to flip between en/hi from the mobile drawer. */}
+        <div className="flex items-center justify-between rounded-md border border-cv-neutral-200 p-2">
+          <span className="px-2 text-xs font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
+            Language
+          </span>
+          <LocaleSwitcher variant="pill" align="end" />
+        </div>
+
         {user ? (
           <div className="space-y-1">
             <Link
