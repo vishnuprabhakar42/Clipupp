@@ -14,9 +14,9 @@ export const size = { width: 1200, height: 630 };
  * brand palette changes.
  */
 const CV = {
-  primary:       "#DC2626",
-  primaryStrong: "#B91C1C",
-  accent:        "#F59E0B",
+  primary:       "#6C5CE7",
+  primaryStrong: "#5847D6",
+  accent:        "#00B894",
 } as const;
 
 export async function GET(
