@@ -15,16 +15,13 @@ type Copy = {
 };
 
 /**
- * Newsletter band — refined-minimal. Soft warm-to-cool gradient on a
- * light background so dark text is always crisp (no contrast risk). The
- * one distinctive design choice is the form: the Subscribe button is
- * absolutely-positioned INSIDE the input pill (Substack / Resend pattern)
- * so the whole CTA reads as one cohesive element instead of two separate
- * controls. On mobile the button drops below for proper tap targets.
+ * Newsletter band — sits on `cv-section-bg-mesh-warm` (amber mesh) so it
+ * reads as the hottest CTA strip on the page. White pill form has the
+ * crimson-gradient submit nested INSIDE the input on desktop (Substack
+ * pattern) and stacked beneath on mobile for tap targets.
  *
- * Compact vertical rhythm — py-12 to py-16, not the previous chunky
- * py-20+. Everything else is restraint: small eyebrow chip, normal-sized
- * heading, one-line subhead, single trust line.
+ * Server-rendered shell is `'use client'` because the form has interactive
+ * state (submitting / submitted) and uses sonner toasts.
  */
 export function NewsletterBar({
   copy,
@@ -65,39 +62,40 @@ export function NewsletterBar({
   return (
     <section
       aria-label="Newsletter subscription"
-      className="relative overflow-hidden bg-cv-primary-soft"
+      className="cv-section-bg-mesh-warm relative overflow-hidden"
     >
-      <div className="container py-12 md:py-16">
-        <div className="mx-auto max-w-xl text-center">
-          {/* Eyebrow chip — small, white, ringed. Signals "newsletter"
-              without consuming visual space. */}
-          <span className="inline-flex items-center gap-1.5 rounded-sm bg-white px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-700 ring-1 ring-cv-neutral-200">
-            <Mail className="h-3 w-3 text-cv-primary" aria-hidden />
+      <div className="cv-container py-14 md:py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 font-display text-[11px] font-extrabold uppercase tracking-[0.16em] text-cv-accent-800 backdrop-blur-sm">
+            <Mail
+              className="h-3 w-3 text-cv-accent-700"
+              aria-hidden
+              strokeWidth={2.5}
+            />
             Weekly drop
           </span>
 
-          {/* Headline */}
-          <h2 className="cv-h2 mt-4">
-            {headline}
-          </h2>
+          <h2 className="cv-display-hero mt-5 text-white">{headline}</h2>
 
-          {/* Subhead — single line, compact. */}
-          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-cv-neutral-600 sm:text-[15px]">
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/90 sm:text-[15px]">
             {subheadline}
           </p>
 
-          {/* Form / success — the distinctive bit. On sm+ the button lives
-              INSIDE the input pill. On mobile it stacks below for proper
-              tap targets. */}
           {submitted ? (
-            <div className="mx-auto mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-cv-success-soft px-5 py-2.5 text-sm font-semibold text-cv-success-strong ring-1 ring-cv-success/20">
+            <div
+              className="mx-auto mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 font-display text-sm font-extrabold text-cv-success-strong"
+              style={{ boxShadow: "var(--cv-shadow-lifted)" }}
+            >
               <CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden />
               Almost there — check your inbox to confirm.
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="mx-auto mt-6 max-w-md">
-              {/* Desktop: nested button inside input pill */}
-              <div className="relative hidden sm:block">
+            <form onSubmit={onSubmit} className="mx-auto mt-7 max-w-xl">
+              {/* Desktop: nested gradient button inside input pill */}
+              <div
+                className="relative hidden h-16 rounded-full bg-white sm:block"
+                style={{ boxShadow: "var(--cv-shadow-lifted)" }}
+              >
                 <label htmlFor="cv-newsletter-email-d" className="sr-only">
                   Email address
                 </label>
@@ -110,19 +108,21 @@ export function NewsletterBar({
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   disabled={submitting}
-                  className="h-14 w-full rounded-md border-[1.5px] border-cv-neutral-200 bg-white pl-5 pr-[140px] text-[15px] text-cv-neutral-900 outline-none placeholder:text-cv-neutral-400 focus:border-cv-primary focus:ring-2 focus:ring-cv-primary/30 disabled:opacity-40"
+                  className="h-full w-full rounded-full bg-transparent pl-7 pr-[170px] text-[15px] text-cv-neutral-900 outline-none placeholder:text-cv-neutral-400 disabled:opacity-40"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="absolute right-1.5 top-1.5 inline-flex h-11 items-center gap-1.5 rounded-md bg-cv-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong disabled:opacity-40"
+                  className="cv-btn-primary-gradient absolute right-2 top-2 h-12 rounded-full px-6"
                 >
                   {submitting ? "…" : ctaLabel}
-                  {!submitting && <ArrowRight className="h-3.5 w-3.5" aria-hidden />}
+                  {!submitting && (
+                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                  )}
                 </button>
               </div>
 
-              {/* Mobile: stacked input + full-width button */}
+              {/* Mobile: stacked input + full-width gradient button */}
               <div className="flex flex-col gap-2 sm:hidden">
                 <label htmlFor="cv-newsletter-email-m" className="sr-only">
                   Email address
@@ -136,12 +136,12 @@ export function NewsletterBar({
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   disabled={submitting}
-                  className="h-12 w-full rounded-md border-[1.5px] border-cv-neutral-200 bg-white px-4 text-[15px] text-cv-neutral-900 outline-none placeholder:text-cv-neutral-400 focus:border-cv-primary focus:ring-2 focus:ring-cv-primary/30 disabled:opacity-40"
+                  className="h-12 w-full rounded-full border-[1.5px] border-white/40 bg-white px-5 text-[15px] text-cv-neutral-900 outline-none placeholder:text-cv-neutral-400 disabled:opacity-40"
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex h-12 items-center justify-center gap-1.5 rounded-md bg-cv-primary px-6 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong disabled:opacity-40"
+                  className="cv-btn-primary-gradient w-full rounded-full"
                 >
                   {submitting ? "Subscribing…" : ctaLabel}
                   {!submitting && <ArrowRight className="h-4 w-4" aria-hidden />}
@@ -150,9 +150,10 @@ export function NewsletterBar({
             </form>
           )}
 
-          {/* Trust line — single short sentence, muted. */}
-          <p className="mt-4 text-xs text-cv-neutral-500">
-            Join <span className="font-semibold text-cv-neutral-700">10,000+</span> smart shoppers. We never share your email.
+          <p className="mt-5 text-xs text-white/80">
+            Join{" "}
+            <span className="font-extrabold text-white">10,000+</span> smart
+            shoppers. We never share your email.
           </p>
         </div>
       </div>

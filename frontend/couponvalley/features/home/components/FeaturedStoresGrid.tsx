@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
 import { ArrowRight } from "lucide-react";
 import { storesApi } from "@/lib/api/stores";
+import { CashbackChip } from "@/features/cashback/components/CashbackChip";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 type Store = {
@@ -11,16 +12,18 @@ type Store = {
   logoUrl: string;
   brandColor?: string | null;
   cashbackRate?: string | null;
+  cashbackRateBps?: number | null;
+  cashbackEnabled?: boolean | null;
   tagline?: string | null;
   rating?: string | null;
   reviewCount?: number;
 };
 
 /**
- * Featured stores — clean editorial grid. Equal-sized flat cards in a
- * 2 / 3 / 4-column responsive layout. Logos sit in a white tile with a
- * neutral border so each card scans the same regardless of source brand
- * colour. Single shadow level, no hover lift.
+ * Featured stores — vivid grid. Equal-sized cv-card-vivid cards in a
+ * 2 / 3 / 4-column responsive layout. Crimson→amber gradient border lifts
+ * each card off the page. Logos sit in a fixed-aspect white tile; the body
+ * shows tagline + cashback chip (when enabled) + a "View coupons" arrow.
  *
  * Server-rendered. Prefers `section.stores` from the homepage payload; falls
  * back to `storesApi.list({ limit })` when the admin hasn't pinned items.
@@ -42,19 +45,22 @@ export async function FeaturedStoresGrid({
     <section aria-labelledby="featured-stores-heading">
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 id="featured-stores-heading" className="cv-h2">
+          <p className="cv-eyebrow-vivid">This week</p>
+          <h2 id="featured-stores-heading" className="cv-h2 mt-2">
             {heading}
           </h2>
           {subtitle && (
-            <p className="cv-body mt-2 max-w-xl text-cv-neutral-600">{subtitle}</p>
+            <p className="cv-body mt-2 max-w-xl text-cv-neutral-700">
+              {subtitle}
+            </p>
           )}
         </div>
         <Link
           href="/stores"
-          className="group inline-flex items-center gap-1 text-sm font-semibold text-cv-primary hover:underline"
+          className="group inline-flex items-center gap-1 text-sm font-bold text-cv-primary-700 hover:underline"
         >
           See all stores
-          <ArrowRight className="h-4 w-4" aria-hidden />
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
         </Link>
       </div>
 
@@ -87,10 +93,10 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
   return (
     <Link
       href={`/stores/${store.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
+      className="cv-card-vivid group flex h-full flex-col overflow-hidden bg-white"
       aria-label={store.name}
     >
-      <div className="flex aspect-[5/3] items-center justify-center overflow-hidden border-b border-cv-neutral-200 bg-white p-6">
+      <div className="flex aspect-[5/3] items-center justify-center overflow-hidden bg-white p-6">
         {store.logoUrl ? (
           <Image
             src={store.logoUrl}
@@ -104,28 +110,34 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
         ) : (
           <span
             aria-hidden
-            className="grid h-16 w-16 place-items-center rounded-full bg-cv-primary text-2xl font-semibold text-white"
+            className="grid h-16 w-16 place-items-center rounded-full cv-gradient-hero text-2xl font-extrabold text-white"
           >
             {(store.name || "?").trim().charAt(0).toUpperCase()}
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <p className="line-clamp-1 cv-h3 group-hover:text-cv-primary">
+      <div className="flex flex-1 flex-col gap-2 p-4 pt-3">
+        <p className="line-clamp-1 cv-h3 group-hover:text-cv-primary-700">
           {store.name}
         </p>
         {store.tagline && (
           <p className="cv-meta line-clamp-1">{store.tagline}</p>
         )}
+        <CashbackChip
+          rateBps={store.cashbackRateBps}
+          enabled={store.cashbackEnabled}
+        />
         <div className="mt-auto flex items-center justify-between pt-2">
-          <span className="text-[13px] font-semibold text-cv-primary">
+          <span className="text-[13px] font-bold text-cv-primary-700">
             {dealLabel}
           </span>
-          <ArrowRight
-            className="h-4 w-4 text-cv-neutral-300 group-hover:text-cv-primary"
+          <span
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cv-primary-soft text-cv-primary-700 transition-transform group-hover:translate-x-0.5"
             aria-hidden
-          />
+          >
+            <ArrowRight className="h-3.5 w-3.5" />
+          </span>
         </div>
       </div>
     </Link>

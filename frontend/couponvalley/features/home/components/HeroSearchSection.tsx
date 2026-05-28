@@ -6,10 +6,14 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 /**
  * Top-of-page hero with a prominent search box and category quick-jump
  * pills. Designed to be the LCP candidate on the home page: pure HTML,
- * server-rendered, no client JS, no large hero image.
+ * server-rendered, no client JS, no photographic asset — gradient mesh
+ * + a text headline does the heavy lifting. The form GETs `/search?q=…`
+ * so the entire interaction works without JavaScript.
  *
- * The form GETs `/search?q=...` so the entire interaction works without
- * JavaScript — important for both SEO and CWV.
+ * Visual tier (Phase 2): crimson mesh background, white display-mega H1
+ * with one keyword in amber gradient, h-16 white pill search with an
+ * embedded crimson-gradient submit, glass category chips, trust strip
+ * in white with a live pulse-dot.
  */
 export async function HeroSearchSection({
   section,
@@ -21,37 +25,47 @@ export async function HeroSearchSection({
     section?.subtitle ??
     "Search thousands of verified coupons and deals from the brands you love. Updated daily by our editorial team.";
 
-  // Top categories for quick-jump pills — fetched server-side so the chips
-  // are in the initial HTML for SEO + LCP.
   const categories = await categoriesApi.tree().catch(() => []);
   const pillCategories = categories.slice(0, 8);
 
   return (
-    <section aria-labelledby="hero-search-heading" className="bg-cv-primary-soft">
-      <div className="cv-container py-14 lg:py-20">
+    <section
+      aria-labelledby="hero-search-heading"
+      className="cv-section-bg-mesh-primary relative overflow-hidden"
+      style={{ minHeight: "clamp(420px, 50vh, 560px)" }}
+    >
+      <div className="cv-container relative py-14 lg:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="cv-tag bg-transparent px-0 text-cv-primary">
+          <p
+            className="cv-eyebrow-vivid mx-auto inline-flex"
+            style={{ color: "#FFFFFF" }}
+          >
+            <span className="cv-pulse-dot mr-2" aria-hidden />
             Save smarter, not harder
           </p>
-          <h1 id="hero-search-heading" className="cv-display-hero mt-3">
-            {heading}
+          <h1
+            id="hero-search-heading"
+            className="cv-display-mega mt-4 text-white"
+          >
+            {applyKeywordGradient(heading)}
           </h1>
-          <p className="cv-body mx-auto mt-4 max-w-2xl text-cv-neutral-600">
+          <p className="cv-body mx-auto mt-4 max-w-2xl text-white/85">
             {subtitle}
           </p>
 
-          {/* Search form — pure HTML form, GETs /search?q=... */}
+          {/* Search pill — h-16 white container, gradient submit inside. */}
           <form
             action="/search"
             method="get"
             role="search"
-            className="mx-auto mt-8 flex max-w-2xl items-center gap-2 rounded-md border-[1.5px] border-cv-neutral-200 bg-white p-1.5 shadow-card focus-within:border-cv-primary focus-within:ring-2 focus-within:ring-cv-primary/30"
+            className="mx-auto mt-9 flex h-16 max-w-2xl items-center gap-2 rounded-full bg-white p-2 transition-shadow focus-within:shadow-glow-primary"
+            style={{ boxShadow: "var(--cv-shadow-lifted)" }}
           >
             <label htmlFor="hero-search-input" className="sr-only">
               Search stores, coupons, and brands
             </label>
             <Search
-              className="ml-3 h-5 w-5 shrink-0 text-cv-neutral-400"
+              className="ml-4 h-5 w-5 shrink-0 text-cv-neutral-500"
               aria-hidden
             />
             <input
@@ -64,16 +78,16 @@ export async function HeroSearchSection({
             />
             <button
               type="submit"
-              className="inline-flex h-11 items-center gap-1.5 rounded-md bg-cv-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong"
+              className="cv-btn-primary-gradient h-12 rounded-full px-7 text-[14px] font-extrabold uppercase tracking-wide"
             >
               <Search className="h-4 w-4 sm:hidden" aria-hidden />
-              <span className="hidden sm:inline">Search</span>
+              <span className="hidden sm:inline">Search deals</span>
             </button>
           </form>
 
           {pillCategories.length > 0 && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
+            <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-white/75">
                 <Tag className="h-3 w-3" aria-hidden />
                 Popular
               </span>
@@ -81,7 +95,7 @@ export async function HeroSearchSection({
                 <Link
                   key={c.id}
                   href={`/categories/${c.slug}`}
-                  className="rounded-full border border-cv-neutral-200 bg-white px-3 py-1 text-xs font-semibold text-cv-neutral-700 transition-colors hover:border-cv-primary hover:text-cv-primary"
+                  className="cv-btn-glass rounded-full px-4 py-1.5 text-[12px] font-bold min-h-0"
                 >
                   {c.title}
                 </Link>
@@ -89,29 +103,73 @@ export async function HeroSearchSection({
             </div>
           )}
 
-          {/* Hero trust microcopy — 4 inline value props in a single
-              strip. No own card; blends into the hero band. Anchors the
-              promise without dragging the eye away from the search box. */}
-          <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[13px] text-cv-neutral-600">
+          {/* Trust strip — white text on hero. */}
+          <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-[14px] font-medium text-white/85">
             <li className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-cv-success-strong" aria-hidden />
-              <span><span className="font-semibold text-cv-neutral-900">10,000+</span> coupons</span>
+              <CheckCircle2
+                className="h-4 w-4 text-cv-success"
+                aria-hidden
+                strokeWidth={2.25}
+              />
+              <span>
+                <span className="font-display font-extrabold text-white">
+                  10,000+
+                </span>{" "}
+                coupons
+              </span>
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <Tag className="h-4 w-4 text-cv-primary" aria-hidden />
-              <span><span className="font-semibold text-cv-neutral-900">500+</span> stores</span>
+              <Tag
+                className="h-4 w-4 text-cv-accent-400"
+                aria-hidden
+                strokeWidth={2.25}
+              />
+              <span>
+                <span className="font-display font-extrabold text-white">
+                  500+
+                </span>{" "}
+                stores
+              </span>
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-cv-success-strong" aria-hidden />
+              <ShieldCheck
+                className="h-4 w-4 text-cv-success"
+                aria-hidden
+                strokeWidth={2.25}
+              />
               <span>Verified daily</span>
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-cv-accent" aria-hidden />
+              <Sparkles
+                className="h-4 w-4 text-cv-accent-400"
+                aria-hidden
+                strokeWidth={2.25}
+              />
               <span>Free forever</span>
             </li>
           </ul>
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Wraps the last word of the heading in a savings-gradient span so the H1
+ * has one accent without breaking the text-balance / LCP candidate.
+ */
+function applyKeywordGradient(heading: string): React.ReactNode {
+  const trimmed = heading.trim();
+  const lastSpace = trimmed.lastIndexOf(" ");
+  if (lastSpace < 0) {
+    return <span className="cv-text-gradient-savings">{trimmed}</span>;
+  }
+  const before = trimmed.slice(0, lastSpace);
+  const lastWord = trimmed.slice(lastSpace + 1);
+  return (
+    <>
+      {before}{" "}
+      <span className="cv-text-gradient-savings">{lastWord}</span>
+    </>
   );
 }

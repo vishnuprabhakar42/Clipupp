@@ -3,8 +3,8 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 
 /**
  * Value-proposition strip — four side-by-side guarantees that build trust
- * before the FAQ + newsletter signup. Different layout from the stats
- * strip: icon + text inline, no big numeric values.
+ * before the FAQ + newsletter signup. Each tile gets a left-edge gradient
+ * bar that widens on hover (cv-edge-bar) + a soft icon disc.
  */
 export function GuaranteeStrip({
   section,
@@ -17,28 +17,40 @@ export function GuaranteeStrip({
     icon: typeof BadgeCheck;
     label: string;
     body: string;
+    tone: "primary" | "success" | "accent";
   }> = [
     {
       icon: BadgeCheck,
       label: "Verified daily",
       body: "Every code is re-tested every 24 hours.",
+      tone: "success",
     },
     {
       icon: Wallet,
       label: "Always free",
       body: "No subscription, no hidden fees, ever.",
+      tone: "primary",
     },
     {
       icon: ShieldCheck,
       label: "Spam-free promise",
       body: "We never share your email with merchants.",
+      tone: "primary",
     },
     {
       icon: Sparkles,
       label: "Editor curated",
       body: "Hand-picked deals, never auto-imported.",
+      tone: "accent",
     },
   ];
+
+  const discFor = (tone: "primary" | "success" | "accent") =>
+    tone === "success"
+      ? "bg-cv-success-soft text-cv-success-strong"
+      : tone === "accent"
+        ? "bg-cv-accent-soft text-cv-accent-700"
+        : "bg-cv-primary-soft text-cv-primary-700";
 
   return (
     <section aria-labelledby="guarantees-heading">
@@ -46,13 +58,15 @@ export function GuaranteeStrip({
         {heading}
       </h2>
       <ul className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-        {items.map(({ icon: Icon, label, body }) => (
+        {items.map(({ icon: Icon, label, body, tone }) => (
           <li
             key={label}
-            className="flex h-full items-start gap-3 rounded-lg border border-cv-neutral-200 bg-white p-5 shadow-card"
+            className="cv-card cv-edge-bar group flex h-full items-start gap-3 p-5"
           >
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-cv-primary-soft">
-              <Icon className="h-5 w-5 text-cv-primary" aria-hidden />
+            <span
+              className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${discFor(tone)}`}
+            >
+              <Icon className="h-5 w-5" aria-hidden strokeWidth={2.25} />
             </span>
             <div className="min-w-0">
               <p className="cv-h3">{label}</p>

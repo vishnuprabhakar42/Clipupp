@@ -7,9 +7,11 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
  * as JSON-LD `FAQPage` structured data, which Google may surface as a
  * collapsible FAQ rich result in search.
  *
+ * Visual tier (Phase 2): sits on `cv-section-bg-primary-soft`. Each accordion
+ * item gets a gradient chevron disc that flips on open.
+ *
  * No client-side JavaScript — opening/closing is handled by the browser's
- * native `<details>` element. Smooth chevron rotation via Tailwind's
- * `group-open:` variant.
+ * native `<details>` element. Smooth chevron rotation via `group-open:`.
  */
 const FAQS: ReadonlyArray<{ q: string; a: string }> = [
   {
@@ -69,12 +71,12 @@ export function FaqSection({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-3xl">
-        <div className="mb-8 text-center">
-          <p className="cv-tag bg-transparent px-0 text-cv-primary">Support</p>
-          <h2 id="faq-heading" className="cv-h2 mt-2">
+        <div className="mb-9 text-center">
+          <p className="cv-eyebrow-vivid mx-auto">Support</p>
+          <h2 id="faq-heading" className="cv-h2 mt-3">
             {heading}
           </h2>
-          <p className="cv-body mx-auto mt-2 max-w-xl text-cv-neutral-600">
+          <p className="cv-body mx-auto mt-3 max-w-xl text-cv-neutral-700">
             {subtitle}
           </p>
         </div>
@@ -82,15 +84,21 @@ export function FaqSection({
         <ul className="space-y-3">
           {FAQS.map(({ q, a }, i) => (
             <li key={i}>
-              <details className="group rounded-lg border border-cv-neutral-200 bg-white shadow-card">
+              <details className="cv-card group">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
                   <h3 className="cv-h3 text-left">{q}</h3>
-                  <ChevronDown
-                    className="h-5 w-5 shrink-0 text-cv-neutral-500 transition-transform group-open:rotate-180"
+                  <span
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-white shadow-glow-primary transition-transform group-open:rotate-180"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
+                    }}
                     aria-hidden
-                  />
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </span>
                 </summary>
-                <p className="cv-body border-t border-cv-neutral-200 px-5 py-4 leading-relaxed text-cv-neutral-600">
+                <p className="cv-body border-t border-cv-neutral-200 px-5 py-4 leading-relaxed text-cv-neutral-700">
                   {a}
                 </p>
               </details>

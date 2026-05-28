@@ -8,12 +8,13 @@ import type { CouponSummary } from "@/lib/api/types";
 /**
  * Editor's-picks section. Asymmetric 2-column layout (different visual
  * rhythm from the uniform `TopDeals` grid):
- *   • Left: one large featured deal with cover-image / brand tile + meta.
- *   • Right: three small horizontal-list deals stacked.
+ *   • Left: one large featured deal with cv-gradient-warm hero band + corner
+ *     ribbon, big amber-gradient savings number, gradient CTA.
+ *   • Right: three small horizontal-row deals with left-edge gradient bars.
  *
- * Data: uses pre-loaded `coupons` on the section payload when the admin
- * pinned specific items; otherwise falls back to the top 4 popularity-
- * sorted coupons. Server-rendered.
+ * Data: pre-loaded `section.coupons` from the homepage payload when admin
+ * pinned specific items; otherwise top-4 popularity-sorted coupons. Server-
+ * rendered.
  */
 export async function DailyPicksSection({
   section,
@@ -40,15 +41,15 @@ export async function DailyPicksSection({
     <section aria-labelledby="daily-picks-heading">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-tag bg-transparent px-0 text-cv-accent">Daily picks</p>
+          <p className="cv-eyebrow-vivid cv-eyebrow-vivid--accent">Daily picks</p>
           <h2 id="daily-picks-heading" className="cv-h2 mt-2">
             {heading}
           </h2>
-          <p className="cv-body mt-2 max-w-xl text-cv-neutral-600">{subtitle}</p>
+          <p className="cv-body mt-2 max-w-xl text-cv-neutral-700">{subtitle}</p>
         </div>
         <Link
           href="/coupons"
-          className="text-sm font-semibold text-cv-primary hover:underline"
+          className="text-sm font-bold text-cv-primary-700 hover:underline"
         >
           See all →
         </Link>
@@ -79,57 +80,63 @@ function FeaturedPick({ coupon }: { coupon: CouponSummary }) {
   return (
     <Link
       href={href}
-      className="group flex h-full min-h-[260px] flex-col overflow-hidden rounded-lg border border-cv-neutral-200 bg-white shadow-card"
+      className="cv-card group relative flex h-full min-h-[260px] flex-col overflow-hidden"
     >
-      {/* Hero band — flat brand tint with logo + savings overlay */}
-      <div className="relative flex aspect-[16/7] items-center justify-center overflow-hidden border-b border-cv-neutral-200 bg-cv-accent-soft p-6">
+      <span className="cv-ribbon-corner" aria-hidden>
+        <span className="cv-ribbon-corner__inner">Pick</span>
+      </span>
+
+      {/* Hero band — amber gradient with logo + "Editor's pick" eyebrow */}
+      <div className="relative flex aspect-[16/7] items-center justify-center overflow-hidden cv-gradient-warm p-6">
         {coupon.storeLogoUrl ? (
-          <Image
-            src={coupon.storeLogoUrl}
-            alt={coupon.storeName ?? ""}
-            width={220}
-            height={100}
-            sizes="(min-width: 1024px) 560px, 100vw"
-            className="max-h-full w-auto max-w-full object-contain"
-          />
+          <span className="grid h-20 w-44 place-items-center rounded-xl bg-white p-3">
+            <Image
+              src={coupon.storeLogoUrl}
+              alt={coupon.storeName ?? ""}
+              width={150}
+              height={64}
+              sizes="180px"
+              className="max-h-full w-auto max-w-full object-contain"
+            />
+          </span>
         ) : (
           <span
             aria-hidden
-            className="grid h-16 w-16 place-items-center rounded-full bg-cv-accent text-2xl font-semibold text-white"
+            className="grid h-16 w-16 place-items-center rounded-full bg-white text-2xl font-extrabold text-cv-accent-700"
           >
             {(coupon.storeName ?? "?").trim().charAt(0).toUpperCase()}
           </span>
         )}
-        <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-sm bg-cv-accent px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-white">
-          <Sparkles className="h-3 w-3" aria-hidden />
+        <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1 font-display text-[11px] font-extrabold uppercase tracking-[0.16em] text-cv-accent-800 backdrop-blur-sm">
+          <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2.5} />
           Editor's pick
         </span>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         {coupon.storeName && (
-          <p className="cv-tag bg-transparent px-0">{coupon.storeName}</p>
+          <p className="cv-eyebrow-vivid">{coupon.storeName}</p>
         )}
-        <h3 className="cv-h2 line-clamp-2 text-[1.25rem] leading-tight lg:text-[1.375rem]">
+        <h3 className="cv-h2 line-clamp-2 text-[1.25rem] leading-tight lg:text-[1.375rem] group-hover:text-cv-primary-700">
           {coupon.title}
         </h3>
         {savings && (
-          <p className="cv-price">
+          <p className="cv-text-gradient-savings cv-savings-massive">
             {savings}
-            <span className="ml-1 text-sm font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
-              Off
+            <span className="ml-1 font-display text-[1rem] font-extrabold uppercase tracking-[0.12em] text-cv-accent-700">
+              OFF
             </span>
           </p>
         )}
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-500">
+          <span className="cv-meta inline-flex items-center gap-1">
             <Clock className="h-3 w-3" aria-hidden />
             Curated today
           </span>
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-cv-primary group-hover:underline">
+          <span className="inline-flex items-center gap-1 text-sm font-bold text-cv-primary-700 group-hover:underline">
             <Tag className="h-3.5 w-3.5" aria-hidden />
             View deal
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" aria-hidden />
           </span>
         </div>
       </div>
@@ -148,7 +155,7 @@ function SmallPick({ coupon }: { coupon: CouponSummary }) {
   return (
     <Link
       href={href}
-      className="group flex h-full items-center gap-3 rounded-lg border border-cv-neutral-200 bg-white p-3 shadow-card"
+      className="cv-card cv-edge-bar group flex h-full items-center gap-3 p-3"
     >
       <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-md border border-cv-neutral-200 bg-white">
         {coupon.storeLogoUrl ? (
@@ -161,26 +168,28 @@ function SmallPick({ coupon }: { coupon: CouponSummary }) {
             className="max-h-full w-auto max-w-full object-contain"
           />
         ) : (
-          <span className="text-xs font-semibold uppercase text-cv-neutral-500">
+          <span className="text-xs font-extrabold uppercase text-cv-neutral-500">
             {(coupon.storeName ?? "?").trim().charAt(0).toUpperCase()}
           </span>
         )}
       </span>
       <div className="min-w-0 flex-1">
         {coupon.storeName && (
-          <p className="cv-tag bg-transparent px-0">{coupon.storeName}</p>
+          <p className="font-display text-[11px] font-extrabold uppercase tracking-[0.12em] text-cv-neutral-500">
+            {coupon.storeName}
+          </p>
         )}
-        <p className="line-clamp-1 text-sm font-semibold text-cv-neutral-900 group-hover:text-cv-primary">
+        <p className="line-clamp-1 text-sm font-bold text-cv-neutral-900 group-hover:text-cv-primary-700">
           {coupon.title}
         </p>
         {savings && (
-          <p className="mt-0.5 text-[13px] font-semibold text-cv-accent-strong tabular-nums">
+          <p className="mt-0.5 cv-text-gradient-savings font-display text-[14px] font-extrabold tabular-nums">
             {savings} Off
           </p>
         )}
       </div>
       <ArrowRight
-        className="h-4 w-4 shrink-0 text-cv-neutral-300 group-hover:text-cv-primary"
+        className="h-4 w-4 shrink-0 text-cv-neutral-300 transition-transform group-hover:translate-x-1 group-hover:text-cv-primary-700"
         aria-hidden
       />
     </Link>
