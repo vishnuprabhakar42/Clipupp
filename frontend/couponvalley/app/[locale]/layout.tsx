@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
+import { Inter, Manrope } from "next/font/google";
 import { isLocale } from "@/lib/i18n/config";
 import { notFound } from "next/navigation";
 import "../globals.css";
@@ -16,12 +17,27 @@ import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
 import { HindiBetaMarker } from "@/components/site/HindiBetaMarker";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
-// Typography: Apple San Francisco everywhere via the system font stack
-// (see `--font-sans` in app/globals.css). No webfont network load — SF on
-// Apple platforms, native fallbacks elsewhere. Tailwind's `font-sans` and
-// `font-display` both resolve to this stack, so existing class usages keep
-// working without modification.
-//
+// Typography: Inter (body) + Manrope (display) loaded via next/font.
+// Self-hosted, preloaded, no FOUT — Next handles the network roundtrip at
+// build, ships the woff2 with the app, and emits a preload link tag. The
+// `variable` option exposes each as a CSS custom property the design system
+// (app/globals.css) reaches for via `--font-sans` and `--font-display`.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-sans",
+  adjustFontFallback: true,
+});
+
+const manrope = Manrope({
+  subsets: ["latin", "latin-ext"],
+  weight: ["600", "700", "800"],
+  display: "swap",
+  variable: "--font-display",
+  adjustFontFallback: true,
+});
+
 // CookieBanner, FirstVisitModal, and WebVitalsReporter are lazy-loaded in
 // DeferredClientWidgets (client component) so they don't ship in the initial
 // SSR HTML and hydrate after first paint.
@@ -92,8 +108,8 @@ export async function generateMetadata({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#3B82F6" },
-    { media: "(prefers-color-scheme: dark)", color: "#1D4ED8" },
+    { media: "(prefers-color-scheme: light)", color: "#DC2626" },
+    { media: "(prefers-color-scheme: dark)", color: "#B91C1C" },
   ],
   colorScheme: "light" as const,
   width: "device-width",
@@ -117,7 +133,11 @@ export default async function LocaleLayout({
   const localeTyped = locale as Locale;
 
   return (
-    <html lang={localeToBcp47[localeTyped]} dir={dirFor(localeTyped)}>
+    <html
+      lang={localeToBcp47[localeTyped]}
+      dir={dirFor(localeTyped)}
+      className={`${inter.variable} ${manrope.variable}`}
+    >
       <head>
         {/* Preconnect to the image origins we use most so the first <Image>
             on the page doesn't pay the TCP+TLS handshake cost. */}
