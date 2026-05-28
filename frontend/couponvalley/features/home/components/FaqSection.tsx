@@ -72,7 +72,7 @@ export function FaqSection({
       />
       <div className="mx-auto max-w-3xl">
         <div className="mb-9 text-center">
-          <p className="cv-eyebrow-vivid mx-auto">Support</p>
+          <p className="cv-eyebrow-vivid mx-auto">{heading}</p>
           <h2 id="faq-heading" className="cv-h2 mt-3">
             {heading}
           </h2>

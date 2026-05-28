@@ -89,7 +89,7 @@ export async function PopularCategoriesGrid({
     <section aria-labelledby="popular-categories-heading">
       <div className="mb-7 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-eyebrow-vivid">Shop by category</p>
+          <p className="cv-eyebrow-vivid">{heading}</p>
           <h2 id="popular-categories-heading" className="cv-h2 mt-2">
             {heading}
           </h2>
