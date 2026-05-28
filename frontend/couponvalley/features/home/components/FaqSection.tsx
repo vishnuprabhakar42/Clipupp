@@ -88,11 +88,7 @@ export function FaqSection({
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 [&::-webkit-details-marker]:hidden">
                   <h3 className="cv-h3 text-left">{q}</h3>
                   <span
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-white shadow-glow-primary transition-transform group-open:rotate-180"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
-                    }}
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-cv-primary-soft text-cv-primary transition-transform group-open:rotate-180"
                     aria-hidden
                   >
                     <ChevronDown className="h-4 w-4" />

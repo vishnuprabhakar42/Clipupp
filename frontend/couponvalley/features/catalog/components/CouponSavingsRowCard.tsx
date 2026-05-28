@@ -69,18 +69,16 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
       className={`relative overflow-hidden rounded-xl bg-white shadow-resting transition-shadow hover:shadow-hover ${borderCls}`}
     >
       {showStripe && (
-        <div
-          className={`px-5 py-1.5 ${isFlashDeal ? "cv-gradient-savings" : "cv-gradient-hero"}`}
-        >
-          <span className="inline-flex items-center gap-1.5 font-display text-[11px] font-extrabold uppercase tracking-[0.18em] text-white">
+        <div className="bg-cv-primary px-5 py-1.5">
+          <span className="inline-flex items-center gap-1.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-white">
             {isFlashDeal ? (
               <>
-                <Flame className="h-3 w-3" aria-hidden strokeWidth={2.5} />
+                <Flame className="h-3 w-3" aria-hidden strokeWidth={2} />
                 Flash deal
               </>
             ) : (
               <>
-                <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2.5} />
+                <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2} />
                 Recommended
               </>
             )}

@@ -86,8 +86,9 @@ function FeaturedPick({ coupon }: { coupon: CouponSummary }) {
         <span className="cv-ribbon-corner__inner">Pick</span>
       </span>
 
-      {/* Hero band — amber gradient with logo + "Editor's pick" eyebrow */}
-      <div className="relative flex aspect-[16/7] items-center justify-center overflow-hidden cv-gradient-warm p-6">
+      {/* Hero band — soft primary tint with logo + "Editor's pick" eyebrow.
+          No gradient (gradients reserved for hero/CTA only). */}
+      <div className="relative flex aspect-[16/7] items-center justify-center overflow-hidden bg-cv-primary-soft p-6">
         {coupon.storeLogoUrl ? (
           <span className="grid h-20 w-44 place-items-center rounded-xl bg-white p-3">
             <Image
@@ -107,8 +108,8 @@ function FeaturedPick({ coupon }: { coupon: CouponSummary }) {
             {(coupon.storeName ?? "?").trim().charAt(0).toUpperCase()}
           </span>
         )}
-        <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white/95 px-3 py-1 font-display text-[11px] font-extrabold uppercase tracking-[0.16em] text-cv-accent-800 backdrop-blur-sm">
-          <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2.5} />
+        <span className="absolute left-4 top-4 inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-cv-primary backdrop-blur-sm">
+          <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2} />
           Editor's pick
         </span>
       </div>
@@ -121,9 +122,9 @@ function FeaturedPick({ coupon }: { coupon: CouponSummary }) {
           {coupon.title}
         </h3>
         {savings && (
-          <p className="cv-text-gradient-savings cv-savings-massive">
+          <p className="cv-savings-massive text-cv-primary">
             {savings}
-            <span className="ml-1 font-display text-[1rem] font-extrabold uppercase tracking-[0.12em] text-cv-accent-700">
+            <span className="ml-1 font-display text-[1rem] font-bold uppercase tracking-[0.12em] text-cv-neutral-500">
               OFF
             </span>
           </p>
@@ -183,7 +184,7 @@ function SmallPick({ coupon }: { coupon: CouponSummary }) {
           {coupon.title}
         </p>
         {savings && (
-          <p className="mt-0.5 cv-text-gradient-savings font-display text-[14px] font-extrabold tabular-nums">
+          <p className="mt-0.5 font-display text-[14px] font-extrabold tabular-nums text-cv-primary">
             {savings} Off
           </p>
         )}

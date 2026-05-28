@@ -110,7 +110,7 @@ function StoreCard({ store, index }: { store: Store; index: number }) {
         ) : (
           <span
             aria-hidden
-            className="grid h-16 w-16 place-items-center rounded-full cv-gradient-hero text-2xl font-extrabold text-white"
+            className="grid h-16 w-16 place-items-center rounded-full bg-cv-primary-soft text-cv-primary text-2xl font-extrabold"
           >
             {(store.name || "?").trim().charAt(0).toUpperCase()}
           </span>

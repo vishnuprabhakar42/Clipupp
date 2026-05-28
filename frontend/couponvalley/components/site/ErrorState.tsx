@@ -24,19 +24,8 @@ export function ErrorState({
       role="alert"
       className="mx-auto flex max-w-md flex-col items-center gap-3 py-12 text-center"
     >
-      <span
-        className="grid h-16 w-16 place-items-center rounded-2xl"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--cv-danger-strong), var(--cv-accent-strong))",
-          boxShadow: "var(--cv-shadow-lifted)",
-        }}
-      >
-        <AlertCircle
-          className="h-8 w-8 text-white"
-          aria-hidden
-          strokeWidth={2}
-        />
+      <span className="grid h-16 w-16 place-items-center rounded-2xl bg-cv-danger-soft text-cv-danger-strong">
+        <AlertCircle className="h-8 w-8" aria-hidden strokeWidth={2} />
       </span>
       <h3 className="cv-h3 mt-2">{title}</h3>
       {description && (

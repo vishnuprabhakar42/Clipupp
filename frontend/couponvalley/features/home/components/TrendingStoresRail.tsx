@@ -56,7 +56,7 @@ export async function TrendingStoresRail({
       ) : (
         <ScrollRail ariaLabel="Trending stores" className="gap-5">
           {stores.map((s, i) => (
-            <RailItem key={s.id} store={s} priority={i < 6} index={i} />
+            <RailItem key={s.id} store={s} priority={i < 6} />
           ))}
         </ScrollRail>
       )}
@@ -73,28 +73,17 @@ async function safeFetch(limit: number): Promise<Store[]> {
   }
 }
 
-// 4-color cycling top stripe — deterministic by index.
-const STRIPE_CYCLE = [
-  "var(--cv-primary-600)",
-  "var(--cv-accent-500)",
-  "var(--cv-success)",
-  "var(--cv-primary-400)",
-];
-
 function RailItem({
   store,
   priority,
-  index,
 }: {
   store: Store;
   priority: boolean;
-  index: number;
 }) {
   const dealLabel = store.cashbackRate ?? "View coupons";
   const prev = store.previousCashbackRate;
   const initial = (store.name || "?").trim().charAt(0).toUpperCase();
   const hasLogo = Boolean(store.logoUrl);
-  const stripeColor = STRIPE_CYCLE[index % STRIPE_CYCLE.length];
 
   return (
     <Link
@@ -103,12 +92,7 @@ function RailItem({
       aria-label={`${store.name} — ${dealLabel}`}
     >
       <div className="cv-card relative h-[88px] w-[220px] overflow-hidden">
-        <span
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-1"
-          style={{ backgroundColor: stripeColor }}
-        />
-        <div className="flex h-full items-center justify-center p-4 pt-5">
+        <div className="flex h-full items-center justify-center p-4">
           {hasLogo ? (
             <Image
               src={store.logoUrl}
@@ -122,7 +106,7 @@ function RailItem({
           ) : (
             <span
               aria-hidden
-              className="grid h-14 w-14 place-items-center rounded-full cv-gradient-hero text-xl font-extrabold text-white"
+              className="grid h-14 w-14 place-items-center rounded-full bg-cv-primary-soft text-cv-primary text-xl font-extrabold"
             >
               {initial}
             </span>
@@ -130,7 +114,7 @@ function RailItem({
         </div>
       </div>
       <p className="mt-2.5 text-[13px] leading-snug">
-        <span className="font-bold text-cv-primary-700 underline decoration-1 underline-offset-2 group-hover:no-underline">
+        <span className="font-semibold text-cv-primary underline decoration-1 underline-offset-2 group-hover:no-underline">
           {dealLabel}
         </span>
         {prev && <span className="text-cv-neutral-500"> was {prev}</span>}

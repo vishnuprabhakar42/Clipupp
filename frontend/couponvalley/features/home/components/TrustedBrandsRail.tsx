@@ -98,7 +98,7 @@ function BrandCard({ store }: { store: Store }) {
       ) : (
         <span
           aria-hidden
-          className="grid h-14 w-14 place-items-center rounded-full cv-gradient-hero text-xl font-extrabold text-white"
+          className="grid h-14 w-14 place-items-center rounded-full bg-cv-primary-soft text-cv-primary text-xl font-extrabold"
         >
           {initial}
         </span>

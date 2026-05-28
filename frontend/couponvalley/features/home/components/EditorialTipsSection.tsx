@@ -52,14 +52,6 @@ export function EditorialTipsSection({
     },
   ];
 
-  // 4-color rotating gradient discs.
-  const DISCS = [
-    { bg: "cv-gradient-hero", glow: "shadow-glow-primary" },
-    { bg: "cv-gradient-warm", glow: "shadow-glow-accent" },
-    { bg: "cv-gradient-success", glow: "shadow-glow-success" },
-    { bg: "cv-gradient-cool", glow: "shadow-glow-primary" },
-  ];
-
   return (
     <section aria-labelledby="tips-heading">
       <div className="mb-9 max-w-2xl">
@@ -72,28 +64,25 @@ export function EditorialTipsSection({
         <p className="cv-body mt-3 text-cv-neutral-700">{subtitle}</p>
       </div>
       <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-        {tips.map(({ icon: Icon, number, title, body }, i) => {
-          const disc = DISCS[i % DISCS.length];
-          return (
-            <li key={title} className="cv-card flex h-full flex-col gap-4 p-6">
-              <div className="flex items-center justify-between gap-3">
-                <span
-                  className={`grid h-12 w-12 place-items-center rounded-2xl text-white font-display text-[15px] font-extrabold ${disc.bg} ${disc.glow}`}
-                  aria-hidden
-                >
-                  {number}
-                </span>
-                <Icon
-                  className="h-6 w-6 text-cv-neutral-300"
-                  aria-hidden
-                  strokeWidth={1.75}
-                />
-              </div>
-              <h3 className="cv-h3">{title}</h3>
-              <p className="cv-body text-cv-neutral-700">{body}</p>
-            </li>
-          );
-        })}
+        {tips.map(({ icon: Icon, number, title, body }) => (
+          <li key={title} className="cv-card flex h-full flex-col gap-4 p-6">
+            <div className="flex items-center justify-between gap-3">
+              <span
+                className="grid h-12 w-12 place-items-center rounded-2xl bg-cv-primary-soft text-cv-primary font-display text-[15px] font-extrabold"
+                aria-hidden
+              >
+                {number}
+              </span>
+              <Icon
+                className="h-6 w-6 text-cv-primary"
+                aria-hidden
+                strokeWidth={2}
+              />
+            </div>
+            <h3 className="cv-h3">{title}</h3>
+            <p className="cv-body text-cv-neutral-600">{body}</p>
+          </li>
+        ))}
       </ul>
     </section>
   );

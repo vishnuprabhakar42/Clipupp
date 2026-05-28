@@ -32,19 +32,17 @@ export async function AnnouncementBar() {
   const dismissedId = jar.get(ANNOUNCEMENT_COOKIE)?.value;
   if (dismissedId === resolved.id) return null;
 
-  // If the campaign declares its own theme color, honour it via an inline
-  // gradient that fades from the theme into amber. Otherwise use the brand
-  // crimson → amber gradient (cv-gradient-savings inverted).
+  // Honour an explicit campaign theme color as a solid fill; otherwise the
+  // announcement bar uses the brand primary blue. Gradients are reserved for
+  // the homepage hero + primary CTAs in the clean palette.
   const useThemeColor = !!resolved.themeColor;
   const bgStyle: React.CSSProperties = useThemeColor
-    ? {
-        background: `linear-gradient(90deg, ${resolved.themeColor!} 0%, var(--cv-accent-500) 100%)`,
-      }
+    ? { backgroundColor: resolved.themeColor! }
     : {};
 
   return (
     <div
-      className={`relative text-white ${useThemeColor ? "" : "cv-gradient-hero"}`}
+      className={`relative text-white ${useThemeColor ? "" : "bg-cv-primary"}`}
       style={bgStyle}
     >
       <div className="cv-container flex items-center justify-center gap-3 px-12 py-2.5 text-center text-sm">
