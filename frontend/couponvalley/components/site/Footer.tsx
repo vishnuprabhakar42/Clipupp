@@ -74,7 +74,7 @@ export async function Footer() {
   const categories = categoryTree?.slice(0, 10) ?? [];
 
   return (
-    <footer className="mt-20 bg-cv-neutral-900 text-gray-300" role="contentinfo">
+    <footer className="bg-cv-neutral-900 text-gray-300" role="contentinfo">
       {/* ── Main grid: brand + columns ── */}
       <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
