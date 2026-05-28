@@ -69,12 +69,12 @@ export function AuthLayout({
                 }}
                 aria-hidden
               >
-                <svg viewBox="0 0 56 56" width={22} height={22} aria-hidden>
+                <svg viewBox="0 0 32 32" width={24} height={24} aria-hidden>
                   <path
-                    d="M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36"
+                    d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth={4}
+                    strokeWidth={2.6}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
