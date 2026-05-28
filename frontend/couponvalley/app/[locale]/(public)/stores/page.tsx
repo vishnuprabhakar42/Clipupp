@@ -86,7 +86,7 @@ export default async function StoresPage({
   const listUrl = canonicalFor("/stores", locale);
 
   return (
-    <div className="container py-8 md:py-12">
+    <>
       {stores.length > 0 && (
         <JsonLd
           id="ld-itemlist"
@@ -100,12 +100,23 @@ export default async function StoresPage({
           })}
         />
       )}
-      <header className="mx-auto mb-6 max-w-3xl text-center">
-        <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
-          {t("listTitle")}
-        </h1>
-        <p className="mt-2 text-muted-foreground">{t("listSubtitle")}</p>
-      </header>
+
+      {/* List hero band — fade-down (white → primary-soft). */}
+      <section className="cv-section-bg-fade-down border-b border-cv-neutral-200">
+        <div className="cv-container py-10 lg:py-14">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="cv-eyebrow-vivid mx-auto">All brands</p>
+            <h1 className="cv-display-hero mt-3">
+              <span className="cv-text-gradient-hero">{t("listTitle")}</span>
+            </h1>
+            <p className="cv-body mt-3 text-cv-neutral-700">
+              {t("listSubtitle")}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="cv-container py-8 md:py-10">
 
       <Suspense>
         <StoreFilters categories={filterCategories} />
@@ -228,6 +239,7 @@ export default async function StoresPage({
           )}
         </>
       )}
-    </div>
+      </div>
+    </>
   );
 }

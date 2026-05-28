@@ -7,6 +7,7 @@ import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
 import { CouponFilters } from "@/features/catalog/components/CouponFilters";
+import { Flame } from "lucide-react";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { itemListSchema } from "@/lib/seo/schemas";
 import { buildMetadata } from "@/lib/seo/meta";
@@ -79,7 +80,7 @@ export default async function OffersPage({
   const listUrl = canonicalFor("/offers", locale);
 
   return (
-    <div className="container py-8 md:py-12">
+    <>
       {offers.length > 0 && (
         <JsonLd
           id="ld-itemlist"
@@ -93,41 +94,67 @@ export default async function OffersPage({
           })}
         />
       )}
-      <header className="mb-6 max-w-3xl">
-        <h1 className="cv-gradient-text text-3xl font-bold tracking-tight md:text-4xl">
-          {t("listTitle")}
-        </h1>
-        <p className="mt-2 text-muted-foreground">{t("listSubtitle")}</p>
-      </header>
 
-      <Suspense>
-        <CouponFilters categories={filterCategories} />
-      </Suspense>
-
-      {hadError ? (
-        <p className="text-sm text-destructive">{t("loadError")}</p>
-      ) : (
-        <>
-          <CouponList coupons={offers} emptyLabel={t("emptyState")} />
-
-          {nextCursor && (
-            <div className="mt-10 text-center">
-              <Link
-                href={{
-                  pathname: "/offers",
-                  query: {
-                    ...(sp.category ? { category: sp.category } : {}),
-                    cursor: nextCursor,
-                  },
-                }}
-                className="cv-btn-ghost"
-              >
-                Load more
-              </Link>
+      <section className="cv-section-bg-fade-down border-b border-cv-neutral-200">
+        <div className="cv-container py-10 lg:py-14">
+          <div className="flex items-start gap-5">
+            <span
+              className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl text-white shadow-glow-accent"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--cv-accent-700), var(--cv-accent-500))",
+              }}
+              aria-hidden
+            >
+              <Flame className="h-8 w-8" strokeWidth={2.25} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="cv-eyebrow-vivid cv-eyebrow-vivid--accent">
+                Hot Deals
+              </p>
+              <h1 className="cv-display-hero mt-2">
+                <span className="cv-text-gradient-savings">
+                  {t("listTitle")}
+                </span>
+              </h1>
+              <p className="cv-body mt-3 max-w-2xl text-cv-neutral-700">
+                {t("listSubtitle")}
+              </p>
             </div>
-          )}
-        </>
-      )}
-    </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="cv-container py-10">
+        <Suspense>
+          <CouponFilters categories={filterCategories} />
+        </Suspense>
+
+        {hadError ? (
+          <p className="text-sm text-cv-danger-strong">{t("loadError")}</p>
+        ) : (
+          <>
+            <CouponList coupons={offers} emptyLabel={t("emptyState")} />
+
+            {nextCursor && (
+              <div className="mt-10 text-center">
+                <Link
+                  href={{
+                    pathname: "/offers",
+                    query: {
+                      ...(sp.category ? { category: sp.category } : {}),
+                      cursor: nextCursor,
+                    },
+                  }}
+                  className="cv-btn-ghost"
+                >
+                  Load more
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }
