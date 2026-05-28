@@ -111,7 +111,7 @@ function RailItem({
         </div>
       </div>
       <p className="mt-2.5 text-[13px] leading-snug">
-        <span className="font-semibold text-cv-primary underline decoration-1 underline-offset-2 group-hover:no-underline">
+        <span className="font-semibold text-cv-primary decoration-1 underline-offset-2 group-hover:underline">
           {dealLabel}
         </span>
         {prev && <span className="text-cv-neutral-500"> was {prev}</span>}
