@@ -57,30 +57,20 @@ export function AuthLayout({
           <div className="text-center">
             <Link
               href="/"
-              className="inline-flex items-center gap-2.5 font-display"
+              className="inline-flex items-center gap-2 text-cv-primary-700 font-display"
               aria-label="ClipUpp home"
             >
-              <span
-                className="grid h-10 w-10 place-items-center rounded-md text-white"
-                style={{
-                  background:
-                    "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
-                  boxShadow: "var(--cv-shadow-glow-primary)",
-                }}
-                aria-hidden
-              >
-                <svg viewBox="0 0 32 32" width={24} height={24} aria-hidden>
-                  <path
-                    d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2.6}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              <span className="cv-text-gradient-hero text-xl font-extrabold tracking-tight">
+              <svg viewBox="0 0 32 32" width={36} height={36} aria-hidden>
+                <path
+                  d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.6}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="cv-text-gradient-hero text-2xl font-extrabold tracking-tight">
                 clipupp
               </span>
             </Link>
