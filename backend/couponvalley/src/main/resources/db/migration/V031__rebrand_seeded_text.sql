@@ -71,10 +71,28 @@ WHERE title            LIKE '%CouponValley%'
    OR meta_title       LIKE '%CouponValley%'
    OR meta_description LIKE '%CouponValley%';
 
+-- Slug rename is unique-constrained. The R__seed_dev_data.sql repeatable
+-- migration re-ran after the rebrand edit and inserted the ClipUpp-slugged
+-- rows (e.g. 'how-cashback-works-clipupp'); the original CouponValley-slugged
+-- rows from the pre-rebrand seed are still in the table. Renaming the old
+-- slug → new would collide with the unique constraint, so drop the orphan
+-- old rows first when their rebranded target already exists.
+DELETE FROM article a1
+WHERE a1.slug LIKE '%couponvalley%'
+  AND EXISTS (
+    SELECT 1 FROM article a2
+    WHERE a2.slug = replace(a1.slug, 'couponvalley', 'clipupp')
+  );
+
+-- Now safe to rename any remaining couponvalley-slugged articles.
 UPDATE article
-SET slug    = replace(slug,    'couponvalley', 'clipupp'),
-    body_md = replace(body_md, 'couponvalley', 'clipupp')
-WHERE slug LIKE '%couponvalley%' OR body_md LIKE '%couponvalley%';
+SET slug = replace(slug, 'couponvalley', 'clipupp')
+WHERE slug LIKE '%couponvalley%';
+
+-- body_md is plain text — no unique constraint, safe to rewrite separately.
+UPDATE article
+SET body_md = replace(body_md, 'couponvalley', 'clipupp')
+WHERE body_md LIKE '%couponvalley%';
 
 -- ---------------------------------------------------------------------------
 -- 5. campaign — name / hero_title / hero_subtitle / cta_label / cta_url
