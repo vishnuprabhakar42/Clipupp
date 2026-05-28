@@ -6,7 +6,6 @@ import { isLocale } from "@/lib/i18n/config";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { LanguageProvider } from "@/components/language-provider";
-import { ReactQueryProvider } from "@/components/providers/react-query-provider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { GoogleOAuthProvider } from "@/components/providers/GoogleOAuthProvider";
 import { getServerSession } from "@/lib/auth/server";
@@ -131,8 +130,7 @@ export default async function LocaleLayout({
       <body className="font-sans">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <LanguageProvider>
-            <ReactQueryProvider>
-              <GoogleOAuthProvider>
+            <GoogleOAuthProvider>
               <AuthProvider initialUser={session}>
                 <a
                   href="#main"
@@ -144,9 +142,8 @@ export default async function LocaleLayout({
                 {children}
                 <DeferredClientWidgets />
               </AuthProvider>
-              </GoogleOAuthProvider>
-              <Toaster />
-            </ReactQueryProvider>
+            </GoogleOAuthProvider>
+            <Toaster />
           </LanguageProvider>
         </NextIntlClientProvider>
         <JsonLd id="ld-organization" data={organizationSchema(SITE_URL)} />

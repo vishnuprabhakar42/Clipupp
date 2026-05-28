@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { offersApi } from "@/lib/api/coupons";
+import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
 import { CouponList } from "@/features/catalog/components/CouponList";
 import { CouponFilters } from "@/features/catalog/components/CouponFilters";
@@ -48,17 +49,32 @@ export default async function OffersPage({
   let nextCursor: string | null = null;
   let hadError = false;
 
-  try {
-    const page = await offersApi.list({
-      category: sp.category,
-      cursor: sp.cursor,
-      limit: 24,
-    });
-    offers = page.data;
-    nextCursor = page.page.nextCursor;
-  } catch (err) {
-    hadError = !(isApiError(err) && err.status === 404);
+  // Parallel-fetch offers + categories so the filter dropdown can render
+  // without a client-side React Query call.
+  const [offersPageResult, categoryTree] = await Promise.all([
+    (async () => {
+      try {
+        return await offersApi.list({
+          category: sp.category,
+          cursor: sp.cursor,
+          limit: 24,
+        });
+      } catch (err) {
+        if (!(isApiError(err) && err.status === 404)) hadError = true;
+        return null;
+      }
+    })(),
+    categoriesApi.tree().catch(() => []),
+  ]);
+  if (offersPageResult) {
+    offers = offersPageResult.data;
+    nextCursor = offersPageResult.page.nextCursor;
   }
+  const filterCategories = (categoryTree ?? []).map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    title: c.title,
+  }));
 
   const listUrl = canonicalFor("/offers", locale);
 
@@ -85,7 +101,7 @@ export default async function OffersPage({
       </header>
 
       <Suspense>
-        <CouponFilters />
+        <CouponFilters categories={filterCategories} />
       </Suspense>
 
       {hadError ? (
