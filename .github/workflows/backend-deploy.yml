@@ -45,6 +45,12 @@ concurrency:
   group: backend-deploy-${{ github.ref }}
   cancel-in-progress: false
 
+# Workflow-level permissions — explicit so the job-level grants below are
+# additive even if the repo's default-token policy is restrictive.
+permissions:
+  contents: read
+  packages: write
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/clipupp-backend
@@ -105,9 +111,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     timeout-minutes: 10
+    # Skip cleanly when Railway secrets aren't configured yet — the image is
+    # still in GHCR and Railway can pull it on its own polling cycle. Once
+    # RAILWAY_TOKEN + RAILWAY_SERVICE are set, this job runs automatically.
+    if: ${{ vars.RAILWAY_ENABLED == 'true' }}
     environment:
       name: production
-      url: https://api.clipupp.com
     steps:
       - name: Install Railway CLI
         run: |
