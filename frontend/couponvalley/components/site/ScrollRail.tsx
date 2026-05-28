@@ -93,11 +93,10 @@ export function ScrollRail({
     el.scrollTo({ left: p * el.clientWidth, behavior: "smooth" });
   }
 
-  // Mirror the PromoBannersCarousel arrow buttons exactly so the two
-  // affordances read as one consistent control vocabulary across the page.
-  // The buttons sit centred on the rail's left/right edge (50% translate,
-  // half-in / half-out) rather than just nudged outside — that's what makes
-  // the banner arrows pop and what fixes the "not visible" complaint here.
+  // Buttons strip the white pill / border / shadow — they're just the
+  // chevron icon now. The edge fade behind them does the visual lifting,
+  // and the chevron itself is bumped to a larger stroke so it reads clearly
+  // without chrome.
   const useCustomTop = typeof arrowAnchorTop === "number";
   const arrowPos = {
     left: `absolute left-0 -translate-x-1/2 -translate-y-1/2 ${useCustomTop ? "" : "top-1/2"}`,
@@ -105,7 +104,15 @@ export function ScrollRail({
   };
   const arrowTopStyle = useCustomTop ? { top: arrowAnchorTop } : undefined;
   const buttonClass =
-    "z-dropdown hidden h-9 w-9 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-700 shadow-card transition-colors hover:text-cv-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary disabled:cursor-not-allowed disabled:opacity-0 md:grid";
+    "z-dropdown hidden h-9 w-9 place-items-center rounded-full bg-transparent text-cv-neutral-700 transition-colors hover:text-cv-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary disabled:cursor-not-allowed disabled:opacity-0 md:grid";
+
+  // Edge fade is computed dynamically: only the side(s) with scrollable
+  // content get faded. At the very start of the rail (canLeft false) the
+  // left edge stays solid so the first card isn't ghosted; same on the
+  // right when there's nothing further to scroll to.
+  const maskImage = edgeFade
+    ? `linear-gradient(to right, ${canLeft ? "transparent 0%, black 4%" : "black 0%, black 0%"}, ${canRight ? "black 96%, transparent 100%" : "black 100%, black 100%"})`
+    : undefined;
 
   return (
     <div>
@@ -118,7 +125,7 @@ export function ScrollRail({
           className={`${arrowPos.left} ${buttonClass}`}
           style={arrowTopStyle}
         >
-          <ChevronLeft className="h-4 w-4" aria-hidden strokeWidth={2.5} />
+          <ChevronLeft className="h-6 w-6" aria-hidden strokeWidth={2.5} />
         </button>
 
         <div
@@ -126,17 +133,8 @@ export function ScrollRail({
           aria-label={ariaLabel}
           className={`cv-no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-2 ${className}`}
           style={
-            edgeFade
-              ? {
-                  // Soft fade to transparent at the outermost 4% of the rail
-                  // on both sides. Mask is on this inner div only, so the
-                  // absolutely-positioned arrow buttons (children of the
-                  // relative parent) keep full opacity.
-                  maskImage:
-                    "linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)",
-                  WebkitMaskImage:
-                    "linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)",
-                }
+            maskImage
+              ? { maskImage, WebkitMaskImage: maskImage }
               : undefined
           }
         >
@@ -151,7 +149,7 @@ export function ScrollRail({
           className={`${arrowPos.right} ${buttonClass}`}
           style={arrowTopStyle}
         >
-          <ChevronRight className="h-4 w-4" aria-hidden strokeWidth={2.5} />
+          <ChevronRight className="h-6 w-6" aria-hidden strokeWidth={2.5} />
         </button>
       </div>
 
