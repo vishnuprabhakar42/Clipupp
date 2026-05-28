@@ -3,6 +3,17 @@ spring:
     properties:
       hibernate:
         format_sql: false
+        generate_statistics: false
+
+# Hide Swagger UI + the raw OpenAPI document in production. Defence-in-depth
+# on top of the SecurityConfig auth requirement: when both flags are false,
+# springdoc skips bean registration entirely so /v3/api-docs/** + /swagger-ui*
+# return 404 even before SecurityConfig sees the request.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
 
 logging:
   level:
@@ -15,3 +26,17 @@ server:
   error:
     include-message: never
     include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
