@@ -39,7 +39,7 @@ import {
   Watch,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Link, useRouter } from "@/lib/i18n/navigation";
+import { Link, useRouter, usePathname } from "@/lib/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -133,6 +133,13 @@ export function HeaderClient({
   categories: NavCategory[];
 }) {
   const auth = useAuth();
+  const pathname = usePathname();
+  // The category icon strip is homepage chrome — it's a wayfinding shortcut
+  // for first-time visitors landing on /, not a global nav element. On every
+  // other page it's just noise that competes with the page's own headings
+  // (store hero, category hero, coupon hero, etc.).
+  // next-intl's usePathname strips the [locale] segment, so home is just "/".
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -151,6 +158,10 @@ export function HeaderClient({
   const stripCategories = categories;
 
   useEffect(() => {
+    // Effect re-attaches when the strip mounts/unmounts (navigating into/out
+    // of the homepage), so `isHome` belongs in the deps even though it
+    // doesn't appear in the body.
+    if (!isHome) return;
     const el = stripRef.current;
     if (!el) return;
     const update = () => {
@@ -165,7 +176,7 @@ export function HeaderClient({
       el.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [stripCategories.length]);
+  }, [stripCategories.length, isHome]);
 
   function scrollStrip(dir: "left" | "right") {
     stripRef.current?.scrollBy({ left: dir === "right" ? 260 : -260, behavior: "smooth" });
@@ -344,59 +355,65 @@ export function HeaderClient({
       </div>
     </header>
 
-    <div className="hidden border-b bg-background lg:block">
-      <div className="container relative px-2">
-        <div
-          ref={stripRef}
-          className="cv-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"
-        >
-          <CategoryChip
-            href="/offers"
-            label="Hot Deals"
-            icon={Flame}
-            tone="accent"
-          />
-          <CategoryChip
-            href="/coupons"
-            label="Coupons"
-            icon={Percent}
-            tone="success"
-          />
-
-          {stripCategories.map((cat) => (
+    {/* Category icon strip — homepage-only wayfinding for first-time visitors.
+        On detail pages (store, coupon, category) the page's own hero header
+        already orients the user, so this strip would just duplicate intent
+        and steal vertical space. Hidden on every route except "/". */}
+    {isHome && (
+      <div className="hidden border-b bg-background lg:block">
+        <div className="container relative px-2">
+          <div
+            ref={stripRef}
+            className="cv-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"
+          >
             <CategoryChip
-              key={cat.id}
-              href={`/categories/${cat.slug}`}
-              label={toSingleWord(cat.title)}
-              icon={getCatIcon(cat.slug, cat.title)}
-              tone="primary"
+              href="/offers"
+              label="Hot Deals"
+              icon={Flame}
+              tone="accent"
             />
-          ))}
+            <CategoryChip
+              href="/coupons"
+              label="Coupons"
+              icon={Percent}
+              tone="success"
+            />
+
+            {stripCategories.map((cat) => (
+              <CategoryChip
+                key={cat.id}
+                href={`/categories/${cat.slug}`}
+                label={toSingleWord(cat.title)}
+                icon={getCatIcon(cat.slug, cat.title)}
+                tone="primary"
+              />
+            ))}
+          </div>
+
+          {canScrollLeft && (
+            <button
+              type="button"
+              aria-label="Scroll categories left"
+              onClick={() => scrollStrip("left")}
+              className="absolute left-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          )}
+
+          {canScrollRight && (
+            <button
+              type="button"
+              aria-label="Scroll categories right"
+              onClick={() => scrollStrip("right")}
+              className="absolute right-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          )}
         </div>
-
-        {canScrollLeft && (
-          <button
-            type="button"
-            aria-label="Scroll categories left"
-            onClick={() => scrollStrip("left")}
-            className="absolute left-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-        )}
-
-        {canScrollRight && (
-          <button
-            type="button"
-            aria-label="Scroll categories right"
-            onClick={() => scrollStrip("right")}
-            className="absolute right-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        )}
       </div>
-    </div>
+    )}
     </>
   );
 }
