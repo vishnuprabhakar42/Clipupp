@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { storesApi } from "@/lib/api/stores";
+import { categoriesApi } from "@/lib/api/categories";
 import { isApiError } from "@/lib/api/errors";
 import { StoreFilters } from "@/features/catalog/components/StoreFilters";
 import { AlphabetJumpBar } from "@/features/catalog/components/AlphabetJumpBar";
@@ -54,18 +55,33 @@ export default async function StoresPage({
   let nextCursor: string | null = null;
   let hadError = false;
 
-  try {
-    const page = await storesApi.list({
-      country: sp.country,
-      category: sp.category,
-      cursor: sp.cursor,
-      limit: 24,
-    });
-    stores = page.data;
-    nextCursor = page.page.nextCursor;
-  } catch (err) {
-    hadError = !(isApiError(err) && err.status === 404);
+  // Parallel-fetch the categories tree alongside the stores list so the
+  // filter dropdown gets its options without a client-side React Query call.
+  const [storesPageResult, categoryTree] = await Promise.all([
+    (async () => {
+      try {
+        return await storesApi.list({
+          country: sp.country,
+          category: sp.category,
+          cursor: sp.cursor,
+          limit: 24,
+        });
+      } catch (err) {
+        if (!(isApiError(err) && err.status === 404)) hadError = true;
+        return null;
+      }
+    })(),
+    categoriesApi.tree().catch(() => []),
+  ]);
+  if (storesPageResult) {
+    stores = storesPageResult.data;
+    nextCursor = storesPageResult.page.nextCursor;
   }
+  const filterCategories = (categoryTree ?? []).map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    title: c.title,
+  }));
 
   const listUrl = canonicalFor("/stores", locale);
 
@@ -92,7 +108,7 @@ export default async function StoresPage({
       </header>
 
       <Suspense>
-        <StoreFilters />
+        <StoreFilters categories={filterCategories} />
       </Suspense>
 
       {hadError ? (

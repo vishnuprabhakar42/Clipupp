@@ -2,10 +2,9 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Filter, Tag, Truck, Store, X } from "lucide-react";
-import { categoriesApi } from "@/lib/api/categories";
 import type { CouponType } from "@/lib/api/types";
+import type { CategoryOption } from "./StoreFilters";
 
 const TYPE_OPTIONS: Array<{
   value: CouponType;
@@ -19,14 +18,21 @@ const TYPE_OPTIONS: Array<{
 ];
 
 /**
- * URL-state filters for /coupons. All chips mutate the query string and
- * trigger a soft navigation (router.push without scroll) so the server-rendered
- * list refreshes without a full page reload. Active state is read from the
- * URL — no internal state drift.
+ * URL-state filters for /coupons and /offers. All chips mutate the query
+ * string and trigger a soft navigation (router.push without scroll) so the
+ * server-rendered list refreshes without a full page reload. Active state
+ * is read from the URL — no internal state drift.
+ *
+ * Category options now come from the server-fetched parent (a single
+ * `tree()` call in the page) instead of useQuery here — this kills the
+ * last React Query dependency on a public route so the provider can
+ * move out of the root layout.
  */
 export function CouponFilters({
+  categories = [],
   showCategory = true,
 }: {
+  categories?: CategoryOption[];
   showCategory?: boolean;
 }) {
   const router = useRouter();
@@ -36,13 +42,6 @@ export function CouponFilters({
 
   const selectedTypes = new Set(search.getAll("types"));
   const activeCategory = search.get("category") ?? "";
-
-  const categories = useQuery({
-    queryKey: ["nav", "categories"],
-    queryFn: () => categoriesApi.tree(),
-    staleTime: 10 * 60_000,
-    enabled: showCategory,
-  });
 
   function commit(next: URLSearchParams) {
     next.delete("cursor"); // any filter change resets pagination
@@ -106,7 +105,7 @@ export function CouponFilters({
           );
         })}
 
-        {showCategory && (
+        {showCategory && categories.length > 0 && (
           <select
             value={activeCategory}
             onChange={(e) => setCategory(e.target.value)}
@@ -114,7 +113,7 @@ export function CouponFilters({
             className="ml-1 rounded-full border bg-background px-3 py-1 text-xs"
           >
             <option value="">All categories</option>
-            {categories.data?.map((c) => (
+            {categories.map((c) => (
               <option key={c.id} value={c.slug}>
                 {c.title}
               </option>

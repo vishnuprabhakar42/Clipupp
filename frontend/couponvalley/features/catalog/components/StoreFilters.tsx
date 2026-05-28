@@ -2,9 +2,7 @@
 
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Filter, Globe, X } from "lucide-react";
-import { categoriesApi } from "@/lib/api/categories";
 
 const COUNTRY_OPTIONS = [
   { value: "", label: "All regions" },
@@ -17,7 +15,19 @@ const COUNTRY_OPTIONS = [
   { value: "SG", label: "Singapore" },
 ];
 
-export function StoreFilters() {
+export type CategoryOption = { id: string; slug: string; title: string };
+
+/**
+ * URL-state filters for /stores. Reads + writes country/category via
+ * searchParams; clears the cursor on any filter change so pagination
+ * resets cleanly.
+ *
+ * Category options now come from the server-fetched parent (a single
+ * `tree()` call in the page) instead of useQuery here — this kills the
+ * last React Query dependency on a public route so the provider can
+ * move out of the root layout.
+ */
+export function StoreFilters({ categories }: { categories: CategoryOption[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -25,12 +35,6 @@ export function StoreFilters() {
 
   const country = search.get("country") ?? "";
   const category = search.get("category") ?? "";
-
-  const categories = useQuery({
-    queryKey: ["nav", "categories"],
-    queryFn: () => categoriesApi.tree(),
-    staleTime: 10 * 60_000,
-  });
 
   function commit(next: URLSearchParams) {
     next.delete("cursor");
@@ -92,7 +96,7 @@ export function StoreFilters() {
           className="rounded-full border bg-background px-3 py-1 text-xs"
         >
           <option value="">All categories</option>
-          {categories.data?.map((c) => (
+          {categories.map((c) => (
             <option key={c.id} value={c.slug}>
               {c.title}
             </option>
