@@ -1,0 +1,45 @@
+# Build outputs + caches
+build/
+.gradle/
+out/
+target/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs + tmp
+*.log
+logs/
+tmp/
+
+# Local env / secrets — never bake into the image
+.env
+.env.local
+.env.development
+.env.production
+*.local.yml
+*.local.yaml
+
+# Tests + benchmarks (we run `bootJar -x test` already, but excluding from
+# the build context shrinks transfer time)
+src/test/
+
+# Git metadata
+.git/
+.gitignore
+.gitattributes
+
+# Misc
+README.md
+*.md
+HELP.md

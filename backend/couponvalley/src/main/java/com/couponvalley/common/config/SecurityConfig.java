@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -38,11 +40,14 @@ public class SecurityConfig {
 
     private final String allowedOriginsCsv;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final boolean isProd;
 
     public SecurityConfig(@Value("${couponvalley.cors.allowed-origins}") String allowedOriginsCsv,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          Environment env) {
         this.allowedOriginsCsv = allowedOriginsCsv;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.isProd = env.acceptsProfiles(Profiles.of("prod"));
     }
 
     @Bean
@@ -114,10 +119,15 @@ public class SecurityConfig {
                         "/api/v1/newsletter/unsubscribe").permitAll()
                 // Outbound redirect + affiliate postbacks
                 .requestMatchers("/r/**", "/postback/**").permitAll()
-                // Health + docs
+                // Health + docs. Swagger UI + raw OpenAPI doc are PUBLIC only on
+                // dev; in prod they require an authenticated request (defence-in-
+                // depth on top of `springdoc.{api-docs,swagger-ui}.enabled=false`
+                // in application-prod.yml).
                 .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
-                .requestMatchers("/api/v1/ping").permitAll()
+                .requestMatchers(isProd
+                        ? new String[] { "/api/v1/ping" }
+                        : new String[] { "/api/v1/ping", "/v3/api-docs/**",
+                                "/swagger-ui.html", "/swagger-ui/**" }).permitAll()
                 // SEO endpoints
                 .requestMatchers("/sitemap.xml", "/sitemaps/**", "/robots.txt").permitAll()
                 // Everything else requires auth
