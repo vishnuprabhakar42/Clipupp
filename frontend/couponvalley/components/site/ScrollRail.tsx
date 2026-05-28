@@ -24,6 +24,7 @@ export function ScrollRail({
   showDots = false,
   className = "",
   arrowAnchorTop,
+  edgeFade = false,
 }: {
   children: ReactNode;
   ariaLabel?: string;
@@ -36,6 +37,10 @@ export function ScrollRail({
    *  tile + a deal-label paragraph below) so the arrow centres on the tile,
    *  not the whole item. Defaults to 50% (rail centre). */
   arrowAnchorTop?: number;
+  /** When true, applies a CSS mask-image to the SCROLLING div only (not the
+   *  parent), so the left + right edges of the card list fade into the
+   *  background. The arrow buttons sit on the parent and are unaffected. */
+  edgeFade?: boolean;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -120,6 +125,20 @@ export function ScrollRail({
           ref={railRef}
           aria-label={ariaLabel}
           className={`cv-no-scrollbar flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-2 ${className}`}
+          style={
+            edgeFade
+              ? {
+                  // Soft fade to transparent at the outermost 4% of the rail
+                  // on both sides. Mask is on this inner div only, so the
+                  // absolutely-positioned arrow buttons (children of the
+                  // relative parent) keep full opacity.
+                  maskImage:
+                    "linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)",
+                  WebkitMaskImage:
+                    "linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)",
+                }
+              : undefined
+          }
         >
           {children}
         </div>

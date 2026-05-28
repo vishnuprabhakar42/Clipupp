@@ -37,11 +37,9 @@ export async function TrustedBrandsRail({
         <h2 id="trusted-brands-heading" className="cv-eyebrow-vivid">{heading}</h2>
       </div>
 
-      {/* The earlier version of this rail wrapped ScrollRail in a CSS
-          mask-image that faded the left + right edges to transparent.
-          That mask also faded the scroll-arrow buttons to invisible
-          at the very position where they're meant to appear. Removed —
-          the arrows are now the edge affordance. */}
+      {/* Edge-fade is applied via ScrollRail's `edgeFade` prop, which masks
+          only the inner scrolling div (not the parent), so the arrow
+          buttons on the edges stay fully visible. */}
       <div className="mt-6">
         {stores.length === 0 ? (
           <p className="cv-meta">No brands yet.</p>
@@ -50,6 +48,7 @@ export async function TrustedBrandsRail({
             ariaLabel="Trusted brands"
             variant="arrow"
             showDots
+            edgeFade
             className="gap-3"
           >
             {stores.map((s) => (
