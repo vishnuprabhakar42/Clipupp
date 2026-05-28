@@ -37,15 +37,12 @@ export async function TrustedBrandsRail({
         <h2 id="trusted-brands-heading" className="cv-eyebrow-vivid">{heading}</h2>
       </div>
 
-      <div
-        className="mt-6"
-        style={{
-          maskImage:
-            "linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%)",
-          WebkitMaskImage:
-            "linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%)",
-        }}
-      >
+      {/* The earlier version of this rail wrapped ScrollRail in a CSS
+          mask-image that faded the left + right edges to transparent.
+          That mask also faded the scroll-arrow buttons to invisible
+          at the very position where they're meant to appear. Removed —
+          the arrows are now the edge affordance. */}
+      <div className="mt-6">
         {stores.length === 0 ? (
           <p className="cv-meta">No brands yet.</p>
         ) : (
