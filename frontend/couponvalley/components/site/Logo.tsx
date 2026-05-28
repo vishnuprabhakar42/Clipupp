@@ -22,7 +22,8 @@ import { Link } from "@/lib/i18n/navigation";
  */
 
 const PAPERCLIP_D =
-  "M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36";
+  "M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19";
+const PAPERCLIP_VIEWBOX = "0 0 32 32";
 
 export function LogoMark({
   size = 40,
@@ -44,9 +45,9 @@ export function LogoMark({
       aria-hidden
     >
       <svg
-        viewBox="0 0 56 56"
-        width={Math.round(size * 0.6)}
-        height={Math.round(size * 0.6)}
+        viewBox={PAPERCLIP_VIEWBOX}
+        width={Math.round(size * 0.65)}
+        height={Math.round(size * 0.65)}
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
       >
@@ -54,7 +55,7 @@ export function LogoMark({
           d={PAPERCLIP_D}
           fill="none"
           stroke="currentColor"
-          strokeWidth={4}
+          strokeWidth={2.6}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -91,19 +92,21 @@ export function LogoWordmark({
       aria-label="ClipUpp"
       className={className}
     >
-      {/* Paperclip mark */}
+      {/* Paperclip mark — re-anchored into the 220×56 viewBox.
+          Path uses the same shape as PAPERCLIP_D but scaled+positioned
+          for the wordmark canvas (paperclip occupies x=14-32, y=10-42). */}
       <path
-        d={PAPERCLIP_D}
+        d="M14 10 L14 42 A8 8 0 0 0 32 42 L32 18 A6 6 0 0 0 19 18 L19 36"
         fill="none"
         stroke={monochrome ? "currentColor" : "var(--cv-primary-600)"}
-        strokeWidth={3.5}
+        strokeWidth={4}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Wordmark — Manrope-style. Drawn as paths is overkill; using
-          `<text>` keeps the SVG small and the font swap free. */}
+      {/* Wordmark — Manrope. Using `<text>` keeps the SVG small and the
+          font swap free at runtime. */}
       <text
-        x={58}
+        x={52}
         y={40}
         fontFamily="var(--font-display, 'Manrope'), 'Manrope', 'Inter', system-ui, sans-serif"
         fontWeight={800}
