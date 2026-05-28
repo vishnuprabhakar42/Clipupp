@@ -51,7 +51,12 @@ export async function TrendingStoresRail({
       {stores.length === 0 ? (
         <p className="cv-meta">No stores yet.</p>
       ) : (
-        <ScrollRail ariaLabel="Trending stores" className="gap-5" arrowAnchorTop={44}>
+        <ScrollRail
+          ariaLabel="Trending stores"
+          className="gap-5"
+          arrowAnchorTop={44}
+          edgeFade
+        >
           {stores.map((s, i) => (
             <RailItem key={s.id} store={s} priority={i < 6} />
           ))}
