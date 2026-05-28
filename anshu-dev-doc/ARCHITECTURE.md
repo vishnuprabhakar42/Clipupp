@@ -1,4 +1,4 @@
-# CouponValley — Architecture Document
+# Clipupp — Architecture Document
 
 **Document Version:** 1.0
 **Date:** 2026-05-09
@@ -24,7 +24,7 @@ Read top-to-bottom on first pass. It's organized so each section answers its own
 11. **Technical SEO & Performance** — first-class SEO design (a Phase 1 priority)
 12. **Development Task Breakdown** — the ordered Phase 1 sprint plan
 
-This doc supersedes `frontend/couponvalley/dev-docs/02-technical-analysis.md` and `03-gaps-and-roadmap.md` for forward-looking decisions; those documents remain as a record of what existed before this redesign.
+This doc supersedes `frontend/clipupp/dev-docs/02-technical-analysis.md` and `03-gaps-and-roadmap.md` for forward-looking decisions; those documents remain as a record of what existed before this redesign.
 
 ---
 
@@ -32,7 +32,7 @@ This doc supersedes `frontend/couponvalley/dev-docs/02-technical-analysis.md` an
 
 ### 1.1 Vision
 
-CouponValley is a savings ecosystem: discount codes, cashback, deals, and merchant promotions across thousands of online and in-store retailers, organized into a fast, multilingual, SEO-strong website. Over time it grows into a browser extension, merchant self-serve portal, community-driven coupon submissions, and personalized recommendations.
+Clipupp is a savings ecosystem: discount codes, cashback, deals, and merchant promotions across thousands of online and in-store retailers, organized into a fast, multilingual, SEO-strong website. Over time it grows into a browser extension, merchant self-serve portal, community-driven coupon submissions, and personalized recommendations.
 
 ### 1.2 Phase 1 goal (this document)
 
@@ -208,12 +208,12 @@ These tools are excellent and will be added — but only when traffic justifies 
 
 ### 2.5 Repository topology
 
-CouponValley remains a **polyglot mono-folder** (not a true monorepo with shared tooling):
+Clipupp remains a **polyglot mono-folder** (not a true monorepo with shared tooling):
 
 ```
-CouponValley/
-├── frontend/couponvalley/    # Next.js 15 app (its own git repo, package.json)
-├── backend/couponvalley/     # Spring Boot app (Gradle)
+Clipupp/
+├── frontend/clipupp/    # Next.js 15 app (its own git repo, package.json)
+├── backend/clipupp/     # Spring Boot app (Gradle)
 ├── anshu-dev-doc/            # Architecture & decision docs (this file lives here)
 └── CLAUDE.md                 # Root operating notes (already exists)
 ```
@@ -227,7 +227,7 @@ A true monorepo (Nx, Turborepo) is overkill at this size. The OpenAPI spec from 
 ### 3.1 Folder structure (post-cleanup)
 
 ```
-frontend/couponvalley/
+frontend/clipupp/
 ├── app/
 │   ├── layout.tsx                      # Root: ThemeProvider → IntlProvider → ReactQueryProvider
 │   ├── globals.css
@@ -406,7 +406,7 @@ ThemeProvider                ← next-themes
 ```
 Login flow:
 1. User submits sign-in form to POST /api/v1/auth/login
-2. Backend sets HttpOnly Secure SameSite=Strict cookie "cv_rt" at /api/v1/auth/
+2. Backend sets HttpOnly Secure SameSite=Strict cookie "clipupp_rt" at /api/v1/auth/
 3. Backend returns { accessToken, user } in body
 4. Frontend stores accessToken in module-scoped variable (memory only)
 5. React Query invalidates 'auth/me' → refetch → user UI updates
@@ -460,8 +460,8 @@ lib/prisma.ts
 ### 4.1 Package layout
 
 ```
-com.couponvalley
-├── CouponvalleyApplication.java
+com.clipupp
+├── ClipuppApplication.java
 ├── common/                             # Cross-cutting
 │   ├── config/                         # SecurityConfig, JpaConfig, OpenApiConfig, CacheConfig, AsyncConfig
 │   ├── error/                          # GlobalExceptionHandler (RFC 7807), error codes
@@ -634,7 +634,7 @@ Phase 2 will add a state machine (PENDING → APPROVED → REJECTED → REVERSED
 
 #### i18n
 - Internal `MessageSourceConfig` loads `i18n/messages_<locale>.properties`
-- Locale resolver: header `Accept-Language` → cookie `cv_locale` → user preference (if authed) → default `en`
+- Locale resolver: header `Accept-Language` → cookie `clipupp_locale` → user preference (if authed) → default `en`
 
 #### seo
 - `SitemapGenerator` runs `@Scheduled(cron = "0 0 3 * * *")` (3am daily):
@@ -664,7 +664,7 @@ Domain events are published via Spring `ApplicationEventPublisher` in Phase 1 �
 
 ```json
 {
-  "type": "https://docs.couponvalley.com/errors/coupon-expired",
+  "type": "https://docs.clipupp.com/errors/coupon-expired",
   "title": "Coupon expired",
   "status": 410,
   "detail": "This coupon expired on 2026-04-30",
@@ -1306,7 +1306,7 @@ Content-Type: `application/problem+json`. Always returned for 4xx/5xx.
 
 ```json
 {
-  "type": "https://docs.couponvalley.com/errors/validation",
+  "type": "https://docs.clipupp.com/errors/validation",
   "title": "Validation failed",
   "status": 422,
   "detail": "One or more fields are invalid",
@@ -1397,7 +1397,7 @@ GET /api/v1/search
 - HS256 in Phase 1 (single-instance, single secret). RS256 once we have ≥2 instances and a JWKS endpoint.
 - TTL: 15 minutes
 - Claims: `sub` (userId), `roles`, `locale`, `iat`, `exp`, `jti` (UUID, used for blacklist if ever needed)
-- Validation: signature, exp, iss (`couponvalley`), aud (`cv-web`)
+- Validation: signature, exp, iss (`clipupp`), aud (`clipupp-web`)
 
 ### 7.2 Refresh tokens
 
@@ -1405,7 +1405,7 @@ GET /api/v1/search
 - TTL: 30 days
 - **Rotated on every use:** new token issued, old marked `used_at`. The replacement chain is tracked via `parent_id`.
 - **Replay detection:** if a token marked `used_at` is presented again, all tokens in that user's chain are revoked + alert logged. Real-world attack signature.
-- **Cookie:** `Set-Cookie: cv_rt=<token>; Path=/api/v1/auth; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`
+- **Cookie:** `Set-Cookie: clipupp_rt=<token>; Path=/api/v1/auth; HttpOnly; Secure; SameSite=Strict; Max-Age=2592000`
 - Issued only by `/auth/login`, `/auth/refresh`, `/auth/oauth/google/callback`. Cleared by `/auth/logout`.
 
 ### 7.3 Roles
@@ -1482,8 +1482,8 @@ CSP is tighter on `/admin` (no inline scripts, restricted img sources).
 
 - Most endpoints use Bearer Authorization → no CSRF surface
 - The only cookie-auth endpoints are `/auth/refresh` and `/auth/logout`
-- Both require **double-submit cookie + custom header** (`X-CSRF-Token` matches a non-HttpOnly companion cookie `cv_csrf`)
-- Frontend reads `cv_csrf`, sends it back as header
+- Both require **double-submit cookie + custom header** (`X-CSRF-Token` matches a non-HttpOnly companion cookie `clipupp_csrf`)
+- Frontend reads `clipupp_csrf`, sends it back as header
 
 ### 7.12 PII at rest
 
@@ -1768,11 +1768,11 @@ Templates:
 
 | Page | Title pattern | Description pattern |
 |---|---|---|
-| Homepage | `CouponValley — Coupon Codes, Cashback & Deals from 1000+ Stores` | `Save with verified coupon codes, cashback, and exclusive deals from top brands. Updated daily.` |
+| Homepage | `Clipupp — Coupon Codes, Cashback & Deals from 1000+ Stores` | `Save with verified coupon codes, cashback, and exclusive deals from top brands. Updated daily.` |
 | Store | `{Store.name} Coupons — {N} Codes & Deals (May 2026)` | `Save with {N} verified {Store.name} coupons & promo codes. Up to {biggestSaving} off, free shipping, and more — updated {month} {year}.` |
 | Coupon | `{Coupon.title} — {Store.name} Promo Code` | `{Coupon.shortDescription}. Verified {coupon.verified ? 'today' : ''}, used by {used_count}+ shoppers.` |
 | Category | `Best {Category.title} Coupons & Deals — {N} Stores` | `{N} stores, hundreds of {Category.title.toLowerCase()} coupons and deals. Find the best {Category.title} discounts.` |
-| Blog | `{Article.title} — CouponValley Blog` | `{Article.excerpt}` |
+| Blog | `{Article.title} — Clipupp Blog` | `{Article.excerpt}` |
 
 Lengths enforced: title ≤60 chars, description ≤160 chars (warn in admin if exceeded). Per-coupon `meta_title` and `meta_description` columns let editors override.
 
@@ -1781,9 +1781,9 @@ OpenGraph + Twitter:
 ```html
 <meta property="og:title" content="..." />
 <meta property="og:description" content="..." />
-<meta property="og:url" content="https://couponvalley.com/stores/amazon-india" />
+<meta property="og:url" content="https://clipupp.com/stores/amazon-india" />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="https://couponvalley.com/og/store/amazon-india" />
+<meta property="og:image" content="https://clipupp.com/og/store/amazon-india" />
 <meta property="og:locale" content="en_US" />
 <meta property="og:locale:alternate" content="hi_IN" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -1805,9 +1805,9 @@ Components in `components/seo/` emit JSON-LD via `next/script type="application/
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "CouponValley",
-  "url": "https://couponvalley.com",
-  "logo": "https://couponvalley.com/logo.png",
+  "name": "Clipupp",
+  "url": "https://clipupp.com",
+  "logo": "https://clipupp.com/logo.png",
   "sameAs": ["https://twitter.com/...", "https://facebook.com/..."]
 }
 ```
@@ -1816,10 +1816,10 @@ Components in `components/seo/` emit JSON-LD via `next/script type="application/
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "url": "https://couponvalley.com",
+  "url": "https://clipupp.com",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://couponvalley.com/search?q={search_term_string}",
+    "target": "https://clipupp.com/search?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -1845,7 +1845,7 @@ Plus `BreadcrumbList` + `FAQPage` (from store FAQs).
   "@type": "Offer",
   "name": "Amazon India 50% Off Electronics",
   "description": "...",
-  "url": "https://couponvalley.com/coupons/amazon-india-50-off-electronics",
+  "url": "https://clipupp.com/coupons/amazon-india-50-off-electronics",
   "validFrom": "2026-05-01T00:00:00+05:30",
   "validThrough": "2026-05-31T23:59:59+05:30",
   "availability": "https://schema.org/InStock",
@@ -1887,7 +1887,7 @@ Disallow: /r/
 Disallow: /og/
 Disallow: /search
 
-Sitemap: https://couponvalley.com/sitemap.xml
+Sitemap: https://clipupp.com/sitemap.xml
 ```
 
 ### 11.7 Internal linking
@@ -1953,7 +1953,7 @@ Sprint plan for Phase 1. Each sprint ends with a deployed staging build and acce
 
 ### Sprint 0 — Cleanup & Foundations (1 week)
 
-**Frontend cleanup (all in `frontend/couponvalley/`):**
+**Frontend cleanup (all in `frontend/clipupp/`):**
 
 1. Delete the following files/folders:
    - `auth.ts`, `auth.config.ts`, `middleware.ts` (will be re-added with next-intl matcher only)
@@ -1971,7 +1971,7 @@ Sprint plan for Phase 1. Each sprint ends with a deployed staging build and acce
 6. Add `middleware.ts` (next-intl only): matches all routes except `/api`, `/_next`, `/og`, `/sitemap.xml`, `/robots.txt`, files with extensions.
 7. Smoke: `npm run lint && npx tsc --noEmit && npm run build` all clean.
 
-**Backend foundations (all in `backend/couponvalley/`):**
+**Backend foundations (all in `backend/clipupp/`):**
 
 8. Replace `src/main/resources/application.properties` with profiled YAML:
    - `application.yml` (defaults)
@@ -1984,7 +1984,7 @@ Sprint plan for Phase 1. Each sprint ends with a deployed staging build and acce
 9. `build.gradle` — add: `org.flywaydb:flyway-core`, `org.flywaydb:flyway-database-postgresql`, `io.jsonwebtoken:jjwt-api/impl/jackson:0.12.x`, `com.github.ben-manes.caffeine:caffeine`, `com.bucket4j:bucket4j-core`, `org.springframework.boot:spring-boot-starter-mail` (or Resend SDK if available; otherwise direct HTTP client), `software.amazon.awssdk:s3` (R2 is S3-compatible).
 10. Package skeleton:
     ```
-    com.couponvalley/
+    com.clipupp/
       common/{config,error,audit,idempotency,ratelimit,outbox,pagination,validation,i18n,tracing}
       auth/{api,application,domain,infra}
       users/{api,application,domain,infra}
@@ -2014,7 +2014,7 @@ Sprint plan for Phase 1. Each sprint ends with a deployed staging build and acce
 
 17. GitHub Actions workflow `frontend-ci.yml`: install + lint + typecheck + build on PR
 18. GitHub Actions workflow `backend-ci.yml`: gradle build + test + spotbugs/checkstyle on PR
-19. GitHub Actions workflow `openapi-sync.yml`: on backend `main` push, regenerate `frontend/couponvalley/lib/api/generated/` and open a PR
+19. GitHub Actions workflow `openapi-sync.yml`: on backend `main` push, regenerate `frontend/clipupp/lib/api/generated/` and open a PR
 20. Staging deploy on `main`: backend → Fly.io / Railway; frontend → Vercel preview
 
 **Acceptance:** clean repo with no NextAuth/Prisma; backend boots with security enabled; Postgres up; OpenAPI served; CI green.
@@ -2076,7 +2076,7 @@ Sprint plan for Phase 1. Each sprint ends with a deployed staging build and acce
     - `/offers` and `/offers/[slug]` (= coupons of type DEAL/FREE_SHIPPING)
     - `/search` (RSC, results)
     - Header search-as-you-type wired to `/search/suggest`
-55. Migrate fixtures from `frontend/couponvalley/data/{brands,coupons,categoriesData}.ts` into Flyway seed SQL (`V099__seed_phase1_demo.sql` — a demo/dev seed only, not run in prod)
+55. Migrate fixtures from `frontend/clipupp/data/{brands,coupons,categoriesData}.ts` into Flyway seed SQL (`V099__seed_phase1_demo.sql` — a demo/dev seed only, not run in prod)
 56. Tests:
     - Repository slice tests with Testcontainers
     - Controller `@WebMvcTest` for each public endpoint

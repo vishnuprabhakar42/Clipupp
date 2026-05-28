@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs cat *)",
+      "Read(//Users/anshu/Desktop/CouponValley/frontend/clipupp/**)"
+    ]
+  }
+}

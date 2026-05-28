@@ -46,17 +46,17 @@ npm run openapi:gen  # regenerate lib/api/generated/schema.ts from running backe
 
 ### How the two apps talk
 
-The browser **never** talks to the backend directly. `next.config.mjs` rewrites `/api/v1/*`, `/r/*`, `/postback/*`, `/v3/api-docs/*`, `/swagger-ui/*`, `/actuator/*` to `BACKEND_URL` so the browser always sees same-origin requests. This is **load-bearing for auth**: the `cv_rt` HttpOnly refresh cookie is set on the Next.js origin (`localhost:3000`) and travels on navigations. Server components in Next.js bypass the rewrite and hit `BACKEND_URL` directly so they don't double-hop.
+The browser **never** talks to the backend directly. `next.config.mjs` rewrites `/api/v1/*`, `/r/*`, `/postback/*`, `/v3/api-docs/*`, `/swagger-ui/*`, `/actuator/*` to `BACKEND_URL` so the browser always sees same-origin requests. This is **load-bearing for auth**: the `clipupp_rt` HttpOnly refresh cookie is set on the Next.js origin (`localhost:3000`) and travels on navigations. Server components in Next.js bypass the rewrite and hit `BACKEND_URL` directly so they don't double-hop.
 
 ### Auth flow (cross-stack)
 
 The Java backend (`auth/` module) is the single source of truth — there is **no NextAuth**, no DB access from the frontend.
 
-1. `POST /api/v1/auth/login` → backend returns `accessToken` in JSON and sets `cv_rt` as HttpOnly cookie.
+1. `POST /api/v1/auth/login` → backend returns `accessToken` in JSON and sets `clipupp_rt` as HttpOnly cookie.
 2. Frontend stores the access token in-memory only (`lib/auth/token-store.ts`).
 3. On 401, `lib/api/client.ts` calls `lib/auth/refresh.ts:refreshAccessToken()` (a **singleton** — direct calls to `/api/v1/auth/refresh` race and trip the backend's replay-detection).
 4. `/api/v1/auth/refresh` is **non-rotating**: it mints a new access token but keeps the same refresh token. Only login rotates the refresh token.
-5. Server components use `lib/auth/server.ts:getServerSession()` (wrapped in React `cache()`) → reads `cv_rt` and hits `/users/me`.
+5. Server components use `lib/auth/server.ts:getServerSession()` (wrapped in React `cache()`) → reads `clipupp_rt` and hits `/users/me`.
 
 Roles: `USER`, `ADMIN`, `SUPER_ADMIN`, `MERCHANT`. **ADMIN and SUPER_ADMIN are NOT hierarchical** in backend `@PreAuthorize` checks — every admin endpoint uses `@PreAuthorize("hasRole('ADMIN')")`, so granting only `SUPER_ADMIN` does not unlock the admin portal. Roles are stored in the `user_role` table (not `app_user_role`).
 
@@ -73,7 +73,7 @@ Each business domain lives at `com.clipupp.<module>/{api,application,domain,infr
 
 Cross-cutting infrastructure lives under `common/`: `audit`, `outbox` (transactional outbox pattern — poller runs every 5s), `idempotency`, `pagination` (cursor encoder for public APIs, Spring offset pages for admin), `ratelimit` (Bucket4j, in-memory), `error`, `tracing`, `i18n`, `text` (slugifier), `validation`. Config classes (cache, security, Jackson, JWT, Flyway, media, OpenAPI, HTTP caching) sit in `common/config/`.
 
-The app boots from `CouponvalleyApplication.java` with `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching` all enabled. Caches are Caffeine (in-process). **Cache eviction rule:** writes to `store`, `coupon`, or `category` must evict **both** `homepage.top` AND `homepage.layout` — the trending rail and featured grid read embedded data from the layout cache, so busting only `homepage.top` leaves stale logos/titles. See the cache-related notes in `frontend/clipupp/CLAUDE.md`.
+The app boots from `ClipuppApplication.java` with `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching` all enabled. Caches are Caffeine (in-process). **Cache eviction rule:** writes to `store`, `coupon`, or `category` must evict **both** `homepage.top` AND `homepage.layout` — the trending rail and featured grid read embedded data from the layout cache, so busting only `homepage.top` leaves stale logos/titles. See the cache-related notes in `frontend/clipupp/CLAUDE.md`.
 
 Java 21 virtual threads are enabled (`spring.threads.virtual.enabled: true`). `open-in-view` is `false` — fetch eagerly inside services.
 
@@ -92,7 +92,7 @@ Both shapes are mirrored in `frontend/clipupp/lib/api/types.ts`. Don't mix them 
 - `(admin)/admin/*` — requires `ADMIN` role; sidebar groups: Dashboard | Site | Catalog | Content | Affiliates | People
 - OG image routes at `app/og/{store,coupon}/[slug]/route.tsx` run on the **edge runtime** and cannot read CSS vars — they mirror the brand palette inline (see frontend CLAUDE.md "legitimate hex exceptions").
 
-i18n via `next-intl` with `[locale]` URL prefix and `cv_locale` cookie. Feature code is split by domain in `features/` (auth, catalog, admin, home, newsletter, savedcoupons, site) — see frontend CLAUDE.md for the inventory.
+i18n via `next-intl` with `[locale]` URL prefix and `clipupp_locale` cookie. Feature code is split by domain in `features/` (auth, catalog, admin, home, newsletter, savedcoupons, site) — see frontend CLAUDE.md for the inventory.
 
 ## Migrations and data
 

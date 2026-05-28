@@ -16,7 +16,7 @@ name: backend-deploy
 #
 # Flow:
 #   1. backend-ci on main: completed + success.
-#   2. Build the Dockerfile in backend/couponvalley/ on GitHub's runner,
+#   2. Build the Dockerfile in backend/clipupp/ on GitHub's runner,
 #      using buildx + GHA cache. Tag with both `latest` and `sha-<short>`.
 #   3. Push to GitHub Container Registry (ghcr.io). Make the package Public
 #      once after the first push (github.com/<owner>?tab=packages →
@@ -89,8 +89,8 @@ jobs:
       - name: Build & push
         uses: docker/build-push-action@v5
         with:
-          context: backend/couponvalley
-          file: backend/couponvalley/Dockerfile
+          context: backend/clipupp
+          file: backend/clipupp/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

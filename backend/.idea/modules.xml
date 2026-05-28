@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/backend.iml" filepath="$PROJECT_DIR$/.idea/backend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/couponvalley.main.iml" filepath="$PROJECT_DIR$/.idea/modules/couponvalley.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/couponvalley.test.iml" filepath="$PROJECT_DIR$/.idea/modules/couponvalley.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clipupp.main.iml" filepath="$PROJECT_DIR$/.idea/modules/clipupp.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/clipupp.test.iml" filepath="$PROJECT_DIR$/.idea/modules/clipupp.test.iml" />
     </modules>
   </component>
 </project>

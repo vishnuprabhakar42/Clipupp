@@ -1,4 +1,4 @@
-# CouponValley — Implementation Progress & Handoff
+# Clipupp — Implementation Progress & Handoff
 
 **Read this first when picking up work in a new session.** Together with `ARCHITECTURE.md` (in the same folder), this document gives you full context: what's already built, what decisions were made and why, where things live, what's next, and how to verify any of it locally.
 
@@ -8,12 +8,12 @@ If you're starting a new Claude Code session: skim §1, §2, §3.7 (current stat
 
 ## 1. Project at a glance
 
-CouponValley is a Rakuten/RetailMeNot-style coupons + cashback platform. Polyglot mono-folder layout:
+Clipupp is a Rakuten/RetailMeNot-style coupons + cashback platform. Polyglot mono-folder layout:
 
 ```
-CouponValley/
-├── frontend/couponvalley/    # Next.js 15 App Router (its own git repo)
-├── backend/couponvalley/     # Spring Boot 4.0.6 / Java 21 (Gradle)
+Clipupp/
+├── frontend/clipupp/    # Next.js 15 App Router (its own git repo)
+├── backend/clipupp/     # Spring Boot 4.0.6 / Java 21 (Gradle)
 ├── anshu-dev-doc/            # ARCHITECTURE.md, this file (PROGRESS.md)
 ├── docker-compose.yml        # Postgres + Adminer for collaborators
 ├── .env.example
@@ -44,8 +44,8 @@ These are the choices that shape the codebase. Don't undo without explicit user 
 | Currency | INR primary, USD secondary, FX table seeded but unused until Phase 2 | Sprint 2 |
 | SEO | First-class — SSR + ISR, JSON-LD per page type, hreflang alternates, OG image generators, sitemap from backend | Sprint 3 |
 | Test infra | JUnit + AssertJ unit tests on critical-path logic. Spring Boot `@SpringBootTest` + Testcontainers integration tests deferred until CI has Docker | Sprint 1+ |
-| Local Postgres | User runs Postgres directly on host (not docker-compose). DB `couponvalley_db`, user `postgres`, password `anshu`. `application-dev.yml` is configured to match — **do not change**. | Sprint 0 |
-| Email adapter | `LoggingEmailAdapter` (logs payload to console) is the Phase 1 default. Resend/SES adapter swaps in via `couponvalley.email.provider` config when API key is wired. | Sprint 1 |
+| Local Postgres | User runs Postgres directly on host (not docker-compose). DB `clipupp_db`, user `postgres`, password `anshu`. `application-dev.yml` is configured to match — **do not change**. | Sprint 0 |
+| Email adapter | `LoggingEmailAdapter` (logs payload to console) is the Phase 1 default. Resend/SES adapter swaps in via `clipupp.email.provider` config when API key is wired. | Sprint 1 |
 
 The user prefers **lean Phase 1 infra** — defer Kafka/ES/Redis-cluster/ClickHouse until concrete scale triggers fire (documented in `ARCHITECTURE.md` §9.4). When in doubt, use the simpler path and flag the trigger to upgrade.
 
@@ -62,10 +62,10 @@ Every sprint is closed: backend tests pass, frontend `lint + typecheck + build` 
 **Frontend configs:** `next.config.mjs` re-enables TS/ESLint enforcement (was both ignored), removes `unoptimized: true`, adds `remotePatterns`. `tsconfig.json` drops the dead `../server/...` include. `app/layout.tsx` removes `generator: "v0.dev"`. Added `.eslintrc.json` with Next core-web-vitals + `no-unescaped-entities` off.
 
 **Backend foundations:**
-- Package moved `com.example.couponvalley` → `com.couponvalley`
+- Package moved `com.example.clipupp` → `com.clipupp`
 - `application.properties` → profiled YAML (`application.yml` + `application-dev.yml` + `application-prod.yml`). `SecurityAutoConfiguration` exclusion removed. `ddl-auto=validate` (not `update`). Server compression on. Virtual threads on.
-- `build.gradle`: group → `com.couponvalley`. Added Flyway, JJWT, Caffeine, Bucket4j, AWS S3 (R2), Mail, Testcontainers.
-- `CouponvalleyApplication`: `@EnableJpaAuditing(auditorAwareRef = "auditAware")`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching`
+- `build.gradle`: group → `com.clipupp`. Added Flyway, JJWT, Caffeine, Bucket4j, AWS S3 (R2), Mail, Testcontainers.
+- `ClipuppApplication`: `@EnableJpaAuditing(auditorAwareRef = "auditAware")`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching`
 - Module skeleton scaffolded (vertical slices: `api / application / domain / infra` per module)
 - **Common platform code:** `SecurityConfig` (default-deny + public allowlist + Bearer + CORS), `GlobalExceptionHandler` (RFC 7807 problem+json with `code` + `traceId`), `RequestIdFilter` (MDC + `X-Request-Id` header), `AuditAware` (Spring Data auditing source from JWT principal), `CacheConfig` (Caffeine cache manager with named caches), `OpenApiConfig` (springdoc with bearer + refresh-cookie security schemes), `PingController` (smoke endpoint at `/api/v1/ping`).
 - `V001__init_pgcrypto_citext.sql`: `pgcrypto`, `citext`, `pg_trgm` extensions + `platform_meta` marker
@@ -88,7 +88,7 @@ Every sprint is closed: backend tests pass, frontend `lint + typecheck + build` 
 - `OutboxService` + `OutboxPoller` (`@Scheduled(fixedDelay=5000)`, exponential backoff, capped at 30min)
 - `EmailAdapter` port + `LoggingEmailAdapter` (Phase 1 default — logs payload) + `EmailDispatcher` (outbox topic `email.send`)
 - `AuditLogService` — append-only, swallows errors so business txns don't fail on audit hiccups
-- `RefreshCookie` helper (`HttpOnly + Secure + SameSite=Strict`, dev-relaxed via `couponvalley.cookie.secure: false`)
+- `RefreshCookie` helper (`HttpOnly + Secure + SameSite=Strict`, dev-relaxed via `clipupp.cookie.secure: false`)
 
 **Backend API:** `AuthController` (8 endpoints under `/api/v1/auth`), `UsersController` (5 endpoints under `/api/v1/users/me`).
 
@@ -141,7 +141,7 @@ Every sprint is closed: backend tests pass, frontend `lint + typecheck + build` 
 - `ClickRedirectCache`: Caffeine-backed denormalized lookup (coupon → store → active link → template). Admin write paths evict via existing `coupon.redirect` cache.
 - `ClickService.recordClick`: synchronous insert (sub-5ms target), async popularity counter. Falls back to direct merchant URL when no active affiliate link.
 - `PostbackService.ingest`: verifies signature → parses → idempotent on `(network_id, network_txn_id)`. Duplicates re-applied as state transitions.
-- `NetworkSecretResolver`: reads from `affiliate_network.postback_secret_enc`; env override `COUPONVALLEY_NETWORK_SECRET_<CODE>` for sandbox
+- `NetworkSecretResolver`: reads from `affiliate_network.postback_secret_enc`; env override `CLIPUPP_NETWORK_SECRET_<CODE>` for sandbox
 
 **Backend API:** `RedirectController` (`GET /r/{couponId}` — 302 with `X-CV-Click-Id`), `PostbackController` (`POST /postback/{network}` — raw-body HMAC, 202 on new / 200 on dup), `AdminAffiliateNetworkController`, `AdminMerchantNetworkLinkController`, `AccountClicksController` (`GET /api/v1/account/clicks`).
 
@@ -179,7 +179,7 @@ Every sprint is closed: backend tests pass, frontend `lint + typecheck + build` 
 
 **Frontend:**
 - `lib/api/admin.ts` — typed clients for every admin endpoint (stores, coupons, categories, networks, merchant-links, newsletter, users, clicks, conversions, articles, authors, banners). `SpringPage<T>` for offset-paginated admin endpoints.
-- `lib/admin/server-fetch.ts` — server-side cookie-bridge helper (refresh `cv_rt` → access token → admin endpoint)
+- `lib/admin/server-fetch.ts` — server-side cookie-bridge helper (refresh `clipupp_rt` → access token → admin endpoint)
 - **`(admin)/admin/layout.tsx`** — sticky sidebar (grouped: Catalog / Content / Affiliates / People), role gate (anon → `/sign-in`, non-ADMIN → 403 panel), email + sign-out
 - 19 admin pages built: `Dashboard`, `Stores` (+ new), `Coupons` (+ new), `Categories` (+ new), `Banners` (+ new), `Blog` (read-only), `Networks` (+ new), `Merchant Links` (+ new), `Users`, `Newsletter`, `Clicks`, `Conversions`
 - Per-row admin client islands: `<UserRoleControls>` (inline +/− toggle for each role), `<NewStoreForm>`, `<NewCouponForm>`, `<NewCategoryForm>`, `<NewNetworkForm>`, `<NewMerchantLinkForm>`, `<NewBannerForm>`
@@ -224,18 +224,18 @@ Per `ARCHITECTURE.md` §12, Sprint 7 is the launch-prep sprint. Tasks (from spec
 
 Things that aren't obvious from reading the code but trip up newcomers:
 
-- **`couponvalley_db` / `postgres` / `anshu`** — the user's local Postgres. `application-dev.yml` is configured for it. Don't switch to docker-compose's `couponvalley` defaults.
+- **`clipupp_db` / `postgres` / `anshu`** — the user's local Postgres. `application-dev.yml` is configured for it. Don't switch to docker-compose's `clipupp` defaults.
 - **No Spring Boot integration tests yet.** `@SpringBootTest` requires Postgres + Testcontainers + Docker, none of which are in the user's local CI. We have rich unit-test coverage (52 tests on critical-path logic). Adding Testcontainers tests is a Sprint 7+ task.
 - **Custom `LanguageProvider` is a shim**, not a real provider. `components/language-provider.tsx` exports a no-op `LanguageProvider` and a `useLanguage()` hook backed by next-intl's `legacy` namespace. ~10 marketing components still call `useLanguage()` — that's intentional. Eventual full migration is fine but not required.
 - **Homepage marketing components still use `data/coupons.ts` + `data/categoriesData.ts`.** Sprint 5+ never rewired them to backend. Top-coupons, brand-section, popular-offers, banner-slider, top-shops, trending-categories are all static. Wiring them to `couponsApi.top()`, `storesApi.list({ sort: 'popular' })`, etc. is a follow-up.
 - **`HeaderSearch` component is built but not wired into `header.tsx`.** The component is in `features/catalog/components/HeaderSearch.tsx`, ready to swap into the header's existing search form. Sprint 2 follow-up.
 - **First-admin promotion is manual SQL.** No bootstrap config yet. Sprint 7.
-- **Email is logged, not sent.** `LoggingEmailAdapter` writes the rendered model to console. Verify/reset URLs live in the dev console output. Wire Resend by setting `couponvalley.email.provider=resend` + `RESEND_API_KEY`.
+- **Email is logged, not sent.** `LoggingEmailAdapter` writes the rendered model to console. Verify/reset URLs live in the dev console output. Wire Resend by setting `clipupp.email.provider=resend` + `RESEND_API_KEY`.
 - **`<img>` lint warnings in OG routes are expected.** `next/og` `ImageResponse` runs in edge runtime and uses standard `<img>` tags by design.
 - **`next/image` is `unoptimized` on most catalog images** (`unoptimized` prop set explicitly). Phase 2 integration with Cloudflare Image Resizing or `next/image` loader is when that comes off.
 - **Affiliate adapter codes must match registered `NetworkAdapter` beans** — `AffiliateAdminService.createNetwork` rejects unknown codes. To add `klook`/`booking`/etc.: write a new `@Component` adapter under `affiliates/infra/` first.
-- **Postback secrets:** environment override `COUPONVALLEY_NETWORK_SECRET_<CODE>` (uppercase) takes precedence over the DB column when `couponvalley.affiliates.env-secret-override=true` (default). Use this for dev/sandbox without writing the secret to Postgres.
-- **Refresh tokens are opaque + DB-stored**, not JWT. Plain values live only in the `cv_rt` HttpOnly cookie. We hash on storage. Replay (presenting a `used_at` token) revokes the entire chain.
+- **Postback secrets:** environment override `CLIPUPP_NETWORK_SECRET_<CODE>` (uppercase) takes precedence over the DB column when `clipupp.affiliates.env-secret-override=true` (default). Use this for dev/sandbox without writing the secret to Postgres.
+- **Refresh tokens are opaque + DB-stored**, not JWT. Plain values live only in the `clipupp_rt` HttpOnly cookie. We hash on storage. Replay (presenting a `used_at` token) revokes the entire chain.
 - **All money columns are `NUMERIC(19,4)`** with a `*_currency CHAR(3)` neighbor. Never `DOUBLE`/`REAL`.
 - **Slugs are 80 chars max**, ASCII-only, hyphenated, lowercase. `Slugifier.slugify(input)` is the only way slugs get generated. Diacritics stripped via NFD; non-Latin scripts dropped (admin must provide explicit transliterated slug).
 - **`audit_log` is append-only.** Every admin write across every sprint logs an entry. The backend `AuditLogService` swallows audit errors so business txns don't fail when audit hiccups.
@@ -245,11 +245,11 @@ Things that aren't obvious from reading the code but trip up newcomers:
 
 ## 6. Where things live (file map)
 
-**Backend (`backend/couponvalley/`)**
+**Backend (`backend/clipupp/`)**
 
 ```
-src/main/java/com/couponvalley/
-├── CouponvalleyApplication.java
+src/main/java/com/clipupp/
+├── ClipuppApplication.java
 ├── common/
 │   ├── audit/        # AuditableEntity, AuditAware, AuditLog/Service/Repository
 │   ├── config/       # SecurityConfig, JwtProperties, CacheConfig, OpenApiConfig
@@ -296,7 +296,7 @@ src/main/resources/db/migration/
 └── V009__blog_banner.sql
 ```
 
-**Frontend (`frontend/couponvalley/`)**
+**Frontend (`frontend/clipupp/`)**
 
 ```
 app/
@@ -361,17 +361,17 @@ messages/
 
 ```bash
 # Backend
-cd backend/couponvalley
+cd backend/clipupp
 ./gradlew build            # compile + tests + jar — should be green
 ./gradlew bootRun --args='--spring.profiles.active=dev'
-# Flyway applies V001–V009 to couponvalley_db on first boot.
+# Flyway applies V001–V009 to clipupp_db on first boot.
 # Swagger: http://localhost:8080/swagger-ui.html
 # Sitemap: curl http://localhost:8080/sitemap.xml
 ```
 
 ```bash
 # Frontend
-cd frontend/couponvalley
+cd frontend/clipupp
 npm install
 npm run lint && npm run typecheck && npm run build   # all green
 npm run dev                                          # http://localhost:3000
@@ -381,7 +381,7 @@ npm run dev                                          # http://localhost:3000
 
 1. Backend running. Sign up at `http://localhost:3000/sign-up`. Check the backend console for the `EMAIL [verify-email]` log line — paste the verify URL into your browser.
 2. Sign in. Visit `/account` — see your session.
-3. Promote yourself to ADMIN: `psql couponvalley_db -c "INSERT INTO user_role(user_id, role) VALUES ('<uuid>', 'ADMIN');"`. Refresh the page.
+3. Promote yourself to ADMIN: `psql clipupp_db -c "INSERT INTO user_role(user_id, role) VALUES ('<uuid>', 'ADMIN');"`. Refresh the page.
 4. Visit `/admin` — admin dashboard.
 5. Create a category, store, and coupon via the admin forms.
 6. Create an affiliate network (e.g. `impact`), then a merchant network link with a deeplink template.
@@ -394,10 +394,10 @@ npm run dev                                          # http://localhost:3000
 
 ## 8. Useful context / memory
 
-There are project memories at `/Users/anshu/.claude/projects/-Users-anshu-Desktop-CouponValley/memory/`:
+There are project memories at `/Users/anshu/.claude/projects/-Users-anshu-Desktop-Clipupp/memory/`:
 - `MEMORY.md` — index
-- `project_couponvalley.md` — vision + scope + decisions
-- `project_postgres_dev.md` — local Postgres setup (couponvalley_db / postgres / anshu)
+- `project_clipupp.md` — vision + scope + decisions
+- `project_postgres_dev.md` — local Postgres setup (clipupp_db / postgres / anshu)
 - `feedback_lean_phase1_infra.md` — the user's strong preference for lean infra in early phases
 
 These auto-load into context when relevant. Update them when decisions change.

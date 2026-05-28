@@ -1,0 +1,312 @@
+{
+  "site": {
+    "name": "Clipupp",
+    "tagline": "Coupon Codes, Cashback & Deals"
+  },
+  "nav": {
+    "stores": "Top Stores",
+    "categories": "Categories",
+    "offers": "Best Offers",
+    "blog": "Blog",
+    "search": "Search",
+    "signIn": "Sign in",
+    "account": "My Account"
+  },
+  "mobileNav": {
+    "home": "Home",
+    "browse": "Browse",
+    "saved": "Saved",
+    "account": "Account"
+  },
+  "common": {
+    "loading": "Loading…",
+    "loadMore": "Load more",
+    "tryAgain": "Try again",
+    "backToHome": "Back to home",
+    "backToSignIn": "Back to sign in",
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "expires": "Expires",
+    "noExpiry": "No expiry",
+    "verified": "Verified",
+    "exclusive": "Exclusive",
+    "code": "Code",
+    "deal": "Deal",
+    "freeShipping": "Free shipping",
+    "inStore": "In-store",
+    "noCouponsYet": "No coupons yet."
+  },
+  "stores": {
+    "listTitle": "All stores",
+    "listSubtitle": "Discover verified coupons and cashback offers from thousands of brands.",
+    "emptyState": "No stores match your filters yet. Check back soon — we're adding partners every week.",
+    "loadError": "We couldn't load stores right now. Please try again in a moment.",
+    "viewDeals": "View deals",
+    "visit": "Visit {brand}",
+    "topOffers": "Top offers",
+    "couponsHeading": "Coupons & offers",
+    "seeAll": "See all",
+    "faqs": "FAQs",
+    "featuredArticles": "Featured articles",
+    "similarStores": "Similar stores",
+    "stats": {
+      "totalOffers": "Total offers",
+      "couponCodes": "Coupon codes",
+      "inStore": "In-store",
+      "freeShipping": "Free shipping"
+    }
+  },
+  "coupons": {
+    "listTitle": "Active coupons",
+    "listSubtitle": "Verified discount codes you can paste at checkout, ranked by recent activity.",
+    "emptyFilters": "No coupons match your filters yet.",
+    "loadError": "We couldn't load coupons right now. Please try again in a moment.",
+    "revealAndVisit": "Reveal code & visit store",
+    "copyCode": "Copy code",
+    "copied": "Copied {code}",
+    "copyFailed": "Could not copy to clipboard",
+    "visitMerchant": "Visit merchant",
+    "getThisDeal": "Get this deal",
+    "minimumPurchase": "Minimum purchase",
+    "used": "Used {count} times",
+    "terms": "Terms",
+    "categories": "Categories"
+  },
+  "offers": {
+    "listTitle": "Offers & deals",
+    "listSubtitle": "Click-through promotions, free-shipping deals, and limited-time discounts.",
+    "emptyState": "No active offers right now — check back tomorrow.",
+    "loadError": "We couldn't load offers right now. Please try again in a moment.",
+    "activate": "Activate offer at {brand}"
+  },
+  "categories": {
+    "listTitle": "Categories",
+    "listSubtitle": "Pick a category to browse the latest coupons and deals.",
+    "emptyState": "No categories yet. The team is curating taxonomies — check back soon.",
+    "loadError": "We couldn't load categories right now.",
+    "noCouponsInCategory": "No active coupons in {category} right now."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search stores, coupons, categories…",
+    "emptyHelp": "Try searching for a brand, a category, or an offer keyword from the header.",
+    "resultsFor": "Results for \"{query}\"",
+    "noMatches": "No matches yet — try a broader keyword.",
+    "tempUnavailable": "Search is temporarily unavailable. Please try again.",
+    "matchesCount": "{count, plural, one {# match} other {# matches}} across stores, coupons, and categories.",
+    "kindStore": "Store",
+    "kindCoupon": "Coupon",
+    "kindCategory": "Category",
+    "sectionStores": "Stores",
+    "sectionCoupons": "Coupons",
+    "sectionCategories": "Categories",
+    "searching": "Searching…"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInIntro": "Sign in to save coupons and track your savings.",
+    "signedIn": "Signed in",
+    "signingIn": "Signing in…",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "signedOut": "Signed out",
+    "signOutFailed": "Could not sign out cleanly. Please try again.",
+    "newHere": "New here?",
+    "createAccount": "Create an account",
+    "alreadyHaveAccount": "Already have an account?",
+    "signUpTitle": "Create your account",
+    "signUpIntro": "Free, takes about a minute, and you can verify by email.",
+    "creatingAccount": "Creating account…",
+    "createCta": "Create account",
+    "verifyEmailHint": "12+ characters, with upper, lower, and a digit.",
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "name": "Name (optional)",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "currentPassword": "Current password"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "accountLocked": "Account temporarily locked. Try again in 15 minutes.",
+      "passwordNotSet": "This account uses social sign-in. Use Continue with Google.",
+      "emailTaken": "Email is already registered",
+      "currentPasswordIncorrect": "Current password is incorrect",
+      "serverUnreachable": "Could not reach the server. Please try again.",
+      "tokenExpired": "This reset link is no longer valid. Request a new one."
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "intro": "Enter your email and we'll send you a reset link.",
+      "send": "Send reset link",
+      "sending": "Sending…",
+      "checkInbox": "Check your inbox",
+      "checkInboxMessage": "If an account exists for that email, we just sent a reset link. It expires in one hour."
+    },
+    "reset": {
+      "title": "Set a new password",
+      "invalidLink": "Reset link is invalid",
+      "invalidLinkMessage": "The reset link is missing or malformed. Request a new one.",
+      "requestNew": "Request a new link",
+      "passwordsDontMatch": "Passwords do not match",
+      "updating": "Updating…",
+      "setNewPassword": "Set new password",
+      "passwordUpdated": "Password updated. Sign in with your new password.",
+      "forgotLink": "Forgot password?"
+    },
+    "verify": {
+      "verifying": "Verifying your email…",
+      "successTitle": "Email verified",
+      "successMessage": "You're all set. You can now sign in.",
+      "expiredTitle": "Link expired",
+      "invalidTitle": "Link is invalid",
+      "expiredMessage": "Verification links are valid for 24 hours. Request a new one.",
+      "errorTitle": "Something went wrong",
+      "errorMessage": "We couldn't reach the server. Please try again."
+    },
+    "changePassword": {
+      "title": "Change password",
+      "intro": "Updating your password signs you out of every other device.",
+      "submit": "Change password",
+      "submitting": "Updating…",
+      "success": "Password updated. Sign in again on your other devices."
+    }
+  },
+  "account": {
+    "title": "Your account",
+    "signedInAs": "Signed in as {email}",
+    "emailNotVerified": "Email not verified",
+    "navOverview": "Overview",
+    "navProfile": "Profile",
+    "navPreferences": "Preferences",
+    "welcome": "Welcome",
+    "welcomeWithName": "Welcome, {name}",
+    "fields": {
+      "email": "Email",
+      "verified": "Verified",
+      "yes": "Yes",
+      "no": "No",
+      "locale": "Locale",
+      "roles": "Roles"
+    },
+    "savedTitle": "Saved coupons",
+    "savedComingSoon": "Saving coupons opens up in Sprint 5. Until then, click any coupon to jump straight to the merchant.",
+    "cashbackTitle": "Cashback",
+    "cashbackComingSoon": "Cashback rewards land in Phase 2. Your click history is already being recorded so you don't miss any earnings when it does.",
+    "profile": {
+      "title": "Profile",
+      "displayName": "Display name",
+      "avatarUrl": "Avatar URL",
+      "language": "Language",
+      "save": "Save profile",
+      "saving": "Saving…",
+      "saved": "Profile updated",
+      "saveError": "Could not save changes"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "loading": "Loading preferences…",
+      "preferredCurrency": "Preferred currency",
+      "currencyHint": "ISO 4217 — for example INR, USD, GBP. Used for cashback display in Phase 2.",
+      "transactional": "Transactional emails",
+      "transactionalDesc": "Verification, password resets, and other essential account messages.",
+      "weekly": "Weekly deals digest",
+      "weeklyDesc": "A weekly highlight of new coupons in your top categories.",
+      "promotional": "Promotional emails",
+      "promotionalDesc": "Occasional product news and partner offers. Off by default.",
+      "save": "Save preferences",
+      "saving": "Saving…",
+      "saved": "Preferences saved",
+      "saveError": "Could not save preferences"
+    }
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundMessage": "The page you were looking for doesn't exist or has moved."
+  },
+  "metadata": {
+    "homepage": {
+      "title": "Clipupp — Coupon Codes, Cashback & Deals",
+      "description": "Save with verified coupon codes, cashback, and exclusive deals from 1000+ top brands. Updated daily."
+    },
+    "stores": {
+      "title": "All Stores",
+      "description": "Browse 1000+ verified stores. Find coupon codes, cashback, and exclusive deals from your favorite brands."
+    },
+    "coupons": {
+      "title": "Coupons & Promo Codes",
+      "description": "Active coupon codes from top stores. Verified daily — copy and paste at checkout to save."
+    },
+    "offers": {
+      "title": "Offers & Deals",
+      "description": "Live deals, free shipping, and limited-time offers from your favorite stores — no code required."
+    },
+    "categories": {
+      "title": "Browse by Category",
+      "description": "Find coupons by category — fashion, electronics, food, travel, and more."
+    }
+  },
+  "legacy": {
+    "topStores": "Top Stores",
+    "categories": "Categories",
+    "bestOffers": "Best Offers",
+    "blog": "Blog",
+    "searchPlaceholder": "Search for stores, brands or deals…",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "english": "English",
+    "hindi": "Hindi",
+    "spanish": "Spanish",
+    "french": "French",
+    "arabic": "Arabic",
+    "trending": "Trending",
+    "topCoupons": "Top Coupons",
+    "topShops": "Top Shops",
+    "trendingCategories": "Trending Categories",
+    "popularOffers": "Popular Offers",
+    "todaysBestOffers": "Today's Best Offers",
+    "peopleAreCurrentlyUsing": "people are currently using",
+    "exclusive": "Exclusive",
+    "viewAll": "View All",
+    "copyCode": "Copy Code",
+    "getOffer": "Get Offer",
+    "expires": "Expires",
+    "used": "Used",
+    "times": "times",
+    "newsletter": "Newsletter",
+    "subscribeText": "Subscribe to get the latest deals and offers",
+    "subscribe": "Subscribe",
+    "emailPlaceholder": "Enter your email",
+    "footerText": "Discover the best deals and coupons from top brands worldwide",
+    "electronics": "Electronics",
+    "fashion": "Fashion",
+    "travel": "Travel",
+    "food": "Food",
+    "beauty": "Beauty",
+    "home": "Home",
+    "copyright": "© 2025 Clipupp. All rights reserved.",
+    "noCouponsFound": "No coupons found"
+  },
+  "home": {
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Three simple steps between you and a discount.",
+      "step1": {
+        "title": "Find a coupon",
+        "description": "Browse hundreds of active coupons across 50+ stores. Filter by category or search by brand."
+      },
+      "step2": {
+        "title": "Click through",
+        "description": "Tap the code to copy it, then jump to the store with one click."
+      },
+      "step3": {
+        "title": "Save at checkout",
+        "description": "Paste the code at checkout to apply your discount instantly."
+      }
+    }
+  }
+}

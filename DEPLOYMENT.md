@@ -1,4 +1,4 @@
-# ClipUpp — Production Deployment
+# Clipupp — Production Deployment
 
 Backend → Railway (Spring Boot 4 + Postgres). Frontend → Vercel (Next.js 15).
 
@@ -20,13 +20,13 @@ migrations, scaling) see the inline comments in the files referenced below.
 
 ### 1.1 Create the project
 
-1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick the ClipUpp repo.
+1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo** → pick the Clipupp repo.
 2. Click **+ Add → Database → PostgreSQL**. Railway provisions a managed Postgres and injects `PGHOST / PGUSER / PGPASSWORD / PGDATABASE / PGPORT` into the same project.
 
 ### 1.2 Configure the backend service
 
-- **Root Directory**: `backend/couponvalley`
-- **Build**: the repo ships [`backend/couponvalley/Dockerfile`](./backend/couponvalley/Dockerfile) and [`railway.json`](./backend/couponvalley/railway.json) — Railway auto-detects them. No build / start command override needed.
+- **Root Directory**: `backend/clipupp`
+- **Build**: the repo ships [`backend/clipupp/Dockerfile`](./backend/clipupp/Dockerfile) and [`railway.json`](./backend/clipupp/railway.json) — Railway auto-detects them. No build / start command override needed.
 - **Health check**: already declared in `railway.json` as `/actuator/health`.
 
 ### 1.3 Backend environment variables
@@ -56,8 +56,8 @@ Optional:
 | Variable | Default | Notes |
 |---|---|---|
 | `DB_POOL_SIZE` | `25` | Hikari max-pool-size |
-| `COUPONVALLEY_RATELIMIT_PUBLIC_PER_MIN` | `120` | Per-IP req/min on public GETs |
-| `COUPONVALLEY_RATELIMIT_WINDOW_SECONDS` | `60` | Bucket refill window |
+| `CLIPUPP_RATELIMIT_PUBLIC_PER_MIN` | `120` | Per-IP req/min on public GETs |
+| `CLIPUPP_RATELIMIT_WINDOW_SECONDS` | `60` | Bucket refill window |
 
 ### 1.4 Expose a public URL
 
@@ -79,7 +79,7 @@ curl https://<railway-domain>/api/v1/stores?limit=4 | head -c 200
 # → JSON with seeded stores (proves DB + Flyway worked)
 
 curl https://<railway-domain>/api/v1/settings/public | head -c 200
-# → JSON; brand.name should read "ClipUpp" (proves V031 rebrand-data migration ran)
+# → JSON; brand.name should read "Clipupp" (proves V031 rebrand-data migration ran)
 
 curl -i https://<railway-domain>/v3/api-docs
 # → 404 (Swagger is disabled in prod by application-prod.yml)
@@ -92,7 +92,7 @@ curl -i https://<railway-domain>/v3/api-docs
 ### 2.1 Import the project
 
 1. [vercel.com](https://vercel.com) → **Add New → Project** → import the same GitHub repo.
-2. **Root Directory**: `frontend/couponvalley`
+2. **Root Directory**: `frontend/clipupp`
 3. **Framework Preset**: Next.js (auto-detected).
 4. Leave Build / Install / Output commands as defaults.
 
@@ -125,7 +125,7 @@ Railway will roll a new revision automatically.
 Backend:
 - [ ] `GET /actuator/health` → 200 `{"status":"UP"}`
 - [ ] `GET /api/v1/stores?limit=4` → 200 with stores
-- [ ] `GET /api/v1/settings/public` → 200 with `"brand.name":"ClipUpp"`
+- [ ] `GET /api/v1/settings/public` → 200 with `"brand.name":"Clipupp"`
 - [ ] `GET /v3/api-docs` → 404 (Swagger disabled in prod)
 - [ ] `GET /api/v1/dev/seed` → 404 (dev endpoint absent in prod profile)
 - [ ] Hammer `/api/v1/stores` 200+ times → 429 with `Retry-After` (rate limiter works)
@@ -186,7 +186,7 @@ When the time comes to scale horizontally, swap Caffeine for Redis-backed cache 
 
 - **Dev seed endpoint** (`/api/v1/dev/seed`) is `@Profile("dev")` — the controller bean is never registered in prod.
 - **Swagger UI + raw OpenAPI doc** are disabled in prod via `application-prod.yml` (`springdoc.api-docs.enabled=false`, `springdoc.swagger-ui.enabled=false`). SecurityConfig also drops the public allowlist for those paths when the prod profile is active.
-- **The `cv_rt` refresh cookie** is `HttpOnly`, `Secure`, `SameSite=Lax`. It only travels over HTTPS because `COOKIE_SECURE=true` is set in prod.
+- **The `clipupp_rt` refresh cookie** is `HttpOnly`, `Secure`, `SameSite=Lax`. It only travels over HTTPS because `COOKIE_SECURE=true` is set in prod.
 - **CSP** ships in report-only mode from `next.config.mjs`. After ~2 weeks of report-only telemetry, flip it to enforcement by renaming the header.
 - **CORS** is locked to `CORS_ALLOWED_ORIGINS` — set this to your Vercel domain (or custom domain) and nothing else.
 - **The dev `application-dev.yml`** contains live Cloudflare R2 credentials (intentionally, so the Gradle daemon doesn't drop env vars on macOS). Before going to production, **rotate those keys in Cloudflare** so the committed copy can't be used to access prod media.

@@ -1,0 +1,967 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================================
+   Clipupp design tokens — Clean Professional (Theme 3)
+   -----------------------------------------------------------------------------
+   Single-accent palette: one blue, slate neutrals, two background tints, one
+   border color. Gradients reserved for two surfaces only — the hero band and
+   the primary CTA. Every icon across the site shares the same single color.
+   Sections alternate between #FFFFFF and #F8FAFC for separation; no third
+   tint, no accent backgrounds.
+
+   Two documented inline-hex exceptions: OG image edge routes and Recharts
+   SVG props (both mirror these vars inline with a "Mirror of --clipupp-*" comment).
+   ========================================================================== */
+
+@layer base {
+  :root {
+    /* ── Single brand purple scale (dark purple + light purple) ────────── */
+    --clipupp-primary-50:  #F5F3FF;   /* near-white lavender — page accent backgrounds */
+    --clipupp-primary-100: #EDE9FE;   /* LIGHT PURPLE — tile fills, soft pills, eyebrows */
+    --clipupp-primary-200: #DDD6FE;
+    --clipupp-primary-300: #C4B5FD;
+    --clipupp-primary-400: #A78BFA;
+    --clipupp-primary-500: #8B5CF6;
+    --clipupp-primary-600: #7C3AED;   /* Mid purple — gradient bright stop */
+    --clipupp-primary-700: #6D28D9;   /* DARK PURPLE — buttons, links, active, all icons */
+    --clipupp-primary-800: #5B21B6;   /* Deeper purple — hover, gradient deep stop */
+    --clipupp-primary-900: #4C1D95;
+    --clipupp-primary:        var(--clipupp-primary-700);
+    --clipupp-primary-strong: var(--clipupp-primary-800);
+    --clipupp-primary-soft:   var(--clipupp-primary-100);
+    --clipupp-primary-fg:     #FFFFFF;
+
+    /* ── Accent — collapsed to primary (single-accent system). Every utility
+          class that used to reach for amber/blue accent now resolves to the
+          same brand purple. */
+    --clipupp-accent-50:  #F5F3FF;
+    --clipupp-accent-100: #EDE9FE;
+    --clipupp-accent-200: #DDD6FE;
+    --clipupp-accent-300: #C4B5FD;
+    --clipupp-accent-400: #A78BFA;
+    --clipupp-accent-500: #8B5CF6;
+    --clipupp-accent-600: #7C3AED;
+    --clipupp-accent-700: #6D28D9;
+    --clipupp-accent-800: #5B21B6;
+    --clipupp-accent-900: #4C1D95;
+    --clipupp-accent:        var(--clipupp-primary-700);
+    --clipupp-accent-strong: var(--clipupp-primary-800);
+    --clipupp-accent-soft:   var(--clipupp-primary-100);
+    --clipupp-accent-fg:     #FFFFFF;
+
+    /* ── Success — emerald, used only for true positive states (verified,
+          "Copied!" toasts, confirmed cashback). NOT for general accents. */
+    --clipupp-success:        #10B981;
+    --clipupp-success-strong: #059669;
+    --clipupp-success-soft:   #ECFDF5;
+    --clipupp-success-fg:     #FFFFFF;
+
+    /* ── Danger — red, errors only ─────────────────────────────────────── */
+    --clipupp-danger:        #DC2626;
+    --clipupp-danger-strong: #B91C1C;
+    --clipupp-danger-soft:   #FEF2F2;
+    --clipupp-danger-fg:     #FFFFFF;
+
+    /* ── Info blue (informational only — same hue family as primary) ───── */
+    --clipupp-info:        #2563EB;
+    --clipupp-info-soft:   #EFF6FF;
+
+    /* ── Slate neutral scale (cool, professional) ──────────────────────── */
+    --clipupp-neutral-0:   #FFFFFF;   /* Background 1 */
+    --clipupp-neutral-50:  #F8FAFC;   /* Background 2 — alternating sections */
+    --clipupp-neutral-100: #F1F5F9;
+    --clipupp-neutral-200: #E2E8F0;   /* Borders / dividers */
+    --clipupp-neutral-300: #CBD5E1;
+    --clipupp-neutral-400: #94A3B8;
+    --clipupp-neutral-500: #64748B;   /* Text muted — secondary / captions */
+    --clipupp-neutral-600: #475569;
+    --clipupp-neutral-700: #334155;
+    --clipupp-neutral-800: #1E293B;
+    --clipupp-neutral-900: #0F172A;   /* Text dark — headings + body */
+
+    /* ── RGB triplets for slash-opacity modifier ── */
+    --clipupp-primary-rgb:        109 40 217;   /* #6D28D9 — dark purple */
+    --clipupp-primary-strong-rgb: 91 33 182;    /* #5B21B6 */
+    --clipupp-primary-soft-rgb:   237 233 254;  /* #EDE9FE — light purple */
+    --clipupp-primary-fg-rgb:     255 255 255;
+
+    --clipupp-accent-rgb:         109 40 217;
+    --clipupp-accent-strong-rgb:  91 33 182;
+    --clipupp-accent-soft-rgb:    237 233 254;
+    --clipupp-accent-fg-rgb:      255 255 255;
+
+    --clipupp-success-rgb:        16 185 129;
+    --clipupp-success-strong-rgb: 5 150 105;
+    --clipupp-success-soft-rgb:   236 253 245;
+    --clipupp-success-fg-rgb:     255 255 255;
+
+    --clipupp-danger-rgb:         220 38 38;
+    --clipupp-danger-strong-rgb:  185 28 28;
+    --clipupp-danger-soft-rgb:    254 242 242;
+    --clipupp-danger-fg-rgb:      255 255 255;
+
+    --clipupp-neutral-50-rgb:  248 250 252;
+    --clipupp-neutral-100-rgb: 241 245 249;
+    --clipupp-neutral-200-rgb: 226 232 240;
+    --clipupp-neutral-300-rgb: 203 213 225;
+    --clipupp-neutral-400-rgb: 148 163 184;
+    --clipupp-neutral-500-rgb: 100 116 139;
+    --clipupp-neutral-600-rgb: 71 85 105;
+    --clipupp-neutral-700-rgb: 51 65 85;
+    --clipupp-neutral-800-rgb: 30 41 59;
+    --clipupp-neutral-900-rgb: 15 23 42;
+
+    /* ── shadcn semantic tokens, re-pointed to the single-purple palette.
+          HSL values match the hex tokens above. */
+    --background: 0 0% 100%;         /* white */
+    --foreground: 222 47% 11%;       /* clipupp-neutral-900 #0F172A text-dark */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 263 70% 50%;          /* dark purple #6D28D9 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 251 91% 95%;        /* light purple #EDE9FE */
+    --secondary-foreground: 263 69% 42%;
+    --muted: 210 40% 98%;            /* neutral-50 #F8FAFC */
+    --muted-foreground: 215 16% 47%; /* neutral-500 #64748B text-muted */
+    --accent: 263 70% 50%;           /* SAME as primary — collapsed accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 73% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;           /* neutral-200 #E2E8F0 */
+    --input: 214 32% 91%;
+    --ring: 263 70% 50%;
+    --radius: 0.5rem;
+
+    /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
+    --header-h: 64px;
+    --header-h-lg: 72px;
+
+    /* ── Typography — Inter (body) + Manrope (display) loaded via next/font
+          in app/[locale]/layout.tsx; the `--font-sans` and `--font-display`
+          vars are injected by Next so the values below are inherit fallbacks
+          for the rare case Next's runtime injection isn't ready (e.g. error
+          page during build). next/font handles preload + self-host + FOIT. */
+    --font-sans:
+      var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont,
+      "Helvetica Neue", "Segoe UI", Roboto, "Helvetica", Arial, sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji";
+    --font-display:
+      var(--font-manrope, "Manrope"), var(--font-inter, "Inter"),
+      -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto,
+      "Helvetica", Arial, sans-serif;
+    --font-mono:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+
+    /* ── Motion tokens — durations + easing. Everything in the app reaches
+          for these so we get coherent rhythm without scattered ad-hoc values. */
+    --clipupp-dur-fast:    120ms;
+    --clipupp-dur-base:    200ms;
+    --clipupp-dur-slow:    320ms;
+    --clipupp-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --clipupp-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Shadow tiers (semantic). Cards sit at resting → hover; floating
+          elements (featured/dragging) use lifted; modals + drawers use modal;
+          glow shadows reserved for hot CTAs and focused inputs. */
+    --clipupp-shadow-resting:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 1px 1px rgba(15, 23, 42, 0.06);
+    --clipupp-shadow-hover:
+      0 4px 12px rgba(15, 23, 42, 0.08),
+      0 2px 4px rgba(15, 23, 42, 0.06);
+    --clipupp-shadow-lifted:
+      0 12px 32px -8px rgba(15, 23, 42, 0.18),
+      0 4px 12px -4px rgba(15, 23, 42, 0.10);
+    --clipupp-shadow-modal:
+      0 24px 48px -12px rgba(15, 23, 42, 0.25),
+      0 12px 24px -8px rgba(15, 23, 42, 0.15);
+    /* Glow shadows: reserved for the primary CTA only. Single purple tone.
+       (Accent alias maps to the same purple glow for consistency.) */
+    --clipupp-shadow-glow-primary:
+      0 0 0 1px rgba(109, 40, 217, 0.18),
+      0 8px 20px -6px rgba(109, 40, 217, 0.32);
+    --clipupp-shadow-glow-accent:
+      0 0 0 1px rgba(109, 40, 217, 0.18),
+      0 8px 20px -6px rgba(109, 40, 217, 0.32);
+    --clipupp-shadow-glow-success:
+      0 0 0 1px rgba(16, 185, 129, 0.18),
+      0 8px 20px -6px rgba(16, 185, 129, 0.32);
+
+    /* Legacy aliases kept for back-compat with components from Phase 1-7. */
+    --clipupp-shadow-card:       var(--clipupp-shadow-resting);
+    --clipupp-shadow-card-hover: var(--clipupp-shadow-hover);
+
+    /* ── Z-index scale ─────────────────────────────────────────────────── */
+    --z-base:            0;
+    --z-dropdown:        100;
+    --z-sticky:          200;
+    --z-modal-backdrop:  300;
+    --z-modal:           400;
+    --z-toast:           500;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-padding-top: calc(var(--header-h) + 16px);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (min-width: 1024px) {
+    html {
+      scroll-padding-top: calc(var(--header-h-lg) + 16px);
+    }
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  :focus-visible {
+    outline: 3px solid rgb(var(--clipupp-primary-rgb) / 0.45);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  ::selection {
+    background: rgb(var(--clipupp-primary-rgb) / 0.20);
+    color: var(--clipupp-primary-strong);
+  }
+  h1, h2 {
+    text-wrap: balance;
+  }
+}
+
+.rtl {
+  direction: rtl;
+}
+
+@layer components {
+  /* ── Layout primitives ─────────────────────────────────────────────────
+        Container: max-1280, breakpoint-scaling side padding.
+        Section: rhythm spacing.
+        Prose: max line-length for editorial text. */
+  .clipupp-container {
+    @apply mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-20;
+  }
+  .clipupp-section {
+    @apply py-12 lg:py-20;
+  }
+  .clipupp-prose {
+    @apply mx-auto max-w-[680px];
+  }
+
+  /* ── Typography hierarchy ──────────────────────────────────────────────
+        Manrope (display, 600/700/800) + Inter (body, 400/500/600).
+        clamp() responsive scaling avoids breakpoint cliffs. */
+
+  /* Hero-only mega heading — biggest, tightest, heaviest. */
+  .clipupp-display-mega {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.75rem, 6vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--clipupp-neutral-900);
+    text-wrap: balance;
+  }
+  /* Sub-hero on detail / list pages (store / coupon / category / blog). */
+  .clipupp-display-hero {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--clipupp-neutral-900);
+    text-wrap: balance;
+  }
+  .clipupp-h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--clipupp-neutral-900);
+    text-wrap: balance;
+  }
+  .clipupp-h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--clipupp-neutral-900);
+    text-wrap: balance;
+  }
+  .clipupp-h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--clipupp-neutral-900);
+  }
+  .clipupp-body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--clipupp-neutral-700);
+  }
+  .clipupp-meta {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--clipupp-neutral-600);
+  }
+  .clipupp-price {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--clipupp-neutral-900);
+  }
+
+  /* Eyebrow — section labels above a heading. Burnt orange (#C2410C) —
+     deeper than a bright orange, still complementary to the dark purple
+     primary, reads as confident-vibrant on white. Tiny bar after the text
+     picks up the same hue. */
+  .clipupp-eyebrow-vivid {
+    @apply inline-flex items-center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #C2410C;
+    position: relative;
+    padding-right: 56px;
+  }
+  .clipupp-eyebrow-vivid::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 3px;
+    border-radius: 2px;
+    background: #C2410C;
+  }
+  /* Tone modifiers — opt-in overrides. Default eyebrow is burnt orange;
+     sections that want emphasis can layer one of these on the same element. */
+  .clipupp-eyebrow-vivid--accent { color: #C2410C; }
+  .clipupp-eyebrow-vivid--success { color: var(--clipupp-success-strong); }
+
+  /* Big savings number on row cards / hero overlays. Tabular nums so digits
+     align in vertical stacks. */
+  .clipupp-savings-massive {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Legacy aliases — old pages reference `.clipupp-tag`. Map it onto the new
+     eyebrow look so old call sites still render correctly while we sweep. */
+  .clipupp-tag {
+    @apply inline-flex items-center rounded-sm bg-clipupp-primary-soft px-2 py-0.5;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--clipupp-primary-strong);
+  }
+  .clipupp-section-title { @apply clipupp-h2; }
+  .clipupp-section-link {
+    @apply text-sm font-semibold text-clipupp-primary hover:underline;
+  }
+  .clipupp-headline-accent { color: var(--clipupp-primary); }
+  .clipupp-tabular { font-variant-numeric: tabular-nums; }
+
+  /* ── Gradient text utilities ───────────────────────────────────────────
+        Only ONE gradient text utility — `.clipupp-text-gradient-hero` — applied
+        on the homepage hero H1 keyword and nowhere else. Every other big-
+        savings number renders as solid primary text. */
+  .clipupp-text-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-800) 0%,
+      var(--clipupp-primary-600) 100%
+    );
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+  /* Legacy aliases — components still reference these. Map to solid primary
+     so the savings number reads as a single confident color, not a gradient. */
+  .clipupp-text-gradient-savings,
+  .clipupp-text-gradient-deal {
+    color: var(--clipupp-primary);
+    background: none;
+    -webkit-background-clip: initial;
+            background-clip: initial;
+    -webkit-text-fill-color: currentColor;
+  }
+
+  /* ── Gradient catalog ──────────────────────────────────────────────────
+        Clean Professional rule: gradients only on the hero band and primary
+        CTAs. Every other class in this catalog resolves to a solid primary
+        fill so legacy callsites still work but the visual is restrained. */
+  .clipupp-gradient-hero {
+    /* Primary CTA gradient — the only decorative gradient on the site
+       besides the hero mesh. #6D28D9 → #5B21B6 (dark purple range). */
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-800) 0%,
+      var(--clipupp-primary-600) 100%
+    );
+  }
+  .clipupp-gradient-warm,
+  .clipupp-gradient-cool,
+  .clipupp-gradient-savings,
+  .clipupp-gradient-rainbow {
+    background: var(--clipupp-primary);
+  }
+  .clipupp-gradient-success {
+    background: var(--clipupp-success);
+  }
+  /* Mesh = full saturated base + two soft radial light spots. Animates over
+     18s for subtle life on hero sections; disabled by reduced-motion. */
+  /* Mesh — RESERVED for the homepage hero section only. Subtle blue
+     gradient with a single soft light spot. No animation (calm, professional). */
+  .clipupp-mesh-primary {
+    background-color: var(--clipupp-primary-700);
+    background-image:
+      radial-gradient(
+        circle at 25% 30%,
+        rgba(255, 255, 255, 0.16) 0%,
+        transparent 55%
+      ),
+      linear-gradient(
+        135deg,
+        var(--clipupp-primary-800) 0%,
+        var(--clipupp-primary-600) 100%
+      );
+  }
+  /* Mesh-warm is a legacy alias — collapsed to a plain neutral surface
+     since the clean palette only allows two background tints. */
+  .clipupp-mesh-warm {
+    background-color: var(--clipupp-neutral-50);
+  }
+
+  /* ── Section background helpers ─────────────────────────────────────────
+        Clean Professional rule: alternating sections use only TWO tints —
+        white (`clipupp-neutral-0`) and the neutral-50 tint (`#F8FAFC`). Every
+        legacy "soft" / "fade-down" helper collapses to one of those two so
+        the page never reads as a rainbow of accent bands. The hero mesh
+        is the single exception. */
+  .clipupp-section-bg-primary       { background-color: var(--clipupp-primary); }
+  .clipupp-section-bg-primary-soft  { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-accent-soft   { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-success-soft  { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-neutral       { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-mesh-primary  { @apply clipupp-mesh-primary; }
+  .clipupp-section-bg-mesh-warm     { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-fade-down     { background-color: var(--clipupp-neutral-50); }
+  .clipupp-section-bg-rainbow-strip {
+    height: 4px;
+    width: 100%;
+    background: var(--clipupp-primary);
+  }
+
+  /* ── Base card primitive — full component variants come in Phase B. ── */
+  .clipupp-card {
+    @apply rounded-xl border border-clipupp-neutral-200 bg-card text-card-foreground;
+    box-shadow: var(--clipupp-shadow-resting);
+    transition:
+      box-shadow var(--clipupp-dur-base) var(--clipupp-ease-out),
+      transform var(--clipupp-dur-base) var(--clipupp-ease-out),
+      border-color var(--clipupp-dur-base) var(--clipupp-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .clipupp-card:hover {
+      box-shadow: var(--clipupp-shadow-hover);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* ── Base button stubs — full variants come in Phase B. ──────────────── */
+  .clipupp-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-primary:hover { background: var(--clipupp-primary-strong); }
+  .clipupp-btn-primary:disabled { opacity: 0.4; pointer-events: none; }
+
+  .clipupp-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: transparent;
+    color: var(--clipupp-primary);
+    border: 1.5px solid var(--clipupp-primary);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-ghost:hover { background: var(--clipupp-primary-soft); }
+
+  /* ── Input baseline — referenced across the app during sweep. ────────── */
+  .clipupp-input {
+    @apply flex h-11 w-full rounded-md px-3 text-[15px] transition-shadow;
+    background: var(--clipupp-neutral-0);
+    color: var(--clipupp-neutral-900);
+    border: 1.5px solid var(--clipupp-neutral-200);
+    font-family: var(--font-sans);
+  }
+  .clipupp-input::placeholder { color: var(--clipupp-neutral-400); }
+  .clipupp-input:focus,
+  .clipupp-input:focus-within {
+    border-color: var(--clipupp-primary-400);
+    outline: none;
+    box-shadow: var(--clipupp-shadow-glow-primary);
+  }
+  .clipupp-input:disabled { opacity: 0.4; }
+
+  /* ── Pill (chips / category tags) ──────────────────────────────────── */
+  .clipupp-pill {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+  }
+
+  /* ── Color strip — small horizontal accent (used in eyebrow rows etc.) */
+  .clipupp-color-strip {
+    @apply h-1 w-12 rounded-full;
+    background: linear-gradient(
+      90deg,
+      var(--clipupp-primary-600),
+      var(--clipupp-accent-500)
+    );
+  }
+
+  /* ── Skeleton — neutral shimmer matching card radius. ────────────────── */
+  .clipupp-skeleton {
+    @apply relative overflow-hidden rounded-xl bg-clipupp-neutral-100;
+  }
+  .clipupp-skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.55),
+      transparent
+    );
+    animation: clipupp-shimmer 1.4s infinite;
+  }
+
+  /* Hide scrollbar cross-browser */
+  .clipupp-no-scrollbar::-webkit-scrollbar { display: none; }
+  .clipupp-no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Admin table zebra striping. Opt-in via data-zebra on the <table>. */
+  .clipupp-table-zebra tbody tr:nth-child(even) {
+    background: var(--clipupp-neutral-50);
+  }
+
+  /* =========================================================================
+     Phase B — Component library
+     Cards, buttons, badges, ribbons, border-gradient utilities.
+     ====================================================================== */
+
+  /* ── Card variants (extend the base .clipupp-card declared above) ──────────── */
+
+  /* "Vivid" card legacy alias — in the clean palette, a normal card with
+     a 1px border. The hover lift is preserved so featured items still feel
+     interactive without colored chrome. */
+  .clipupp-card-vivid {
+    @apply relative rounded-xl bg-card text-card-foreground;
+    border: 1px solid var(--clipupp-neutral-200);
+    box-shadow: var(--clipupp-shadow-resting);
+    transition:
+      box-shadow var(--clipupp-dur-base) var(--clipupp-ease-out),
+      transform var(--clipupp-dur-base) var(--clipupp-ease-out),
+      border-color var(--clipupp-dur-base) var(--clipupp-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .clipupp-card-vivid:hover {
+      box-shadow: var(--clipupp-shadow-hover);
+      border-color: var(--clipupp-primary-200);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Brand-tinted: top band carries the store's brand color (set via inline
+     style), white body underneath. The 8:3 aspect band holds the logo. */
+  .clipupp-card-brand-tinted {
+    @apply clipupp-card overflow-hidden;
+  }
+  .clipupp-card-brand-tinted__band {
+    @apply flex items-center justify-center;
+    aspect-ratio: 8 / 3;
+    background: var(--clipupp-primary-soft); /* default; override inline */
+  }
+
+  /* Photo hero: full-bleed cover image, gradient overlay, text on top. */
+  .clipupp-card-photo-hero {
+    @apply relative overflow-hidden rounded-xl;
+    box-shadow: var(--clipupp-shadow-resting);
+    transition:
+      box-shadow var(--clipupp-dur-base) var(--clipupp-ease-out),
+      transform var(--clipupp-dur-base) var(--clipupp-ease-out);
+  }
+  .clipupp-card-photo-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(25, 24, 27, 0.85) 0%,
+      rgba(25, 24, 27, 0.20) 55%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .clipupp-card-photo-hero:hover {
+      box-shadow: var(--clipupp-shadow-lifted);
+      transform: translateY(-3px);
+    }
+  }
+
+  /* Coupon row: multi-column flex with a savings column color-coded by tier.
+     Layout details live in the component; this just locks the chrome. */
+  .clipupp-card-coupon-row {
+    @apply clipupp-card grid items-center gap-4 p-4 md:grid-cols-[auto_1fr_auto_auto] md:p-5;
+  }
+
+  /* Legacy border-gradient — now a solid primary border. */
+  .clipupp-border-gradient-primary {
+    border: 1px solid var(--clipupp-primary);
+  }
+
+  /* ── Button variants ──────────────────────────────────────────────────── */
+
+  /* Primary CTA — the ONE allowed gradient button. Dark-purple range:
+     #7C3AED (vibrant mid purple) → #5B21B6 (deeper purple) on hover.
+     Used on the hero CTA, sign-in submit, "Get this deal", "Get code", etc. */
+  .clipupp-btn-primary-gradient {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-600) 0%,
+      var(--clipupp-primary-800) 100%
+    );
+    color: var(--clipupp-primary-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-primary-gradient:hover {
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-700) 0%,
+      var(--clipupp-primary-900) 100%
+    );
+  }
+  .clipupp-btn-primary-gradient:disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Accent variants collapse to the primary look. No second accent color
+     in the clean palette — every CTA reads as the same brand action. */
+  .clipupp-btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-accent:hover { background: var(--clipupp-primary-strong); }
+  .clipupp-btn-accent:disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Accent-gradient legacy alias — same look as primary-gradient. No pulse
+     animation (calm professional rhythm; no "shouting" CTAs). */
+  .clipupp-btn-accent-gradient {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-600) 0%,
+      var(--clipupp-primary-800) 100%
+    );
+    color: var(--clipupp-primary-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-accent-gradient:hover {
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-700) 0%,
+      var(--clipupp-primary-900) 100%
+    );
+  }
+  .clipupp-btn-accent-gradient:disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Glass: white/60 backdrop-blur. Used over hero / photo overlay. */
+  .clipupp-btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: rgba(255, 255, 255, 0.60);
+    color: var(--clipupp-neutral-900);
+    border: 1px solid rgba(255, 255, 255, 0.40);
+    -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-glass:hover { background: rgba(255, 255, 255, 0.80); }
+
+  /* Soft pill: rounded-full with primary-soft background. Category chips. */
+  .clipupp-btn-soft-pill {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2 text-sm font-semibold transition-colors;
+    background: var(--clipupp-primary-soft);
+    color: var(--clipupp-primary-strong);
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-soft-pill:hover {
+    background: var(--clipupp-primary-100);
+    color: var(--clipupp-primary-700);
+  }
+  .clipupp-btn-soft-pill[data-active="true"] {
+    background: linear-gradient(
+      135deg,
+      var(--clipupp-primary-700) 0%,
+      var(--clipupp-primary-500) 100%
+    );
+    color: var(--clipupp-primary-fg);
+    box-shadow: var(--clipupp-shadow-glow-primary);
+  }
+
+  /* Danger: solid red. Destructive admin actions. */
+  .clipupp-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--clipupp-danger);
+    color: var(--clipupp-danger-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .clipupp-btn-danger:hover { background: var(--clipupp-danger-strong); }
+
+  /* ── Badges & ribbons ─────────────────────────────────────────────────────
+        Clean palette: badges are restrained pills in soft primary blue
+        (informational) or success green (verified positive only). No
+        gradient backgrounds, no pulse animations. */
+
+  .clipupp-badge-savings {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    background: var(--clipupp-primary-soft);
+    color: var(--clipupp-primary-strong);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  .clipupp-badge-flash {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .clipupp-badge-verified {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--clipupp-success-soft);
+    color: var(--clipupp-success-strong);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .clipupp-badge-exclusive {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--clipupp-primary-soft);
+    color: var(--clipupp-primary-strong);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .clipupp-badge-hot {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .clipupp-badge-new {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .clipupp-badge-expiring {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--clipupp-danger-soft);
+    color: var(--clipupp-danger-strong);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* Corner ribbon — small solid primary ribbon. No gradient. */
+  .clipupp-ribbon-corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 96px;
+    height: 96px;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .clipupp-ribbon-corner__inner {
+    position: absolute;
+    top: 16px;
+    right: -28px;
+    width: 140px;
+    padding: 6px 0;
+    background: var(--clipupp-primary);
+    color: var(--clipupp-primary-fg);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    transform: rotate(45deg);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.20);
+  }
+
+  /* Left-edge gradient bar — for guarantees tiles + active sidebar items.
+     Widens on hover via the parent's :hover. */
+  .clipupp-edge-bar {
+    position: relative;
+    padding-left: 16px;
+  }
+  .clipupp-edge-bar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 2px;
+    background: var(--clipupp-primary);
+    transition: width var(--clipupp-dur-base) var(--clipupp-ease-out);
+  }
+  .clipupp-edge-bar:hover::before { width: 5px; }
+
+  /* Pulse dot — live indicator. 8px dot with two expanding ring layers. */
+  .clipupp-pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--clipupp-success);
+  }
+  .clipupp-pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    border: 2px solid var(--clipupp-success);
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .clipupp-pulse-dot::after {
+      animation: clipupp-pulse-dot 1.4s ease-out infinite;
+    }
+  }
+}
+
+/* =============================================================================
+   Animations — compositor-friendly (transform / opacity / box-shadow only).
+   All non-essential ones gated by prefers-reduced-motion in @layer base above.
+   ========================================================================== */
+
+@keyframes clipupp-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes clipupp-fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes clipupp-gradient-shift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes clipupp-pulse-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgb(var(--clipupp-accent-rgb) / 0.40),
+      0 8px 24px -6px rgb(var(--clipupp-accent-rgb) / 0.40);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgb(var(--clipupp-accent-rgb) / 0),
+      0 8px 24px -6px rgb(var(--clipupp-accent-rgb) / 0.55);
+  }
+}
+
+@keyframes clipupp-pulse-dot {
+  0%, 100% { transform: scale(1);   opacity: 1;   }
+  50%      { transform: scale(1.4); opacity: 0.6; }
+}
+
+.clipupp-fade-in-up {
+  animation: clipupp-fade-in-up 0.5s var(--clipupp-ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clipupp-fade-in-up { animation: none; }
+}

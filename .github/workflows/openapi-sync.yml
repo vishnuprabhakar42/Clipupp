@@ -6,10 +6,10 @@ name: openapi-sync
 #
 # What it will do (Sprint 1+):
 #   1. Boot the backend in CI, dump /v3/api-docs/v1 to a JSON file
-#   2. Run openapi-typescript against it -> frontend/couponvalley/lib/api/generated/schema.ts
+#   2. Run openapi-typescript against it -> frontend/clipupp/lib/api/generated/schema.ts
 #   3. Open a PR if the generated types changed
 #
-# Until then, regenerate locally via: cd frontend/couponvalley && npm run openapi:gen
+# Until then, regenerate locally via: cd frontend/clipupp && npm run openapi:gen
 
 on:
   workflow_dispatch:
