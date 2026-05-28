@@ -14,9 +14,9 @@ export const size = { width: 1200, height: 630 };
  * brand palette changes.
  */
 const CV = {
-  primary:       "#6C5CE7",
-  primaryStrong: "#5847D6",
-  accent:        "#00B894",
+  primary:       "#6D28D9",
+  primaryStrong: "#5B21B6",
+  accent:        "#10B981",
 } as const;
 
 export async function GET(
@@ -49,7 +49,7 @@ export async function GET(
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 80,
-          background: `linear-gradient(135deg, ${CV.primary} 0%, ${CV.primaryStrong} 60%, #60A5FA 100%)`,
+          background: `linear-gradient(135deg, ${CV.primary} 0%, ${CV.primaryStrong} 60%, #A78BFA 100%)`,
           color: "white",
           fontFamily: "ui-sans-serif, system-ui, -apple-system",
         }}
