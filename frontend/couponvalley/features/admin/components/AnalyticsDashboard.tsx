@@ -52,7 +52,7 @@ const RANGE_OPTIONS = [
 // Pie wedges cycle through the brand roles. Mirror of the --cv-* vars in
 // globals.css — kept inline because Recharts resolves the fill string at
 // render and doesn't read CSS variables for `<Cell fill="..."/>`.
-const PIE_COLORS = ["#6C5CE7", "#00B894", "#10b981", "#6C5CE7", "#475569"];
+const PIE_COLORS = ["#6D28D9", "#10B981", "#10b981", "#6D28D9", "#475569"];
 
 type Props = {
   initialDays: number;
@@ -161,9 +161,9 @@ export function AnalyticsDashboard({
   // Recharts <Area> needs a literal hex/var string at render — the SVG won't
   // resolve a Tailwind class. Map each timeseries metric to one brand role.
   const accentMetric: Record<TimeseriesMetric, string> = {
-    clicks:      "#6C5CE7", // cv-primary (blue)
+    clicks:      "#6D28D9", // cv-primary (blue)
     conversions: "#10b981", // cv-success (emerald)
-    signups:     "#00B894", // cv-accent (orange)
+    signups:     "#10B981", // cv-accent (orange)
   };
   const metricColor = accentMetric[metric];
 
@@ -390,8 +390,8 @@ export function AnalyticsDashboard({
                   >
                     <defs>
                       <linearGradient id="bar-brand" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#6C5CE7" />
-                        <stop offset="100%" stopColor="#5847D6" />
+                        <stop offset="0%" stopColor="#6D28D9" />
+                        <stop offset="100%" stopColor="#5B21B6" />
                       </linearGradient>
                     </defs>
                     <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="#f1f5f9" />

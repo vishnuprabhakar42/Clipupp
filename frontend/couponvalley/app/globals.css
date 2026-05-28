@@ -17,39 +17,38 @@
 
 @layer base {
   :root {
-    /* ── Single brand blue scale ───────────────────────────────────────── */
-    --cv-primary-50:  #EFF6FF;
-    --cv-primary-100: #DBEAFE;
-    --cv-primary-200: #BFDBFE;
-    --cv-primary-300: #93C5FD;
-    --cv-primary-400: #60A5FA;
-    --cv-primary-500: #3B82F6;
-    --cv-primary-600: #2563EB;   /* PRIMARY — buttons, links, active, all icons */
-    --cv-primary-700: #1D4ED8;
-    --cv-primary-800: #1E40AF;   /* Gradient deep stop */
-    --cv-primary-900: #1E3A8A;
-    --cv-primary:        var(--cv-primary-600);
-    --cv-primary-strong: var(--cv-primary-700);
-    --cv-primary-soft:   var(--cv-primary-50);
+    /* ── Single brand purple scale (dark purple + light purple) ────────── */
+    --cv-primary-50:  #F5F3FF;   /* near-white lavender — page accent backgrounds */
+    --cv-primary-100: #EDE9FE;   /* LIGHT PURPLE — tile fills, soft pills, eyebrows */
+    --cv-primary-200: #DDD6FE;
+    --cv-primary-300: #C4B5FD;
+    --cv-primary-400: #A78BFA;
+    --cv-primary-500: #8B5CF6;
+    --cv-primary-600: #7C3AED;   /* Mid purple — gradient bright stop */
+    --cv-primary-700: #6D28D9;   /* DARK PURPLE — buttons, links, active, all icons */
+    --cv-primary-800: #5B21B6;   /* Deeper purple — hover, gradient deep stop */
+    --cv-primary-900: #4C1D95;
+    --cv-primary:        var(--cv-primary-700);
+    --cv-primary-strong: var(--cv-primary-800);
+    --cv-primary-soft:   var(--cv-primary-100);
     --cv-primary-fg:     #FFFFFF;
 
-    /* ── Accent — deliberately collapsed to primary. The system has ONE
-          accent color, full stop. Every utility class that used to reach
-          for amber (badges, hot CTAs, savings ribbons) now resolves to the
-          same brand blue. */
-    --cv-accent-50:  #EFF6FF;
-    --cv-accent-100: #DBEAFE;
-    --cv-accent-200: #BFDBFE;
-    --cv-accent-300: #93C5FD;
-    --cv-accent-400: #60A5FA;
-    --cv-accent-500: #3B82F6;
-    --cv-accent-600: #2563EB;
-    --cv-accent-700: #1D4ED8;
-    --cv-accent-800: #1E40AF;
-    --cv-accent-900: #1E3A8A;
-    --cv-accent:        var(--cv-primary-600);
-    --cv-accent-strong: var(--cv-primary-700);
-    --cv-accent-soft:   var(--cv-primary-50);
+    /* ── Accent — collapsed to primary (single-accent system). Every utility
+          class that used to reach for amber/blue accent now resolves to the
+          same brand purple. */
+    --cv-accent-50:  #F5F3FF;
+    --cv-accent-100: #EDE9FE;
+    --cv-accent-200: #DDD6FE;
+    --cv-accent-300: #C4B5FD;
+    --cv-accent-400: #A78BFA;
+    --cv-accent-500: #8B5CF6;
+    --cv-accent-600: #7C3AED;
+    --cv-accent-700: #6D28D9;
+    --cv-accent-800: #5B21B6;
+    --cv-accent-900: #4C1D95;
+    --cv-accent:        var(--cv-primary-700);
+    --cv-accent-strong: var(--cv-primary-800);
+    --cv-accent-soft:   var(--cv-primary-100);
     --cv-accent-fg:     #FFFFFF;
 
     /* ── Success — emerald, used only for true positive states (verified,
@@ -83,14 +82,14 @@
     --cv-neutral-900: #0F172A;   /* Text dark — headings + body */
 
     /* ── RGB triplets for slash-opacity modifier ── */
-    --cv-primary-rgb:        37 99 235;
-    --cv-primary-strong-rgb: 29 78 216;
-    --cv-primary-soft-rgb:   239 246 255;
+    --cv-primary-rgb:        109 40 217;   /* #6D28D9 — dark purple */
+    --cv-primary-strong-rgb: 91 33 182;    /* #5B21B6 */
+    --cv-primary-soft-rgb:   237 233 254;  /* #EDE9FE — light purple */
     --cv-primary-fg-rgb:     255 255 255;
 
-    --cv-accent-rgb:         37 99 235;
-    --cv-accent-strong-rgb:  29 78 216;
-    --cv-accent-soft-rgb:    239 246 255;
+    --cv-accent-rgb:         109 40 217;
+    --cv-accent-strong-rgb:  91 33 182;
+    --cv-accent-soft-rgb:    237 233 254;
     --cv-accent-fg-rgb:      255 255 255;
 
     --cv-success-rgb:        16 185 129;
@@ -114,7 +113,7 @@
     --cv-neutral-800-rgb: 30 41 59;
     --cv-neutral-900-rgb: 15 23 42;
 
-    /* ── shadcn semantic tokens, re-pointed to the single-blue palette.
+    /* ── shadcn semantic tokens, re-pointed to the single-purple palette.
           HSL values match the hex tokens above. */
     --background: 0 0% 100%;         /* white */
     --foreground: 222 47% 11%;       /* cv-neutral-900 #0F172A text-dark */
@@ -122,19 +121,19 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 217 91% 56%;          /* blue #2563EB */
+    --primary: 263 70% 50%;          /* dark purple #6D28D9 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 100% 97%;       /* primary-50 #EFF6FF */
-    --secondary-foreground: 217 91% 40%;
+    --secondary: 251 91% 95%;        /* light purple #EDE9FE */
+    --secondary-foreground: 263 69% 42%;
     --muted: 210 40% 98%;            /* neutral-50 #F8FAFC */
     --muted-foreground: 215 16% 47%; /* neutral-500 #64748B text-muted */
-    --accent: 217 91% 56%;           /* SAME as primary — collapsed accent */
+    --accent: 263 70% 50%;           /* SAME as primary — collapsed accent */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 73% 50%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;           /* neutral-200 #E2E8F0 */
     --input: 214 32% 91%;
-    --ring: 217 91% 56%;
+    --ring: 263 70% 50%;
     --radius: 0.5rem;
 
     /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
@@ -181,15 +180,14 @@
     --cv-shadow-modal:
       0 24px 48px -12px rgba(15, 23, 42, 0.25),
       0 12px 24px -8px rgba(15, 23, 42, 0.15);
-    /* Glow shadows: reserved for the primary CTA only. Single blue tone.
-       (Accent + success aliases kept so old callsites still resolve; both
-       map to the same blue glow for consistency.) */
+    /* Glow shadows: reserved for the primary CTA only. Single purple tone.
+       (Accent alias maps to the same purple glow for consistency.) */
     --cv-shadow-glow-primary:
-      0 0 0 1px rgba(37, 99, 235, 0.18),
-      0 8px 20px -6px rgba(37, 99, 235, 0.32);
+      0 0 0 1px rgba(109, 40, 217, 0.18),
+      0 8px 20px -6px rgba(109, 40, 217, 0.32);
     --cv-shadow-glow-accent:
-      0 0 0 1px rgba(37, 99, 235, 0.18),
-      0 8px 20px -6px rgba(37, 99, 235, 0.32);
+      0 0 0 1px rgba(109, 40, 217, 0.18),
+      0 8px 20px -6px rgba(109, 40, 217, 0.32);
     --cv-shadow-glow-success:
       0 0 0 1px rgba(16, 185, 129, 0.18),
       0 8px 20px -6px rgba(16, 185, 129, 0.32);
@@ -431,7 +429,7 @@
         fill so legacy callsites still work but the visual is restrained. */
   .cv-gradient-hero {
     /* Primary CTA gradient — the only decorative gradient on the site
-       besides the hero mesh. #2563EB → #1E40AF per spec. */
+       besides the hero mesh. #6D28D9 → #5B21B6 (dark purple range). */
     background: linear-gradient(
       135deg,
       var(--cv-primary-800) 0%,
@@ -671,7 +669,8 @@
 
   /* ── Button variants ──────────────────────────────────────────────────── */
 
-  /* Primary CTA — the ONE allowed gradient button (#2563EB → #1E40AF).
+  /* Primary CTA — the ONE allowed gradient button. Dark-purple range:
+     #7C3AED (vibrant mid purple) → #5B21B6 (deeper purple) on hover.
      Used on the hero CTA, sign-in submit, "Get this deal", "Get code", etc. */
   .cv-btn-primary-gradient {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
