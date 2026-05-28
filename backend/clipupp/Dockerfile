@@ -1,57 +1,56 @@
 # syntax=docker/dockerfile:1.7
 # ─────────────────────────────────────────────────────────────────────────────
 # Clipupp backend — production Dockerfile
-# Multi-stage build keeps the runtime image lean (no JDK, no Gradle cache,
-# no test classes). Suitable for Railway, Render, Fly.io, AWS ECS / EKS.
+# Alpine multi-stage. Why Alpine over Debian:
+#   - smaller runtime image (~80 MB vs ~250 MB)
+#   - BusyBox `adduser -S` auto-assigns a free UID, so no "UID 1000 is not
+#     unique" collision against base images that already ship that UID.
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── Stage 1 — build ──────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jdk AS build
-WORKDIR /workspace
-
-# Copy Gradle wrapper + build files first so the dependency download layer
-# is cached as long as build.gradle / settings.gradle don't change.
-COPY gradlew settings.gradle build.gradle ./
-COPY gradle ./gradle
-RUN chmod +x gradlew && ./gradlew --no-daemon --version
-
-# Resolve dependencies (cached unless build.gradle changes)
-RUN ./gradlew --no-daemon dependencies > /dev/null 2>&1 || true
-
-# Now copy sources and build the boot jar
-COPY src ./src
-RUN ./gradlew --no-daemon clean bootJar -x test
-
-# Verify the artifact name matches build.gradle's bootJar.archiveFileName
-RUN test -f build/libs/app.jar || (ls -lah build/libs && false)
-
-
-# ── Stage 2 — runtime ────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jre
-
-# Run as a non-root user for safety.
-RUN groupadd --system clipupp && \
-    useradd  --system --gid clipupp --uid 1000 --home /app --shell /sbin/nologin clipupp && \
-    mkdir -p /app && chown clipupp:clipupp /app
+# ── Stage 1: Build ──────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
-COPY --from=build --chown=clipupp:clipupp /workspace/build/libs/app.jar /app/app.jar
+
+# Copy Gradle wrapper + dependency files first → dependency-download layer is
+# cached as long as build.gradle / settings.gradle don't change.
+COPY gradle/ gradle/
+COPY gradlew gradlew
+COPY build.gradle settings.gradle ./
+RUN chmod +x gradlew
+
+# Pre-fetch dependencies (warms the cache; the `|| true` covers Gradle's
+# legitimate non-zero exits on unresolved configs without breaking the build).
+RUN ./gradlew dependencies --no-daemon -q || true
+
+# Build the boot jar. Tests run in backend-ci, not here.
+COPY src/ src/
+RUN ./gradlew bootJar --no-daemon -x test
+
+
+# ── Stage 2: Runtime ─────────────────────────────────────────────────────────
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# Non-root user — BusyBox -S = system account, GID/UID auto-assigned.
+RUN addgroup -S clipupp && adduser -S clipupp -G clipupp
+
+# build.gradle pins archiveFileName = 'app.jar', so the path is deterministic.
+COPY --from=builder --chown=clipupp:clipupp /app/build/libs/app.jar /app/app.jar
 
 USER clipupp
 
-# Container-aware JVM flags + UTF-8 + urandom for fast SecureRandom seeding.
-# MaxRAMPercentage lets the JVM right-size its heap against the container
-# memory limit (Railway containers default to 512 MB → ~384 MB heap).
-ENV JAVA_OPTS="\
-    -XX:+UseG1GC \
-    -XX:MaxRAMPercentage=75 \
-    -XX:+ExitOnOutOfMemoryError \
-    -Djava.security.egd=file:/dev/./urandom \
-    -Dfile.encoding=UTF-8 \
-    -Duser.timezone=UTC"
+# Default to the prod profile so a misconfigured Railway service still boots
+# safely. Override via env if needed.
+ENV SPRING_PROFILES_ACTIVE=prod
+
+# Container-aware JVM: heap auto-sizes to the container memory limit.
+# Railway's default 512 MB container → ~384 MB heap.
+ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8 -Duser.timezone=UTC"
 
 EXPOSE 8080
 
-# Spring Boot reads $PORT via ${PORT:8080} fallback in application.yml after we
-# wire SERVER_PORT=$PORT in Railway. Falls back to 8080 when not set (local).
-ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar /app/app.jar"]
+# Spring picks up $PORT via ${PORT:8080} in application.yml when Railway
+# injects it; falls back to 8080 locally.
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
