@@ -8,9 +8,10 @@ type HeroCategory = {
 };
 
 /**
- * Hero band for category detail pages. Small icon left, H1 + description
- * right, optional stat chips below. Faint cv-primary-soft background so
- * the band reads as a hero without competing with the coupon list.
+ * Hero band for category detail pages. Fade-down background (white → primary
+ * soft), gradient icon disc on the left, H1 + description on the right.
+ * Softer than store / coupon mesh heroes — signals "browse / discovery"
+ * rather than "checkout / claim."
  *
  * Server-rendered; icon defaults to Lucide Tag.
  */
@@ -26,39 +27,41 @@ export function CategoryHero({
   return (
     <section
       aria-labelledby="category-hero-heading"
-      className="border-b border-cv-neutral-200 bg-cv-primary-soft"
+      className="cv-section-bg-fade-down relative overflow-hidden border-b border-cv-neutral-200"
     >
-      <div className="cv-container py-8 lg:py-12">
-        <div className="flex flex-col items-start gap-5 lg:flex-row lg:items-center">
-          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-xl bg-white text-cv-primary shadow-card lg:h-20 lg:w-20">
-            <Icon className="h-8 w-8 lg:h-9 lg:w-9" aria-hidden strokeWidth={1.75} />
+      <div className="cv-container py-10 lg:py-14">
+        <div className="flex flex-col items-start gap-5 lg:flex-row lg:items-center lg:gap-7">
+          <span
+            className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl text-white lg:h-24 lg:w-24"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
+              boxShadow: "var(--cv-shadow-glow-primary)",
+            }}
+          >
+            <Icon className="h-9 w-9 lg:h-11 lg:w-11" aria-hidden strokeWidth={2} />
           </span>
           <div className="min-w-0 flex-1">
-            <h1
-              id="category-hero-heading"
-              className="font-display text-[1.75rem] font-bold leading-tight tracking-tight text-cv-neutral-900 lg:text-[2.25rem]"
-            >
-              {category.title} Coupons & Deals
+            <p className="cv-eyebrow-vivid">Category</p>
+            <h1 id="category-hero-heading" className="cv-display-hero mt-2">
+              {category.title}{" "}
+              <span className="cv-text-gradient-savings">Coupons</span> &amp;{" "}
+              <span className="cv-text-gradient-hero">Deals</span>
             </h1>
             {category.description && (
-              <p className="cv-body mt-2 max-w-3xl text-cv-neutral-600">
-                {category.description}
-              </p>
+              <p className="cv-body mt-3 max-w-3xl">{category.description}</p>
             )}
           </div>
         </div>
 
         {stats && stats.length > 0 && (
-          <ul className="mt-6 flex flex-wrap items-center gap-2 sm:gap-3">
+          <ul className="mt-7 flex flex-wrap items-center gap-2">
             {stats.map((s) => (
-              <li
-                key={s.label}
-                className="inline-flex items-center gap-2 rounded-full border border-cv-neutral-200 bg-white px-3 py-1.5 text-[13px]"
-              >
-                <span className="font-semibold tabular-nums text-cv-neutral-900">
+              <li key={s.label} className="cv-btn-soft-pill text-[13px]">
+                <span className="font-extrabold tabular-nums text-cv-primary-800">
                   {typeof s.value === "number" ? s.value.toLocaleString() : s.value}
                 </span>
-                <span className="text-cv-neutral-500">{s.label}</span>
+                <span className="text-cv-primary-700">{s.label}</span>
               </li>
             ))}
           </ul>

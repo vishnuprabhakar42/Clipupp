@@ -1,22 +1,24 @@
-import { CheckCircle2, ChevronDown, Sparkles, TrendingUp, Users2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, Sparkles, TrendingUp, Users2, Flame } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import type { CouponSummary } from "@/lib/api/types";
 
 /**
- * The new platform-wide coupon row card. Server-rendered, zero client JS.
- * Layout (desktop):
+ * Platform-wide coupon row card — most-rendered component on the site.
+ * Server-rendered, zero client JS. Layout (desktop):
  *
- *   ┌──────────┬───┬────────────────────────┬─────────────────────────────┐
- *   │ SAVINGS  │ │ │ Title                  │ stats line                  │
- *   │ (huge)   │ │ │ ▾ Show details         │ ┌─[GET CODE]─[XX...ER]──┐  │
- *   └──────────┴───┴────────────────────────┴─────────────────────────────┘
+ *   ┌──── savings ────┬───┬──── title + meta ────┬──── CTA + code hint ────┐
  *
  * The reveal under "Show details" is a native <details> so it works without
  * JS. The CTA is an <a target="_blank"> pointing at /r/{couponId} so the
  * affiliate redirect happens server-side via the Spring backend.
  *
- * Used by store-detail pages and list pages that need a high-density list
- * presentation (couponers expect lists, not tile grids).
+ * Visual tier (Phase 2 redesign):
+ * - Hot deals: 2px crimson border, gradient stripe "FLASH" + savings text
+ *   gets `.cv-text-gradient-savings` (amber gradient).
+ * - Recommended: 2px crimson border, gradient stripe "RECOMMENDED".
+ * - Default: 1px neutral border, savings in crimson.
+ * Codes get an amber-gradient CTA with the last 2 chars peeking behind.
+ * Deals get a crimson-gradient CTA, full-width.
  */
 export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
   const isCode = coupon.type === "CODE";
@@ -24,6 +26,7 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
     (coupon.usedCount ?? 0) >= 50 || (coupon.popularityScore ?? 0) >= 75;
   const isFlashDeal = isHot && (coupon.type === "DEAL" || coupon.type === "FREE_SHIPPING");
   const isRecommended = coupon.exclusive || (coupon.verified && isHot && !isFlashDeal);
+  const showStripe = isRecommended || isFlashDeal;
 
   const savings = (coupon.savingsLabel ?? "").trim();
   const savingsBig = savings
@@ -52,35 +55,49 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
       ? Math.min(99, Math.max(70, coupon.popularityScore))
       : null;
 
-  // Border + accent role. Orange ONLY for flash deals (urgency); blue for
-  // recommended; neutral otherwise. See feedback_visual_direction memory.
+  // Border + savings color tier.
   const borderCls = isFlashDeal
-    ? "border-cv-accent"
+    ? "border-cv-accent-500 border-2"
     : isRecommended
-      ? "border-cv-primary"
-      : "border-cv-neutral-200";
-  const stripBg = isFlashDeal ? "bg-cv-accent" : "bg-cv-primary";
-  const savingsColor = isFlashDeal ? "text-cv-accent-strong" : "text-cv-primary";
-  const stripLabel = isFlashDeal ? "Flash deal" : "Recommended";
+      ? "border-cv-primary-600 border-2"
+      : "border-cv-neutral-200 border";
+  // Savings color: always amber gradient for hot deals, otherwise crimson.
+  const useGradient = isFlashDeal || isHot;
 
   return (
     <article
-      className={`overflow-hidden rounded-lg border-2 bg-white shadow-card ${borderCls}`}
+      className={`relative overflow-hidden rounded-xl bg-white shadow-resting transition-shadow hover:shadow-hover ${borderCls}`}
     >
-      {(isRecommended || isFlashDeal) && (
-        <div className={`${stripBg} px-5 py-1.5`}>
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-white">
-            {stripLabel}
+      {showStripe && (
+        <div
+          className={`px-5 py-1.5 ${isFlashDeal ? "cv-gradient-savings" : "cv-gradient-hero"}`}
+        >
+          <span className="inline-flex items-center gap-1.5 font-display text-[11px] font-extrabold uppercase tracking-[0.18em] text-white">
+            {isFlashDeal ? (
+              <>
+                <Flame className="h-3 w-3" aria-hidden strokeWidth={2.5} />
+                Flash deal
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-3 w-3" aria-hidden strokeWidth={2.5} />
+                Recommended
+              </>
+            )}
           </span>
         </div>
       )}
 
-      {/* Mobile: stacked rows. Desktop: 3-col grid with dashed divider. */}
+      {/* Mobile: stacked. Desktop: 3-col grid with dashed divider. */}
       <div className="flex flex-col md:flex-row md:items-stretch">
         {/* SAVINGS column */}
-        <div className="flex shrink-0 items-center justify-center px-5 py-5 md:w-[160px] md:py-7">
+        <div className="flex shrink-0 items-center justify-center px-5 py-5 md:w-[180px] md:py-7">
           <p
-            className={`text-center font-display text-[1.75rem] font-extrabold uppercase leading-[1.05] tracking-tight tabular-nums md:text-[2.1rem] md:leading-[1.2] ${savingsColor}`}
+            className={`cv-savings-massive text-center uppercase ${
+              useGradient
+                ? "cv-text-gradient-savings"
+                : "text-cv-primary-700"
+            }`}
           >
             {savingsBig}
           </p>
@@ -93,14 +110,14 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
         <div className="flex min-w-0 flex-1 flex-col justify-center gap-2 px-5 py-4 md:px-6 md:py-6">
           <Link
             href={`/coupons/${coupon.slug}`}
-            className="line-clamp-2 text-[15px] font-semibold leading-snug text-cv-neutral-900 transition-colors hover:text-cv-primary md:text-[17px]"
+            className="line-clamp-2 font-display text-[15px] font-bold leading-snug text-cv-neutral-900 transition-colors hover:text-cv-primary-700 md:text-[17px]"
           >
             {coupon.title}
           </Link>
 
           {(coupon.description || coupon.code) && (
             <details className="group/details">
-              <summary className="inline-flex w-fit cursor-pointer items-center gap-1 text-[13px] font-medium text-cv-primary outline-none hover:underline focus-visible:underline">
+              <summary className="inline-flex w-fit cursor-pointer items-center gap-1 text-[13px] font-semibold text-cv-primary-700 outline-none hover:underline focus-visible:underline">
                 Show details
                 <ChevronDown
                   className="h-3.5 w-3.5 transition-transform group-open/details:rotate-180"
@@ -121,29 +138,29 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
             </details>
           )}
 
-          {/* Inline meta — verified / hot / exclusive — kept tight */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
+          {/* Inline meta — verified / exclusive / success / uses */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
             {coupon.verified && (
-              <span className="inline-flex items-center gap-1 font-medium text-cv-success-strong">
-                <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+              <span className="cv-badge-verified">
+                <CheckCircle2 className="h-3 w-3" aria-hidden />
                 Verified
               </span>
             )}
             {coupon.exclusive && (
-              <span className="inline-flex items-center gap-1 font-medium text-cv-accent-strong">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+              <span className="cv-badge-exclusive">
+                <Sparkles className="h-3 w-3" aria-hidden />
                 Exclusive
               </span>
             )}
             {successRate !== null && (
-              <span className="inline-flex items-center gap-1 font-medium text-cv-success-strong">
-                <TrendingUp className="h-3.5 w-3.5" aria-hidden />
-                <span className="font-bold">{successRate}%</span> success
+              <span className="cv-pill bg-cv-success-soft text-cv-success-strong">
+                <TrendingUp className="h-3 w-3" aria-hidden />
+                <span className="font-bold tabular-nums">{successRate}%</span> success
               </span>
             )}
             {coupon.usedCount > 0 && (
-              <span className="inline-flex items-center gap-1 font-medium text-cv-neutral-500">
-                <Users2 className="h-3.5 w-3.5" aria-hidden />
+              <span className="inline-flex items-center gap-1 text-[12px] font-medium text-cv-neutral-500">
+                <Users2 className="h-3 w-3" aria-hidden />
                 {coupon.usedCount.toLocaleString()} uses
               </span>
             )}
@@ -154,9 +171,9 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
         <div className="flex shrink-0 items-center px-5 py-4 md:w-[300px] md:py-6">
           <div className="relative h-12 w-full">
             {codeHint && (
-              <div className="absolute inset-0 flex items-center justify-end rounded-md border-2 border-dashed border-cv-neutral-300 bg-white">
+              <div className="absolute inset-0 flex items-center justify-end rounded-md border-2 border-dashed border-cv-accent-400 bg-cv-accent-soft">
                 <span
-                  className="select-none pr-3 font-mono text-[12px] font-bold tracking-[0.22em] text-cv-neutral-400"
+                  className="select-none pr-3 font-mono text-[13px] font-extrabold tracking-[0.22em] text-cv-accent-700"
                   aria-hidden
                 >
                   {codeHint}
@@ -168,8 +185,8 @@ export function CouponSavingsRowCard({ coupon }: { coupon: CouponSummary }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`${ctaText} for ${coupon.title}`}
-              className={`absolute inset-y-0 left-0 z-10 inline-flex items-center justify-center rounded-md bg-cv-primary px-4 text-[13px] font-extrabold uppercase tracking-wide text-white transition-colors hover:bg-cv-primary-strong ${
-                codeHint ? "w-[78%]" : "w-full"
+              className={`${isCode ? "cv-btn-accent-gradient" : "cv-btn-primary-gradient"} absolute inset-y-0 left-0 z-10 text-[13px] font-extrabold uppercase tracking-wide ${
+                codeHint ? "w-[76%]" : "w-full"
               }`}
             >
               {ctaText}
