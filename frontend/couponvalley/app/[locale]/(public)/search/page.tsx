@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Search as SearchIcon } from "lucide-react";
 import { searchApi } from "@/lib/api/search";
 import { isApiError } from "@/lib/api/errors";
+import { EmptyState } from "@/components/site/EmptyState";
 
 // Search results pages are intentionally not indexed (duplicate-content risk).
 export const metadata: Metadata = {
@@ -23,11 +25,15 @@ export default async function SearchPage({
 
   if (!q) {
     return (
-      <div className="container py-12">
-        <h1 className="text-2xl font-semibold">Search</h1>
-        <p className="mt-2 text-muted-foreground">
-          Try searching for a brand, a category, or an offer keyword from the header.
-        </p>
+      <div className="cv-section-bg-primary-soft">
+        <div className="cv-container py-16">
+          <EmptyState
+            icon={SearchIcon}
+            tone="primary"
+            title="What are you looking for today?"
+            description="Try searching for a brand, a category, or an offer keyword from the header."
+          />
+        </div>
       </div>
     );
   }
@@ -44,102 +50,127 @@ export default async function SearchPage({
     hadError = !(isApiError(err) && err.status === 404);
   }
 
-  const total = results.stores.length + results.coupons.length + results.categories.length;
+  const total =
+    results.stores.length + results.coupons.length + results.categories.length;
 
   return (
-    <div className="container py-8 md:py-12">
-      <header className="mb-8 max-w-3xl">
-        <h1 className="text-2xl font-semibold md:text-3xl">
-          Results for <span className="text-cv-primary">&ldquo;{q}&rdquo;</span>
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {hadError
-            ? "Search is temporarily unavailable. Please try again."
-            : total === 0
-              ? "No matches yet — try a broader keyword."
-              : `${total} match${total === 1 ? "" : "es"} across stores, coupons, and categories.`}
-        </p>
-      </header>
+    <>
+      {/* Compact hero with gradient query */}
+      <section className="cv-section-bg-primary-soft">
+        <div className="cv-container py-10 lg:py-12">
+          <p className="cv-eyebrow-vivid">Search results</p>
+          <h1 className="cv-display-hero mt-2 text-[1.75rem] lg:text-[2.25rem]">
+            Results for{" "}
+            <span className="cv-text-gradient-hero">&ldquo;{q}&rdquo;</span>
+          </h1>
+          <p className="cv-body mt-3 text-cv-neutral-700">
+            {hadError
+              ? "Search is temporarily unavailable. Please try again."
+              : total === 0
+                ? "No matches yet — try a broader keyword."
+                : `${total} match${total === 1 ? "" : "es"} across stores, coupons, and categories.`}
+          </p>
+        </div>
+      </section>
 
-      {!hadError && results.coupons.length > 0 && (
-        <Section title="Coupons">
-          {results.coupons.map((hit) => (
-            <Link
-              key={hit.id}
-              href={`/coupons/${hit.slug}`}
-              className="flex h-full flex-col rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
-            >
-              <p className="line-clamp-1 font-medium">{hit.title}</p>
-              {hit.snippet && (
-                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{hit.snippet}</p>
-              )}
-              <span className="mt-auto pt-3 text-xs font-semibold text-cv-primary">
-                View coupon →
-              </span>
+      <div className="cv-container py-10">
+        {total === 0 && !hadError && (
+          <EmptyState
+            icon={SearchIcon}
+            tone="accent"
+            title="Nothing for that exact phrase"
+            description="Try fewer or broader keywords — or browse all stores to find what you need."
+          >
+            <Link href="/stores" className="cv-btn-primary-gradient">
+              Browse all stores
             </Link>
-          ))}
-        </Section>
-      )}
+          </EmptyState>
+        )}
 
-      {!hadError && results.stores.length > 0 && (
-        <Section title="Stores">
-          {results.stores.map((hit) => (
-            <Link
-              key={hit.id}
-              href={`/stores/${hit.slug}`}
-              className="flex items-center gap-3 rounded-lg border border-cv-neutral-200 bg-white p-4 shadow-card"
-            >
-              {hit.imageUrl && (
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted p-1.5">
-                  <Image
-                    src={hit.imageUrl}
-                    alt={hit.title}
-                    width={48}
-                    height={48}
-                    className="h-full w-full object-contain"
-                    unoptimized
-                  />
-                </div>
-              )}
-              <div className="min-w-0">
-                <p className="truncate font-medium">{hit.title}</p>
+        {!hadError && results.coupons.length > 0 && (
+          <Section eyebrow="Coupons">
+            {results.coupons.map((hit) => (
+              <Link
+                key={hit.id}
+                href={`/coupons/${hit.slug}`}
+                className="cv-card flex h-full flex-col p-4"
+              >
+                <p className="line-clamp-1 cv-h3">{hit.title}</p>
                 {hit.snippet && (
-                  <p className="line-clamp-1 text-xs text-muted-foreground">{hit.snippet}</p>
+                  <p className="cv-meta mt-1 line-clamp-2">{hit.snippet}</p>
                 )}
-              </div>
-            </Link>
-          ))}
-        </Section>
-      )}
+                <span className="mt-auto pt-3 text-xs font-bold text-cv-primary-700">
+                  View coupon →
+                </span>
+              </Link>
+            ))}
+          </Section>
+        )}
 
-      {!hadError && results.categories.length > 0 && (
-        <Section title="Categories">
-          {results.categories.map((hit) => (
-            <Link
-              key={hit.id}
-              href={`/categories/${hit.slug}`}
-              className="rounded-full bg-secondary px-3 py-1.5 text-sm text-secondary-foreground hover:bg-secondary/80"
-            >
-              {hit.title}
-            </Link>
-          ))}
-        </Section>
-      )}
-    </div>
+        {!hadError && results.stores.length > 0 && (
+          <Section eyebrow="Stores">
+            {results.stores.map((hit) => (
+              <Link
+                key={hit.id}
+                href={`/stores/${hit.slug}`}
+                className="cv-card flex items-center gap-3 p-4"
+              >
+                {hit.imageUrl && (
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-cv-neutral-100 p-1.5">
+                    <Image
+                      src={hit.imageUrl}
+                      alt={hit.title}
+                      width={48}
+                      height={48}
+                      className="h-full w-full object-contain"
+                      unoptimized
+                    />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate cv-h3">{hit.title}</p>
+                  {hit.snippet && (
+                    <p className="line-clamp-1 cv-meta">{hit.snippet}</p>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </Section>
+        )}
+
+        {!hadError && results.categories.length > 0 && (
+          <Section eyebrow="Categories">
+            <div className="col-span-full flex flex-wrap gap-2">
+              {results.categories.map((hit) => (
+                <Link
+                  key={hit.id}
+                  href={`/categories/${hit.slug}`}
+                  className="cv-btn-soft-pill text-sm"
+                >
+                  {hit.title}
+                </Link>
+              ))}
+            </div>
+          </Section>
+        )}
+      </div>
+    </>
   );
 }
 
 function Section({
-  title,
+  eyebrow,
   children,
 }: {
-  title: string;
+  eyebrow: string;
   children: React.ReactNode;
 }) {
   return (
     <section className="mb-10">
-      <h2 className="mb-4 text-lg font-semibold">{title}</h2>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+      <p className="cv-eyebrow-vivid mb-4">{eyebrow}</p>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {children}
+      </div>
     </section>
   );
 }

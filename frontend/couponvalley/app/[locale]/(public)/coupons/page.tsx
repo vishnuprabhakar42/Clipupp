@@ -64,7 +64,7 @@ export default async function CouponsListPage({
   const listUrl = canonicalFor("/coupons", locale);
 
   return (
-    <div className="container py-8 md:py-12">
+    <>
       {coupons.length > 0 && (
         <JsonLd
           id="ld-itemlist"
@@ -78,40 +78,54 @@ export default async function CouponsListPage({
           })}
         />
       )}
-      <header className="mb-8 max-w-3xl">
-        <h1 className="cv-h1 text-cv-primary">Active coupons</h1>
-        <p className="mt-2 text-muted-foreground">
-          Verified discount codes you can paste at checkout, ranked by recent activity.
-        </p>
-      </header>
 
-      {hadError ? (
-        <p className="text-sm text-destructive">
-          We couldn&apos;t load coupons right now. Please try again in a moment.
-        </p>
-      ) : (
-        <>
-          <CouponList coupons={coupons} emptyLabel="No coupons match your filters yet." />
+      <section className="cv-section-bg-fade-down border-b border-cv-neutral-200">
+        <div className="cv-container py-10 lg:py-14">
+          <div className="max-w-3xl">
+            <p className="cv-eyebrow-vivid">Verified daily</p>
+            <h1 className="cv-display-hero mt-3">
+              <span className="cv-text-gradient-hero">Active</span> coupons
+            </h1>
+            <p className="cv-body mt-3 text-cv-neutral-700">
+              Discount codes you can paste at checkout, ranked by recent
+              activity. Every code retested in the last 24 hours.
+            </p>
+          </div>
+        </div>
+      </section>
 
-          {nextCursor && (
-            <div className="mt-10 text-center">
-              <Link
-                href={{
-                  pathname: "/coupons",
-                  query: {
-                    ...(sp.category ? { category: sp.category } : {}),
-                    ...(sp.storeId ? { storeId: sp.storeId } : {}),
-                    cursor: nextCursor,
-                  },
-                }}
-                className="inline-flex items-center rounded-md border bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
-              >
-                Load more
-              </Link>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+      <div className="cv-container py-10">
+        {hadError ? (
+          <p className="text-sm text-cv-danger-strong">
+            We couldn&apos;t load coupons right now. Please try again in a moment.
+          </p>
+        ) : (
+          <>
+            <CouponList
+              coupons={coupons}
+              emptyLabel="No coupons match your filters yet."
+            />
+
+            {nextCursor && (
+              <div className="mt-10 text-center">
+                <Link
+                  href={{
+                    pathname: "/coupons",
+                    query: {
+                      ...(sp.category ? { category: sp.category } : {}),
+                      ...(sp.storeId ? { storeId: sp.storeId } : {}),
+                      cursor: nextCursor,
+                    },
+                  }}
+                  className="cv-btn-ghost"
+                >
+                  Load more
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }
