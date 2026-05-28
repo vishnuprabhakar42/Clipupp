@@ -23,12 +23,19 @@ export function ScrollRail({
   variant = "chevron",
   showDots = false,
   className = "",
+  arrowAnchorTop,
 }: {
   children: ReactNode;
   ariaLabel?: string;
   variant?: Variant;
   showDots?: boolean;
   className?: string;
+  /** Vertical position of the arrow buttons, measured from the top of the
+   *  rail container in pixels. Use it when the rail's children render extra
+   *  content below the visual "tile" (e.g. TrendingStoresRail: 88 px logo
+   *  tile + a deal-label paragraph below) so the arrow centres on the tile,
+   *  not the whole item. Defaults to 50% (rail centre). */
+  arrowAnchorTop?: number;
 }) {
   const railRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -86,10 +93,12 @@ export function ScrollRail({
   // The buttons sit centred on the rail's left/right edge (50% translate,
   // half-in / half-out) rather than just nudged outside — that's what makes
   // the banner arrows pop and what fixes the "not visible" complaint here.
+  const useCustomTop = typeof arrowAnchorTop === "number";
   const arrowPos = {
-    left: "absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2",
-    right: "absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2",
+    left: `absolute left-0 -translate-x-1/2 -translate-y-1/2 ${useCustomTop ? "" : "top-1/2"}`,
+    right: `absolute right-0 translate-x-1/2 -translate-y-1/2 ${useCustomTop ? "" : "top-1/2"}`,
   };
+  const arrowTopStyle = useCustomTop ? { top: arrowAnchorTop } : undefined;
   const buttonClass =
     "z-dropdown hidden h-9 w-9 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-700 shadow-card transition-colors hover:text-cv-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary disabled:cursor-not-allowed disabled:opacity-0 md:grid";
 
@@ -102,6 +111,7 @@ export function ScrollRail({
           onClick={() => scroll("left")}
           disabled={!canLeft}
           className={`${arrowPos.left} ${buttonClass}`}
+          style={arrowTopStyle}
         >
           <ChevronLeft className="h-4 w-4" aria-hidden strokeWidth={2.5} />
         </button>
@@ -120,6 +130,7 @@ export function ScrollRail({
           onClick={() => scroll("right")}
           disabled={!canRight}
           className={`${arrowPos.right} ${buttonClass}`}
+          style={arrowTopStyle}
         >
           <ChevronRight className="h-4 w-4" aria-hidden strokeWidth={2.5} />
         </button>
