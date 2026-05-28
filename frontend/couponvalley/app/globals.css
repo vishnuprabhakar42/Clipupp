@@ -646,6 +646,371 @@
   .cv-table-zebra tbody tr:nth-child(even) {
     background: var(--cv-neutral-50);
   }
+
+  /* =========================================================================
+     Phase B — Component library
+     Cards, buttons, badges, ribbons, border-gradient utilities.
+     ====================================================================== */
+
+  /* ── Card variants (extend the base .cv-card declared above) ──────────── */
+
+  /* Vivid: 1.5px crimson→amber gradient border + stronger lift on hover.
+     Implemented via background-clip stacking (no extra DOM, no SVG). */
+  .cv-card-vivid {
+    @apply relative rounded-xl bg-card text-card-foreground;
+    background-clip: padding-box;
+    border: 1.5px solid transparent;
+    box-shadow: var(--cv-shadow-resting);
+    transition:
+      box-shadow var(--cv-dur-base) var(--cv-ease-out),
+      transform var(--cv-dur-base) var(--cv-ease-out);
+  }
+  .cv-card-vivid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-600),
+      var(--cv-accent-500)
+    );
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cv-card-vivid:hover {
+      box-shadow: var(--cv-shadow-lifted);
+      transform: translateY(-3px);
+    }
+  }
+
+  /* Brand-tinted: top band carries the store's brand color (set via inline
+     style), white body underneath. The 8:3 aspect band holds the logo. */
+  .cv-card-brand-tinted {
+    @apply cv-card overflow-hidden;
+  }
+  .cv-card-brand-tinted__band {
+    @apply flex items-center justify-center;
+    aspect-ratio: 8 / 3;
+    background: var(--cv-primary-soft); /* default; override inline */
+  }
+
+  /* Photo hero: full-bleed cover image, gradient overlay, text on top. */
+  .cv-card-photo-hero {
+    @apply relative overflow-hidden rounded-xl;
+    box-shadow: var(--cv-shadow-resting);
+    transition:
+      box-shadow var(--cv-dur-base) var(--cv-ease-out),
+      transform var(--cv-dur-base) var(--cv-ease-out);
+  }
+  .cv-card-photo-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(25, 24, 27, 0.85) 0%,
+      rgba(25, 24, 27, 0.20) 55%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cv-card-photo-hero:hover {
+      box-shadow: var(--cv-shadow-lifted);
+      transform: translateY(-3px);
+    }
+  }
+
+  /* Coupon row: multi-column flex with a savings column color-coded by tier.
+     Layout details live in the component; this just locks the chrome. */
+  .cv-card-coupon-row {
+    @apply cv-card grid items-center gap-4 p-4 md:grid-cols-[auto_1fr_auto_auto] md:p-5;
+  }
+
+  /* Border gradient utility — apply on its own to box-bound any element. */
+  .cv-border-gradient-primary {
+    position: relative;
+    border: 1.5px solid transparent;
+    background-clip: padding-box;
+  }
+  .cv-border-gradient-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    margin: -1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-600),
+      var(--cv-accent-500)
+    );
+  }
+
+  /* ── Button variants ──────────────────────────────────────────────────── */
+
+  /* Primary-gradient: always-on crimson gradient + primary glow. Hero CTA. */
+  .cv-btn-primary-gradient {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-transform;
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-700) 0%,
+      var(--cv-primary-500) 100%
+    );
+    color: var(--cv-primary-fg);
+    box-shadow: var(--cv-shadow-glow-primary);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-primary-gradient:hover { transform: translateY(-1px); }
+  .cv-btn-primary-gradient:disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Accent: solid amber. Secondary CTAs in warm contexts. */
+  .cv-btn-accent {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--cv-accent);
+    color: var(--cv-accent-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-accent:hover { background: var(--cv-accent-strong); }
+  .cv-btn-accent:disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Accent-gradient: hottest CTA. "Get code", coupon reveal. Always pulses. */
+  .cv-btn-accent-gradient {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-transform;
+    background: linear-gradient(
+      135deg,
+      var(--cv-accent-600) 0%,
+      var(--cv-accent-400) 100%
+    );
+    color: var(--cv-accent-fg);
+    box-shadow: var(--cv-shadow-glow-accent);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-accent-gradient:hover { transform: translateY(-1px); }
+  .cv-btn-accent-gradient:disabled { opacity: 0.4; pointer-events: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-btn-accent-gradient {
+      animation: cv-pulse-glow 2.4s ease-in-out infinite;
+    }
+  }
+
+  /* Glass: white/60 backdrop-blur. Used over hero / photo overlay. */
+  .cv-btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: rgba(255, 255, 255, 0.60);
+    color: var(--cv-neutral-900);
+    border: 1px solid rgba(255, 255, 255, 0.40);
+    -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-glass:hover { background: rgba(255, 255, 255, 0.80); }
+
+  /* Soft pill: rounded-full with primary-soft background. Category chips. */
+  .cv-btn-soft-pill {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2 text-sm font-semibold transition-colors;
+    background: var(--cv-primary-soft);
+    color: var(--cv-primary-strong);
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-soft-pill:hover {
+    background: var(--cv-primary-100);
+    color: var(--cv-primary-700);
+  }
+  .cv-btn-soft-pill[data-active="true"] {
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-700) 0%,
+      var(--cv-primary-500) 100%
+    );
+    color: var(--cv-primary-fg);
+    box-shadow: var(--cv-shadow-glow-primary);
+  }
+
+  /* Danger: solid red. Destructive admin actions. */
+  .cv-btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--cv-danger);
+    color: var(--cv-danger-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-danger:hover { background: var(--cv-danger-strong); }
+
+  /* ── Badges & ribbons ─────────────────────────────────────────────────── */
+
+  .cv-badge-savings {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    background: linear-gradient(
+      90deg,
+      var(--cv-accent-700),
+      var(--cv-accent-500)
+    );
+    color: var(--cv-accent-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  .cv-badge-flash {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    background: linear-gradient(
+      90deg,
+      var(--cv-accent-700),
+      var(--cv-accent-500)
+    );
+    color: var(--cv-accent-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: var(--cv-shadow-glow-accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-badge-flash {
+      animation: cv-pulse-glow 0.6s ease-in-out infinite;
+    }
+  }
+
+  .cv-badge-verified {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--cv-success-soft);
+    color: var(--cv-success-strong);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .cv-badge-exclusive {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--cv-accent-soft);
+    color: var(--cv-accent-700);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .cv-badge-hot {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--cv-danger);
+    color: var(--cv-danger-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .cv-badge-new {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--cv-success);
+    color: var(--cv-success-fg);
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .cv-badge-expiring {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    background: var(--cv-danger);
+    color: var(--cv-danger-fg);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-badge-expiring { animation: cv-pulse-dot 1.4s ease-in-out infinite; }
+  }
+
+  /* Corner ribbon — diagonal accent on the top-right of a card. CSS clip-path
+     keeps it DOM-light; no SVG required. */
+  .cv-ribbon-corner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 96px;
+    height: 96px;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .cv-ribbon-corner__inner {
+    position: absolute;
+    top: 16px;
+    right: -28px;
+    width: 140px;
+    padding: 6px 0;
+    background: linear-gradient(
+      90deg,
+      var(--cv-accent-700),
+      var(--cv-accent-500)
+    );
+    color: var(--cv-accent-fg);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    transform: rotate(45deg);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.20);
+  }
+
+  /* Left-edge gradient bar — for guarantees tiles + active sidebar items.
+     Widens on hover via the parent's :hover. */
+  .cv-edge-bar {
+    position: relative;
+    padding-left: 16px;
+  }
+  .cv-edge-bar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(
+      to bottom,
+      var(--cv-primary-600),
+      var(--cv-accent-500)
+    );
+    transition: width var(--cv-dur-base) var(--cv-ease-out);
+  }
+  .cv-edge-bar:hover::before { width: 5px; }
+
+  /* Pulse dot — live indicator. 8px dot with two expanding ring layers. */
+  .cv-pulse-dot {
+    position: relative;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--cv-success);
+  }
+  .cv-pulse-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    border: 2px solid var(--cv-success);
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-pulse-dot::after {
+      animation: cv-pulse-dot 1.4s ease-out infinite;
+    }
+  }
 }
 
 /* =============================================================================
