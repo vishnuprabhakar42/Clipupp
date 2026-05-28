@@ -201,35 +201,25 @@ export function HeaderClient({
           <Link
             href="/"
             aria-label="ClipUpp home"
-            className="flex shrink-0 items-center gap-2.5"
+            className="flex shrink-0 items-center gap-2 text-cv-primary-700"
           >
-            <span
-              className="grid h-9 w-9 place-items-center rounded-md text-white"
-              style={{
-                background:
-                  "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
-                boxShadow: "var(--cv-shadow-glow-primary)",
-              }}
+            <svg
+              viewBox="0 0 32 32"
+              width={32}
+              height={32}
+              xmlns="http://www.w3.org/2000/svg"
               aria-hidden
             >
-              <svg
-                viewBox="0 0 32 32"
-                width={22}
-                height={22}
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden
-              >
-                <path
-                  d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2.6}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <span className="cv-text-gradient-hero hidden font-display text-[1.125rem] font-extrabold tracking-tight sm:inline-block">
+              <path
+                d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.6}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="cv-text-gradient-hero font-display text-[1.25rem] font-extrabold tracking-tight">
               clipupp
             </span>
           </Link>
@@ -534,27 +524,18 @@ function MobileMenu({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2.5 border-b border-cv-neutral-200 px-5 py-4">
-        <span
-          className="grid h-9 w-9 place-items-center rounded-md text-white"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
-          }}
-          aria-hidden
-        >
-          <svg viewBox="0 0 32 32" width={22} height={22} aria-hidden>
-            <path
-              d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2.6}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-        <span className="cv-text-gradient-hero font-display text-base font-extrabold tracking-tight">
+      <div className="flex items-center gap-2 border-b border-cv-neutral-200 px-5 py-4 text-cv-primary-700">
+        <svg viewBox="0 0 32 32" width={28} height={28} aria-hidden>
+          <path
+            d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.6}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <span className="cv-text-gradient-hero font-display text-lg font-extrabold tracking-tight">
           clipupp
         </span>
       </div>
