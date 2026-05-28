@@ -51,7 +51,7 @@ export async function DailyPicksSection({
         </div>
         <Link
           href="/coupons"
-          className="text-sm font-bold text-cv-primary-700 hover:underline"
+          className="text-sm font-medium text-cv-primary-700 hover:underline"
         >
           See all →
         </Link>

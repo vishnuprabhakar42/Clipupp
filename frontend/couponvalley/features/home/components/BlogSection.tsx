@@ -39,7 +39,7 @@ export async function BlogSection({
         </div>
         <Link
           href="/blog"
-          className="text-sm font-bold text-cv-primary-700 hover:underline"
+          className="text-sm font-medium text-cv-primary-700 hover:underline"
         >
           See all stories →
         </Link>

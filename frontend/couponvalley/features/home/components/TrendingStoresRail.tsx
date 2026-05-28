@@ -42,7 +42,7 @@ export async function TrendingStoresRail({
         </div>
         <Link
           href="/stores"
-          className="text-sm font-bold text-cv-primary-700 hover:underline"
+          className="text-sm font-medium text-cv-primary-700 hover:underline"
         >
           See all →
         </Link>
