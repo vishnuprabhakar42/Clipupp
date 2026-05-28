@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/clipupp_db
+    url: jdbc:postgresql://localhost:5432/couponvalley_db
     username: postgres
     password: anshu
   jpa:
