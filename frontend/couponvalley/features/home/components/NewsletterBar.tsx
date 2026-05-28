@@ -8,8 +8,11 @@ import {
   CalendarCheck,
   CheckCircle2,
   Mail,
+  Percent,
   ShieldCheck,
   Sparkles,
+  Tag,
+  Ticket,
 } from "lucide-react";
 import { newsletterApi } from "@/lib/api/newsletter";
 import { isApiError } from "@/lib/api/errors";
@@ -76,10 +79,11 @@ export function NewsletterBar({
           "linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 50%, #EDE9FE 100%)",
       }}
     >
-      {/* Atmospheric layer — two soft lavender orbs anchor the field, then
-          a scatter of sparkles + outline ring shapes give the section its
-          unique signature (no dot pattern, no canned mesh). All purely
-          decorative CSS / SVG, sub-1 KB. */}
+      {/* Atmospheric layer — two soft lavender orbs anchor the field, and
+          a scatter of on-brand decorations (paperclips from the ClipUpp
+          logomark + coupon-site iconography: tickets, tags, percent badge)
+          replaces the generic sparkles. Everything is inline SVG / Lucide,
+          sub-1 KB. */}
       <span
         aria-hidden
         className="pointer-events-none absolute -left-32 -top-40 z-0 h-[28rem] w-[28rem] rounded-full"
@@ -99,73 +103,67 @@ export function NewsletterBar({
         }}
       />
 
-      {/* Floating sparkles — 5 four-point stars at varied sizes, rotations,
-          and positions. CSS-only SVG, no asset cost. */}
+      {/* Paperclips — the ClipUpp logomark. Two instances at different
+          sizes / angles tie the section to the brand. Same path as
+          components/site/Logo.tsx. */}
       <svg
         aria-hidden
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute left-[8%] top-[18%] z-0 h-7 w-7 text-cv-primary-400 opacity-60"
-        style={{ transform: "rotate(12deg)" }}
+        viewBox="0 0 32 32"
+        className="pointer-events-none absolute left-[8%] top-[14%] z-0 h-12 w-12 text-cv-primary-300 opacity-70"
+        style={{ transform: "rotate(-14deg)" }}
       >
         <path
-          d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
-          fill="currentColor"
+          d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.4}
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
       <svg
         aria-hidden
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute right-[10%] top-[28%] z-0 h-5 w-5 text-cv-primary-500 opacity-50"
-        style={{ transform: "rotate(-18deg)" }}
+        viewBox="0 0 32 32"
+        className="pointer-events-none absolute right-[7%] bottom-[16%] z-0 h-10 w-10 text-cv-primary-400 opacity-60"
+        style={{ transform: "rotate(20deg)" }}
       >
         <path
-          d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
-          fill="currentColor"
-        />
-      </svg>
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute left-[14%] bottom-[20%] z-0 h-6 w-6 text-cv-primary-400 opacity-55"
-        style={{ transform: "rotate(-8deg)" }}
-      >
-        <path
-          d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
-          fill="currentColor"
-        />
-      </svg>
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute right-[8%] bottom-[24%] z-0 h-8 w-8 text-cv-primary-300 opacity-70"
-        style={{ transform: "rotate(22deg)" }}
-      >
-        <path
-          d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
-          fill="currentColor"
-        />
-      </svg>
-      <svg
-        aria-hidden
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute right-[22%] top-[8%] z-0 h-4 w-4 text-cv-primary-500 opacity-45"
-      >
-        <path
-          d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
-          fill="currentColor"
+          d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.4}
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
 
-      {/* Outlined rings — two thin lavender circles drift behind the content
-          for that "concentric ripple" feel without the visual cost of a
-          full mesh. */}
-      <span
+      {/* Coupon-site iconography — Ticket, Tag, Percent. Mirrors the
+          Lucide vocabulary used everywhere else on the page. */}
+      <Ticket
         aria-hidden
-        className="pointer-events-none absolute left-[6%] bottom-[10%] z-0 h-32 w-32 rounded-full border-2 border-cv-primary-200 opacity-50"
+        className="pointer-events-none absolute right-[12%] top-[18%] z-0 h-8 w-8 -rotate-12 text-cv-primary-400 opacity-55"
+        strokeWidth={1.75}
       />
+      <Tag
+        aria-hidden
+        className="pointer-events-none absolute left-[14%] bottom-[22%] z-0 h-7 w-7 rotate-[8deg] text-cv-primary-400 opacity-60"
+        strokeWidth={1.75}
+      />
+      <Percent
+        aria-hidden
+        className="pointer-events-none absolute right-[22%] top-[8%] z-0 h-6 w-6 -rotate-6 text-cv-primary-500 opacity-50"
+        strokeWidth={2}
+      />
+      <Percent
+        aria-hidden
+        className="pointer-events-none absolute left-[24%] bottom-[10%] z-0 h-5 w-5 rotate-[14deg] text-cv-primary-500 opacity-50"
+        strokeWidth={2}
+      />
+
+      {/* One subtle outline ring kept for cadence — not a full mesh. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute right-[5%] top-[15%] z-0 h-24 w-24 rounded-full border-2 border-cv-primary-200 opacity-55"
+        className="pointer-events-none absolute right-[5%] top-[10%] z-0 h-24 w-24 rounded-full border-2 border-cv-primary-200 opacity-55"
       />
 
       <div className="cv-container relative z-[1] py-16 md:py-24">
