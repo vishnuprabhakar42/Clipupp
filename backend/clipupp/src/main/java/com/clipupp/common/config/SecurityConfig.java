@@ -41,11 +41,14 @@ public class SecurityConfig {
     private final String allowedOriginsCsv;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final boolean isProd;
+    private final boolean docsPublic;
 
     public SecurityConfig(@Value("${clipupp.cors.allowed-origins}") String allowedOriginsCsv,
+                          @Value("${clipupp.api-docs.public:false}") boolean docsPublic,
                           JwtAuthenticationFilter jwtAuthenticationFilter,
                           Environment env) {
         this.allowedOriginsCsv = allowedOriginsCsv;
+        this.docsPublic = docsPublic;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.isProd = env.acceptsProfiles(Profiles.of("prod"));
     }
@@ -119,12 +122,12 @@ public class SecurityConfig {
                         "/api/v1/newsletter/unsubscribe").permitAll()
                 // Outbound redirect + affiliate postbacks
                 .requestMatchers("/r/**", "/postback/**").permitAll()
-                // Health + docs. Swagger UI + raw OpenAPI doc are PUBLIC only on
-                // dev; in prod they require an authenticated request (defence-in-
-                // depth on top of `springdoc.{api-docs,swagger-ui}.enabled=false`
-                // in application-prod.yml).
+                // Health + docs. Swagger UI + raw OpenAPI doc are PUBLIC on
+                // dev. In prod they're locked down by default; set
+                // CLIPUPP_API_DOCS_PUBLIC=true (and SPRINGDOC_*_ENABLED=true) to
+                // expose them temporarily for QA without rebuilding the image.
                 .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
-                .requestMatchers(isProd
+                .requestMatchers((isProd && !docsPublic)
                         ? new String[] { "/api/v1/ping" }
                         : new String[] { "/api/v1/ping", "/v3/api-docs/**",
                                 "/swagger-ui.html", "/swagger-ui/**" }).permitAll()
