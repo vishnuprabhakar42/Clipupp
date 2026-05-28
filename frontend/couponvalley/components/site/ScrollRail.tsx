@@ -81,14 +81,16 @@ export function ScrollRail({
     el.scrollTo({ left: p * el.clientWidth, behavior: "smooth" });
   }
 
-  const Icon = variant === "chevron" ? ChevronLeft : ChevronLeft;
-  const IconRight = variant === "chevron" ? ChevronRight : ChevronRight;
   const arrowPos =
     variant === "chevron"
       ? { left: "absolute -left-3 top-1/2 -translate-y-1/2", right: "absolute -right-3 top-1/2 -translate-y-1/2" }
       : { left: "absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2", right: "absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2" };
+  // White pill with a clear slate-300 border, lifted shadow, and the brand
+  // purple icon. Hovers to a soft primary fill + stronger lift. Visible at
+  // rest without dominating the rail; matches the affordance vocabulary of
+  // the rest of the page (single primary colour, restrained shadow tier).
   const buttonClass =
-    "z-dropdown hidden h-11 w-11 place-items-center rounded-full border border-cv-neutral-200 bg-white text-cv-neutral-600 shadow-card transition-colors hover:text-cv-neutral-900 disabled:cursor-not-allowed disabled:opacity-0 md:grid";
+    "z-dropdown hidden h-11 w-11 place-items-center rounded-full border border-cv-neutral-300 bg-white text-cv-primary-700 shadow-lifted transition-all hover:bg-cv-primary-soft hover:text-cv-primary-800 hover:shadow-modal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cv-primary disabled:cursor-not-allowed disabled:opacity-0 md:grid";
 
   return (
     <div>
@@ -100,7 +102,7 @@ export function ScrollRail({
           disabled={!canLeft}
           className={`${arrowPos.left} ${buttonClass}`}
         >
-          <Icon className="h-5 w-5" aria-hidden />
+          <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={2.25} />
         </button>
 
         <div
@@ -118,7 +120,7 @@ export function ScrollRail({
           disabled={!canRight}
           className={`${arrowPos.right} ${buttonClass}`}
         >
-          <IconRight className="h-5 w-5" aria-hidden />
+          <ChevronRight className="h-5 w-5" aria-hidden strokeWidth={2.25} />
         </button>
       </div>
 
