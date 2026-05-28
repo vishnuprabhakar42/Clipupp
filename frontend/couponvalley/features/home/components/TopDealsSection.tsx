@@ -28,10 +28,7 @@ export async function TopDealsSection({
     <section aria-labelledby="top-deals-heading">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-eyebrow-vivid">{heading}</p>
-          <h2 id="top-deals-heading" className="cv-h2 mt-2">
-            {heading}
-          </h2>
+          <h2 id="top-deals-heading" className="cv-eyebrow-vivid">{heading}</h2>
         </div>
         <Link
           href="/coupons"

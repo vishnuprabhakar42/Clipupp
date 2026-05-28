@@ -65,10 +65,7 @@ export function SavingsStatsStrip({
   return (
     <section aria-labelledby="stats-heading">
       <div className="mx-auto mb-9 max-w-2xl text-center">
-        <p className="cv-eyebrow-vivid mx-auto">{heading}</p>
-        <h2 id="stats-heading" className="cv-h2 mt-3">
-          {heading}
-        </h2>
+        <h2 id="stats-heading" className="cv-eyebrow-vivid mx-auto">{heading}</h2>
         <p className="cv-body mt-3 text-cv-neutral-700">{subtitle}</p>
       </div>
 

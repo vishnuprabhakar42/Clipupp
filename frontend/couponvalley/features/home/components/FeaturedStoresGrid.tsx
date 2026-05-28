@@ -45,10 +45,7 @@ export async function FeaturedStoresGrid({
     <section aria-labelledby="featured-stores-heading">
       <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="cv-eyebrow-vivid">{heading}</p>
-          <h2 id="featured-stores-heading" className="cv-h2 mt-2">
-            {heading}
-          </h2>
+          <h2 id="featured-stores-heading" className="cv-eyebrow-vivid">{heading}</h2>
           {subtitle && (
             <p className="cv-body mt-2 max-w-xl text-cv-neutral-700">
               {subtitle}
