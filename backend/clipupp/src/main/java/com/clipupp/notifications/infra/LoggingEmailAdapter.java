@@ -5,7 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
  * with structured fields so developers can copy verification / reset URLs
  * out of the console without standing up a real SMTP relay.
  *
- * <p>Active when {@code clipupp.email.provider} is unset, {@code logging},
- * or {@code resend} but no {@code RESEND_API_KEY} is provided.
+ * <p>Registered as a fallback whenever no other {@code EmailAdapter} bean
+ * exists. When a real provider (e.g. a future {@code ResendEmailAdapter})
+ * is added, Spring will prefer that one and this fallback is skipped.
  */
 @Component
-@ConditionalOnProperty(prefix = "clipupp.email", name = "provider",
-        havingValue = "logging", matchIfMissing = true)
+@ConditionalOnMissingBean(EmailAdapter.class)
 public class LoggingEmailAdapter implements EmailAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(LoggingEmailAdapter.class);
