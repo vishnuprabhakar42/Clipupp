@@ -76,7 +76,7 @@ export function FirstVisitModal() {
         <div className="bg-cv-primary p-6 text-white">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            Welcome to CouponValley
+            Welcome to ClipUpp
           </span>
           <h2 className="mt-3 text-2xl font-bold leading-tight">
             Save smarter — get the best deals first.

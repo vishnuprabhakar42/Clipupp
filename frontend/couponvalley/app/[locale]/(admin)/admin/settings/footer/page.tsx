@@ -23,7 +23,7 @@ export default async function FooterSettingsPage() {
           fields={[
             { key: "footer.disclosure", label: "Affiliate disclosure", type: "textarea" },
             { key: "footer.commission_note", label: "Commission note (brand block)", type: "textarea" },
-            { key: "footer.hashtag", label: "Hashtag mark", placeholder: "#SaveWithCouponValley" },
+            { key: "footer.hashtag", label: "Hashtag mark", placeholder: "#SaveWithClipUpp" },
           ]}
         />
       </div>

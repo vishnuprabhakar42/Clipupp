@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "CouponValley",
+    "name": "ClipUpp",
     "tagline": "Coupon Codes, Cashback & Deals"
   },
   "nav": {
@@ -228,7 +228,7 @@
   },
   "metadata": {
     "homepage": {
-      "title": "CouponValley — Coupon Codes, Cashback & Deals",
+      "title": "ClipUpp — Coupon Codes, Cashback & Deals",
       "description": "Save with verified coupon codes, cashback, and exclusive deals from 1000+ top brands. Updated daily."
     },
     "stores": {
@@ -288,7 +288,7 @@
     "food": "Food",
     "beauty": "Beauty",
     "home": "Home",
-    "copyright": "© 2025 CouponValley. All rights reserved.",
+    "copyright": "© 2025 ClipUpp. All rights reserved.",
     "noCouponsFound": "No coupons found"
   },
   "home": {

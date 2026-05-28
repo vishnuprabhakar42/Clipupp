@@ -260,7 +260,7 @@ function RelatedArticleCard({ article }: { article: ArticleSummary }) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-cv-neutral-400">
-            CouponValley
+            ClipUpp
           </div>
         )}
       </div>

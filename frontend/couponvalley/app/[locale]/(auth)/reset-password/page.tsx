@@ -5,7 +5,7 @@ import { AuthLayout } from "@/features/auth/components/AuthLayout";
 
 export const metadata: Metadata = {
   title: "Reset password",
-  description: "Set a new password for your CouponValley account.",
+  description: "Set a new password for your ClipUpp account.",
   robots: { index: false, follow: false },
 };
 

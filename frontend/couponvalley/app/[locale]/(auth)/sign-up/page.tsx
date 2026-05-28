@@ -5,7 +5,7 @@ import { AuthLayout } from "@/features/auth/components/AuthLayout";
 
 export const metadata: Metadata = {
   title: "Create an account",
-  description: "Join CouponValley to save coupons and get the best deals first.",
+  description: "Join ClipUpp to save coupons and get the best deals first.",
   robots: { index: false, follow: true },
 };
 

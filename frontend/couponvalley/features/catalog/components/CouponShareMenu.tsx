@@ -14,7 +14,7 @@ import {
 /**
  * Reusable "share" affordance for coupons. Tries the native share sheet first
  * (great on mobile + iOS); falls back to a per-network dropdown. Every link
- * carries a `?utm_source=couponvalley_share` parameter so we can attribute
+ * carries a `?utm_source=clipupp_share` parameter so we can attribute
  * organic resurfacing.
  */
 export function CouponShareMenu({
@@ -132,9 +132,9 @@ export function CouponShareMenu({
 
 function withUtm(url: string) {
   try {
-    const u = new URL(url, "https://couponvalley.com");
+    const u = new URL(url, "https://clipupp.com");
     if (!u.searchParams.has("utm_source")) {
-      u.searchParams.set("utm_source", "couponvalley_share");
+      u.searchParams.set("utm_source", "clipupp_share");
     }
     return u.toString();
   } catch {

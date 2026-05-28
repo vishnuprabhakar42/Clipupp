@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/couponvalley_db
+    url: jdbc:postgresql://localhost:5432/clipupp_db
     username: postgres
     password: anshu
   jpa:
@@ -29,7 +29,7 @@ couponvalley:
     allowed-origins: http://localhost:3000
   email:
     provider: logging
-    from: dev@couponvalley.local
+    from: dev@clipupp.local
   google:
     client-id: ${GOOGLE_CLIENT_ID:1072385341259-92bm5h34k6si1jd4gerro4g22cv0ml98.apps.googleusercontent.com}
 

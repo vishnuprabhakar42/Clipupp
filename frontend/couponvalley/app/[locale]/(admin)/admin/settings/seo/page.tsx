@@ -24,8 +24,8 @@ export default async function SeoSettingsPage() {
             {
               key: "seo.default_title_template",
               label: "Default title template",
-              hint: "Use %s where the page title goes. Example: \"%s · CouponValley\".",
-              placeholder: "%s · CouponValley",
+              hint: "Use %s where the page title goes. Example: \"%s · ClipUpp\".",
+              placeholder: "%s · ClipUpp",
             },
             { key: "seo.default_description", label: "Default meta description", type: "textarea" },
             {

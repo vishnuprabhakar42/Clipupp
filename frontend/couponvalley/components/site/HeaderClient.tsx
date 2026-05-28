@@ -200,13 +200,38 @@ export function HeaderClient({
 
           <Link
             href="/"
-            aria-label="CouponValley home"
-            className="flex shrink-0 items-center gap-2 font-bold text-cv-primary"
+            aria-label="ClipUpp home"
+            className="flex shrink-0 items-center gap-2.5"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-cv-primary text-white">
-              <ShoppingBag className="h-4 w-4" aria-hidden />
+            <span
+              className="grid h-9 w-9 place-items-center rounded-md text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
+                boxShadow: "var(--cv-shadow-glow-primary)",
+              }}
+              aria-hidden
+            >
+              <svg
+                viewBox="0 0 56 56"
+                width={20}
+                height={20}
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path
+                  d="M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={4}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </span>
-            <span className="hidden text-base font-bold tracking-tight sm:inline-block">CouponValley</span>
+            <span className="cv-text-gradient-hero hidden font-display text-[1.125rem] font-extrabold tracking-tight sm:inline-block">
+              clipupp
+            </span>
           </Link>
 
           <div className="hidden lg:block">
@@ -509,11 +534,29 @@ function MobileMenu({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-cv-neutral-200 px-5 py-4">
-        <span className="grid h-8 w-8 place-items-center rounded-md bg-cv-primary text-white">
-          <ShoppingBag className="h-4 w-4" aria-hidden />
+      <div className="flex items-center gap-2.5 border-b border-cv-neutral-200 px-5 py-4">
+        <span
+          className="grid h-9 w-9 place-items-center rounded-md text-white"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
+          }}
+          aria-hidden
+        >
+          <svg viewBox="0 0 56 56" width={20} height={20} aria-hidden>
+            <path
+              d="M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={4}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </span>
-        <span className="text-base font-semibold">CouponValley</span>
+        <span className="cv-text-gradient-hero font-display text-base font-extrabold tracking-tight">
+          clipupp
+        </span>
       </div>
 
       <nav

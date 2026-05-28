@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CouponValley",
-    short_name: "CouponValley",
+    name: "ClipUpp",
+    short_name: "ClipUpp",
     description: "Save more on every purchase with verified coupons, promo codes, and deals from your favourite stores.",
     start_url: "/",
     display: "standalone",

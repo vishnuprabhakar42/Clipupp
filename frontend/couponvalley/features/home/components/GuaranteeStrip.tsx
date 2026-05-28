@@ -11,7 +11,7 @@ export function GuaranteeStrip({
 }: {
   section?: HomepageSectionPayload | null;
 }) {
-  const heading = section?.title ?? "Why shoppers choose CouponValley";
+  const heading = section?.title ?? "Why shoppers choose ClipUpp";
 
   const items: Array<{
     icon: typeof BadgeCheck;

@@ -3,16 +3,16 @@ import Link from "next/link";
 import { InfoPageShell } from "@/features/site/components/InfoPageShell";
 
 export const metadata: Metadata = {
-  title: "About CouponValley",
+  title: "About ClipUpp",
   description:
-    "CouponValley is a verified coupon aggregator built for shoppers who want real savings without the spam.",
+    "ClipUpp is a verified coupon aggregator built for shoppers who want real savings without the spam.",
   alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
   return (
     <InfoPageShell
-      title="About CouponValley"
+      title="About ClipUpp"
       intro="A small team of engineers and shopaholics on a mission to make every checkout cheaper — without spammy popups or fake codes."
     >
       <h2 id="what-we-do">What we do</h2>
@@ -29,7 +29,7 @@ export default function AboutPage() {
       </p>
       <h2 id="contact">Contact</h2>
       <p>
-        For partnership inquiries: <a href="mailto:partners@couponvalley.com">partners@couponvalley.com</a>.
+        For partnership inquiries: <a href="mailto:partners@clipupp.com">partners@clipupp.com</a>.
         For everything else: <Link href="/contact">/contact</Link>.
       </p>
     </InfoPageShell>

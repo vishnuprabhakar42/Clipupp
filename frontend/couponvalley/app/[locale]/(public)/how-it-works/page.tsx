@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CheckCircle2, MousePointer2, PiggyBank, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "How CouponValley works",
+  title: "How ClipUpp works",
   description:
     "Find a coupon, click through, save at checkout. No browser extension needed.",
   alternates: { canonical: "/how-it-works" },

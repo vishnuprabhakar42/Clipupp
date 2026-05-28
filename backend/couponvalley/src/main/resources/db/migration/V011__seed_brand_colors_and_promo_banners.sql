@@ -19,7 +19,7 @@ UPDATE store SET brand_color = '#0E6EFF' WHERE slug = 'cleartrip'    AND brand_c
 -- V011: Backfill TOP_BAR banner. Only inserted if no TOP_BAR banner exists yet.
 INSERT INTO banner (position, title, subtitle, image_url, link_url, active, country_code, placement, starts_at, ends_at)
 SELECT 0,
-       'Share CouponValley & earn ₹500 referral bonus',
+       'Share ClipUpp & earn ₹500 referral bonus',
        'Refer Now',
        'https://placehold.co/1x1/000000/000000?text=+',
        '/account',
@@ -35,19 +35,19 @@ INSERT INTO banner (position, title, subtitle, image_url, link_url, active, coun
 SELECT v.position::SMALLINT, v.title, v.subtitle, v.image_url, v.link_url,
        TRUE, 'IN', 'PROMO_CARD', now(), now() + INTERVAL '90 days'
 FROM (VALUES
-    (1, 'Gettin'' Cashback — Learn how to use CouponValley',
+    (1, 'Gettin'' Cashback — Learn how to use ClipUpp',
         'Earn cashback on every purchase. Here''s how it works.',
         'https://placehold.co/1200x500/4F46E5/FFFFFF?text=How+Cashback+Works',
         '/how-it-works'),
     (2, 'Refer a Friend & Earn ₹500',
-        'Share CouponValley with friends and earn cashback for every signup.',
+        'Share ClipUpp with friends and earn cashback for every signup.',
         'https://placehold.co/1200x500/F59E0B/1A1A1A?text=Refer+%26+Earn+%E2%82%B9500',
         '/account'),
     (3, 'New User Bonus — Flat ₹100 Off',
         'Sign up today and grab a flat ₹100 off coupon on your first order.',
         'https://placehold.co/1200x500/10B981/FFFFFF?text=New+User+Bonus',
         '/sign-up'),
-    (4, 'Download the CouponValley App',
+    (4, 'Download the ClipUpp App',
         'Get exclusive app-only deals, instant notifications, and faster cashback.',
         'https://placehold.co/1200x500/2563EB/FFFFFF?text=Download+the+App',
         '/about')

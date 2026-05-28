@@ -23,26 +23,26 @@ create table if not exists site_setting (
 -- Seed sensible defaults that mirror the strings currently hardcoded in the
 -- public components. Subsequent edits via the admin UI overwrite these.
 insert into site_setting (key, value) values
-    ('brand.name',                  to_jsonb('CouponValley'::text)),
+    ('brand.name',                  to_jsonb('ClipUpp'::text)),
     ('brand.tagline',               to_jsonb('Striving towards making the world a better place to shop with great savings!'::text)),
     ('brand.primary_color',         to_jsonb('#7c3aed'::text)),
     ('brand.accent_color',          to_jsonb('#ffe05b'::text)),
     ('brand.logo_url',              to_jsonb(''::text)),
 
-    ('footer.disclosure',           to_jsonb('CouponValley earns a commission when you click out to a merchant and complete a purchase. This costs you nothing extra and never affects which deals we surface — verified savings come first.'::text)),
-    ('footer.commission_note',      to_jsonb('We may earn a commission if you buy through links on CouponValley.'::text)),
-    ('footer.hashtag',              to_jsonb('#SaveWithCouponValley'::text)),
+    ('footer.disclosure',           to_jsonb('ClipUpp earns a commission when you click out to a merchant and complete a purchase. This costs you nothing extra and never affects which deals we surface — verified savings come first.'::text)),
+    ('footer.commission_note',      to_jsonb('We may earn a commission if you buy through links on ClipUpp.'::text)),
+    ('footer.hashtag',              to_jsonb('#SaveWithClipUpp'::text)),
 
     ('social.whatsapp',             to_jsonb('https://wa.me/9173xxxxxx'::text)),
-    ('social.facebook',             to_jsonb('https://facebook.com/couponvalley'::text)),
-    ('social.x',                    to_jsonb('https://twitter.com/couponvalley'::text)),
-    ('social.linkedin',             to_jsonb('https://linkedin.com/company/couponvalley'::text)),
-    ('social.instagram',            to_jsonb('https://instagram.com/couponvalley'::text)),
-    ('social.youtube',              to_jsonb('https://youtube.com/@couponvalley'::text)),
+    ('social.facebook',             to_jsonb('https://facebook.com/clipupp'::text)),
+    ('social.x',                    to_jsonb('https://twitter.com/clipupp'::text)),
+    ('social.linkedin',             to_jsonb('https://linkedin.com/company/clipupp'::text)),
+    ('social.instagram',            to_jsonb('https://instagram.com/clipupp'::text)),
+    ('social.youtube',              to_jsonb('https://youtube.com/@clipupp'::text)),
 
-    ('contact.email',               to_jsonb('hello@couponvalley.in'::text)),
+    ('contact.email',               to_jsonb('hello@clipupp.in'::text)),
     ('contact.phone',               to_jsonb('+91 91734 56789'::text)),
-    ('contact.address_line1',       to_jsonb('CouponValley HQ,'::text)),
+    ('contact.address_line1',       to_jsonb('ClipUpp HQ,'::text)),
     ('contact.address_line2',       to_jsonb('Bandra Kurla Complex,'::text)),
     ('contact.address_line3',       to_jsonb('Mumbai, MH 400051'::text)),
 
@@ -50,7 +50,7 @@ insert into site_setting (key, value) values
     ('newsletter.subheadline',      to_jsonb('One email. No spam. Unsubscribe anytime.'::text)),
     ('newsletter.cta',              to_jsonb('Subscribe'::text)),
 
-    ('seo.default_title_template',  to_jsonb('%s · CouponValley'::text)),
+    ('seo.default_title_template',  to_jsonb('%s · ClipUpp'::text)),
     ('seo.default_description',     to_jsonb('Verified coupons, cashback, and deals from the stores you actually shop at.'::text)),
     ('seo.og_image',                to_jsonb(''::text))
 on conflict (key) do nothing;

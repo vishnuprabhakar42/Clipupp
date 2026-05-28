@@ -43,7 +43,7 @@ export function CashbackCallout({
           {storeName ? ` at ${storeName}` : ""}
         </p>
         <p className="cv-meta mt-0.5 text-cv-neutral-700">
-          Cashback credits to your CouponValley balance after the merchant
+          Cashback credits to your ClipUpp balance after the merchant
           confirms your order.{" "}
           <Link
             href="/cashback"

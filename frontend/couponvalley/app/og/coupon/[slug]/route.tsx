@@ -12,8 +12,8 @@ export const size = { width: 1200, height: 630 };
  * Keep in sync with globals.css when the brand palette changes.
  */
 const CV = {
-  primary:       "#3B82F6",
-  primaryStrong: "#1D4ED8",
+  primary:       "#DC2626",
+  primaryStrong: "#B91C1C",
 } as const;
 
 export async function GET(
@@ -22,7 +22,7 @@ export async function GET(
 ) {
   const { slug } = await ctx.params;
 
-  let title = "Save with CouponValley";
+  let title = "Save with ClipUpp";
   let store = "";
   let savings: string | null = null;
   let logoUrl: string | null = null;
@@ -70,7 +70,7 @@ export async function GET(
           ) : (
             <div style={{ width: 96, height: 96, borderRadius: 20, background: "rgba(255,255,255,0.1)" }} />
           )}
-          <span style={{ fontSize: 28, opacity: 0.85 }}>{store || "CouponValley"}</span>
+          <span style={{ fontSize: 28, opacity: 0.85 }}>{store || "ClipUpp"}</span>
         </div>
         {savings && (
           <div
@@ -101,7 +101,7 @@ export async function GET(
             {title.length > 90 ? title.slice(0, 87) + "…" : title}
           </span>
           <span style={{ fontSize: 28, opacity: 0.7 }}>
-            couponvalley.com — verified coupons
+            clipupp.com — verified coupons
           </span>
         </div>
       </div>

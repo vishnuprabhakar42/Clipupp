@@ -291,7 +291,7 @@ FROM store s WHERE s.deleted_at IS NULL
 ON CONFLICT DO NOTHING;
 
 INSERT INTO store_top_offer (store_id, position, text)
-SELECT s.id, 3, 'Extra ' || (5 + s.popularity_score % 8) || '% cashback via CouponValley'
+SELECT s.id, 3, 'Extra ' || (5 + s.popularity_score % 8) || '% cashback via ClipUpp'
 FROM store s WHERE s.deleted_at IS NULL
 ON CONFLICT DO NOTHING;
 
@@ -302,7 +302,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO faq (store_id, position, question, answer)
 SELECT s.id, 1,
        'How do I use a ' || s.name || ' coupon code?',
-       'Copy the coupon code from CouponValley and paste it in the promo/discount field at ' || s.name || ' checkout. The discount is applied instantly before payment.'
+       'Copy the coupon code from ClipUpp and paste it in the promo/discount field at ' || s.name || ' checkout. The discount is applied instantly before payment.'
 FROM store s
 WHERE s.deleted_at IS NULL
   AND NOT EXISTS (SELECT 1 FROM faq f WHERE f.store_id = s.id AND f.position = 1);
@@ -310,7 +310,7 @@ WHERE s.deleted_at IS NULL
 INSERT INTO faq (store_id, position, question, answer)
 SELECT s.id, 2,
        'Does ' || s.name || ' offer free delivery?',
-       'Yes! ' || s.name || ' offers free delivery on orders above a minimum value. Check the current free shipping coupon on CouponValley for the latest threshold.'
+       'Yes! ' || s.name || ' offers free delivery on orders above a minimum value. Check the current free shipping coupon on ClipUpp for the latest threshold.'
 FROM store s
 WHERE s.deleted_at IS NULL
   AND NOT EXISTS (SELECT 1 FROM faq f WHERE f.store_id = s.id AND f.position = 2);
@@ -325,7 +325,7 @@ WHERE s.deleted_at IS NULL
 
 INSERT INTO faq (store_id, position, question, answer)
 SELECT s.id, 4,
-       'Are ' || s.name || ' coupons verified on CouponValley?',
+       'Are ' || s.name || ' coupons verified on ClipUpp?',
        'Yes, our team verifies all ' || s.name || ' coupons daily. Verified coupons are marked with a tick and guaranteed to work at the time of publishing.'
 FROM store s
 WHERE s.deleted_at IS NULL
@@ -497,7 +497,7 @@ SELECT
   rs.id,
   rn.id,
   'ADV-' || upper(substr(rs.slug, 1, 6)) || '-' || (1000 + rs.rn + 1)::text,
-  'https://track.couponvalley.in/r?store=' || rs.slug || '&sub_id={click_id}&url={url}',
+  'https://track.clipupp.in/r?store=' || rs.slug || '&sub_id={click_id}&url={url}',
   1,
   TRUE
 FROM ranked_stores rs
@@ -600,7 +600,7 @@ VALUES
   ('how-to-use-coupon-codes-india',
    'How to Use Coupon Codes in India: Complete Guide 2025',
    'Learn the step-by-step process of finding, copying, and applying coupon codes at India''s top online stores to save money on every purchase.',
-   '## Introduction\n\nSaving money online has never been easier. With CouponValley, you can find verified coupon codes for over 500 Indian stores and apply them at checkout for instant discounts.\n\n## Step 1: Find Your Coupon\n\nBrowse our store listings or search for a specific brand. Click "Get Code" to reveal the coupon code.\n\n## Step 2: Copy and Shop\n\nCopy the code to your clipboard, then click through to the store. Add items to your cart as usual.\n\n## Step 3: Apply at Checkout\n\nLook for the "Promo Code", "Discount Code", or "Coupon Code" field at checkout. Paste your code and click Apply.\n\n## Pro Tips\n\n- Stack bank offers with coupon codes for double savings\n- Check expiry dates before applying\n- Some codes are single-use only\n- App-exclusive codes require the store''s mobile app',
+   '## Introduction\n\nSaving money online has never been easier. With ClipUpp, you can find verified coupon codes for over 500 Indian stores and apply them at checkout for instant discounts.\n\n## Step 1: Find Your Coupon\n\nBrowse our store listings or search for a specific brand. Click "Get Code" to reveal the coupon code.\n\n## Step 2: Copy and Shop\n\nCopy the code to your clipboard, then click through to the store. Add items to your cart as usual.\n\n## Step 3: Apply at Checkout\n\nLook for the "Promo Code", "Discount Code", or "Coupon Code" field at checkout. Paste your code and click Apply.\n\n## Pro Tips\n\n- Stack bank offers with coupon codes for double savings\n- Check expiry dates before applying\n- Some codes are single-use only\n- App-exclusive codes require the store''s mobile app',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '5 days',
    'How to Use Coupon Codes in India 2025',
@@ -609,7 +609,7 @@ VALUES
   ('best-amazon-india-coupons-2025',
    'Best Amazon India Coupons & Deals This Month',
    'Discover the top Amazon India coupon codes, deals, and cashback offers available right now. Updated daily by our deals team.',
-   '## Amazon India Deals This Month\n\nAmazon India is one of the most popular shopping destinations in India, and with the right coupon codes, you can save significantly on every purchase.\n\n## Top Categories for Deals\n\n### Electronics\nAmazon regularly offers 10-30% off on smartphones, laptops, and accessories during sale events.\n\n### Fashion\nFashion discounts of up to 50% are common, especially during end-of-season sales.\n\n### Groceries\nAmazon Fresh offers weekly deals on fruits, vegetables, and pantry staples.\n\n## How to Find the Best Amazon Deals\n\n1. Bookmark CouponValley''s Amazon page\n2. Enable deal alerts\n3. Check back daily — new coupons added every day\n4. Stack with HDFC/SBI credit card offers\n\n## Amazon Great Indian Sale\n\nThe annual Great Indian Sale is Amazon''s biggest event, with deals across all categories starting from ₹1.',
+   '## Amazon India Deals This Month\n\nAmazon India is one of the most popular shopping destinations in India, and with the right coupon codes, you can save significantly on every purchase.\n\n## Top Categories for Deals\n\n### Electronics\nAmazon regularly offers 10-30% off on smartphones, laptops, and accessories during sale events.\n\n### Fashion\nFashion discounts of up to 50% are common, especially during end-of-season sales.\n\n### Groceries\nAmazon Fresh offers weekly deals on fruits, vegetables, and pantry staples.\n\n## How to Find the Best Amazon Deals\n\n1. Bookmark ClipUpp''s Amazon page\n2. Enable deal alerts\n3. Check back daily — new coupons added every day\n4. Stack with HDFC/SBI credit card offers\n\n## Amazon Great Indian Sale\n\nThe annual Great Indian Sale is Amazon''s biggest event, with deals across all categories starting from ₹1.',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '3 days',
    'Best Amazon India Coupon Codes & Deals 2025',
@@ -618,7 +618,7 @@ VALUES
   ('top-10-grocery-delivery-apps-india',
    'Top 10 Grocery Delivery Apps in India 2025 (With Coupons)',
    'A complete comparison of India''s best online grocery delivery apps — Blinkit, Zepto, BigBasket, JioMart, and more — with the latest coupon codes.',
-   '## The Best Grocery Delivery Apps in India\n\nOnline grocery shopping has exploded in India, with multiple apps competing to deliver your essentials in under 30 minutes.\n\n## 1. Blinkit (15-minute delivery)\n\nFormerly Grofers, Blinkit is now India''s fastest grocery delivery service operating in 30+ cities.\n\n**Best for:** Last-minute grocery needs\n**Average delivery time:** 10-15 minutes\n\n## 2. Zepto (10-minute delivery)\n\nZepto pioneered the 10-minute delivery model in India and operates dark stores across major metros.\n\n**Best for:** Speed-first shoppers\n\n## 3. BigBasket\n\nIndia''s largest online supermarket with the widest SKU range and reliable scheduled delivery slots.\n\n**Best for:** Weekly grocery shopping\n\n## 4. JioMart\n\nReliance''s grocery platform with competitive prices and integration with WhatsApp ordering.\n\n## How to Save on Grocery Apps\n\n- Use first-order coupons for maximum savings\n- Subscribe to membership plans for consistent discounts\n- Check CouponValley before every order',
+   '## The Best Grocery Delivery Apps in India\n\nOnline grocery shopping has exploded in India, with multiple apps competing to deliver your essentials in under 30 minutes.\n\n## 1. Blinkit (15-minute delivery)\n\nFormerly Grofers, Blinkit is now India''s fastest grocery delivery service operating in 30+ cities.\n\n**Best for:** Last-minute grocery needs\n**Average delivery time:** 10-15 minutes\n\n## 2. Zepto (10-minute delivery)\n\nZepto pioneered the 10-minute delivery model in India and operates dark stores across major metros.\n\n**Best for:** Speed-first shoppers\n\n## 3. BigBasket\n\nIndia''s largest online supermarket with the widest SKU range and reliable scheduled delivery slots.\n\n**Best for:** Weekly grocery shopping\n\n## 4. JioMart\n\nReliance''s grocery platform with competitive prices and integration with WhatsApp ordering.\n\n## How to Save on Grocery Apps\n\n- Use first-order coupons for maximum savings\n- Subscribe to membership plans for consistent discounts\n- Check ClipUpp before every order',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '7 days',
    'Top 10 Grocery Delivery Apps in India 2025',
@@ -627,7 +627,7 @@ VALUES
   ('best-flight-booking-deals-india',
    'How to Get Cheap Flights in India: Booking Tips & Coupon Codes',
    'Expert tips for finding the cheapest domestic and international flights from India, plus the latest MakeMyTrip, Cleartrip, and Indigo coupon codes.',
-   '## How to Book Cheap Flights in India\n\nFlight prices fluctuate constantly. With the right strategy and coupon codes, you can save thousands on every booking.\n\n## Best Time to Book Domestic Flights\n\nBook 6-8 weeks in advance for domestic routes. Last-minute bookings are almost always more expensive.\n\n## Top Flight Booking Platforms\n\n### MakeMyTrip\nIndia''s most popular travel platform with the widest selection of flights and hotel combos.\n\n### Cleartrip\nKnown for transparent pricing with no hidden fees. Best for straightforward flight searches.\n\n### IRCTC Air\nBook flights through IRCTC for exclusive railway-integration deals.\n\n## Money-Saving Tips\n\n1. Use incognito mode while searching (prices may vary with cookies)\n2. Set price alerts 60 days before your travel date\n3. Compare prices across all platforms\n4. Use CouponValley codes at checkout for extra discounts\n5. Stack credit card travel benefits with coupon codes',
+   '## How to Book Cheap Flights in India\n\nFlight prices fluctuate constantly. With the right strategy and coupon codes, you can save thousands on every booking.\n\n## Best Time to Book Domestic Flights\n\nBook 6-8 weeks in advance for domestic routes. Last-minute bookings are almost always more expensive.\n\n## Top Flight Booking Platforms\n\n### MakeMyTrip\nIndia''s most popular travel platform with the widest selection of flights and hotel combos.\n\n### Cleartrip\nKnown for transparent pricing with no hidden fees. Best for straightforward flight searches.\n\n### IRCTC Air\nBook flights through IRCTC for exclusive railway-integration deals.\n\n## Money-Saving Tips\n\n1. Use incognito mode while searching (prices may vary with cookies)\n2. Set price alerts 60 days before your travel date\n3. Compare prices across all platforms\n4. Use ClipUpp codes at checkout for extra discounts\n5. Stack credit card travel benefits with coupon codes',
    '30000000-0000-0000-0000-000000000004',
    'PUBLISHED', now() - INTERVAL '10 days',
    'Cheap Flight Booking Tips India 2025 — Coupon Codes Included',
@@ -636,7 +636,7 @@ VALUES
   ('skincare-deals-india-2025',
    'Best Skincare Deals in India 2025 — Minimalist, Mamaearth & More',
    'Shop the best skincare deals from India''s top D2C brands — Minimalist, Mamaearth, Plum, WOW, and Nykaa. With verified coupon codes.',
-   '## India''s Skincare Revolution\n\nIndian skincare has transformed dramatically. D2C brands now offer dermatologist-formulated products at a fraction of international brand prices.\n\n## Top Skincare Brands & Deals\n\n### Minimalist\nScience-backed serums with high-concentration actives. Known for transparent ingredient labelling.\n**Best sellers:** Vitamin C 10%, Niacinamide 10%, Retinol 0.3%\n\n### Mamaearth\nToxin-free natural beauty brand. Great for sensitive skin and beginners.\n**Best sellers:** Vitamin C Face Wash, Onion Hair Oil\n\n### Plum\n100% vegan formulations with botanical ingredients.\n\n### WOW Skin Science\nApple Cider Vinegar range is their hero product line.\n\n## When to Buy\n\n- Nykaa sale events: Biggest discounts 4x per year\n- Brand anniversary sales: 30-50% off site-wide\n- Daily CouponValley exclusive codes: 5-15% additional',
+   '## India''s Skincare Revolution\n\nIndian skincare has transformed dramatically. D2C brands now offer dermatologist-formulated products at a fraction of international brand prices.\n\n## Top Skincare Brands & Deals\n\n### Minimalist\nScience-backed serums with high-concentration actives. Known for transparent ingredient labelling.\n**Best sellers:** Vitamin C 10%, Niacinamide 10%, Retinol 0.3%\n\n### Mamaearth\nToxin-free natural beauty brand. Great for sensitive skin and beginners.\n**Best sellers:** Vitamin C Face Wash, Onion Hair Oil\n\n### Plum\n100% vegan formulations with botanical ingredients.\n\n### WOW Skin Science\nApple Cider Vinegar range is their hero product line.\n\n## When to Buy\n\n- Nykaa sale events: Biggest discounts 4x per year\n- Brand anniversary sales: 30-50% off site-wide\n- Daily ClipUpp exclusive codes: 5-15% additional',
    '30000000-0000-0000-0000-000000000003',
    'PUBLISHED', now() - INTERVAL '2 days',
    'Best Skincare Deals India 2025 — Minimalist, Mamaearth, Plum',
@@ -645,20 +645,20 @@ VALUES
   ('electronics-buying-guide-india',
    'Electronics Buying Guide India 2025: When to Buy & Best Deals',
    'The complete guide to buying electronics in India — the best time to shop, which platforms to use, and how to find the biggest discounts on phones, laptops, and TVs.',
-   '## When Is the Best Time to Buy Electronics in India?\n\n### Diwali Sale Season (Oct–Nov)\nThe biggest discounts of the year. Amazon Great Indian Festival and Flipkart Big Billion Days run simultaneously.\n\n### Republic Day Sales (January)\nGreat for laptops and TVs. Discounts of 20-40% are common.\n\n### Independence Day Sales (August)\nMid-year refresh with solid deals on smartphones.\n\n## Best Platforms by Category\n\n| Category | Best Platform |\n|---|---|\n| Smartphones | Amazon, Flipkart |\n| Laptops | Croma, Reliance Digital |\n| TVs | Vijay Sales, Croma |\n| Audio | boAt website, Amazon |\n\n## Pro Tips\n\n1. Never buy at full price — electronics go on sale every 2-3 weeks\n2. Check CouponValley for launch-day exclusive codes\n3. Compare across 3+ platforms before buying\n4. EMI with zero cost via bank credit cards saves additional interest',
+   '## When Is the Best Time to Buy Electronics in India?\n\n### Diwali Sale Season (Oct–Nov)\nThe biggest discounts of the year. Amazon Great Indian Festival and Flipkart Big Billion Days run simultaneously.\n\n### Republic Day Sales (January)\nGreat for laptops and TVs. Discounts of 20-40% are common.\n\n### Independence Day Sales (August)\nMid-year refresh with solid deals on smartphones.\n\n## Best Platforms by Category\n\n| Category | Best Platform |\n|---|---|\n| Smartphones | Amazon, Flipkart |\n| Laptops | Croma, Reliance Digital |\n| TVs | Vijay Sales, Croma |\n| Audio | boAt website, Amazon |\n\n## Pro Tips\n\n1. Never buy at full price — electronics go on sale every 2-3 weeks\n2. Check ClipUpp for launch-day exclusive codes\n3. Compare across 3+ platforms before buying\n4. EMI with zero cost via bank credit cards saves additional interest',
    '30000000-0000-0000-0000-000000000002',
    'PUBLISHED', now() - INTERVAL '14 days',
    'Electronics Buying Guide India 2025 — Best Time to Buy',
    'When to buy electronics in India and how to get the best deals on phones, laptops, and TVs with coupon codes.'),
 
-  ('how-cashback-works-couponvalley',
-   'How Cashback Works on CouponValley — Complete Guide',
-   'Everything you need to know about earning cashback on CouponValley. How it''s tracked, when it''s credited, and how to maximize your earnings.',
-   '## What Is Cashback?\n\nCashback is real money returned to you after a qualifying purchase. When you click through CouponValley to a partner store and complete a purchase, we earn a commission — and share a portion of it with you as cashback.\n\n## How It Works\n\n1. **Find a store** on CouponValley with a cashback rate\n2. **Click through** — our tracking link records your session\n3. **Shop and pay** on the partner store as normal\n4. **Cashback is tracked** — usually confirmed within 24–48 hours\n5. **Cash is credited** — to your CouponValley wallet after validation\n\n## How to Maximize Cashback\n\n- Always click through CouponValley just before checkout\n- Disable VPN and ad-blockers (they interfere with tracking)\n- Don''t open the store in a new tab manually — use our link\n- Stack cashback with coupon codes for double savings\n\n## When Is Cashback Credited?\n\nMost stores validate cashback within 30–90 days after the order is confirmed and the return window closes.',
+  ('how-cashback-works-clipupp',
+   'How Cashback Works on ClipUpp — Complete Guide',
+   'Everything you need to know about earning cashback on ClipUpp. How it''s tracked, when it''s credited, and how to maximize your earnings.',
+   '## What Is Cashback?\n\nCashback is real money returned to you after a qualifying purchase. When you click through ClipUpp to a partner store and complete a purchase, we earn a commission — and share a portion of it with you as cashback.\n\n## How It Works\n\n1. **Find a store** on ClipUpp with a cashback rate\n2. **Click through** — our tracking link records your session\n3. **Shop and pay** on the partner store as normal\n4. **Cashback is tracked** — usually confirmed within 24–48 hours\n5. **Cash is credited** — to your ClipUpp wallet after validation\n\n## How to Maximize Cashback\n\n- Always click through ClipUpp just before checkout\n- Disable VPN and ad-blockers (they interfere with tracking)\n- Don''t open the store in a new tab manually — use our link\n- Stack cashback with coupon codes for double savings\n\n## When Is Cashback Credited?\n\nMost stores validate cashback within 30–90 days after the order is confirmed and the return window closes.',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '20 days',
-   'How Cashback Works on CouponValley — Full Guide 2025',
-   'Learn how cashback is tracked, when it''s credited, and how to maximize your earnings on CouponValley.')
+   'How Cashback Works on ClipUpp — Full Guide 2025',
+   'Learn how cashback is tracked, when it''s credited, and how to maximize your earnings on ClipUpp.')
 ON CONFLICT (slug) DO NOTHING;
 
 -- ─────────────────────────────────────────────────────────────────────────────

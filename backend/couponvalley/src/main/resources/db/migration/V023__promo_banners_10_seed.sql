@@ -14,7 +14,7 @@ FROM (VALUES
          'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&h=600&fit=crop&q=75',
          '/stores'),
     (2,  'Refer a friend, earn ₹500',
-         'Share CouponValley and earn for every signup.',
+         'Share ClipUpp and earn for every signup.',
          'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=1600&h=600&fit=crop&q=75',
          '/account'),
     (3,  'Flat ₹100 off your first order',

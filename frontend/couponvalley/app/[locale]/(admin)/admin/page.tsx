@@ -77,7 +77,7 @@ export default async function AdminDashboardPage() {
                 Welcome back, {firstName} 👋
               </h1>
               <p className="mt-1 max-w-2xl text-sm text-gray-600">
-                Here&apos;s how CouponValley performed in the last {DEFAULT_DAYS} days. Use the
+                Here&apos;s how ClipUpp performed in the last {DEFAULT_DAYS} days. Use the
                 range pills below to zoom in, drill into any tile, or jump into one of the modules
                 on the right.
               </p>

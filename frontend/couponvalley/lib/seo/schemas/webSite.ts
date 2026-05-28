@@ -2,7 +2,7 @@ export function webSiteSchema(siteUrl: string): object {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "CouponValley",
+    name: "ClipUpp",
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",
