@@ -24,7 +24,7 @@
       "Bash(curl *)",
       "Bash(xargs cat *)",
       "Bash(./gradlew bootRun --args='--spring.profiles.active=dev')",
-      "Bash(PGPASSWORD=anshu psql -U postgres -d couponvalley_db -c \"\\\\dt\")",
+      "Bash(PGPASSWORD=anshu psql -U postgres -d clipupp_db -c \"\\\\dt\")",
       "Bash(PGPASSWORD=anshu psql *)",
       "Bash(awk '{print $2}')",
       "Bash(ps -p 5367 -o command)",
@@ -46,9 +46,25 @@
       "Bash(lsof -ti:3000)",
       "Bash(xargs -r kill)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('Scripts:', list\\(d.get\\('scripts',{}\\).keys\\(\\)\\)\\); print\\('Key deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)[:20]\\)\")",
-      "Bash(grep -r \"cv-primary\\\\|cv-accent\\\\|cv-success\\\\|cv-danger\\\\|cv-neutral\" /Users/anshu/Desktop/CouponValley/frontend/couponvalley --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.css\" ! -path \"*/node_modules/*\" ! -path \"*/.next/*\" -l)",
+      "Bash(grep -r \"clipupp-primary\\\\|clipupp-accent\\\\|clipupp-success\\\\|clipupp-danger\\\\|clipupp-neutral\" /Users/anshu/Desktop/Clipupp/frontend/clipupp --include=\"*.tsx\" --include=\"*.ts\" --include=\"*.css\" ! -path \"*/node_modules/*\" ! -path \"*/.next/*\" -l)",
       "WebFetch(domain:simplycodes.com)",
-      "Bash(psql *)"
+      "Bash(psql *)",
+      "Bash(awk -F: '{print $1}')",
+      "Bash(git checkout *)",
+      "Bash(git mv *)",
+      "Bash(sed -i '' 's|/Users/anshu/Desktop/Clipupp|/Users/anshu/Desktop/CouponValley|g' .claude/settings.local.json backend/clipupp/.claude/settings.local.json)",
+      "Bash(sed -i '' 's/clipupp-media/couponvalley-media/g' backend/clipupp/src/main/resources/application-dev.yml .env.production.example)",
+      "Bash(sed -i '' -e 's/Coupon Valley/Clipupp/g' -e s/CouponValley/Clipupp/g -e s/Couponvalley/Clipupp/g -e s/COUPONVALLEY/CLIPUPP/g -e s/coupon-valley/clipupp/g -e s/coupon_valley/clipupp/g -e s/couponvalley/clipupp/g backend/.idea/workspace.xml)",
+      "Bash(sed -i '' 's|/Users/anshu/Desktop/Clipupp|/Users/anshu/Desktop/CouponValley|g' backend/.idea/workspace.xml)",
+      "Bash(sed -i '' 's/clipupp-media/couponvalley-media/g' backend/.idea/workspace.xml)",
+      "Bash(sed -i '' 's/clipupp_db/couponvalley_db/g' backend/.idea/workspace.xml)",
+      "Bash(./gradlew build *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('  brand.name:', d.get\\('brand.name'\\)\\); print\\('  brand.tagline:', d.get\\('brand.tagline'\\)[:80]\\)\")",
+      "Bash(command -v docker)",
+      "Bash(docker --version)",
+      "Bash(echo \"Docker available: $\\(docker --version\\)\")",
+      "Bash(docker info *)",
+      "Bash(git add *)"
     ]
   }
 }
