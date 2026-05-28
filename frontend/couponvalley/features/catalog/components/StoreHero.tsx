@@ -13,10 +13,10 @@ type HeroStore = {
 };
 
 /**
- * Full-width band above the two-column store-detail grid. Logo (88×88 in a
- * white tile), H1 with brand + month/year, rating row, stat chips below,
- * "Visit brand" CTA on the right. Server-rendered, image priority loaded so
- * it's the LCP candidate on store pages.
+ * Full-width hero band above the two-column store-detail grid. Crimson mesh
+ * background, white logo card (shadow-lifted) floating on the gradient, glass
+ * meta chips, and an amber-gradient "Visit" CTA with glow. Server-rendered;
+ * image priority loaded so it's the LCP candidate on store pages.
  */
 export function StoreHero({
   store,
@@ -26,7 +26,7 @@ export function StoreHero({
   store: HeroStore;
   stats?: StoreStatsInput | null;
   /** Affiliate-routed visit URL — usually `/r/{redirectId}`. Falls back to
-   *  primaryUrl, then "#" if neither is available. */
+   *  primaryUrl, then null if neither is available. */
   visitUrl?: string | null;
 }) {
   const now = new Date();
@@ -38,26 +38,29 @@ export function StoreHero({
   return (
     <section
       aria-labelledby="store-hero-heading"
-      className="border-b border-cv-neutral-200 bg-white"
+      className="cv-section-bg-mesh-primary relative overflow-hidden"
     >
-      <div className="cv-container py-8 lg:py-10">
+      <div className="cv-container py-10 lg:py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5">
-            <div className="grid h-20 w-20 shrink-0 place-items-center overflow-hidden rounded-lg border border-cv-neutral-200 bg-white p-2 lg:h-[88px] lg:w-[88px]">
+            <div
+              className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-3 lg:h-[112px] lg:w-[112px]"
+              style={{ boxShadow: "var(--cv-shadow-lifted)" }}
+            >
               {store.logoUrl ? (
                 <Image
                   src={store.logoUrl}
                   alt={store.name}
-                  width={72}
-                  height={72}
-                  sizes="88px"
+                  width={96}
+                  height={96}
+                  sizes="112px"
                   priority
                   className="max-h-full w-auto max-w-full object-contain"
                 />
               ) : (
                 <span
                   aria-hidden
-                  className="grid h-full w-full place-items-center rounded-md bg-cv-primary text-2xl font-bold text-white"
+                  className="grid h-full w-full place-items-center rounded-xl bg-cv-primary text-3xl font-bold text-white"
                 >
                   {initial}
                 </span>
@@ -66,33 +69,33 @@ export function StoreHero({
             <div className="min-w-0">
               <h1
                 id="store-hero-heading"
-                className="font-display text-[1.75rem] font-bold leading-tight tracking-tight text-cv-neutral-900 lg:text-[2.25rem]"
+                className="cv-display-hero text-white"
               >
-                {store.name} Coupons & Promo Codes
-                <span className="block text-[1rem] font-medium text-cv-neutral-500 lg:text-[1.125rem]">
-                  {monthYear}
+                {store.name}
+                <span className="block font-display text-[15px] font-bold uppercase tracking-[0.16em] text-white/70 lg:text-[16px]">
+                  Coupons & Promo Codes · {monthYear}
                 </span>
               </h1>
-              {(store.shortDescription || rating) && (
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-cv-neutral-600">
+              {(store.shortDescription || rating !== null) && (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   {rating !== null && (
-                    <span className="inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-display text-[12px] font-bold text-white backdrop-blur-sm">
                       <Star
-                        className="h-4 w-4 fill-cv-primary text-cv-primary"
+                        className="h-3.5 w-3.5 fill-cv-accent-400 text-cv-accent-400"
                         aria-hidden
                       />
-                      <span className="font-semibold tabular-nums text-cv-neutral-900">
-                        {rating.toFixed(1)}
-                      </span>
+                      <span className="tabular-nums">{rating.toFixed(1)}</span>
                       {store.reviewCount && store.reviewCount > 0 && (
-                        <span className="text-cv-neutral-500">
-                          · {store.reviewCount.toLocaleString()} reviews
+                        <span className="text-white/70">
+                          · {store.reviewCount.toLocaleString()}
                         </span>
                       )}
                     </span>
                   )}
                   {store.shortDescription && (
-                    <span className="line-clamp-1">{store.shortDescription}</span>
+                    <p className="line-clamp-1 max-w-xl text-[14px] font-medium text-white/85">
+                      {store.shortDescription}
+                    </p>
                   )}
                 </div>
               )}
@@ -104,7 +107,7 @@ export function StoreHero({
               href={cta}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-md bg-cv-primary px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong lg:self-center"
+              className="cv-btn-accent-gradient self-start text-[14px] font-extrabold uppercase tracking-wide lg:self-center"
             >
               Visit {store.name}
               <ExternalLink className="h-4 w-4" aria-hidden />
@@ -113,8 +116,8 @@ export function StoreHero({
         </div>
 
         {stats && (
-          <div className="mt-6">
-            <StoreStatChips stats={stats} />
+          <div className="mt-8">
+            <StoreStatChips stats={stats} variant="glass" />
           </div>
         )}
       </div>
