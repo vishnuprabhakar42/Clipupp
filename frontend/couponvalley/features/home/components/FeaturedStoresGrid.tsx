@@ -54,7 +54,7 @@ export async function FeaturedStoresGrid({
         </div>
         <Link
           href="/stores"
-          className="group inline-flex items-center gap-1 text-sm font-bold text-cv-primary-700 hover:underline"
+          className="group inline-flex items-center gap-1 text-sm font-medium text-cv-primary-700 hover:underline"
         >
           See all stores
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
