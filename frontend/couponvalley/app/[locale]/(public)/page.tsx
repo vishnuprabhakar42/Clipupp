@@ -59,89 +59,115 @@ type RenderContext = {
 
 type SectionBuilder = (s: HomepageSectionPayload, ctx: RenderContext) => ReactNode;
 
+/**
+ * Section background tier matrix — Phase 2 redesign.
+ *
+ * Every entry sets the section's own background. The pattern is "color is the
+ * surface, white is the interruption" — hot sections are saturated, content-
+ * heavy sections are soft tints, scan-dense sections stay white.
+ */
 const SECTION_RENDERERS: Record<string, SectionBuilder> = {
-  // ── NEW: top-of-page hero with prominent search + category quick-jumps.
-  // Owns its own padding + flat brand-soft background.
+  // ── Hero — crimson mesh, owns its own padding + min-height clamp.
   hero_search: (s) => <HeroSearchSection section={s} />,
 
+  // ── Personalised rail — white surface, content carries the colour.
   trending_stores: (s) => (
-    <section className="container py-10">
+    <section className="cv-container py-12">
       <TrendingStoresRail section={s} />
     </section>
   ),
+
+  // ── Promo banners — white (photos do the work).
   promo_banners: (s) => (
-    <section className="container pb-10">
+    <section className="cv-container pb-12">
       <PromoBannersCarousel section={s} />
     </section>
   ),
-  // ── NEW: four big numeric stat tiles. Social proof above the fold.
+
+  // ── Savings stats — amber-soft band (peach).
   savings_stats: (s, ctx) => (
-    <section className="container py-12">
-      <SavingsStatsStrip section={s} settings={ctx.settings} />
+    <section className="cv-section-bg-accent-soft">
+      <div className="cv-container py-14">
+        <SavingsStatsStrip section={s} settings={ctx.settings} />
+      </div>
     </section>
   ),
+
+  // ── Featured stores — fade-down (white → primary-soft).
   featured_stores: (s) => (
-    <section className="bg-cv-neutral-50">
-      <div className="container py-12">
+    <section className="cv-section-bg-fade-down">
+      <div className="cv-container py-14">
         <FeaturedStoresGrid section={s} />
       </div>
     </section>
   ),
-  // ── NEW: editorial 1-large + 3-small picks layout (different rhythm
-  // from the uniform top_deals grid).
+
+  // ── Daily picks — white surface so the warm featured card pops.
   daily_picks: (s) => (
-    <section className="container py-12">
+    <section className="cv-container py-14">
       <DailyPicksSection section={s} />
     </section>
   ),
+
+  // ── Top deals — warm-taupe surface so brand-tinted cards sit at home.
   top_deals: (s) => (
-    <section className="container py-12">
-      <TopDealsSection section={s} />
+    <section className="cv-section-bg-neutral">
+      <div className="cv-container py-14">
+        <TopDealsSection section={s} />
+      </div>
     </section>
   ),
+
+  // ── Editorial / blog — white surface; the photo-hero card is dark.
   editorial: (s) => (
-    <section className="container py-12">
+    <section className="cv-container py-14">
       <BlogSection section={s} />
     </section>
   ),
+
+  // ── Categories — primary-soft (crimson wash).
   popular_categories: (s) => (
-    <section className="bg-cv-neutral-50">
-      <div className="container py-12">
+    <section className="cv-section-bg-primary-soft">
+      <div className="cv-container py-14">
         <PopularCategoriesGrid section={s} />
       </div>
     </section>
   ),
+
+  // ── Trusted brands — white + marquee edge-fade (built into the component).
   trusted_brands: (s) => (
-    <section className="container py-12">
+    <section className="cv-container py-14">
       <TrustedBrandsRail section={s} />
     </section>
   ),
-  // ── NEW: editorial "smart ways to save" tips — 4 columns, content-heavy
-  // for category-page SEO.
+
+  // ── Editorial tips — success-soft (mint band).
   editorial_tips: (s) => (
-    <section className="bg-cv-neutral-50">
-      <div className="container py-12">
+    <section className="cv-section-bg-success-soft">
+      <div className="cv-container py-14">
         <EditorialTipsSection section={s} />
       </div>
     </section>
   ),
-  // ── NEW: trust strip — 4 inline value props (verified, free, no spam,
-  // editor curated). Builds confidence before the FAQ + newsletter CTA.
+
+  // ── Guarantees — white surface; cv-edge-bar carries the colour per tile.
   guarantees: (s) => (
-    <section className="container py-12">
+    <section className="cv-container py-14">
       <GuaranteeStrip section={s} />
     </section>
   ),
-  // ── NEW: FAQ accordion with FAQPage JSON-LD for rich search results.
+
+  // ── FAQ — primary-soft band, gradient chevron discs.
   faq: (s) => (
-    <section className="container py-12">
-      <FaqSection section={s} />
+    <section className="cv-section-bg-primary-soft">
+      <div className="cv-container py-14">
+        <FaqSection section={s} />
+      </div>
     </section>
   ),
+
+  // ── Newsletter — amber mesh; component owns its own padding + bg.
   newsletter: (s, ctx) => (
-    // Full-width band — NewsletterBar owns its own padding + bg so the
-    // top/bottom gaps are symmetric and visually flush with neighbouring
-    // sections instead of floating as a contained card.
     <NewsletterBar section={s} copy={ctx.newsletterCopy} />
   ),
 };
@@ -150,6 +176,10 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
  * Server-rendered homepage. The order, enabled flag, item limits, and
  * per-section copy all come from /api/v1/homepage (admin-managed). Unknown
  * codes are dropped silently so renaming or retiring a section type is safe.
+ *
+ * Phase 2 redesign: every section reaches for a `cv-section-bg-*` helper so
+ * the page reads as a rhythm of coloured blocks instead of one long white
+ * scroll. See SECTION_RENDERERS above for the per-code background.
  */
 export default async function HomePage() {
   const [layout, settings, user] = await Promise.all([
@@ -160,11 +190,10 @@ export default async function HomePage() {
   const allSections = layout?.sections ?? [];
 
   // "Your favorites & visited" (trending_stores) is signed-in-only. We pull
-  // it out of the normal flow, drop it from the iteration, and render it
-  // at the very top of the page when the user is logged in.
+  // it out of the normal flow and render it after the hero when logged in.
   const trending = allSections.find((s) => s.code === "trending_stores");
   // Newsletter is pulled out so HowItWorks can render between content and
-  // the signup CTA (uupm.cc-style flow: hero → content → explainer → CTA).
+  // the signup CTA (hero → content → explainer → CTA).
   const newsletter = allSections.find((s) => s.code === "newsletter");
   const middleSections = allSections.filter(
     (s) => s.code !== "trending_stores" && s.code !== "newsletter"
@@ -172,7 +201,10 @@ export default async function HomePage() {
 
   const ctx: RenderContext = {
     newsletterCopy: {
-      headline: asString(settings["newsletter.headline"], "Get the best deals weekly"),
+      headline: asString(
+        settings["newsletter.headline"],
+        "Get the best deals weekly"
+      ),
       subheadline: asString(
         settings["newsletter.subheadline"],
         "One email. No spam. Unsubscribe anytime."
@@ -184,7 +216,8 @@ export default async function HomePage() {
 
   return (
     <div className="bg-white">
-      {/* Personalised rail — only visible to signed-in users. */}
+      {/* Personalised rail — only visible to signed-in users. Renders above
+          the rest of the homepage (after the hero, before promo banners). */}
       {user && trending && (
         <div id={trending.code} className="scroll-mt-24">
           {SECTION_RENDERERS[trending.code]?.(trending, ctx)}
@@ -194,8 +227,6 @@ export default async function HomePage() {
       {middleSections.map((s) => {
         const render = SECTION_RENDERERS[s.code];
         if (!render) return null;
-        // id={s.code} lets /admin/homepage's "Preview" link deep-link via
-        // /#<section_code> and scroll the user straight to the right block.
         return (
           <div key={s.code} id={s.code} className="scroll-mt-24">
             {render(s, ctx)}
@@ -203,7 +234,7 @@ export default async function HomePage() {
         );
       })}
 
-      {/* uupm.cc-style 3-step explainer, before the signup CTA. */}
+      {/* Fixed 3-step explainer, before the signup CTA. */}
       <HowItWorksSection />
 
       {/* Newsletter signup — always last so the page ends on the lead-gen CTA. */}

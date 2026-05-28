@@ -13,10 +13,11 @@ type Store = {
 };
 
 /**
- * "Explore online promo codes from brands you trust" — flat white logo tiles
- * in a horizontally scrolling rail. Server-rendered HTML; arrow buttons +
- * pagination dots hydrate as a small client island (ScrollRail with
- * `showDots`). CSS scroll-snap makes the rail usable without JS.
+ * "Explore online promo codes from brands you trust" — white logo tiles in a
+ * horizontally scrolling rail with edge-fade masking. Server-rendered HTML;
+ * arrow buttons + pagination dots hydrate as a small client island
+ * (ScrollRail with `showDots`). CSS scroll-snap makes the rail usable without
+ * JS. The edge fade is a CSS mask-image, so it costs nothing in JS.
  */
 export async function TrustedBrandsRail({
   section,
@@ -32,11 +33,22 @@ export async function TrustedBrandsRail({
 
   return (
     <section aria-labelledby="trusted-brands-heading">
-      <h2 id="trusted-brands-heading" className="cv-h2">
-        {heading}
-      </h2>
+      <div className="mb-6">
+        <p className="cv-eyebrow-vivid">Brands you know</p>
+        <h2 id="trusted-brands-heading" className="cv-h2 mt-2">
+          {heading}
+        </h2>
+      </div>
 
-      <div className="mt-6">
+      <div
+        className="mt-6"
+        style={{
+          maskImage:
+            "linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%)",
+        }}
+      >
         {stores.length === 0 ? (
           <p className="cv-meta">No brands yet.</p>
         ) : (
@@ -71,7 +83,7 @@ function BrandCard({ store }: { store: Store }) {
   return (
     <Link
       href={`/stores/${store.slug}`}
-      className="flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden rounded-lg border border-cv-neutral-200 bg-white p-4 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
+      className="cv-card flex h-[110px] w-[calc((100%-3rem)/2)] shrink-0 snap-start items-center justify-center overflow-hidden p-4 sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4rem)/6)]"
       aria-label={store.name}
     >
       {hasLogo ? (
@@ -81,12 +93,12 @@ function BrandCard({ store }: { store: Store }) {
           width={188}
           height={72}
           sizes="(min-width: 1024px) 188px, (min-width: 640px) 33vw, 50vw"
-          className="max-h-full w-auto max-w-full object-contain"
+          className="max-h-full w-auto max-w-full object-contain transition-transform group-hover:scale-105"
         />
       ) : (
         <span
           aria-hidden
-          className="grid h-14 w-14 place-items-center rounded-full bg-cv-primary text-xl font-semibold text-white"
+          className="grid h-14 w-14 place-items-center rounded-full cv-gradient-hero text-xl font-extrabold text-white"
         >
           {initial}
         </span>
