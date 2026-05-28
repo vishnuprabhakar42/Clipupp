@@ -214,35 +214,71 @@ export default async function HomePage() {
     settings,
   };
 
+  // Build a single ordered list of every visual section on the page —
+  // trending (logged-in only) → middle sections (admin-managed) →
+  // HowItWorks (fixed) → newsletter. We then walk it with a single index
+  // so the alternating-bg rule below can reason about positions
+  // regardless of which renderer the admin picked for each slot.
+  type Entry = { key: string; node: ReactNode; lockBg?: boolean };
+  const entries: Entry[] = [];
+
+  if (user && trending) {
+    entries.push({
+      key: trending.code,
+      node: SECTION_RENDERERS[trending.code]?.(trending, ctx) ?? null,
+    });
+  }
+
+  middleSections.forEach((s) => {
+    const render = SECTION_RENDERERS[s.code];
+    if (!render) return;
+    entries.push({ key: s.code, node: render(s, ctx) });
+  });
+
+  entries.push({ key: "how_it_works", node: <HowItWorksSection /> });
+
+  if (newsletter) {
+    entries.push({
+      key: newsletter.code,
+      node: SECTION_RENDERERS[newsletter.code]?.(newsletter, ctx) ?? null,
+      // Newsletter is the bottom lead-gen CTA — its white form text needs
+      // a coloured background to remain visible, so it's exempt from the
+      // alternating-bg rule below.
+      lockBg: true,
+    });
+  }
+
+  // Background rule: first two visual sections keep whatever bg their
+  // renderer set (hero mesh + the section the admin pinned at position 2).
+  // From position 3 onwards every section gets either bg-white or
+  // bg-cv-neutral-50, alternating, *regardless* of which renderer occupies
+  // that slot. `[&>section]:!bg-transparent` neutralises any bg the
+  // renderer's <section> set so the wrapper's bg shows through.
+  let alternationCount = 0;
   return (
     <div className="bg-white">
-      {/* Personalised rail — only visible to signed-in users. Renders above
-          the rest of the homepage (after the hero, before promo banners). */}
-      {user && trending && (
-        <div id={trending.code} className="scroll-mt-24">
-          {SECTION_RENDERERS[trending.code]?.(trending, ctx)}
-        </div>
-      )}
-
-      {middleSections.map((s) => {
-        const render = SECTION_RENDERERS[s.code];
-        if (!render) return null;
+      {entries.map((e, idx) => {
+        const lockBg = idx < 2 || e.lockBg;
+        if (lockBg) {
+          return (
+            <div key={e.key} id={e.key} className="scroll-mt-24">
+              {e.node}
+            </div>
+          );
+        }
+        const bgClass =
+          alternationCount % 2 === 0 ? "bg-white" : "bg-cv-neutral-50";
+        alternationCount++;
         return (
-          <div key={s.code} id={s.code} className="scroll-mt-24">
-            {render(s, ctx)}
+          <div
+            key={e.key}
+            id={e.key}
+            className={`scroll-mt-24 ${bgClass} [&>section]:!bg-transparent`}
+          >
+            {e.node}
           </div>
         );
       })}
-
-      {/* Fixed 3-step explainer, before the signup CTA. */}
-      <HowItWorksSection />
-
-      {/* Newsletter signup — always last so the page ends on the lead-gen CTA. */}
-      {newsletter && (
-        <div id={newsletter.code} className="scroll-mt-24">
-          {SECTION_RENDERERS[newsletter.code]?.(newsletter, ctx)}
-        </div>
-      )}
     </div>
   );
 }
