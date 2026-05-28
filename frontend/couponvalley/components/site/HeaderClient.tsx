@@ -401,34 +401,25 @@ export function HeaderClient({
   );
 }
 
-type ChipTone = "primary" | "accent" | "success";
-const TONE_STYLES: Record<ChipTone, { bg: string; icon: string }> = {
-  primary: { bg: "bg-cv-primary-soft", icon: "text-cv-primary" },
-  accent: { bg: "bg-cv-accent-soft", icon: "text-cv-accent" },
-  success: { bg: "bg-cv-success-soft", icon: "text-cv-success-strong" },
-};
-
 function CategoryChip({
   href,
   label,
   icon: Icon,
-  tone = "primary",
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
-  tone?: ChipTone;
+  /** Deprecated — tone is ignored in the clean palette. All chips share
+   *  the same single soft-primary tile + primary icon treatment. */
+  tone?: "primary" | "accent" | "success";
 }) {
-  const styles = TONE_STYLES[tone];
   return (
     <Link
       href={href}
       className="group flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-lg px-2 py-2 text-center transition-colors hover:bg-cv-neutral-100"
     >
-      <span
-        className={`grid h-11 w-11 place-items-center rounded-full transition-colors ${styles.bg}`}
-      >
-        <Icon className={`h-5 w-5 ${styles.icon}`} aria-hidden strokeWidth={1.75} />
+      <span className="grid h-11 w-11 place-items-center rounded-full bg-cv-primary-soft transition-colors">
+        <Icon className="h-5 w-5 text-cv-primary" aria-hidden strokeWidth={2} />
       </span>
       <span className="line-clamp-1 max-w-full text-[11px] font-semibold uppercase tracking-[0.04em] text-cv-neutral-700 group-hover:text-cv-neutral-900">
         {label}

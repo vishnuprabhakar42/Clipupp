@@ -18,24 +18,18 @@ export async function HowItWorksSection() {
       number: "01",
       title: t("step1.title"),
       description: t("step1.description"),
-      disc: "cv-gradient-hero",
-      glow: "shadow-glow-primary",
     },
     {
       icon: MousePointerClick,
       number: "02",
       title: t("step2.title"),
       description: t("step2.description"),
-      disc: "cv-gradient-warm",
-      glow: "shadow-glow-accent",
     },
     {
       icon: Tag,
       number: "03",
       title: t("step3.title"),
       description: t("step3.description"),
-      disc: "cv-gradient-success",
-      glow: "shadow-glow-success",
     },
   ];
   return (
@@ -73,10 +67,10 @@ export async function HowItWorksSection() {
                 className="cv-card relative z-[1] flex h-full flex-col gap-3 p-6 pt-4 text-center"
               >
                 <span
-                  className={`mx-auto -mt-10 grid h-14 w-14 place-items-center rounded-2xl text-white ${step.disc} ${step.glow}`}
+                  className="mx-auto -mt-10 grid h-14 w-14 place-items-center rounded-2xl bg-cv-primary-soft text-cv-primary"
                   aria-hidden
                 >
-                  <Icon className="h-6 w-6" strokeWidth={2.25} />
+                  <Icon className="h-6 w-6" strokeWidth={2} />
                 </span>
                 <span className="cv-eyebrow-vivid mx-auto !pr-0 !after:hidden">
                   Step {step.number}

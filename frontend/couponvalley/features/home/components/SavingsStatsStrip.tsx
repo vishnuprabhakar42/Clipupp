@@ -35,40 +35,30 @@ export function SavingsStatsStrip({
     label: string;
     note: string;
     icon: typeof BadgeCheck;
-    disc: string;
-    glow: string;
   }> = [
     {
       value: asString(s["stats.coupons"], "10,000+"),
       label: "Active coupons",
       note: "Live every day",
       icon: Ticket,
-      disc: "cv-gradient-warm",
-      glow: "shadow-glow-accent",
     },
     {
       value: asString(s["stats.stores"], "500+"),
       label: "Partner stores",
       note: "Across every category",
       icon: Building2,
-      disc: "cv-gradient-hero",
-      glow: "shadow-glow-primary",
     },
     {
       value: asString(s["stats.verified"], "97%"),
       label: "Verified daily",
       note: "Codes retested in 24h",
       icon: BadgeCheck,
-      disc: "cv-gradient-success",
-      glow: "shadow-glow-success",
     },
     {
       value: asString(s["stats.savings"], "₹1,200"),
       label: "Avg. savings",
       note: "Per active shopper",
       icon: TrendingUp,
-      disc: "cv-gradient-cool",
-      glow: "shadow-glow-primary",
     },
   ];
 
@@ -83,17 +73,15 @@ export function SavingsStatsStrip({
       </div>
 
       <ul className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {tiles.map(({ value, label, note, icon: Icon, disc, glow }) => (
+        {tiles.map(({ value, label, note, icon: Icon }) => (
           <li
             key={label}
             className="cv-card flex h-full flex-col gap-3 p-6"
           >
-            <span
-              className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl text-white ${disc} ${glow}`}
-            >
-              <Icon className="h-6 w-6" aria-hidden strokeWidth={2.25} />
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cv-primary-soft text-cv-primary">
+              <Icon className="h-6 w-6" aria-hidden strokeWidth={2} />
             </span>
-            <p className="cv-text-gradient-savings font-display text-[2.25rem] font-extrabold leading-none tracking-tight tabular-nums lg:text-[2.5rem]">
+            <p className="font-display text-[2.25rem] font-extrabold leading-none tracking-tight tabular-nums text-cv-neutral-900 lg:text-[2.5rem]">
               {value}
             </p>
             <div>

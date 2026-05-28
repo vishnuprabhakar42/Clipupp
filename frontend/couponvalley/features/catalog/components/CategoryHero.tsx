@@ -31,22 +31,13 @@ export function CategoryHero({
     >
       <div className="cv-container py-10 lg:py-14">
         <div className="flex flex-col items-start gap-5 lg:flex-row lg:items-center lg:gap-7">
-          <span
-            className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl text-white lg:h-24 lg:w-24"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
-              boxShadow: "var(--cv-shadow-glow-primary)",
-            }}
-          >
+          <span className="grid h-20 w-20 shrink-0 place-items-center rounded-2xl bg-cv-primary-soft text-cv-primary lg:h-24 lg:w-24">
             <Icon className="h-9 w-9 lg:h-11 lg:w-11" aria-hidden strokeWidth={2} />
           </span>
           <div className="min-w-0 flex-1">
             <p className="cv-eyebrow-vivid">Category</p>
             <h1 id="category-hero-heading" className="cv-display-hero mt-2">
-              {category.title}{" "}
-              <span className="cv-text-gradient-savings">Coupons</span> &amp;{" "}
-              <span className="cv-text-gradient-hero">Deals</span>
+              {category.title} Coupons &amp; Deals
             </h1>
             {category.description && (
               <p className="cv-body mt-3 max-w-3xl">{category.description}</p>

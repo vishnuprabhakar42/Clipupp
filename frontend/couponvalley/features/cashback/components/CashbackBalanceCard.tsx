@@ -36,21 +36,18 @@ export function CashbackBalanceCard({
       key: "confirmed",
       label: "Available to withdraw",
       value: b.confirmed,
-      tone: "success" as const,
       icon: CheckCircle2,
     },
     {
       key: "pending",
       label: "Pending confirmation",
       value: b.pending,
-      tone: "accent" as const,
       icon: Hourglass,
     },
     {
       key: "lifetime",
       label: "Lifetime withdrawn",
       value: b.withdrawnLifetime,
-      tone: "primary" as const,
       icon: Wallet,
     },
   ];
@@ -59,21 +56,13 @@ export function CashbackBalanceCard({
     <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {tiles.map((t) => {
         const Icon = t.icon;
-        const discClass =
-          t.tone === "success"
-            ? "cv-gradient-success shadow-glow-success"
-            : t.tone === "accent"
-              ? "cv-gradient-warm shadow-glow-accent"
-              : "cv-gradient-hero shadow-glow-primary";
         return (
           <li
             key={t.key}
             className="cv-card flex items-center gap-3 p-4"
           >
-            <span
-              className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white ${discClass}`}
-            >
-              <Icon className="h-5 w-5" aria-hidden strokeWidth={2.25} />
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-cv-primary-soft text-cv-primary">
+              <Icon className="h-5 w-5" aria-hidden strokeWidth={2} />
             </span>
             <div className="min-w-0 flex-1">
               <p className="cv-meta text-cv-neutral-500">{t.label}</p>

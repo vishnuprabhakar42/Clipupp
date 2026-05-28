@@ -33,17 +33,9 @@ const CATEGORY_THEMES: Array<{
   { match: ["finance", "card", "bank"], icon: CreditCard },
 ];
 
-// 6-color gradient disc cycle — deterministic by tile index so re-renders
-// don't shuffle colours mid-session. Each entry combines a Tailwind gradient
-// utility (cv-* tokens) with a matching glow class.
-const DISC_CYCLE: Array<{ bg: string; glow: string }> = [
-  { bg: "cv-gradient-hero",    glow: "shadow-glow-primary" },
-  { bg: "cv-gradient-warm",    glow: "shadow-glow-accent" },
-  { bg: "cv-gradient-success", glow: "shadow-glow-success" },
-  { bg: "cv-gradient-cool",    glow: "shadow-glow-primary" },
-  { bg: "cv-gradient-savings", glow: "shadow-glow-accent" },
-  { bg: "cv-gradient-rainbow", glow: "shadow-glow-primary" },
-];
+// Clean palette: every category disc shares the same soft-blue treatment.
+// No rotating gradients — one accent, applied consistently.
+const DISC_CLASS = "bg-cv-primary-soft text-cv-primary";
 
 function styleFor(slug: string, title: string): LucideIcon {
   const text = `${slug} ${title}`.toLowerCase();
@@ -114,9 +106,8 @@ export async function PopularCategoriesGrid({
         <p className="cv-meta">No categories yet.</p>
       ) : (
         <ul className="grid grid-cols-2 items-stretch gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {cats.slice(0, limit).map((c, i) => {
+          {cats.slice(0, limit).map((c) => {
             const Icon = styleFor(c.slug, c.title);
-            const disc = DISC_CYCLE[i % DISC_CYCLE.length];
             return (
               <li key={c.id} className="h-full">
                 <Link
@@ -124,9 +115,9 @@ export async function PopularCategoriesGrid({
                   className="cv-card group flex h-full flex-col items-center gap-3 p-4 text-center"
                 >
                   <span
-                    className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-white ${disc.bg} ${disc.glow}`}
+                    className={`grid h-14 w-14 shrink-0 place-items-center rounded-2xl ${DISC_CLASS}`}
                   >
-                    <Icon className="h-6 w-6" aria-hidden strokeWidth={2.25} />
+                    <Icon className="h-6 w-6" aria-hidden strokeWidth={2} />
                   </span>
                   <div className="min-w-0">
                     <p className="cv-h3 line-clamp-1 group-hover:text-cv-primary-700">

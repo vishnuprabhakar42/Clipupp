@@ -17,40 +17,28 @@ export function GuaranteeStrip({
     icon: typeof BadgeCheck;
     label: string;
     body: string;
-    tone: "primary" | "success" | "accent";
   }> = [
     {
       icon: BadgeCheck,
       label: "Verified daily",
       body: "Every code is re-tested every 24 hours.",
-      tone: "success",
     },
     {
       icon: Wallet,
       label: "Always free",
       body: "No subscription, no hidden fees, ever.",
-      tone: "primary",
     },
     {
       icon: ShieldCheck,
       label: "Spam-free promise",
       body: "We never share your email with merchants.",
-      tone: "primary",
     },
     {
       icon: Sparkles,
       label: "Editor curated",
       body: "Hand-picked deals, never auto-imported.",
-      tone: "accent",
     },
   ];
-
-  const discFor = (tone: "primary" | "success" | "accent") =>
-    tone === "success"
-      ? "bg-cv-success-soft text-cv-success-strong"
-      : tone === "accent"
-        ? "bg-cv-accent-soft text-cv-accent-700"
-        : "bg-cv-primary-soft text-cv-primary-700";
 
   return (
     <section aria-labelledby="guarantees-heading">
@@ -58,15 +46,13 @@ export function GuaranteeStrip({
         {heading}
       </h2>
       <ul className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-        {items.map(({ icon: Icon, label, body, tone }) => (
+        {items.map(({ icon: Icon, label, body }) => (
           <li
             key={label}
             className="cv-card cv-edge-bar group flex h-full items-start gap-3 p-5"
           >
-            <span
-              className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${discFor(tone)}`}
-            >
-              <Icon className="h-5 w-5" aria-hidden strokeWidth={2.25} />
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-cv-primary-soft text-cv-primary">
+              <Icon className="h-5 w-5" aria-hidden strokeWidth={2} />
             </span>
             <div className="min-w-0">
               <p className="cv-h3">{label}</p>
