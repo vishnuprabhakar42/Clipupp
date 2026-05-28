@@ -26,7 +26,7 @@ FROM (VALUES
         'https://placehold.co/1600x600/F2D5D5/1A1A1A/png?text=Cash+Back+is+in+bloom&font=playfair',
         '/stores'),
     (2, 'Refer a friend, earn ₹500',
-        'Share CouponValley and earn cashback on every signup.',
+        'Share ClipUpp and earn cashback on every signup.',
         'https://placehold.co/1600x600/4F46E5/FFFFFF/png?text=Refer+%26+Earn+%E2%82%B9500&font=montserrat',
         '/account'),
     (3, 'New user bonus — Flat ₹100 off',

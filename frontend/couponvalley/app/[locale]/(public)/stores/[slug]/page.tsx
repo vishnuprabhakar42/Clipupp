@@ -129,7 +129,7 @@ export default async function StoreDetailPage({
 
   const introText = [
     `Find the best ${detail.name} coupons, promo codes and deals for ${monthYear}.`,
-    `CouponValley has ${totalOffers} verified ${detail.name} offers — tested and updated regularly by our team.`,
+    `ClipUpp has ${totalOffers} verified ${detail.name} offers — tested and updated regularly by our team.`,
     detail.shortDescription ??
       `Browse coupon codes, free shipping deals, and exclusive offers to save on your next purchase at ${detail.name}.`,
   ].join(" ");
@@ -309,7 +309,7 @@ export default async function StoreDetailPage({
                 Why trust us?
               </h3>
               <p className="text-xs leading-relaxed text-gray-600">
-                CouponValley has a dedicated team sourcing and verifying the
+                ClipUpp has a dedicated team sourcing and verifying the
                 best {detail.name} coupons, promo codes and deals — so you can
                 save money and time while shopping. Our deal hunters constantly
                 research the market to provide up-to-date savings, and we make
@@ -537,8 +537,8 @@ export default async function StoreDetailPage({
                   />
                   <EditorialItem
                     n={4}
-                    title={`CouponValley's commitment to ${detail.name} savings:`}
-                    body={`CouponValley works to ensure every ${detail.name} coupon and promo code is tested and verified before it is featured. Our team reviews offers regularly and removes expired or non-working codes promptly so you always have up-to-date savings.`}
+                    title={`ClipUpp's commitment to ${detail.name} savings:`}
+                    body={`ClipUpp works to ensure every ${detail.name} coupon and promo code is tested and verified before it is featured. Our team reviews offers regularly and removes expired or non-working codes promptly so you always have up-to-date savings.`}
                   />
                 </div>
               </div>

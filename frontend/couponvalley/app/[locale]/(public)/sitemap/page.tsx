@@ -19,7 +19,7 @@ export async function generateMetadata({
   return buildMetadata({
     title: "Site map — All stores & categories",
     description:
-      "Browse every store and category on CouponValley. The full directory in one place — useful for finding less-popular brands quickly.",
+      "Browse every store and category on ClipUpp. The full directory in one place — useful for finding less-popular brands quickly.",
     path: "/sitemap",
     locale,
   });

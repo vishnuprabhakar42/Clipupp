@@ -54,7 +54,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // CouponValley Crimson + Amber palette — Phase 2 redesign.
+        // ClipUpp Crimson + Amber palette — Phase 2 redesign.
         // All hex source values live in app/globals.css as CSS vars. The
         // RGB triplets (--cv-*-rgb) here let Tailwind's slash-opacity
         // modifier work: `text-cv-primary/40`, `ring-cv-accent/30`, etc.

@@ -2,20 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> Frontend-specific notes (Clean Blue palette, route groups, image contract, auth singleton, OG-route hex exceptions) live in `frontend/couponvalley/CLAUDE.md`. Read both when working across stacks.
+> Frontend-specific notes (Clean Blue palette, route groups, image contract, auth singleton, OG-route hex exceptions) live in `frontend/clipupp/CLAUDE.md`. Read both when working across stacks.
 
 ## Repository shape
 
 Two-app monorepo. There is no root-level package manager, lockfile, or workspace tool — each app is operated from its own directory:
 
-- `backend/couponvalley/` — Spring Boot 4 / Java 21 / Gradle wrapper
-- `frontend/couponvalley/` — Next.js 15 App Router (npm)
+- `backend/clipupp/` — Spring Boot 4 / Java 21 / Gradle wrapper
+- `frontend/clipupp/` — Next.js 15 App Router (npm)
 
 Do not run commands from the repo root; `cd` into the app directory you're working in.
 
 ## Commands
 
-### Backend (`backend/couponvalley/`)
+### Backend (`backend/clipupp/`)
 
 ```bash
 ./gradlew bootRun                                   # run dev server on :8080 (auto-applies Flyway, profile=dev)
@@ -26,11 +26,11 @@ Do not run commands from the repo root; `cd` into the app directory you're worki
 SPRING_PROFILES_ACTIVE=prod ./gradlew bootRun       # run with prod profile (requires all env vars set)
 ```
 
-The dev profile is the default (`application.yml` defaults `SPRING_PROFILES_ACTIVE` to `dev`). The dev profile expects a **local Postgres** at `localhost:5432`, db `couponvalley_db`, user `postgres`, password `anshu`. Flyway runs on startup and applies `src/main/resources/db/migration/V*__*.sql` plus the `R__seed_dev_data.sql` repeatable seed.
+The dev profile is the default (`application.yml` defaults `SPRING_PROFILES_ACTIVE` to `dev`). The dev profile expects a **local Postgres** at `localhost:5432`, db `clipupp_db`, user `postgres`, password `anshu`. Flyway runs on startup and applies `src/main/resources/db/migration/V*__*.sql` plus the `R__seed_dev_data.sql` repeatable seed.
 
 Dev-only utilities live under `/api/v1/dev/**` (loaded only when `@Profile("dev")`) — including `POST /api/v1/dev/seed` to populate categories, 15 stores, coupons, banners, and three users (admin/editor/user).
 
-### Frontend (`frontend/couponvalley/`)
+### Frontend (`frontend/clipupp/`)
 
 ```bash
 npm run dev          # dev server on :3000
@@ -64,7 +64,7 @@ Backend security defaults to deny-all. The public allowlist in `common/config/Se
 
 ### Backend module layout
 
-Each business domain lives at `com.couponvalley.<module>/{api,application,domain,infra}` (23 modules — `auth`, `users`, `stores`, `coupons`, `categories`, `affiliates`, `clicktrack`, `conversions`, `savedcoupons`, `newsletter`, `notifications`, `blog`, `banner`, `campaigns`, `home`, `legalpages`, `media`, `search`, `seo`, `settings`, `analytics`, `admin`, plus dev-only `dev`). Conventions:
+Each business domain lives at `com.clipupp.<module>/{api,application,domain,infra}` (23 modules — `auth`, `users`, `stores`, `coupons`, `categories`, `affiliates`, `clicktrack`, `conversions`, `savedcoupons`, `newsletter`, `notifications`, `blog`, `banner`, `campaigns`, `home`, `legalpages`, `media`, `search`, `seo`, `settings`, `analytics`, `admin`, plus dev-only `dev`). Conventions:
 
 - `api/` — `@RestController` + DTOs; controllers are prefixed `Public*` (public endpoints) or `Admin*` (under `/api/v1/admin/**`, all `@PreAuthorize("hasRole('ADMIN')")`)
 - `application/` — services, transaction boundaries
@@ -73,7 +73,7 @@ Each business domain lives at `com.couponvalley.<module>/{api,application,domain
 
 Cross-cutting infrastructure lives under `common/`: `audit`, `outbox` (transactional outbox pattern — poller runs every 5s), `idempotency`, `pagination` (cursor encoder for public APIs, Spring offset pages for admin), `ratelimit` (Bucket4j, in-memory), `error`, `tracing`, `i18n`, `text` (slugifier), `validation`. Config classes (cache, security, Jackson, JWT, Flyway, media, OpenAPI, HTTP caching) sit in `common/config/`.
 
-The app boots from `CouponvalleyApplication.java` with `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching` all enabled. Caches are Caffeine (in-process). **Cache eviction rule:** writes to `store`, `coupon`, or `category` must evict **both** `homepage.top` AND `homepage.layout` — the trending rail and featured grid read embedded data from the layout cache, so busting only `homepage.top` leaves stale logos/titles. See the cache-related notes in `frontend/couponvalley/CLAUDE.md`.
+The app boots from `CouponvalleyApplication.java` with `@EnableJpaAuditing`, `@EnableScheduling`, `@EnableAsync`, `@EnableCaching` all enabled. Caches are Caffeine (in-process). **Cache eviction rule:** writes to `store`, `coupon`, or `category` must evict **both** `homepage.top` AND `homepage.layout` — the trending rail and featured grid read embedded data from the layout cache, so busting only `homepage.top` leaves stale logos/titles. See the cache-related notes in `frontend/clipupp/CLAUDE.md`.
 
 Java 21 virtual threads are enabled (`spring.threads.virtual.enabled: true`). `open-in-view` is `false` — fetch eagerly inside services.
 
@@ -82,7 +82,7 @@ Java 21 virtual threads are enabled (`spring.threads.virtual.enabled: true`). `o
 - **Public** endpoints (`/api/v1/coupons`, `/api/v1/stores`, etc.) → cursor-based `CursorPage<T>` (opaque encoded cursor). Use `common/pagination/CursorEncoder`.
 - **Admin** endpoints (`/api/v1/admin/**`) → Spring's offset-based `SpringPage<T>` (`page`/`size`/`sort`).
 
-Both shapes are mirrored in `frontend/couponvalley/lib/api/types.ts`. Don't mix them on the wrong tier.
+Both shapes are mirrored in `frontend/clipupp/lib/api/types.ts`. Don't mix them on the wrong tier.
 
 ### Frontend route groups (`app/[locale]/`)
 
@@ -96,7 +96,7 @@ i18n via `next-intl` with `[locale]` URL prefix and `cv_locale` cookie. Feature 
 
 ## Migrations and data
 
-- Migrations: `backend/couponvalley/src/main/resources/db/migration/V###__*.sql`. Always create a new `V###__*.sql` — never edit a committed migration. `out-of-order: false` in `application.yml`, so the numeric sequence is strict.
+- Migrations: `backend/clipupp/src/main/resources/db/migration/V###__*.sql`. Always create a new `V###__*.sql` — never edit a committed migration. `out-of-order: false` in `application.yml`, so the numeric sequence is strict.
 - `R__seed_dev_data.sql` is a Flyway **repeatable** migration that re-runs whenever its checksum changes; safe to edit.
 - The DB schema covers users/auth, stores/catalog, coupons, affiliates, clicks/conversions, saved coupons + newsletter, blog/banners, legal pages, homepage layout/sections, site settings, analytics views, campaigns. The `homepage_section` table drives the admin's drag-reorder editor — keys must match the `SECTION_RENDERERS` map in `app/[locale]/(public)/page.tsx`.
 

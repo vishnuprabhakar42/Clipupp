@@ -55,13 +55,13 @@ WHERE placement = 'PROMO_CARD'
 UPDATE banner SET title = 'Refer a friend, get ₹500 in coupons'
 WHERE placement = 'PROMO_CARD' AND title = 'Refer a friend, earn ₹500';
 
-UPDATE banner SET subtitle = 'Share CouponValley with friends and get bonus coupons.'
+UPDATE banner SET subtitle = 'Share ClipUpp with friends and get bonus coupons.'
 WHERE placement = 'PROMO_CARD'
-  AND subtitle = 'Share CouponValley and earn for every signup.';
+  AND subtitle = 'Share ClipUpp and earn for every signup.';
 
-UPDATE banner SET subtitle = 'Share CouponValley with friends — both of you get bonus coupons.'
+UPDATE banner SET subtitle = 'Share ClipUpp with friends — both of you get bonus coupons.'
 WHERE placement = 'PROMO_CARD'
-  AND subtitle = 'Share CouponValley with friends and earn cashback for every signup.';
+  AND subtitle = 'Share ClipUpp with friends and earn cashback for every signup.';
 
 UPDATE banner SET subtitle = 'Sign up today to unlock a flat ₹100 off coupon on your first order.'
 WHERE placement = 'PROMO_CARD'
@@ -71,8 +71,8 @@ UPDATE banner SET subtitle = 'Sign up today and unlock a flat ₹100 off coupon 
 WHERE placement = 'PROMO_CARD'
   AND subtitle = 'Sign up today and grab a flat ₹100 off coupon on your first order.';
 
-UPDATE banner SET title = 'How CouponValley works'
-WHERE placement = 'PROMO_CARD' AND title = 'Gettin'' Cashback — Learn how to use CouponValley';
+UPDATE banner SET title = 'How ClipUpp works'
+WHERE placement = 'PROMO_CARD' AND title = 'Gettin'' Cashback — Learn how to use ClipUpp';
 
 UPDATE banner SET subtitle = 'Save with verified coupon codes on every checkout. Here''s how it works.'
 WHERE placement = 'PROMO_CARD'
@@ -92,13 +92,13 @@ WHERE key = 'newsletter.subheadline'
 
 UPDATE site_setting
 SET value = to_jsonb(
-  'CouponValley is a verified coupon aggregator. We may earn an affiliate commission when you click a deal; you never pay more.'::text
+  'ClipUpp is a verified coupon aggregator. We may earn an affiliate commission when you click a deal; you never pay more.'::text
 )
 WHERE key = 'footer.disclosure'
   AND value::text ILIKE '%cashback%';
 
 -- 4) Top bar referral banner subtitle ----------------------------------------
 
-UPDATE banner SET title = 'Share CouponValley & get ₹500 in bonus coupons'
+UPDATE banner SET title = 'Share ClipUpp & get ₹500 in bonus coupons'
 WHERE placement = 'TOP_BAR'
-  AND title = 'Share CouponValley & earn ₹500 referral bonus';
+  AND title = 'Share ClipUpp & earn ₹500 referral bonus';

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ShoppingBag, CheckCircle2, Sparkles, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Sparkles, ShieldCheck } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 
 type Bullet = { icon?: typeof CheckCircle2; title: string; body?: string };
@@ -38,7 +38,7 @@ export function AuthLayout({
   children,
   footer,
   bullets = DEFAULT_BULLETS,
-  panelHeading = "Why CouponValley",
+  panelHeading = "Why ClipUpp",
   panelSubheading = "Trusted by 10,000+ smart shoppers.",
 }: {
   heading: string;
@@ -58,7 +58,7 @@ export function AuthLayout({
             <Link
               href="/"
               className="inline-flex items-center gap-2.5 font-display"
-              aria-label="CouponValley home"
+              aria-label="ClipUpp home"
             >
               <span
                 className="grid h-10 w-10 place-items-center rounded-md text-white"
@@ -67,11 +67,21 @@ export function AuthLayout({
                     "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
                   boxShadow: "var(--cv-shadow-glow-primary)",
                 }}
+                aria-hidden
               >
-                <ShoppingBag className="h-5 w-5" aria-hidden />
+                <svg viewBox="0 0 56 56" width={22} height={22} aria-hidden>
+                  <path
+                    d="M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={4}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </span>
-              <span className="cv-text-gradient-hero text-xl font-extrabold">
-                CouponValley
+              <span className="cv-text-gradient-hero text-xl font-extrabold tracking-tight">
+                clipupp
               </span>
             </Link>
             <h1 className="cv-h1 mt-5 text-[1.75rem]">{heading}</h1>
@@ -90,7 +100,7 @@ export function AuthLayout({
           decorative floating circles + glass trust bullets. Pure server
           content; zero JS shipped. */}
       <aside
-        aria-label="Why CouponValley"
+        aria-label="Why ClipUpp"
         className="cv-section-bg-mesh-primary relative hidden flex-col justify-center overflow-hidden px-12 py-10 lg:flex"
       >
         {/* Decorative floating circles */}

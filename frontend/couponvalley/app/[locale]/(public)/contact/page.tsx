@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { InfoPageShell } from "@/features/site/components/InfoPageShell";
 
 export const metadata: Metadata = {
-  title: "Contact CouponValley",
+  title: "Contact ClipUpp",
   description:
     "Reach our team for support, partnership inquiries, or to flag a stale coupon.",
   alternates: { canonical: "/contact" },
@@ -14,18 +14,18 @@ export default function ContactPage() {
       <h2>Support</h2>
       <p>
         Spot a stale or fake coupon? Email{" "}
-        <a href="mailto:support@couponvalley.com">support@couponvalley.com</a>
+        <a href="mailto:support@clipupp.com">support@clipupp.com</a>
         — we typically reply within one business day.
       </p>
       <h2>Partnerships</h2>
       <p>
         Brands and affiliate networks: please contact{" "}
-        <a href="mailto:partners@couponvalley.com">partners@couponvalley.com</a>
+        <a href="mailto:partners@clipupp.com">partners@clipupp.com</a>
         with your network ID and merchant program details.
       </p>
       <h2>Press</h2>
       <p>
-        Press inquiries: <a href="mailto:press@couponvalley.com">press@couponvalley.com</a>.
+        Press inquiries: <a href="mailto:press@clipupp.com">press@clipupp.com</a>.
       </p>
     </InfoPageShell>
   );

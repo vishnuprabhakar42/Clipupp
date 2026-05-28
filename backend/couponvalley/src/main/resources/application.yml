@@ -107,7 +107,7 @@ couponvalley:
     poll-ms: 5000
   email:
     provider: ${EMAIL_PROVIDER:resend}
-    from: ${EMAIL_FROM:no-reply@couponvalley.local}
+    from: ${EMAIL_FROM:no-reply@clipupp.local}
     resend-api-key: ${RESEND_API_KEY:}
   media:
     bucket: ${R2_BUCKET:}

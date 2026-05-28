@@ -14,9 +14,9 @@ export const size = { width: 1200, height: 630 };
  * brand palette changes.
  */
 const CV = {
-  primary:       "#3B82F6",
-  primaryStrong: "#1D4ED8",
-  accent:        "#F97316",
+  primary:       "#DC2626",
+  primaryStrong: "#B91C1C",
+  accent:        "#F59E0B",
 } as const;
 
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
 ) {
   const { slug } = await ctx.params;
 
-  let title = "CouponValley";
+  let title = "ClipUpp";
   let subtitle = "Verified coupons & exclusive deals";
   let logoUrl: string | null = null;
   try {
@@ -79,7 +79,7 @@ export async function GET(
             />
           )}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: 28, opacity: 0.85 }}>CouponValley</span>
+            <span style={{ fontSize: 28, opacity: 0.85 }}>ClipUpp</span>
             <span style={{ fontSize: 24, opacity: 0.7, marginTop: 4 }}>
               Verified store
             </span>

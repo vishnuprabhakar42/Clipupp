@@ -46,13 +46,13 @@ INSERT INTO homepage_section (code, title, subtitle, enabled, position, item_lim
    TRUE, 55, 4),
 
   ('guarantees',
-   'Why shoppers choose CouponValley',
+   'Why shoppers choose ClipUpp',
    NULL,
    TRUE, 65, 4),
 
   ('faq',
    'Frequently asked questions',
-   'Everything you need to know about saving with CouponValley. Still stuck? Drop us a line — humans answer.',
+   'Everything you need to know about saving with ClipUpp. Still stuck? Drop us a line — humans answer.',
    TRUE, 75, NULL)
 ON CONFLICT (code) DO NOTHING;
 

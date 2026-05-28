@@ -100,7 +100,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             className="mt-6 inline-flex items-center gap-1.5 rounded-md bg-cv-primary px-4 py-2 text-sm font-semibold text-white hover:bg-cv-primary-strong"
           >
             <ChevronLeft className="h-4 w-4" />
-            Back to CouponValley
+            Back to ClipUpp
           </Link>
         </div>
       </div>
@@ -133,7 +133,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               <Sparkles className="h-4 w-4 text-white" />
             </span>
             <div>
-              <p className="text-sm font-bold leading-tight">CouponValley</p>
+              <p className="text-sm font-bold leading-tight">ClipUpp</p>
               <p className="text-[10px] uppercase tracking-widest text-white/70">
                 Admin console
               </p>

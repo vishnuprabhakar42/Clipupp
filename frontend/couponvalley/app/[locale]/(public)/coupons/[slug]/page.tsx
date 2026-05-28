@@ -174,7 +174,7 @@ export default async function CouponDetailPage({
         </article>
 
         <p className="mt-6 text-center text-xs text-cv-neutral-500">
-          {tCommon("verified")} by the CouponValley editorial team.
+          {tCommon("verified")} by the ClipUpp editorial team.
         </p>
       </div>
     </>

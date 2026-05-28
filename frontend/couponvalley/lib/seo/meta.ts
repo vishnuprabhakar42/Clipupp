@@ -4,7 +4,7 @@ import { canonicalFor, hreflangAlternates, siteUrl } from "./urls";
 
 export type BuildMetadataOptions = {
   /** Page title — passed through as-is. Title template from root layout
-   *  ("%s — CouponValley") applies unless `titleAbsolute: true` is set. */
+   *  ("%s — ClipUpp") applies unless `titleAbsolute: true` is set. */
   title: string;
   /** Meta description (≤160 chars ideally). */
   description: string;
@@ -19,7 +19,7 @@ export type BuildMetadataOptions = {
    *  use "website" + a Product JSON-LD schema (which is what Google indexes
    *  for product rich results anyway). */
   ogType?: "website" | "article";
-  /** Use the absolute title (skip the root layout's "%s — CouponValley" template). */
+  /** Use the absolute title (skip the root layout's "%s — ClipUpp" template). */
   titleAbsolute?: boolean;
   /** Set true to mark the page noindex,nofollow (search results, account pages). */
   noindex?: boolean;
@@ -68,7 +68,7 @@ export function buildMetadata(opts: BuildMetadataOptions): Metadata {
       title: opts.title,
       description: opts.description,
       url: canonical,
-      siteName: "CouponValley",
+      siteName: "ClipUpp",
       locale: localeToBcp47[opts.locale],
       ...(alternateLocale.length > 0 && { alternateLocale }),
       ...(image && {

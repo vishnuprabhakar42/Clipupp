@@ -39,7 +39,7 @@ export function NewsletterForm({ className }: { className?: string }) {
     return (
       <div className={className}>
         <p className="text-sm text-muted-foreground">
-          We&apos;ve sent a confirmation link. Click it to start receiving CouponValley
+          We&apos;ve sent a confirmation link. Click it to start receiving ClipUpp
           deals.
         </p>
       </div>

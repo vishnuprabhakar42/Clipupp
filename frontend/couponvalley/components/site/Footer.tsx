@@ -38,17 +38,17 @@ export async function Footer() {
     settings["brand.tagline"],
     "Striving towards making the world a better place to shop with great savings!"
   );
-  const brandName = asString(settings["brand.name"], "CouponValley");
+  const brandName = asString(settings["brand.name"], "ClipUpp");
   const accent = asString(settings["brand.accent_color"], "#F97316");
   const commissionNote = asString(
     settings["footer.commission_note"],
-    "We may earn a commission if you buy through links on CouponValley."
+    "We may earn a commission if you buy through links on ClipUpp."
   );
   const disclosure = asString(
     settings["footer.disclosure"],
-    "CouponValley earns a commission when you click out to a merchant and complete a purchase. This costs you nothing extra."
+    "ClipUpp earns a commission when you click out to a merchant and complete a purchase. This costs you nothing extra."
   );
-  const hashtag = asString(settings["footer.hashtag"], "#SaveWithCouponValley");
+  const hashtag = asString(settings["footer.hashtag"], "#SaveWithClipUpp");
 
   const social = {
     whatsapp: asString(settings["social.whatsapp"]),
@@ -79,14 +79,30 @@ export async function Footer() {
       <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
         <div>
-          <Link href="/" className="inline-flex items-center gap-2" style={{ color: accent }}>
+          <Link href="/" className="inline-flex items-center gap-2.5">
             <span
-              className="grid h-9 w-9 place-items-center rounded-md text-white"
-              style={{ backgroundColor: accent }}
+              className="grid h-10 w-10 place-items-center rounded-md text-white"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--cv-primary-700), var(--cv-primary-500))",
+                boxShadow: "var(--cv-shadow-glow-primary)",
+              }}
+              aria-hidden
             >
-              <ShoppingBag className="h-5 w-5" aria-hidden />
+              <svg viewBox="0 0 56 56" width={22} height={22} aria-hidden>
+                <path
+                  d="M17 14 L17 39 A8 8 0 0 0 33 39 L33 17 A6 6 0 0 0 21 17 L21 36"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={4}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </span>
-            <span className="text-xl font-bold">{brandName}</span>
+            <span className="font-display text-xl font-extrabold tracking-tight text-white">
+              {brandName.toLowerCase()}
+            </span>
           </Link>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-cv-neutral-400">{tagline}</p>
 

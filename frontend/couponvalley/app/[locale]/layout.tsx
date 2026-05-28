@@ -58,11 +58,11 @@ export async function generateMetadata({
   return {
     title: {
       default: t("title"),
-      template: `%s — CouponValley`,
+      template: `%s — ClipUpp`,
     },
     description: t("description"),
     metadataBase: new URL(SITE_URL),
-    applicationName: "CouponValley",
+    applicationName: "ClipUpp",
     // Explicit icon links — Next 15's file-convention picker handles
     // `app/icon.svg` but not `app/apple-icon.svg` reliably (apple-icon
     // is expected to be PNG by the convention). Declare both manually
@@ -73,7 +73,7 @@ export async function generateMetadata({
     },
     appleWebApp: {
       capable: true,
-      title: "CouponValley",
+      title: "ClipUpp",
       statusBarStyle: "default",
     },
     formatDetection: {
@@ -91,7 +91,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "website",
-      siteName: "CouponValley",
+      siteName: "ClipUpp",
       locale: localeToBcp47[locale as Locale] ?? "en",
     },
     twitter: { card: "summary_large_image" },

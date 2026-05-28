@@ -18,7 +18,7 @@ export async function BlogSection({
 }: { section?: HomepageSectionPayload | null } = {}) {
   const limit = section?.itemLimit ?? 4;
   const heading = section?.title ?? "The Real Deal";
-  const subtitle = section?.subtitle ?? "by CouponValley";
+  const subtitle = section?.subtitle ?? "by ClipUpp";
 
   let articles: ArticleSummary[] = [];
   try {
@@ -80,7 +80,7 @@ function FeaturedArticle({ a }: { a: Article }) {
           />
         ) : (
           <div className="grid h-full place-items-center font-display text-2xl text-cv-neutral-400">
-            CouponValley
+            ClipUpp
           </div>
         )}
       </div>

@@ -1,17 +1,17 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: couponvalley-postgres
+    container_name: clipupp-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-couponvalley}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-couponvalley}
-      POSTGRES_DB: ${DB_NAME:-couponvalley}
+      POSTGRES_USER: ${DB_USER:-clipupp}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-clipupp}
+      POSTGRES_DB: ${DB_NAME:-clipupp}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
-      - couponvalley-pgdata:/var/lib/postgresql/data
+      - clipupp-pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -20,7 +20,7 @@ services:
 
   adminer:
     image: adminer:latest
-    container_name: couponvalley-adminer
+    container_name: clipupp-adminer
     restart: unless-stopped
     depends_on:
       postgres:
@@ -31,5 +31,5 @@ services:
       ADMINER_DEFAULT_SERVER: postgres
 
 volumes:
-  couponvalley-pgdata:
+  clipupp-pgdata:
     driver: local

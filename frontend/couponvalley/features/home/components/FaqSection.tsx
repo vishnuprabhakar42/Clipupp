@@ -15,12 +15,12 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
  */
 const FAQS: ReadonlyArray<{ q: string; a: string }> = [
   {
-    q: "Are all CouponValley coupons free to use?",
-    a: "Yes. Every coupon, deal, and discount on CouponValley is free for shoppers — no subscription, no membership, no premium tier. We earn a small affiliate commission when you click through and buy, which costs you nothing extra and funds our verification team.",
+    q: "Are all ClipUpp coupons free to use?",
+    a: "Yes. Every coupon, deal, and discount on ClipUpp is free for shoppers — no subscription, no membership, no premium tier. We earn a small affiliate commission when you click through and buy, which costs you nothing extra and funds our verification team.",
   },
   {
     q: "How do I know a code actually works at checkout?",
-    a: "Each code on CouponValley is retested every 24 hours by our editorial team plus an automated checker. Codes with a green verified badge passed within the last week. The last-tested timestamp on every coupon page tells you exactly when the code was confirmed live.",
+    a: "Each code on ClipUpp is retested every 24 hours by our editorial team plus an automated checker. Codes with a green verified badge passed within the last week. The last-tested timestamp on every coupon page tells you exactly when the code was confirmed live.",
   },
   {
     q: "What if a code fails when I try it?",
@@ -32,14 +32,14 @@ const FAQS: ReadonlyArray<{ q: string; a: string }> = [
   },
   {
     q: "Do you cover Indian stores or only international brands?",
-    a: "Both. CouponValley partners with hundreds of Indian-first brands across fashion, electronics, travel, food, and finance, plus the global retailers that ship to India. Use the category strip at the top to filter by what matters to you.",
+    a: "Both. ClipUpp partners with hundreds of Indian-first brands across fashion, electronics, travel, food, and finance, plus the global retailers that ship to India. Use the category strip at the top to filter by what matters to you.",
   },
   {
     q: "How can I submit a coupon I found elsewhere?",
     a: "Every store page has a \"Submit a deal\" link near the top. User submissions go through the same 24-hour verification as our editorial finds — if it works, it's published with credit; if it doesn't, we let you know why.",
   },
   {
-    q: "Does CouponValley work on mobile?",
+    q: "Does ClipUpp work on mobile?",
     a: "The full site works on any modern mobile browser — no app required. Every coupon code is one tap to copy, and the bottom navigation keeps Home, Browse, Saved, and Account always within thumb reach.",
   },
 ];
@@ -52,7 +52,7 @@ export function FaqSection({
   const heading = section?.title ?? "Frequently asked questions";
   const subtitle =
     section?.subtitle ??
-    "Everything you need to know about saving with CouponValley. Still stuck? Drop us a line — humans answer.";
+    "Everything you need to know about saving with ClipUpp. Still stuck? Drop us a line — humans answer.";
 
   const jsonLd = {
     "@context": "https://schema.org",

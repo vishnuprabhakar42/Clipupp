@@ -21,7 +21,7 @@ export async function generateMetadata({
   return buildMetadata({
     title: "Blog — Money-saving tips & shopping guides",
     description:
-      "Smart shopping guides, money-saving strategies, and store deep-dives from the CouponValley editorial team. Updated weekly.",
+      "Smart shopping guides, money-saving strategies, and store deep-dives from the ClipUpp editorial team. Updated weekly.",
     path: "/blog",
     locale,
   });

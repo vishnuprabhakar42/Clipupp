@@ -40,8 +40,8 @@ export default async function NewsletterUnsubscribePage({
             </h1>
             <p className="text-sm text-muted-foreground">
               {result.email
-                ? `${result.email} will not receive any more CouponValley digests.`
-                : "You won't receive any more CouponValley digests."}
+                ? `${result.email} will not receive any more ClipUpp digests.`
+                : "You won't receive any more ClipUpp digests."}
             </p>
             <p className="mt-3 text-sm text-muted-foreground">
               Changed your mind? Resubscribe anytime from the footer.
@@ -52,7 +52,7 @@ export default async function NewsletterUnsubscribePage({
             <h1 className="mb-2 text-2xl font-semibold">Link is invalid</h1>
             <p className="text-sm text-muted-foreground">
               The unsubscribe link is missing or malformed. Email
-              support@couponvalley.com if you need help.
+              support@clipupp.com if you need help.
             </p>
           </>
         )}

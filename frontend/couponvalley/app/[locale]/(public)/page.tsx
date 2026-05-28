@@ -42,7 +42,7 @@ export async function generateMetadata({
       url,
       title,
       description,
-      siteName: "CouponValley",
+      siteName: "ClipUpp",
     },
     twitter: {
       card: "summary_large_image",

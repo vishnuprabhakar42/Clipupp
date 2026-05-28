@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> Repo-wide notes — including the **5-color theme tokens**, backend modules, and Cloudflare R2 setup — live in `/Users/anshu/Desktop/CouponValley/CLAUDE.md`. Read both when working across stacks.
+> Repo-wide notes — including the **5-color theme tokens**, backend modules, and Cloudflare R2 setup — live in `/Users/anshu/Desktop/ClipUpp/CLAUDE.md`. Read both when working across stacks.
 
 ## First principles
 
@@ -74,7 +74,7 @@ No test suite is configured. `next.config.mjs` sets `typescript.ignoreBuildError
 
 **Fixed homepage sections:** `HowItWorksSection` (below admin sections, before newsletter) is a non-admin-managed component in `features/home/components/`. It sits outside the `SECTION_RENDERERS` map and isn't reorderable in `/admin/homepage`.
 
-**Path alias:** `@/*` → project root (`frontend/couponvalley/`), not `src/`.
+**Path alias:** `@/*` → project root (`frontend/clipupp/`), not `src/`.
 
 ## Design system — 3-color "Clean Blue" theme (uupm.cc-inspired)
 

@@ -39,7 +39,7 @@ export function articleSchema({
     dateModified: dateModified ?? datePublished,
     publisher: {
       "@type": "Organization",
-      name: "CouponValley",
+      name: "ClipUpp",
       url: publisherUrl,
       logo: {
         "@type": "ImageObject",

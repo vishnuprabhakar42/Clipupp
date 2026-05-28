@@ -6,7 +6,7 @@ import { AuthLayout } from "@/features/auth/components/AuthLayout";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to your CouponValley account.",
+  description: "Sign in to your ClipUpp account.",
   robots: { index: false, follow: true },
 };
 

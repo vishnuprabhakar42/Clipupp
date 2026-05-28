@@ -38,7 +38,7 @@ export default async function NewsletterConfirmPage({
             <h1 className="mb-2 text-2xl font-semibold">You&apos;re subscribed</h1>
             <p className="text-sm text-muted-foreground">
               {result.email
-                ? `${result.email} will get the next CouponValley digest.`
+                ? `${result.email} will get the next ClipUpp digest.`
                 : "Your email is confirmed."}
             </p>
           </>
