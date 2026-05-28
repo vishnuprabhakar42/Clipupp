@@ -32,8 +32,7 @@ export async function BlogSection({
     <section aria-labelledby="blog-section-heading">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-eyebrow-vivid">{subtitle}</p>
-          <h2 id="blog-section-heading" className="cv-h2 mt-2">
+          <h2 id="blog-section-heading" className="cv-eyebrow-vivid">
             {heading}
           </h2>
         </div>

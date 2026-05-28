@@ -55,10 +55,7 @@ export function EditorialTipsSection({
   return (
     <section aria-labelledby="tips-heading">
       <div className="mb-9 max-w-2xl">
-        <h2
-          id="tips-heading"
-          className="cv-eyebrow-vivid cv-eyebrow-vivid--success"
-        >
+        <h2 id="tips-heading" className="cv-eyebrow-vivid">
           {heading}
         </h2>
         <p className="cv-body mt-3 text-cv-neutral-700">{subtitle}</p>
