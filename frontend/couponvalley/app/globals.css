@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 /* =============================================================================
-   ClipUpp design tokens — Crimson + Amber, Phase 2 redesign foundation
+   ClipUpp design tokens — Premium Purple + Emerald (Theme 2)
    -----------------------------------------------------------------------------
+   "Premium & Trust" palette — feels curated and reliable, ideal for brand-name
+   coupons and cashback sites. Purple primary for CTAs/badges, emerald-teal for
+   savings/verified, dark slate base for nav/text, lavender-tinted page bg.
+
    Single source of truth for color, typography, shadow, motion, and z-index.
    Adding a new token is a design decision; never reach for raw hex in
    components. Two documented exceptions: OG image edge routes and Recharts
@@ -13,23 +17,23 @@
 
 @layer base {
   :root {
-    /* ── Crimson primary scale ─────────────────────────────────────────── */
-    --cv-primary-50:  #FFF1F1;
-    --cv-primary-100: #FFE0E0;
-    --cv-primary-200: #FFC5C5;
-    --cv-primary-300: #FF9B9B;
-    --cv-primary-400: #FF6B6B;
-    --cv-primary-500: #EF4444;
-    --cv-primary-600: #DC2626;
-    --cv-primary-700: #B91C1C;
-    --cv-primary-800: #991B1B;
-    --cv-primary-900: #7F1D1D;
+    /* ── Purple primary scale (Premium & Trust) ────────────────────────── */
+    --cv-primary-50:  #F4F1FF;
+    --cv-primary-100: #ECEAFF;   /* "Soft fill" — tag backgrounds */
+    --cv-primary-200: #DAD3FF;
+    --cv-primary-300: #BFB3FB;
+    --cv-primary-400: #9C8CF2;
+    --cv-primary-500: #7C6DEC;
+    --cv-primary-600: #6C5CE7;   /* PRIMARY — CTAs, badges */
+    --cv-primary-700: #5847D6;
+    --cv-primary-800: #4536A8;
+    --cv-primary-900: #2D2378;
     --cv-primary:        var(--cv-primary-600);
     --cv-primary-strong: var(--cv-primary-700);
-    --cv-primary-soft:   var(--cv-primary-50);
+    --cv-primary-soft:   var(--cv-primary-100);
     --cv-primary-fg:     #FFFFFF;
 
-    /* ── Amber accent scale (savings + urgency) ────────────────────────── */
+    /* ── Amber accent scale (kept for urgency states — used sparingly) ─── */
     --cv-accent-50:  #FFFBEB;
     --cv-accent-100: #FEF3C7;
     --cv-accent-200: #FDE68A;
@@ -45,42 +49,41 @@
     --cv-accent-soft:   var(--cv-accent-50);
     --cv-accent-fg:     #FFFFFF;
 
-    /* ── Savings emerald (verified / cashback confirmed / "Copied!") ───── */
-    --cv-success:        #10B981;
-    --cv-success-strong: #059669;
-    --cv-success-soft:   #ECFDF5;
+    /* ── Emerald-teal success (savings / cashback / verified) ──────────── */
+    --cv-success:        #00B894;   /* "Savings, verified" */
+    --cv-success-strong: #00997A;
+    --cv-success-soft:   #D5F5EC;
     --cv-success-fg:     #FFFFFF;
 
     /* ── Danger red (expired / failed) ─────────────────────────────────── */
-    --cv-danger:        #DC2626;
-    --cv-danger-strong: #B91C1C;
-    --cv-danger-soft:   #FEF2F2;
+    --cv-danger:        #E11D48;
+    --cv-danger-strong: #BE123C;
+    --cv-danger-soft:   #FFE4E9;
     --cv-danger-fg:     #FFFFFF;
 
     /* ── Info blue (informational only — NOT a brand color) ────────────── */
     --cv-info:        #2563EB;
     --cv-info-soft:   #EFF6FF;
 
-    /* ── Warm neutral scale (taupe, pairs with crimson — cool gray would
-          read medical, warm reads retail) ─────────────────────────────── */
+    /* ── Lavender-tinted neutral scale (cool, pairs with purple primary) ─ */
     --cv-neutral-0:   #FFFFFF;
-    --cv-neutral-50:  #FAFAF9;
-    --cv-neutral-100: #F5F4F1;
-    --cv-neutral-200: #E7E5E1;
-    --cv-neutral-300: #D4D1CB;
-    --cv-neutral-400: #A8A5A0;
-    --cv-neutral-500: #78756F;
-    --cv-neutral-600: #57544F;
-    --cv-neutral-700: #3F3C38;
-    --cv-neutral-800: #27262A;
-    --cv-neutral-900: #19181B;
+    --cv-neutral-50:  #F8F7FF;    /* "Background" — tinted page bg */
+    --cv-neutral-100: #F0EEFB;
+    --cv-neutral-200: #DEDCEB;
+    --cv-neutral-300: #C2C0D6;
+    --cv-neutral-400: #918FB0;
+    --cv-neutral-500: #5F5D7E;
+    --cv-neutral-600: #424059;
+    --cv-neutral-700: #2D3436;    /* "Dark base" — nav, text */
+    --cv-neutral-800: #1F2426;
+    --cv-neutral-900: #0F1518;
 
     /* ── RGB triplets (required by Tailwind's /N opacity modifier — e.g.
           `text-cv-primary/40`, `ring-cv-accent/30`). Space-separated; matches
           modern CSS `rgb(R G B / A)` syntax. */
-    --cv-primary-rgb:        220 38 38;
-    --cv-primary-strong-rgb: 185 28 28;
-    --cv-primary-soft-rgb:   255 241 241;
+    --cv-primary-rgb:        108 92 231;
+    --cv-primary-strong-rgb: 88 71 214;
+    --cv-primary-soft-rgb:   236 234 255;
     --cv-primary-fg-rgb:     255 255 255;
 
     --cv-accent-rgb:         245 158 11;
@@ -88,49 +91,49 @@
     --cv-accent-soft-rgb:    255 251 235;
     --cv-accent-fg-rgb:      255 255 255;
 
-    --cv-success-rgb:        16 185 129;
-    --cv-success-strong-rgb: 5 150 105;
-    --cv-success-soft-rgb:   236 253 245;
+    --cv-success-rgb:        0 184 148;
+    --cv-success-strong-rgb: 0 153 122;
+    --cv-success-soft-rgb:   213 245 236;
     --cv-success-fg-rgb:     255 255 255;
 
-    --cv-danger-rgb:         220 38 38;
-    --cv-danger-strong-rgb:  185 28 28;
-    --cv-danger-soft-rgb:    254 242 242;
+    --cv-danger-rgb:         225 29 72;
+    --cv-danger-strong-rgb:  190 18 60;
+    --cv-danger-soft-rgb:    255 228 233;
     --cv-danger-fg-rgb:      255 255 255;
 
-    --cv-neutral-50-rgb:  250 250 249;
-    --cv-neutral-100-rgb: 245 244 241;
-    --cv-neutral-200-rgb: 231 229 225;
-    --cv-neutral-300-rgb: 212 209 203;
-    --cv-neutral-400-rgb: 168 165 160;
-    --cv-neutral-500-rgb: 120 117 111;
-    --cv-neutral-600-rgb: 87 84 79;
-    --cv-neutral-700-rgb: 63 60 56;
-    --cv-neutral-800-rgb: 39 38 42;
-    --cv-neutral-900-rgb: 25 24 27;
+    --cv-neutral-50-rgb:  248 247 255;
+    --cv-neutral-100-rgb: 240 238 251;
+    --cv-neutral-200-rgb: 222 220 235;
+    --cv-neutral-300-rgb: 194 192 214;
+    --cv-neutral-400-rgb: 145 143 176;
+    --cv-neutral-500-rgb: 95 93 126;
+    --cv-neutral-600-rgb: 66 64 89;
+    --cv-neutral-700-rgb: 45 52 54;
+    --cv-neutral-800-rgb: 31 36 38;
+    --cv-neutral-900-rgb: 15 21 24;
 
-    /* ── shadcn semantic tokens, re-pointed to the crimson palette so every
+    /* ── shadcn semantic tokens, re-pointed to the purple palette so every
           primitive in components/ui/* re-skins automatically. HSL values
           chosen to match the hex above. */
-    --background: 0 0% 100%;
-    --foreground: 270 7% 15%;        /* cv-neutral-900 */
+    --background: 248 100% 99%;      /* cv-neutral-50 #F8F7FF tinted bg */
+    --foreground: 187 9% 19%;        /* cv-neutral-700 #2D3436 dark base */
     --card: 0 0% 100%;
-    --card-foreground: 270 7% 15%;
+    --card-foreground: 187 9% 19%;
     --popover: 0 0% 100%;
-    --popover-foreground: 270 7% 15%;
-    --primary: 0 73% 50%;            /* crimson #DC2626 */
+    --popover-foreground: 187 9% 19%;
+    --primary: 250 76% 64%;          /* purple #6C5CE7 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 100% 97%;         /* crimson-50 */
-    --secondary-foreground: 0 73% 35%;
-    --muted: 40 17% 95%;             /* warm taupe-100 #F5F4F1 */
-    --muted-foreground: 33 6% 38%;   /* cv-neutral-600 */
-    --accent: 38 92% 50%;            /* amber #F59E0B */
+    --secondary: 247 100% 96%;       /* purple-100 #ECEAFF soft fill */
+    --secondary-foreground: 250 65% 56%;
+    --muted: 247 100% 96%;           /* purple-100 #ECEAFF */
+    --muted-foreground: 240 12% 43%; /* cv-neutral-500 #5F5D7E */
+    --accent: 167 100% 36%;          /* emerald #00B894 success */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 73% 50%;
+    --destructive: 350 84% 50%;      /* rose #E11D48 */
     --destructive-foreground: 0 0% 100%;
-    --border: 33 9% 88%;             /* cv-neutral-200 */
-    --input: 33 9% 88%;
-    --ring: 0 73% 50%;
+    --border: 240 18% 89%;           /* cv-neutral-200 #DEDCEB */
+    --input: 240 18% 89%;
+    --ring: 250 76% 64%;
     --radius: 0.75rem;
 
     /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
@@ -178,14 +181,14 @@
       0 24px 48px -12px rgba(15, 23, 42, 0.25),
       0 12px 24px -8px rgba(15, 23, 42, 0.15);
     --cv-shadow-glow-primary:
-      0 0 0 1px rgba(220, 38, 38, 0.20),
-      0 8px 24px -6px rgba(220, 38, 38, 0.35);
+      0 0 0 1px rgba(108, 92, 231, 0.22),
+      0 8px 24px -6px rgba(108, 92, 231, 0.38);
     --cv-shadow-glow-accent:
       0 0 0 1px rgba(245, 158, 11, 0.22),
       0 8px 24px -6px rgba(245, 158, 11, 0.40);
     --cv-shadow-glow-success:
-      0 0 0 1px rgba(16, 185, 129, 0.20),
-      0 8px 24px -6px rgba(16, 185, 129, 0.35);
+      0 0 0 1px rgba(0, 184, 148, 0.22),
+      0 8px 24px -6px rgba(0, 184, 148, 0.38);
 
     /* Legacy aliases kept for back-compat with components from Phase 1-7. */
     --cv-shadow-card:       var(--cv-shadow-resting);
@@ -396,8 +399,9 @@
   .cv-tabular { font-variant-numeric: tabular-nums; }
 
   /* ── Gradient text utilities ───────────────────────────────────────────
-        Only two — hero (deep crimson → light crimson) and savings (amber
-        spectrum). Never apply to body, meta, or chips (a11y + aesthetic). */
+        Hero: deep purple → primary purple → light lavender.
+        Savings: emerald spectrum (cashback "₹X back" and "verified" amounts).
+        Never apply to body, meta, or chips (a11y + aesthetic). */
   .cv-text-gradient-hero {
     background: linear-gradient(
       135deg,
@@ -413,9 +417,23 @@
   .cv-text-gradient-savings {
     background: linear-gradient(
       135deg,
-      var(--cv-accent-700) 0%,
-      var(--cv-accent-500) 45%,
-      var(--cv-accent-300) 100%
+      var(--cv-success-strong) 0%,
+      var(--cv-success) 50%,
+      #4DDFB8 100%
+    );
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+  /* "Deal" emphasis — purple savings ("40% OFF", "Up to ₹2000 off"). Used
+     when the savings is a brand-coupon discount rather than cashback. */
+  .cv-text-gradient-deal {
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-700) 0%,
+      var(--cv-primary-500) 50%,
+      var(--cv-primary-300) 100%
     );
     -webkit-background-clip: text;
             background-clip: text;
@@ -435,10 +453,13 @@
     );
   }
   .cv-gradient-warm {
+    /* Purple theme: "warm" repurposed as a soft success-emerald gradient —
+       used for promo bands, the newsletter mesh, and any "trust + savings"
+       atmosphere where amber would feel off-palette. */
     background: linear-gradient(
       135deg,
-      var(--cv-accent-600) 0%,
-      var(--cv-accent-500) 100%
+      var(--cv-success-strong) 0%,
+      var(--cv-success) 100%
     );
   }
   .cv-gradient-cool {
@@ -456,10 +477,11 @@
     );
   }
   .cv-gradient-savings {
+    /* Purple theme: savings = success-emerald (cashback, verified, "₹ back"). */
     background: linear-gradient(
       90deg,
-      var(--cv-accent-700) 0%,
-      var(--cv-accent-500) 100%
+      var(--cv-success-strong) 0%,
+      var(--cv-success) 100%
     );
   }
   .cv-gradient-rainbow {
@@ -482,7 +504,7 @@
       ),
       radial-gradient(
         circle at 80% 70%,
-        rgb(var(--cv-accent-rgb) / 0.30) 0%,
+        rgb(var(--cv-success-rgb) / 0.32) 0%,
         transparent 55%
       ),
       linear-gradient(
@@ -493,7 +515,9 @@
     background-size: 200% 200%;
   }
   .cv-mesh-warm {
-    background-color: var(--cv-accent-600);
+    /* Purple theme: "warm mesh" becomes a deep emerald mesh with purple
+       highlights — used on the newsletter band. */
+    background-color: var(--cv-success-strong);
     background-image:
       radial-gradient(
         circle at 25% 30%,
@@ -502,13 +526,13 @@
       ),
       radial-gradient(
         circle at 75% 70%,
-        rgb(var(--cv-primary-rgb) / 0.25) 0%,
+        rgb(var(--cv-primary-rgb) / 0.30) 0%,
         transparent 55%
       ),
       linear-gradient(
         135deg,
-        var(--cv-accent-700) 0%,
-        var(--cv-accent-500) 100%
+        var(--cv-success-strong) 0%,
+        var(--cv-success) 100%
       );
     background-size: 200% 200%;
   }
