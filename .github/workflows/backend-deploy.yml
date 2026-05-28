@@ -2,34 +2,43 @@ name: backend-deploy
 
 # Build → publish → redeploy pipeline for the Spring Boot backend.
 #
+# Trigger model:
+#   - `workflow_run`: fires automatically when `backend-ci` finishes on main.
+#     The `if:` gate below only proceeds when CI's conclusion == success, so a
+#     failed test never reaches production.
+#   - `workflow_dispatch`: lets you redeploy from the Actions tab without
+#     pushing a code change. Useful for first-time setup + emergency redeploys.
+#
+# Why not `lewagon/wait-on-check-action`? It needs `checks: read` scope on the
+# default `GITHUB_TOKEN`, which most orgs don't grant by default, and it can't
+# tell the difference between "CI hasn't started yet" and "CI was skipped on
+# this SHA because the path filter didn't match." `workflow_run` solves both.
+#
 # Flow:
-#   1. Wait for backend-ci on this SHA to go green (tests are the gate).
+#   1. backend-ci on main: completed + success.
 #   2. Build the Dockerfile in backend/couponvalley/ on GitHub's runner,
 #      using buildx + GHA cache. Tag with both `latest` and `sha-<short>`.
-#   3. Push to GitHub Container Registry (ghcr.io). The image is namespaced
-#      under the repo owner — make it Public once after the first push
-#      (github.com/<owner>?tab=packages → clipupp-backend → Package settings
-#      → Change visibility) so Railway can pull anonymously. Or keep it
-#      Private and add registry credentials to the Railway service.
-#   4. Tell Railway to redeploy via the Railway CLI, which pulls the new
-#      `:latest` digest. Cold redeploy is ~30s because nothing is built
-#      Railway-side — it just fetches a pre-built image.
+#   3. Push to GitHub Container Registry (ghcr.io). Make the package Public
+#      once after the first push (github.com/<owner>?tab=packages →
+#      clipupp-backend → Package settings → Change visibility) so Railway
+#      can pull anonymously. Or keep it Private and add registry credentials
+#      to the Railway service.
+#   4. `railway redeploy` makes the Railway service pull the new `:latest`
+#      digest. Cold redeploy is ~30s because nothing builds Railway-side.
 #
 # Required GitHub secrets:
 #   RAILWAY_TOKEN    — project token from Railway → Project → Tokens
 #   RAILWAY_SERVICE  — backend service name as it appears in Railway
-#                      (e.g. "backend"). Stored as a secret only because
-#                      Actions doesn't expose org-level variables to forks.
+#                      (e.g. "backend").
 #
 # GHCR auth uses the built-in GITHUB_TOKEN with `packages: write` scope —
 # no PAT needed.
 
 on:
-  push:
+  workflow_run:
+    workflows: ['backend-ci']
+    types: [completed]
     branches: [main]
-    paths:
-      - 'backend/couponvalley/**'
-      - '.github/workflows/backend-deploy.yml'
   workflow_dispatch:
 
 concurrency:
@@ -41,31 +50,21 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/clipupp-backend
 
 jobs:
-  wait-for-ci:
-    name: Wait for backend-ci
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Wait for backend-ci to succeed on this SHA
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.sha }}
-          check-name: build
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 15
-
   build-and-push:
     name: Build & push image to GHCR
+    # Run on manual dispatch, or when backend-ci finished successfully.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    needs: wait-for-ci
     timeout-minutes: 20
     permissions:
       contents: read
       packages: write
-    outputs:
-      image-ref: ${{ steps.meta.outputs.tags }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # When triggered by workflow_run, build the exact SHA that CI passed
+          # on — not the latest main, which may have already moved.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
