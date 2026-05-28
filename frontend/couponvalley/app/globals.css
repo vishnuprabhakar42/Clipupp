@@ -2,144 +2,202 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================================
+   CouponValley design tokens — Crimson + Amber, Phase 2 redesign foundation
+   -----------------------------------------------------------------------------
+   Single source of truth for color, typography, shadow, motion, and z-index.
+   Adding a new token is a design decision; never reach for raw hex in
+   components. Two documented exceptions: OG image edge routes and Recharts
+   SVG props (both mirror these vars inline with a "Mirror of --cv-*" comment).
+   ========================================================================== */
+
 @layer base {
   :root {
-    /* ──────────────────────────────────────────────────────────────────────
-       CouponValley 5-color "Clean Blue" brand palette. Single source of
-       truth: every brand surface across the site — buttons, badges, charts,
-       OG images, admin chrome — maps to one of these roles. Adding a new
-       role is a design decision, not a free-form choice.
+    /* ── Crimson primary scale ─────────────────────────────────────────── */
+    --cv-primary-50:  #FFF1F1;
+    --cv-primary-100: #FFE0E0;
+    --cv-primary-200: #FFC5C5;
+    --cv-primary-300: #FF9B9B;
+    --cv-primary-400: #FF6B6B;
+    --cv-primary-500: #EF4444;
+    --cv-primary-600: #DC2626;
+    --cv-primary-700: #B91C1C;
+    --cv-primary-800: #991B1B;
+    --cv-primary-900: #7F1D1D;
+    --cv-primary:        var(--cv-primary-600);
+    --cv-primary-strong: var(--cv-primary-700);
+    --cv-primary-soft:   var(--cv-primary-50);
+    --cv-primary-fg:     #FFFFFF;
 
-         Primary  Blue     trust, CTAs, links, primary buttons, focus rings
-         Accent   Orange   savings urgency, badges, deals, hot-deal state
-         Success  Emerald  approved, verified, "live" pills, success toasts
-         Danger   Red      errors, destructive actions, validation
-         Neutral  Slate    chrome, typography, borders, page background
-       ──────────────────────────────────────────────────────────────────── */
+    /* ── Amber accent scale (savings + urgency) ────────────────────────── */
+    --cv-accent-50:  #FFFBEB;
+    --cv-accent-100: #FEF3C7;
+    --cv-accent-200: #FDE68A;
+    --cv-accent-300: #FCD34D;
+    --cv-accent-400: #FBBF24;
+    --cv-accent-500: #F59E0B;
+    --cv-accent-600: #D97706;
+    --cv-accent-700: #B45309;
+    --cv-accent-800: #92400E;
+    --cv-accent-900: #78350F;
+    --cv-accent:        var(--cv-accent-500);
+    --cv-accent-strong: var(--cv-accent-600);
+    --cv-accent-soft:   var(--cv-accent-50);
+    --cv-accent-fg:     #FFFFFF;
 
-    --cv-primary:        #3B82F6;
-    --cv-primary-strong: #1D4ED8;
-    --cv-primary-soft:   #DBEAFE;
-    --cv-primary-fg:     #ffffff;
-
-    --cv-accent:         #F97316;
-    --cv-accent-strong:  #EA580C;
-    --cv-accent-soft:    #FFF7ED;
-    --cv-accent-fg:      #ffffff;
-
-    --cv-success:        #10b981;
+    /* ── Savings emerald (verified / cashback confirmed / "Copied!") ───── */
+    --cv-success:        #10B981;
     --cv-success-strong: #059669;
-    --cv-success-soft:   #ecfdf5;
-    --cv-success-fg:     #ffffff;
+    --cv-success-soft:   #ECFDF5;
+    --cv-success-fg:     #FFFFFF;
 
-    --cv-danger:         #DC2626;
-    --cv-danger-strong:  #B91C1C;
-    --cv-danger-soft:    #fef2f2;
-    --cv-danger-fg:      #ffffff;
+    /* ── Danger red (expired / failed) ─────────────────────────────────── */
+    --cv-danger:        #DC2626;
+    --cv-danger-strong: #B91C1C;
+    --cv-danger-soft:   #FEF2F2;
+    --cv-danger-fg:     #FFFFFF;
 
-    /* Slate neutral scale — chrome, text, borders */
-    --cv-neutral-50:  #f8fafc;
-    --cv-neutral-100: #f1f5f9;
-    --cv-neutral-200: #e2e8f0;
-    --cv-neutral-300: #cbd5e1;
-    --cv-neutral-400: #94a3b8;
-    --cv-neutral-500: #64748b;
-    --cv-neutral-600: #475569;
-    --cv-neutral-700: #334155;
-    --cv-neutral-800: #1e293b;
-    --cv-neutral-900: #0f172a;
+    /* ── Info blue (informational only — NOT a brand color) ────────────── */
+    --cv-info:        #2563EB;
+    --cv-info-soft:   #EFF6FF;
 
-    /* RGB triplets — required by Tailwind to support the /opacity modifier
-       on cv-* utility classes (e.g. text-cv-primary/40, ring-cv-accent/30,
-       bg-cv-primary/10). The hex vars above are kept verbatim so OG image
-       edge routes and inline-style consumers don't need to change. */
-    --cv-primary-rgb:        59, 130, 246;
-    --cv-primary-strong-rgb: 29, 78, 216;
-    --cv-primary-soft-rgb:   219, 234, 254;
-    --cv-primary-fg-rgb:     255, 255, 255;
+    /* ── Warm neutral scale (taupe, pairs with crimson — cool gray would
+          read medical, warm reads retail) ─────────────────────────────── */
+    --cv-neutral-0:   #FFFFFF;
+    --cv-neutral-50:  #FAFAF9;
+    --cv-neutral-100: #F5F4F1;
+    --cv-neutral-200: #E7E5E1;
+    --cv-neutral-300: #D4D1CB;
+    --cv-neutral-400: #A8A5A0;
+    --cv-neutral-500: #78756F;
+    --cv-neutral-600: #57544F;
+    --cv-neutral-700: #3F3C38;
+    --cv-neutral-800: #27262A;
+    --cv-neutral-900: #19181B;
 
-    --cv-accent-rgb:         249, 115, 22;
-    --cv-accent-strong-rgb:  234, 88, 12;
-    --cv-accent-soft-rgb:    255, 247, 237;
-    --cv-accent-fg-rgb:      255, 255, 255;
+    /* ── RGB triplets (required by Tailwind's /N opacity modifier — e.g.
+          `text-cv-primary/40`, `ring-cv-accent/30`). Space-separated; matches
+          modern CSS `rgb(R G B / A)` syntax. */
+    --cv-primary-rgb:        220 38 38;
+    --cv-primary-strong-rgb: 185 28 28;
+    --cv-primary-soft-rgb:   255 241 241;
+    --cv-primary-fg-rgb:     255 255 255;
 
-    --cv-success-rgb:        16, 185, 129;
-    --cv-success-strong-rgb: 5, 150, 105;
-    --cv-success-soft-rgb:   236, 253, 245;
-    --cv-success-fg-rgb:     255, 255, 255;
+    --cv-accent-rgb:         245 158 11;
+    --cv-accent-strong-rgb:  217 119 6;
+    --cv-accent-soft-rgb:    255 251 235;
+    --cv-accent-fg-rgb:      255 255 255;
 
-    --cv-danger-rgb:         220, 38, 38;
-    --cv-danger-strong-rgb:  185, 28, 28;
-    --cv-danger-soft-rgb:    254, 242, 242;
-    --cv-danger-fg-rgb:      255, 255, 255;
+    --cv-success-rgb:        16 185 129;
+    --cv-success-strong-rgb: 5 150 105;
+    --cv-success-soft-rgb:   236 253 245;
+    --cv-success-fg-rgb:     255 255 255;
 
-    --cv-neutral-50-rgb:  248, 250, 252;
-    --cv-neutral-100-rgb: 241, 245, 249;
-    --cv-neutral-200-rgb: 226, 232, 240;
-    --cv-neutral-300-rgb: 203, 213, 225;
-    --cv-neutral-400-rgb: 148, 163, 184;
-    --cv-neutral-500-rgb: 100, 116, 139;
-    --cv-neutral-600-rgb: 71, 85, 105;
-    --cv-neutral-700-rgb: 51, 65, 85;
-    --cv-neutral-800-rgb: 30, 41, 59;
-    --cv-neutral-900-rgb: 15, 23, 42;
+    --cv-danger-rgb:         220 38 38;
+    --cv-danger-strong-rgb:  185 28 28;
+    --cv-danger-soft-rgb:    254 242 242;
+    --cv-danger-fg-rgb:      255 255 255;
 
-    /* ── shadcn semantic tokens, re-pointed to the 5-color palette so every
-          primitive in components/ui/* re-skins automatically. */
+    --cv-neutral-50-rgb:  250 250 249;
+    --cv-neutral-100-rgb: 245 244 241;
+    --cv-neutral-200-rgb: 231 229 225;
+    --cv-neutral-300-rgb: 212 209 203;
+    --cv-neutral-400-rgb: 168 165 160;
+    --cv-neutral-500-rgb: 120 117 111;
+    --cv-neutral-600-rgb: 87 84 79;
+    --cv-neutral-700-rgb: 63 60 56;
+    --cv-neutral-800-rgb: 39 38 42;
+    --cv-neutral-900-rgb: 25 24 27;
+
+    /* ── shadcn semantic tokens, re-pointed to the crimson palette so every
+          primitive in components/ui/* re-skins automatically. HSL values
+          chosen to match the hex above. */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 270 7% 15%;        /* cv-neutral-900 */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 270 7% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 217 91% 60%;
+    --popover-foreground: 270 7% 15%;
+    --primary: 0 73% 50%;            /* crimson #DC2626 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 95% 93%;
-    --secondary-foreground: 224 76% 28%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 24 95% 53%;
+    --secondary: 0 100% 97%;         /* crimson-50 */
+    --secondary-foreground: 0 73% 35%;
+    --muted: 40 17% 95%;             /* warm taupe-100 #F5F4F1 */
+    --muted-foreground: 33 6% 38%;   /* cv-neutral-600 */
+    --accent: 38 92% 50%;            /* amber #F59E0B */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 73% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 28% 89%;
-    --input: 215 28% 89%;
-    --ring: 217 91% 60%;
-    --radius: 0.5rem;
+    --border: 33 9% 88%;             /* cv-neutral-200 */
+    --input: 33 9% 88%;
+    --ring: 0 73% 50%;
+    --radius: 0.75rem;
 
-    /* Sticky header offset — used by scroll-padding so anchored links don't hide under it. */
+    /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
     --header-h: 64px;
-    --header-h-lg: 112px;
+    --header-h-lg: 72px;
 
-    /* ── Apple San Francisco font stack ───────────────────────────────────
-       Single typeface across the entire platform — no Google Font load,
-       zero network cost. Renders as SF on macOS/iOS/iPadOS, Segoe UI on
-       Windows, Roboto on Android, system on Linux. `--font-display` is an
-       alias so existing `font-display` classes keep their semantic meaning
-       in markup while resolving to the same family. */
+    /* ── Typography — Inter (body) + Manrope (display) loaded via next/font
+          in app/[locale]/layout.tsx; the `--font-sans` and `--font-display`
+          vars are injected by Next so the values below are inherit fallbacks
+          for the rare case Next's runtime injection isn't ready (e.g. error
+          page during build). next/font handles preload + self-host + FOIT. */
     --font-sans:
-      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-      "Helvetica Neue", "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-      "Open Sans", "Helvetica", Arial, sans-serif,
+      var(--font-inter, "Inter"), -apple-system, BlinkMacSystemFont,
+      "Helvetica Neue", "Segoe UI", Roboto, "Helvetica", Arial, sans-serif,
       "Apple Color Emoji", "Segoe UI Emoji";
-    --font-display: var(--font-sans);
+    --font-display:
+      var(--font-manrope, "Manrope"), var(--font-inter, "Inter"),
+      -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto,
+      "Helvetica", Arial, sans-serif;
     --font-mono:
       ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
 
-    /* Single shadow level across the entire app. Anything bigger reads as
-       decorative and breaks the calm grid. */
-    --cv-shadow-card: 0 2px 8px rgba(15, 23, 42, 0.06);
-    --cv-shadow-card-hover: 0 2px 8px rgba(15, 23, 42, 0.08);
+    /* ── Motion tokens — durations + easing. Everything in the app reaches
+          for these so we get coherent rhythm without scattered ad-hoc values. */
+    --cv-dur-fast:    120ms;
+    --cv-dur-base:    200ms;
+    --cv-dur-slow:    320ms;
+    --cv-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --cv-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Z-index scale. Layout the stacking order explicitly so portals,
-       toasts, and stickies never collide. */
-    --z-base: 0;
-    --z-dropdown: 100;
-    --z-sticky: 200;
-    --z-modal-backdrop: 300;
-    --z-modal: 400;
-    --z-toast: 500;
+    /* ── Shadow tiers (semantic). Cards sit at resting → hover; floating
+          elements (featured/dragging) use lifted; modals + drawers use modal;
+          glow shadows reserved for hot CTAs and focused inputs. */
+    --cv-shadow-resting:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 1px 1px rgba(15, 23, 42, 0.06);
+    --cv-shadow-hover:
+      0 4px 12px rgba(15, 23, 42, 0.08),
+      0 2px 4px rgba(15, 23, 42, 0.06);
+    --cv-shadow-lifted:
+      0 12px 32px -8px rgba(15, 23, 42, 0.18),
+      0 4px 12px -4px rgba(15, 23, 42, 0.10);
+    --cv-shadow-modal:
+      0 24px 48px -12px rgba(15, 23, 42, 0.25),
+      0 12px 24px -8px rgba(15, 23, 42, 0.15);
+    --cv-shadow-glow-primary:
+      0 0 0 1px rgba(220, 38, 38, 0.20),
+      0 8px 24px -6px rgba(220, 38, 38, 0.35);
+    --cv-shadow-glow-accent:
+      0 0 0 1px rgba(245, 158, 11, 0.22),
+      0 8px 24px -6px rgba(245, 158, 11, 0.40);
+    --cv-shadow-glow-success:
+      0 0 0 1px rgba(16, 185, 129, 0.20),
+      0 8px 24px -6px rgba(16, 185, 129, 0.35);
+
+    /* Legacy aliases kept for back-compat with components from Phase 1-7. */
+    --cv-shadow-card:       var(--cv-shadow-resting);
+    --cv-shadow-card-hover: var(--cv-shadow-hover);
+
+    /* ── Z-index scale ─────────────────────────────────────────────────── */
+    --z-base:            0;
+    --z-dropdown:        100;
+    --z-sticky:          200;
+    --z-modal-backdrop:  300;
+    --z-modal:           400;
+    --z-toast:           500;
   }
 }
 
@@ -149,9 +207,6 @@
   }
   html {
     scroll-padding-top: calc(var(--header-h) + 16px);
-    /* Force SF (or the platform fallback) on every element on the page.
-       Inheritance does the rest — no descendant rule can break this
-       without re-declaring font-family explicitly. */
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
   }
@@ -176,14 +231,14 @@
     }
   }
   :focus-visible {
-    outline: 2px solid hsl(var(--ring));
+    outline: 3px solid rgb(var(--cv-primary-rgb) / 0.45);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 8px;
   }
   ::selection {
-    background: rgba(59, 130, 246, 0.18);
+    background: rgb(var(--cv-primary-rgb) / 0.20);
+    color: var(--cv-primary-strong);
   }
-  /* Headings get text-wrap: balance to avoid orphan words. */
   h1, h2 {
     text-wrap: balance;
   }
@@ -194,15 +249,10 @@
 }
 
 @layer components {
-  /* Single shadow level. Use on cards, modals, dropdowns. */
-  .cv-shadow-card {
-    box-shadow: var(--cv-shadow-card);
-  }
-  .cv-shadow-card-hover {
-    box-shadow: var(--cv-shadow-card-hover);
-  }
-
-  /* Layout primitives — drive the 8px / container-1280 / section-rhythm rules. */
+  /* ── Layout primitives ─────────────────────────────────────────────────
+        Container: max-1280, breakpoint-scaling side padding.
+        Section: rhythm spacing.
+        Prose: max line-length for editorial text. */
   .cv-container {
     @apply mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-20;
   }
@@ -213,116 +263,383 @@
     @apply mx-auto max-w-[680px];
   }
 
-  /* Typography hierarchy. Use these instead of ad-hoc text-* combos so the
-     three-weight rule (400/600/700) and balance / line-height are enforced. */
+  /* ── Typography hierarchy ──────────────────────────────────────────────
+        Manrope (display, 600/700/800) + Inter (body, 400/500/600).
+        clamp() responsive scaling avoids breakpoint cliffs. */
 
-  /* Hero-only display heading — bigger + tighter than cv-h1. Use ONLY on
-     the homepage hero H1, where we need the system font to visually
-     compete with the Inter/Cal-Sans-style display fonts competitors use.
-     The fix is size + tracking, not a new family — keeps the zero-webfont
-     perf win intact. */
+  /* Hero-only mega heading — biggest, tightest, heaviest. */
+  .cv-display-mega {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.75rem, 6vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--cv-neutral-900);
+    text-wrap: balance;
+  }
+  /* Sub-hero on detail / list pages (store / coupon / category / blog). */
   .cv-display-hero {
-    @apply font-display text-[2.5rem] leading-[1.05] font-bold tracking-[-0.025em] text-cv-neutral-900 sm:text-[3rem] lg:text-[3.5rem];
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: var(--cv-neutral-900);
     text-wrap: balance;
   }
   .cv-h1 {
-    @apply font-display text-[2.25rem] leading-[1.15] font-bold tracking-tight text-cv-neutral-900 sm:text-[2.75rem] lg:text-[3rem];
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--cv-neutral-900);
     text-wrap: balance;
   }
   .cv-h2 {
-    @apply font-display text-[1.5rem] leading-[1.2] font-semibold tracking-tight text-cv-neutral-900 lg:text-[1.75rem];
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--cv-neutral-900);
     text-wrap: balance;
   }
   .cv-h3 {
-    @apply font-display text-[1rem] leading-[1.3] font-semibold text-cv-neutral-900 lg:text-[1.125rem];
-  }
-  .cv-meta {
-    @apply text-[0.8125rem] leading-[1.5] text-cv-neutral-500;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--cv-neutral-900);
   }
   .cv-body {
-    @apply text-[0.9375rem] leading-[1.6] text-cv-neutral-700;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--cv-neutral-700);
+  }
+  .cv-meta {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--cv-neutral-600);
   }
   .cv-price {
-    @apply font-display text-[1.25rem] font-bold text-cv-primary tabular-nums lg:text-[1.5rem];
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--cv-neutral-900);
   }
-  .cv-tag {
-    @apply inline-flex items-center rounded-sm bg-cv-neutral-100 px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-cv-neutral-700;
+
+  /* Eyebrow — section labels above a heading. Replaces the old .cv-tag for
+     this role; cv-tag is kept as alias below for back-compat. */
+  .cv-eyebrow-vivid {
+    @apply inline-flex items-center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cv-primary-700);
+    position: relative;
+    padding-right: 56px;
   }
-  .cv-tabular {
+  .cv-eyebrow-vivid::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--cv-primary-600),
+      var(--cv-accent-500)
+    );
+  }
+  .cv-eyebrow-vivid--accent { color: var(--cv-accent-700); }
+  .cv-eyebrow-vivid--success { color: var(--cv-success-strong); }
+
+  /* Big savings number on row cards / hero overlays. Tabular nums so digits
+     align in vertical stacks. */
+  .cv-savings-massive {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
   }
 
-  /* Card primitives — single shadow, neutral border, no hover lift. */
-  .cv-card {
-    @apply rounded-lg border border-cv-neutral-200 bg-card text-card-foreground;
-    box-shadow: var(--cv-shadow-card);
+  /* Legacy aliases — old pages reference `.cv-tag`. Map it onto the new
+     eyebrow look so old call sites still render correctly while we sweep. */
+  .cv-tag {
+    @apply inline-flex items-center rounded-sm bg-cv-primary-soft px-2 py-0.5;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cv-primary-strong);
+  }
+  .cv-section-title { @apply cv-h2; }
+  .cv-section-link {
+    @apply text-sm font-semibold text-cv-primary hover:underline;
+  }
+  .cv-headline-accent { color: var(--cv-primary); }
+  .cv-tabular { font-variant-numeric: tabular-nums; }
+
+  /* ── Gradient text utilities ───────────────────────────────────────────
+        Only two — hero (deep crimson → light crimson) and savings (amber
+        spectrum). Never apply to body, meta, or chips (a11y + aesthetic). */
+  .cv-text-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-800) 0%,
+      var(--cv-primary-600) 40%,
+      var(--cv-primary-300) 100%
+    );
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
+  }
+  .cv-text-gradient-savings {
+    background: linear-gradient(
+      135deg,
+      var(--cv-accent-700) 0%,
+      var(--cv-accent-500) 45%,
+      var(--cv-accent-300) 100%
+    );
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+            color: transparent;
   }
 
-  /* Skeleton — pure neutral, no coloured shimmer. Matches card radius. */
+  /* ── Gradient catalog ──────────────────────────────────────────────────
+        Define once, reuse everywhere. CSS-only; zero KB delta over flat
+        fills; GPU rasterized. */
+  .cv-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-800) 0%,
+      var(--cv-primary-600) 50%,
+      rgb(var(--cv-primary-rgb) / 0.6) 100%
+    );
+  }
+  .cv-gradient-warm {
+    background: linear-gradient(
+      135deg,
+      var(--cv-accent-600) 0%,
+      var(--cv-accent-500) 100%
+    );
+  }
+  .cv-gradient-cool {
+    background: linear-gradient(
+      135deg,
+      var(--cv-primary-600) 0%,
+      var(--cv-success-strong) 100%
+    );
+  }
+  .cv-gradient-success {
+    background: linear-gradient(
+      135deg,
+      var(--cv-success) 0%,
+      var(--cv-success-strong) 100%
+    );
+  }
+  .cv-gradient-savings {
+    background: linear-gradient(
+      90deg,
+      var(--cv-accent-700) 0%,
+      var(--cv-accent-500) 100%
+    );
+  }
+  .cv-gradient-rainbow {
+    background: linear-gradient(
+      90deg,
+      var(--cv-primary-600) 0%,
+      var(--cv-accent-500) 50%,
+      var(--cv-success) 100%
+    );
+  }
+  /* Mesh = full saturated base + two soft radial light spots. Animates over
+     18s for subtle life on hero sections; disabled by reduced-motion. */
+  .cv-mesh-primary {
+    background-color: var(--cv-primary-700);
+    background-image:
+      radial-gradient(
+        circle at 20% 30%,
+        rgba(255, 255, 255, 0.22) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgb(var(--cv-accent-rgb) / 0.30) 0%,
+        transparent 55%
+      ),
+      linear-gradient(
+        135deg,
+        var(--cv-primary-800) 0%,
+        var(--cv-primary-600) 100%
+      );
+    background-size: 200% 200%;
+  }
+  .cv-mesh-warm {
+    background-color: var(--cv-accent-600);
+    background-image:
+      radial-gradient(
+        circle at 25% 30%,
+        rgba(255, 255, 255, 0.25) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 75% 70%,
+        rgb(var(--cv-primary-rgb) / 0.25) 0%,
+        transparent 55%
+      ),
+      linear-gradient(
+        135deg,
+        var(--cv-accent-700) 0%,
+        var(--cv-accent-500) 100%
+      );
+    background-size: 200% 200%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .cv-mesh-primary,
+    .cv-mesh-warm {
+      animation: cv-gradient-shift 18s linear infinite;
+    }
+  }
+
+  /* ── Section background helpers ─────────────────────────────────────── */
+  .cv-section-bg-primary       { background-color: var(--cv-primary); }
+  .cv-section-bg-primary-soft  { background-color: var(--cv-primary-soft); }
+  .cv-section-bg-accent-soft   { background-color: var(--cv-accent-soft); }
+  .cv-section-bg-success-soft  { background-color: var(--cv-success-soft); }
+  .cv-section-bg-neutral       { background-color: var(--cv-neutral-100); }
+  .cv-section-bg-mesh-primary  { @apply cv-mesh-primary; }
+  .cv-section-bg-mesh-warm     { @apply cv-mesh-warm; }
+  .cv-section-bg-fade-down {
+    background-image: linear-gradient(
+      to bottom,
+      var(--cv-neutral-0) 0%,
+      var(--cv-primary-soft) 100%
+    );
+  }
+  .cv-section-bg-rainbow-strip {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--cv-primary-600) 0%,
+      var(--cv-accent-500) 50%,
+      var(--cv-success) 100%
+    );
+  }
+
+  /* ── Base card primitive — full component variants come in Phase B. ── */
+  .cv-card {
+    @apply rounded-xl border border-cv-neutral-200 bg-card text-card-foreground;
+    box-shadow: var(--cv-shadow-resting);
+    transition:
+      box-shadow var(--cv-dur-base) var(--cv-ease-out),
+      transform var(--cv-dur-base) var(--cv-ease-out),
+      border-color var(--cv-dur-base) var(--cv-ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cv-card:hover {
+      box-shadow: var(--cv-shadow-hover);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* ── Base button stubs — full variants come in Phase B. ──────────────── */
+  .cv-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: var(--cv-primary);
+    color: var(--cv-primary-fg);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-primary:hover { background: var(--cv-primary-strong); }
+  .cv-btn-primary:disabled { opacity: 0.4; pointer-events: none; }
+
+  .cv-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
+    background: transparent;
+    color: var(--cv-primary);
+    border: 1.5px solid var(--cv-primary);
+    min-height: 44px;
+    line-height: 1;
+    font-family: var(--font-sans);
+  }
+  .cv-btn-ghost:hover { background: var(--cv-primary-soft); }
+
+  /* ── Input baseline — referenced across the app during sweep. ────────── */
+  .cv-input {
+    @apply flex h-11 w-full rounded-md px-3 text-[15px] transition-shadow;
+    background: var(--cv-neutral-0);
+    color: var(--cv-neutral-900);
+    border: 1.5px solid var(--cv-neutral-200);
+    font-family: var(--font-sans);
+  }
+  .cv-input::placeholder { color: var(--cv-neutral-400); }
+  .cv-input:focus,
+  .cv-input:focus-within {
+    border-color: var(--cv-primary-400);
+    outline: none;
+    box-shadow: var(--cv-shadow-glow-primary);
+  }
+  .cv-input:disabled { opacity: 0.4; }
+
+  /* ── Pill (chips / category tags) ──────────────────────────────────── */
+  .cv-pill {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+  }
+
+  /* ── Color strip — small horizontal accent (used in eyebrow rows etc.) */
+  .cv-color-strip {
+    @apply h-1 w-12 rounded-full;
+    background: linear-gradient(
+      90deg,
+      var(--cv-primary-600),
+      var(--cv-accent-500)
+    );
+  }
+
+  /* ── Skeleton — neutral shimmer matching card radius. ────────────────── */
   .cv-skeleton {
-    @apply relative overflow-hidden rounded-lg bg-cv-neutral-100;
+    @apply relative overflow-hidden rounded-xl bg-cv-neutral-100;
   }
   .cv-skeleton::after {
     content: "";
     @apply absolute inset-0 -translate-x-full;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
-    animation: shimmer 1.4s infinite;
-  }
-
-  /* Section heading legacy helpers — kept for back-compat with current pages,
-     point to the new typography scale. */
-  .cv-section-title {
-    @apply cv-h2;
-  }
-  .cv-section-link {
-    @apply text-sm font-semibold text-cv-primary hover:underline;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.55),
+      transparent
+    );
+    animation: cv-shimmer 1.4s infinite;
   }
 
   /* Hide scrollbar cross-browser */
-  .cv-no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+  .cv-no-scrollbar::-webkit-scrollbar { display: none; }
   .cv-no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-
-  /* Legacy buttons — keep selectors stable but force them onto the new
-     primary button look (solid, flat, no gradient, h-11 tap target). */
-  .cv-btn-primary {
-    @apply inline-flex items-center justify-center rounded-md bg-cv-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-cv-primary-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cv-primary-strong disabled:opacity-40 disabled:pointer-events-none;
-    min-height: 44px;
-  }
-  .cv-btn-ghost {
-    @apply inline-flex items-center justify-center rounded-md border-[1.5px] border-cv-primary bg-transparent px-4 py-2.5 text-sm font-semibold text-cv-primary transition-colors hover:bg-cv-primary-soft;
-    min-height: 44px;
-  }
-
-  /* Headline accent — solid primary colour, replaces the old
-     .cv-gradient-text. Kept as an alias so existing callers don't break
-     until the consumer-page sweep in Phase 2 retires them. */
-  .cv-headline-accent {
-    color: var(--cv-primary);
-  }
-  .cv-gradient-text {
-    color: var(--cv-primary);
-  }
-
-  /* Flat accent strip — replaces the old three-stop gradient strip but
-     preserves the helper name so existing usages don't break. */
-  .cv-color-strip {
-    @apply h-1 w-12 rounded-full bg-cv-primary;
-  }
-
-  /* Vibrant pill used for category tags / badges */
-  .cv-pill {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold;
-  }
-
-  /* Form input baseline — referenced by .cv-input helpers across pages
-     during the Phase 2 sweep. Mirrors the Input primitive contract. */
-  .cv-input {
-    @apply flex h-11 w-full rounded-md border-[1.5px] border-cv-neutral-200 bg-white px-3 text-[15px] text-cv-neutral-900 placeholder:text-cv-neutral-400 focus:border-cv-primary focus:outline-none focus:ring-2 focus:ring-cv-primary/30 disabled:opacity-40;
   }
 
   /* Admin table zebra striping. Opt-in via data-zebra on the <table>. */
@@ -331,23 +648,48 @@
   }
 }
 
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
+/* =============================================================================
+   Animations — compositor-friendly (transform / opacity / box-shadow only).
+   All non-essential ones gated by prefers-reduced-motion in @layer base above.
+   ========================================================================== */
+
+@keyframes cv-shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes cv-fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cv-gradient-shift {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes cv-pulse-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgb(var(--cv-accent-rgb) / 0.40),
+      0 8px 24px -6px rgb(var(--cv-accent-rgb) / 0.40);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgb(var(--cv-accent-rgb) / 0),
+      0 8px 24px -6px rgb(var(--cv-accent-rgb) / 0.55);
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes cv-pulse-dot {
+  0%, 100% { transform: scale(1);   opacity: 1;   }
+  50%      { transform: scale(1.4); opacity: 0.6; }
 }
 
 .cv-fade-in-up {
-  animation: fadeInUp 0.5s ease-out both;
+  animation: cv-fade-in-up 0.5s var(--cv-ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-fade-in-up { animation: none; }
 }
