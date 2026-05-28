@@ -41,8 +41,10 @@ export async function DailyPicksSection({
     <section aria-labelledby="daily-picks-heading">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-eyebrow-vivid cv-eyebrow-vivid--accent">{heading}</p>
-          <h2 id="daily-picks-heading" className="cv-h2 mt-2">
+          <h2
+            id="daily-picks-heading"
+            className="cv-eyebrow-vivid cv-eyebrow-vivid--accent"
+          >
             {heading}
           </h2>
           <p className="cv-body mt-2 max-w-xl text-cv-neutral-700">{subtitle}</p>

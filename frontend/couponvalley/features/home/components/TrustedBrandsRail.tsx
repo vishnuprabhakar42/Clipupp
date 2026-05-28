@@ -34,10 +34,7 @@ export async function TrustedBrandsRail({
   return (
     <section aria-labelledby="trusted-brands-heading">
       <div className="mb-6">
-        <p className="cv-eyebrow-vivid">{heading}</p>
-        <h2 id="trusted-brands-heading" className="cv-h2 mt-2">
-          {heading}
-        </h2>
+        <h2 id="trusted-brands-heading" className="cv-eyebrow-vivid">{heading}</h2>
       </div>
 
       <div

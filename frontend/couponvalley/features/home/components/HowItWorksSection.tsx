@@ -44,8 +44,7 @@ export async function HowItWorksSection() {
       />
       <div className="cv-container cv-section">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="cv-eyebrow-vivid mx-auto">{t("title")}</p>
-          <h2 className="cv-h2 mt-3">{t("title")}</h2>
+          <h2 className="cv-eyebrow-vivid mx-auto">{t("title")}</h2>
           <p className="cv-body mx-auto mt-3 max-w-md text-cv-neutral-700">
             {t("subtitle")}
           </p>

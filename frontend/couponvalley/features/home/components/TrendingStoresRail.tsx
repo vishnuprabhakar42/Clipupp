@@ -38,10 +38,7 @@ export async function TrendingStoresRail({
     <section aria-labelledby="trending-stores-heading" className="relative">
       <div className="mb-6 flex items-end justify-between gap-3">
         <div>
-          <p className="cv-eyebrow-vivid">{heading}</p>
-          <h2 id="trending-stores-heading" className="cv-h2 mt-2">
-            {heading}
-          </h2>
+          <h2 id="trending-stores-heading" className="cv-eyebrow-vivid">{heading}</h2>
         </div>
         <Link
           href="/stores"
