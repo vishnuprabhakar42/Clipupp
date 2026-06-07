@@ -367,14 +367,18 @@ export function HeaderClient({
             ))}
           </div>
 
+          {/* Scroll buttons styled to match the ScrollRail used in
+              TrustedBrandsRail + every other home rail — transparent, no
+              border, larger chevron, sits OUTSIDE the rail edges via
+              translate-x-1/2 so it never overlaps the chips. */}
           {canScrollLeft && (
             <button
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute -left-2.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute left-0 top-1/2 z-dropdown grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-transparent text-clipupp-neutral-700 transition-colors hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
             </button>
           )}
 
@@ -383,9 +387,9 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute -right-2.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute right-0 top-1/2 z-dropdown grid h-9 w-9 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-transparent text-clipupp-neutral-700 transition-colors hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
             </button>
           )}
         </div>
