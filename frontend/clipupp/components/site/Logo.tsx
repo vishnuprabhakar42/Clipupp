@@ -35,12 +35,12 @@ type WordmarkVariant = "default" | "on-dark" | "full" | "full-on-dark";
 type MarkVariant = "mark" | "mark-white";
 
 const VARIANT = {
-  default: { src: "/logo.png", w: 1151, h: 478 },
-  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 478 },
+  default: { src: "/logo.png", w: 1151, h: 508 },
+  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 508 },
   full: { src: "/logo-full.png", w: 1250, h: 504 },
   "full-on-dark": { src: "/logo-full-on-dark.png", w: 1250, h: 504 },
-  mark: { src: "/logo-mark.png", w: 332, h: 332 },
-  "mark-white": { src: "/logo-mark-white.png", w: 332, h: 332 },
+  mark: { src: "/logo-mark.png", w: 455, h: 455 },
+  "mark-white": { src: "/logo-mark-white.png", w: 455, h: 455 },
 } as const;
 
 export function LogoMark({
