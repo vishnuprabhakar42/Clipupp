@@ -255,11 +255,14 @@
 
 @layer components {
   /* ── Layout primitives ─────────────────────────────────────────────────
-        Container: max-1280, breakpoint-scaling side padding.
+        Container: max-1280, edge-flush on tablet/desktop, small mobile padding.
         Section: rhythm spacing.
         Prose: max line-length for editorial text. */
   .clipupp-container {
-    @apply mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-20;
+    /* On lg+ the content uses the full 1280px safe area (no side padding).
+       Mobile + small tablet keep a 16/24px gutter to avoid touching the
+       screen edge on phones. */
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-0;
   }
   .clipupp-section {
     @apply py-12 lg:py-20;
