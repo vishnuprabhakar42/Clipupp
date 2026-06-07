@@ -193,7 +193,7 @@ export function HeaderClient({
       role="banner"
     >
       <div className="border-b">
-        <div className="container flex h-12 items-center gap-2 md:h-14">
+        <div className="clipupp-container flex h-12 items-center gap-2 md:h-14">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -338,7 +338,7 @@ export function HeaderClient({
         and steal vertical space. Hidden on every route except "/". */}
     {isHome && (
       <div className="hidden border-b bg-background lg:block">
-        <div className="container relative px-2">
+        <div className="clipupp-container relative">
           <div
             ref={stripRef}
             className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"

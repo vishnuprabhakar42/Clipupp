@@ -77,7 +77,7 @@ export async function Footer() {
   return (
     <footer className="bg-clipupp-neutral-900 text-gray-300" role="contentinfo">
       {/* ── Main grid: brand + columns ── */}
-      <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
+      <div className="clipupp-container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
         <div>
           <Logo variant="white" height={56} priority={false} />
@@ -229,7 +229,7 @@ export async function Footer() {
 
       {/* ── Affiliate disclosure ── */}
       <div className="border-t border-white/10 bg-clipupp-neutral-900">
-        <div className="container py-5 text-xs leading-relaxed text-clipupp-neutral-500">
+        <div className="clipupp-container py-5 text-xs leading-relaxed text-clipupp-neutral-500">
           <p>
             <strong className="text-gray-300">Affiliate disclosure:</strong> {disclosure}{" "}
             <Link href="/affiliate-disclosure" className="hover:underline" style={{ color: accent }}>
@@ -242,7 +242,7 @@ export async function Footer() {
 
       {/* ── Bottom hashtag bar ── */}
       <div className="border-t border-white/10">
-        <div className="container py-7 text-center">
+        <div className="clipupp-container py-7 text-center">
           <p
             className="font-display text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: accent }}
@@ -254,7 +254,7 @@ export async function Footer() {
 
       {/* ── Copyright strip ── */}
       <div className="border-t border-white/10">
-        <div className="container flex flex-col items-center justify-between gap-3 py-4 text-xs text-clipupp-neutral-500 sm:flex-row">
+        <div className="clipupp-container flex flex-col items-center justify-between gap-3 py-4 text-xs text-clipupp-neutral-500 sm:flex-row">
           <span>
             © {new Date().getFullYear()} {brandName}. All rights reserved.
           </span>
