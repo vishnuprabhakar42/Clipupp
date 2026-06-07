@@ -52,6 +52,17 @@ spring:
     problemdetails:
       enabled: true
 
+  servlet:
+    multipart:
+      # Match MediaService's MAX_SIZE_BYTES (10 MB) so the controller sees
+      # the request and MediaService can return its own friendly error,
+      # rather than Spring rejecting it at the multipart parser with a
+      # generic 500. Slight headroom on max-request-size for
+      # multipart envelope overhead.
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 12MB
+
 server:
   port: ${SERVER_PORT:8080}
   compression:
