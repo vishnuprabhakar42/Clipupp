@@ -259,10 +259,10 @@
         Section: rhythm spacing.
         Prose: max line-length for editorial text. */
   .clipupp-container {
-    /* On lg+ the content uses the full 1280px safe area (no side padding).
-       Mobile + small tablet keep a 16/24px gutter to avoid touching the
-       screen edge on phones. */
-    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-0;
+    /* Small 10px gutter on every breakpoint — content sits flush within
+       the 1280px safe area but never quite touches the edge. Mobile keeps
+       a slightly wider 16/24px gutter where screen real estate is tightest. */
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-[10px];
   }
   .clipupp-section {
     @apply py-12 lg:py-20;
