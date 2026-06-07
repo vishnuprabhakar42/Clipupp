@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { CheckCircle2, Sparkles, ShieldCheck } from "lucide-react";
-import { Link } from "@/lib/i18n/navigation";
+import { Logo } from "@/components/site/Logo";
 
 type Bullet = { icon?: typeof CheckCircle2; title: string; body?: string };
 
@@ -55,25 +55,7 @@ export function AuthLayout({
       <div className="flex items-center justify-center bg-clipupp-neutral-50 px-4 py-10">
         <div className="w-full max-w-[440px] space-y-6">
           <div className="text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-clipupp-primary-700 font-display"
-              aria-label="Clipupp home"
-            >
-              <svg viewBox="0 0 32 32" width={36} height={36} aria-hidden>
-                <path
-                  d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2.6}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span className="clipupp-text-gradient-hero text-2xl font-extrabold tracking-tight">
-                clipupp
-              </span>
-            </Link>
+            <Logo height={44} priority className="justify-center" />
             <h1 className="clipupp-h1 mt-5 text-[1.75rem]">{heading}</h1>
             {subheading && (
               <p className="clipupp-body mt-2 text-clipupp-neutral-700">{subheading}</p>
