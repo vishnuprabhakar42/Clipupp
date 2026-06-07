@@ -5,33 +5,59 @@ import { Link } from "@/lib/i18n/navigation";
 /**
  * Clipupp brand assets.
  *
- * Source-of-truth artwork lives in /public:
- *   - logo.png       (1151×318) — icon + "Clipupp" wordmark, transparent bg
- *   - logo-mark.png  (332×332)  — icon-only square, transparent bg
- *   - logo-full.png  (1250×504) — full design with "CLIP MORE. SAVE MORE." tagline
+ * Source-of-truth artwork lives in /public — all variants are crops of the
+ * same canonical design and stay pixel-aligned across variants:
  *
- * <LogoMark> — icon only. Use in compact slots (mobile drawer header,
- *              OG-image overlay, avatar tiles).
- * <Logo>     — clickable wordmark for the site header.
+ *   logo.png               1151×334  icon + wordmark, transparent bg
+ *                                    (default for light-bg headers)
+ *   logo-on-dark.png       1151×334  same crop; "Clip" recolored white,
+ *                                    "upp" + icon stay purple
+ *                                    (footer + any dark-bg context)
+ *   logo-full.png          1250×504  full design with tagline
+ *                                    "CLIP MORE. SAVE MORE. EARN MORE."
+ *                                    (hero splashes, OG share cards, email)
+ *   logo-full-on-dark.png  1250×504  full design, dark-bg recolor
+ *                                    (dark hero / share-card variant)
+ *   logo-mark.png           332×332  icon-only square (favicon, compact spots)
+ *   logo-mark-white.png     332×332  icon-only, full white recolor
+ *                                    (drawer header on a dark gradient, etc.)
+ *
+ * Components:
+ *   <LogoMark variant>      — icon only
+ *   <LogoWordmark variant>  — icon + Clipupp wordmark (and optionally tagline)
+ *   <Logo variant>          — clickable wordmark linking to "/"
  *
  * All variants render through next/image so they ship as AVIF/WebP with the
  * right srcset on retina screens.
  */
 
-const WORDMARK_ASPECT = 1151 / 318; // ≈ 3.62
+type WordmarkVariant = "default" | "on-dark" | "full" | "full-on-dark";
+type MarkVariant = "mark" | "mark-white";
+
+const VARIANT = {
+  default: { src: "/logo.png", w: 1151, h: 334 },
+  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 334 },
+  full: { src: "/logo-full.png", w: 1250, h: 504 },
+  "full-on-dark": { src: "/logo-full-on-dark.png", w: 1250, h: 504 },
+  mark: { src: "/logo-mark.png", w: 332, h: 332 },
+  "mark-white": { src: "/logo-mark-white.png", w: 332, h: 332 },
+} as const;
 
 export function LogoMark({
+  variant = "mark",
   size = 40,
   priority = false,
   className,
 }: {
+  variant?: MarkVariant;
   size?: number;
   priority?: boolean;
   className?: string;
 }) {
+  const asset = VARIANT[variant];
   return (
     <Image
-      src="/logo-mark.png"
+      src={asset.src}
       alt="Clipupp"
       width={size}
       height={size}
@@ -42,18 +68,22 @@ export function LogoMark({
 }
 
 export function LogoWordmark({
+  variant = "default",
   height = 40,
   priority = false,
   className,
 }: {
+  variant?: WordmarkVariant;
   height?: number;
   priority?: boolean;
   className?: string;
 }) {
-  const width = Math.round(height * WORDMARK_ASPECT);
+  const asset = VARIANT[variant];
+  const aspect = asset.w / asset.h;
+  const width = Math.round(height * aspect);
   return (
     <Image
-      src="/logo.png"
+      src={asset.src}
       alt="Clipupp"
       width={width}
       height={height}
@@ -66,15 +96,23 @@ export function LogoWordmark({
 
 /**
  * Full clickable header logo: wordmark wrapped in a Link to "/".
- * `height` controls the rendered height in px; aspect-ratio is preserved.
+ * `height` sets the rendered pixel height; aspect-ratio is preserved.
+ *
+ * Pick `variant` to match the surrounding surface:
+ *   "default"      — purple icon, dark "Clip", purple "upp" (light bg, default)
+ *   "on-dark"      — purple icon, white "Clip", purple "upp" (dark bg)
+ *   "full"         — adds the tagline below the wordmark
+ *   "full-on-dark" — tagline variant for dark backgrounds
  */
 export function Logo({
   href = "/",
+  variant = "default",
   height = 40,
   priority = true,
   className,
 }: {
   href?: string;
+  variant?: WordmarkVariant;
   height?: number;
   priority?: boolean;
   className?: string;
@@ -85,7 +123,7 @@ export function Logo({
       aria-label="Clipupp home"
       className={`inline-flex shrink-0 items-center ${className ?? ""}`}
     >
-      <LogoWordmark height={height} priority={priority} />
+      <LogoWordmark variant={variant} height={height} priority={priority} />
     </Link>
   );
 }

@@ -509,20 +509,8 @@ function MobileMenu({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4 text-clipupp-primary-700">
-        <svg viewBox="0 0 32 32" width={28} height={28} aria-hidden>
-          <path
-            d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.6}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="clipupp-text-gradient-hero font-display text-lg font-extrabold tracking-tight">
-          clipupp
-        </span>
+      <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4">
+        <Logo height={32} />
       </div>
 
       <nav
