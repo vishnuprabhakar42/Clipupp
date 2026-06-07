@@ -1,4 +1,5 @@
 import { Link } from "@/lib/i18n/navigation";
+import { Logo } from "@/components/site/Logo";
 import {
   Facebook,
   Headphones,
@@ -79,24 +80,7 @@ export async function Footer() {
       <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
         <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white"
-          >
-            <svg viewBox="0 0 32 32" width={36} height={36} aria-hidden>
-              <path
-                d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.6}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="font-display text-2xl font-extrabold tracking-tight">
-              {brandName.toLowerCase()}
-            </span>
-          </Link>
+          <Logo variant="on-dark" height={44} priority={false} />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-clipupp-neutral-400">{tagline}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
