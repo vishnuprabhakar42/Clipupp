@@ -35,8 +35,8 @@ type WordmarkVariant = "default" | "on-dark" | "full" | "full-on-dark";
 type MarkVariant = "mark" | "mark-white";
 
 const VARIANT = {
-  default: { src: "/logo.png", w: 1151, h: 398 },
-  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 398 },
+  default: { src: "/logo.png", w: 1151, h: 478 },
+  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 478 },
   full: { src: "/logo-full.png", w: 1250, h: 504 },
   "full-on-dark": { src: "/logo-full-on-dark.png", w: 1250, h: 504 },
   mark: { src: "/logo-mark.png", w: 332, h: 332 },
