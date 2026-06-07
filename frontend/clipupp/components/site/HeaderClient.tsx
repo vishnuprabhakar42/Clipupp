@@ -367,16 +367,18 @@ export function HeaderClient({
             ))}
           </div>
 
-          {/* Scroll buttons styled to match the ScrollRail used in
-              TrustedBrandsRail + every other home rail — transparent, no
-              border, larger chevron, sits OUTSIDE the rail edges via
-              translate-x-1/2 so it never overlaps the chips. */}
+          {/* Scroll buttons sit FLUSH against the safe-area edge — the
+              button's outer edge (left for ◄, right for ►) aligns exactly
+              with the container's visible boundary. backdrop-blur over a
+              semi-transparent white tile makes the chips underneath still
+              subtly visible (frosted-glass look), so the button doesn't
+              feel like an opaque cap blocking content. */}
           {canScrollLeft && (
             <button
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute left-0 top-1/2 z-dropdown grid h-9 w-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-transparent text-clipupp-neutral-700 transition-colors hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+              className="absolute left-0 top-1/2 z-dropdown grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200/40 bg-white/60 text-clipupp-neutral-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/80 hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
             >
               <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
             </button>
@@ -387,7 +389,7 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute right-0 top-1/2 z-dropdown grid h-9 w-9 translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-transparent text-clipupp-neutral-700 transition-colors hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+              className="absolute right-0 top-1/2 z-dropdown grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200/40 bg-white/60 text-clipupp-neutral-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/80 hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
             >
               <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
             </button>
