@@ -8,10 +8,11 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",
-    theme_color: "#3B82F6",
+    // Matches --clipupp-primary-700 in globals.css (brand purple).
+    theme_color: "#6D28D9",
     icons: [
       { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
-      { src: "/apple-icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
+      { src: "/apple-icon.png", sizes: "180x180", type: "image/png", purpose: "any" },
     ],
     categories: ["shopping", "lifestyle"],
     lang: "en",
