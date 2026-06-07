@@ -80,7 +80,7 @@ export async function Footer() {
       <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
         <div>
-          <Logo variant="on-dark" height={44} priority={false} />
+          <Logo variant="white" height={56} priority={false} />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-clipupp-neutral-400">{tagline}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">

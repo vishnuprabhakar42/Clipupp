@@ -31,12 +31,13 @@ import { Link } from "@/lib/i18n/navigation";
  * right srcset on retina screens.
  */
 
-type WordmarkVariant = "default" | "on-dark" | "full" | "full-on-dark";
+type WordmarkVariant = "default" | "on-dark" | "white" | "full" | "full-on-dark";
 type MarkVariant = "mark" | "mark-white";
 
 const VARIANT = {
   default: { src: "/logo.png", w: 1151, h: 508 },
   "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 508 },
+  white: { src: "/logo-white.png", w: 1151, h: 508 },
   full: { src: "/logo-full.png", w: 1250, h: 504 },
   "full-on-dark": { src: "/logo-full-on-dark.png", w: 1250, h: 504 },
   mark: { src: "/logo-mark.png", w: 455, h: 455 },
@@ -100,7 +101,9 @@ export function LogoWordmark({
  *
  * Pick `variant` to match the surrounding surface:
  *   "default"      — purple icon, dark "Clip", purple "upp" (light bg, default)
- *   "on-dark"      — purple icon, white "Clip", purple "upp" (dark bg)
+ *   "on-dark"      — purple icon, white "Clip", purple "upp" (dark bg accent)
+ *   "white"        — entire wordmark recoloured pure white (high-contrast
+ *                    footers / pure-monochrome use)
  *   "full"         — adds the tagline below the wordmark
  *   "full-on-dark" — tagline variant for dark backgrounds
  */
