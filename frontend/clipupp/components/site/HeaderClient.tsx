@@ -372,7 +372,7 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute left-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute -left-2.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -383,7 +383,7 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute right-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute -right-2.5 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
