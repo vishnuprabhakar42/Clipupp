@@ -378,20 +378,20 @@ export function HeaderClient({
             ))}
           </div>
 
-          {/* Scroll buttons sit FLUSH against the safe-area edge — the
-              button's outer edge (left for ◄, right for ►) aligns exactly
-              with the container's visible boundary. backdrop-blur over a
-              semi-transparent white tile makes the chips underneath still
-              subtly visible (frosted-glass look), so the button doesn't
-              feel like an opaque cap blocking content. */}
+          {/* Scroll buttons match PromoBannersCarousel exactly:
+              h-9 w-9 white tile, h-4 w-4 chevron (strokeWidth 2.5),
+              border + shadow-card, centered on the safe-area edge via
+              translate(±50%, -50%). The edge-fade mask on the strip
+              above handles the smooth chip dissolve into the button. */}
           {canScrollLeft && (
             <button
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute left-0 top-1/2 z-dropdown grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200/40 bg-white/60 text-clipupp-neutral-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/80 hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              style={{ left: 0, top: "50%", transform: "translate(-50%, -50%)" }}
             >
-              <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
+              <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
             </button>
           )}
 
@@ -400,9 +400,10 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute right-0 top-1/2 z-dropdown grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200/40 bg-white/60 text-clipupp-neutral-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/80 hover:text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              style={{ right: 0, top: "50%", transform: "translate(50%, -50%)" }}
             >
-              <ChevronRight className="h-6 w-6" strokeWidth={2.5} />
+              <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
             </button>
           )}
         </div>
