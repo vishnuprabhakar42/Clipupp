@@ -339,9 +339,20 @@ export function HeaderClient({
     {isHome && (
       <div className="hidden border-b bg-background lg:block">
         <div className="clipupp-container relative">
+          {/* Edge-fade mask: when chips are scrollable in a direction,
+              the corresponding edge fades to transparent so chips
+              disappear behind/into the floating scroll button instead
+              of being hard-cropped. Pulled in from the same pattern as
+              ScrollRail.tsx (used by trusted-brands etc). */}
           <div
             ref={stripRef}
-            className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"
+            className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5"
+            style={(() => {
+              const fadeLeft = canScrollLeft ? "transparent 0%, black 5%" : "black 0%, black 0%";
+              const fadeRight = canScrollRight ? "black 95%, transparent 100%" : "black 100%, black 100%";
+              const mask = `linear-gradient(to right, ${fadeLeft}, ${fadeRight})`;
+              return { maskImage: mask, WebkitMaskImage: mask };
+            })()}
           >
             <CategoryChip
               href="/offers"
