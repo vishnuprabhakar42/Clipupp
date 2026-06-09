@@ -441,6 +441,8 @@ export default async function StoreDetailPage({
             {/* Coupon tabs + list */}
             <StoreTypeTabs
               storeSlug={detail.slug}
+              storeName={detail.name}
+              storeLogoUrl={detail.logoUrl}
               initialCoupons={couponsPage.data}
               initialHasMore={couponsPage.page.hasMore}
             />
