@@ -18,122 +18,157 @@
 @layer base {
   :root {
     /* ── Single brand purple scale (dark purple + light purple) ────────── */
-    --clipupp-primary-50:  #F5F3FF;   /* near-white lavender — page accent backgrounds */
-    --clipupp-primary-100: #EDE9FE;   /* LIGHT PURPLE — tile fills, soft pills, eyebrows */
-    --clipupp-primary-200: #DDD6FE;
-    --clipupp-primary-300: #C4B5FD;
-    --clipupp-primary-400: #A78BFA;
-    --clipupp-primary-500: #8B5CF6;
-    --clipupp-primary-600: #7C3AED;   /* Mid purple — gradient bright stop */
-    --clipupp-primary-700: #6D28D9;   /* DARK PURPLE — buttons, links, active, all icons */
-    --clipupp-primary-800: #5B21B6;   /* Deeper purple — hover, gradient deep stop */
-    --clipupp-primary-900: #4C1D95;
-    --clipupp-primary:        var(--clipupp-primary-700);
-    --clipupp-primary-strong: var(--clipupp-primary-800);
-    --clipupp-primary-soft:   var(--clipupp-primary-100);
+    --clipupp-primary-50:  #F4F3FE;   /* near-white lavender — page accent backgrounds */
+    --clipupp-primary-100: #E4E0FC;   /* LIGHT PURPLE — tile fills, soft pills, eyebrows */
+    --clipupp-primary-200: #CFC0FF;
+    --clipupp-primary-300: #BC9FEA;
+    --clipupp-primary-400: #9B50D6;   /* Rakuten hover purple */
+    --clipupp-primary-500: #8529CD;   /* RAKUTEN BRAND PURPLE — buttons, links, icons */
+    --clipupp-primary-600: #7119B8;   /* Pressed purple — hover/active darken */
+    --clipupp-primary-700: #480081;   /* Deep royal purple — strong emphasis */
+    --clipupp-primary-800: #38006A;
+    --clipupp-primary-900: #2A004F;
+    --clipupp-primary:        var(--clipupp-primary-500);
+    --clipupp-primary-strong: var(--clipupp-primary-600);
+    --clipupp-primary-soft:   var(--clipupp-primary-50);
     --clipupp-primary-fg:     #FFFFFF;
 
     /* ── Accent — collapsed to primary (single-accent system). Every utility
           class that used to reach for amber/blue accent now resolves to the
           same brand purple. */
-    --clipupp-accent-50:  #F5F3FF;
-    --clipupp-accent-100: #EDE9FE;
-    --clipupp-accent-200: #DDD6FE;
-    --clipupp-accent-300: #C4B5FD;
-    --clipupp-accent-400: #A78BFA;
-    --clipupp-accent-500: #8B5CF6;
-    --clipupp-accent-600: #7C3AED;
-    --clipupp-accent-700: #6D28D9;
-    --clipupp-accent-800: #5B21B6;
-    --clipupp-accent-900: #4C1D95;
-    --clipupp-accent:        var(--clipupp-primary-700);
-    --clipupp-accent-strong: var(--clipupp-primary-800);
-    --clipupp-accent-soft:   var(--clipupp-primary-100);
+    --clipupp-accent-50:  #F4F3FE;
+    --clipupp-accent-100: #E4E0FC;
+    --clipupp-accent-200: #CFC0FF;
+    --clipupp-accent-300: #BC9FEA;
+    --clipupp-accent-400: #9B50D6;
+    --clipupp-accent-500: #8529CD;
+    --clipupp-accent-600: #7119B8;
+    --clipupp-accent-700: #480081;
+    --clipupp-accent-800: #38006A;
+    --clipupp-accent-900: #2A004F;
+    --clipupp-accent:        var(--clipupp-primary-500);
+    --clipupp-accent-strong: var(--clipupp-primary-600);
+    --clipupp-accent-soft:   var(--clipupp-primary-50);
     --clipupp-accent-fg:     #FFFFFF;
 
     /* ── Success — emerald, used only for true positive states (verified,
           "Copied!" toasts, confirmed cashback). NOT for general accents. */
-    --clipupp-success:        #10B981;
-    --clipupp-success-strong: #059669;
-    --clipupp-success-soft:   #ECFDF5;
+    --clipupp-success:        #33823F;
+    --clipupp-success-strong: #134028;
+    --clipupp-success-soft:   #ECF6EE;
     --clipupp-success-fg:     #FFFFFF;
 
     /* ── Danger — red, errors only ─────────────────────────────────────── */
-    --clipupp-danger:        #DC2626;
-    --clipupp-danger-strong: #B91C1C;
-    --clipupp-danger-soft:   #FEF2F2;
+    --clipupp-danger:        #B90037;
+    --clipupp-danger-strong: #720827;
+    --clipupp-danger-soft:   #FCE7EE;
     --clipupp-danger-fg:     #FFFFFF;
 
-    /* ── Info blue (informational only — same hue family as primary) ───── */
-    --clipupp-info:        #2563EB;
-    --clipupp-info-soft:   #EFF6FF;
+    /* ── Warning — orange, caution states (expiring, low stock) ────────── */
+    --clipupp-warning:        #EE6B00;
+    --clipupp-warning-strong: #AE5308;
+    --clipupp-warning-soft:   #FFF3E0;
+    --clipupp-warning-fg:     #FFFFFF;
+
+    /* ── Info indigo (informational only) ──────────────────────────────── */
+    --clipupp-info:        #3E3E9D;
+    --clipupp-info-soft:   #ECECF8;
 
     /* ── Slate neutral scale (cool, professional) ──────────────────────── */
     --clipupp-neutral-0:   #FFFFFF;   /* Background 1 */
-    --clipupp-neutral-50:  #F8FAFC;   /* Background 2 — alternating sections */
-    --clipupp-neutral-100: #F1F5F9;
-    --clipupp-neutral-200: #E2E8F0;   /* Borders / dividers */
-    --clipupp-neutral-300: #CBD5E1;
-    --clipupp-neutral-400: #94A3B8;
-    --clipupp-neutral-500: #64748B;   /* Text muted — secondary / captions */
-    --clipupp-neutral-600: #475569;
-    --clipupp-neutral-700: #334155;
-    --clipupp-neutral-800: #1E293B;
-    --clipupp-neutral-900: #0F172A;   /* Text dark — headings + body */
+    --clipupp-neutral-50:  #FAFAFA;   /* Background 2 — alternating sections */
+    --clipupp-neutral-100: #F2F2F2;
+    --clipupp-neutral-200: #DDDDDD;   /* Borders / dividers */
+    --clipupp-neutral-300: #B9B9B9;
+    --clipupp-neutral-400: #949494;
+    --clipupp-neutral-500: #737373;   /* Text tertiary — captions */
+    --clipupp-neutral-600: #575757;   /* Text secondary */
+    --clipupp-neutral-700: #404040;
+    --clipupp-neutral-800: #303030;
+    --clipupp-neutral-900: #252525;   /* Text primary — headings + body (Rakuten) */
 
     /* ── RGB triplets for slash-opacity modifier ── */
-    --clipupp-primary-rgb:        109 40 217;   /* #6D28D9 — dark purple */
-    --clipupp-primary-strong-rgb: 91 33 182;    /* #5B21B6 */
-    --clipupp-primary-soft-rgb:   237 233 254;  /* #EDE9FE — light purple */
+    --clipupp-primary-rgb:        133 41 205;   /* #8529CD — Rakuten brand purple */
+    --clipupp-primary-strong-rgb: 113 25 184;   /* #7119B8 */
+    --clipupp-primary-soft-rgb:   244 243 254;  /* #F4F3FE — light purple */
     --clipupp-primary-fg-rgb:     255 255 255;
 
-    --clipupp-accent-rgb:         109 40 217;
-    --clipupp-accent-strong-rgb:  91 33 182;
-    --clipupp-accent-soft-rgb:    237 233 254;
+    --clipupp-accent-rgb:         133 41 205;
+    --clipupp-accent-strong-rgb:  113 25 184;
+    --clipupp-accent-soft-rgb:    244 243 254;
     --clipupp-accent-fg-rgb:      255 255 255;
 
-    --clipupp-success-rgb:        16 185 129;
-    --clipupp-success-strong-rgb: 5 150 105;
-    --clipupp-success-soft-rgb:   236 253 245;
+    /* Per-step RGB triplets — Rakuten purple ramp. Single source of truth for
+       Tailwind's numbered scale (text-clipupp-primary-700, etc.). Accent
+       mirrors primary (collapsed single-accent system). */
+    --clipupp-primary-50-rgb:  244 243 254;
+    --clipupp-primary-100-rgb: 228 224 252;
+    --clipupp-primary-200-rgb: 207 192 255;
+    --clipupp-primary-300-rgb: 188 159 234;
+    --clipupp-primary-400-rgb: 155 80 214;
+    --clipupp-primary-500-rgb: 133 41 205;
+    --clipupp-primary-600-rgb: 113 25 184;
+    --clipupp-primary-700-rgb: 72 0 129;
+    --clipupp-primary-800-rgb: 56 0 106;
+    --clipupp-primary-900-rgb: 42 0 79;
+    --clipupp-accent-50-rgb:  244 243 254;
+    --clipupp-accent-100-rgb: 228 224 252;
+    --clipupp-accent-200-rgb: 207 192 255;
+    --clipupp-accent-300-rgb: 188 159 234;
+    --clipupp-accent-400-rgb: 155 80 214;
+    --clipupp-accent-500-rgb: 133 41 205;
+    --clipupp-accent-600-rgb: 113 25 184;
+    --clipupp-accent-700-rgb: 72 0 129;
+    --clipupp-accent-800-rgb: 56 0 106;
+    --clipupp-accent-900-rgb: 42 0 79;
+
+    --clipupp-success-rgb:        51 130 63;
+    --clipupp-success-strong-rgb: 19 64 40;
+    --clipupp-success-soft-rgb:   236 246 238;
     --clipupp-success-fg-rgb:     255 255 255;
 
-    --clipupp-danger-rgb:         220 38 38;
-    --clipupp-danger-strong-rgb:  185 28 28;
-    --clipupp-danger-soft-rgb:    254 242 242;
+    --clipupp-danger-rgb:         185 0 55;
+    --clipupp-danger-strong-rgb:  114 8 39;
+    --clipupp-danger-soft-rgb:    252 231 238;
     --clipupp-danger-fg-rgb:      255 255 255;
 
-    --clipupp-neutral-50-rgb:  248 250 252;
-    --clipupp-neutral-100-rgb: 241 245 249;
-    --clipupp-neutral-200-rgb: 226 232 240;
-    --clipupp-neutral-300-rgb: 203 213 225;
-    --clipupp-neutral-400-rgb: 148 163 184;
-    --clipupp-neutral-500-rgb: 100 116 139;
-    --clipupp-neutral-600-rgb: 71 85 105;
-    --clipupp-neutral-700-rgb: 51 65 85;
-    --clipupp-neutral-800-rgb: 30 41 59;
-    --clipupp-neutral-900-rgb: 15 23 42;
+    --clipupp-warning-rgb:        238 107 0;
+    --clipupp-warning-strong-rgb: 174 83 8;
+    --clipupp-warning-soft-rgb:   255 243 224;
+    --clipupp-warning-fg-rgb:     255 255 255;
+
+    --clipupp-neutral-50-rgb:  250 250 250;
+    --clipupp-neutral-100-rgb: 242 242 242;
+    --clipupp-neutral-200-rgb: 221 221 221;
+    --clipupp-neutral-300-rgb: 185 185 185;
+    --clipupp-neutral-400-rgb: 148 148 148;
+    --clipupp-neutral-500-rgb: 115 115 115;
+    --clipupp-neutral-600-rgb: 87 87 87;
+    --clipupp-neutral-700-rgb: 64 64 64;
+    --clipupp-neutral-800-rgb: 48 48 48;
+    --clipupp-neutral-900-rgb: 37 37 37;
 
     /* ── shadcn semantic tokens, re-pointed to the single-purple palette.
           HSL values match the hex tokens above. */
     --background: 0 0% 100%;         /* white */
-    --foreground: 222 47% 11%;       /* clipupp-neutral-900 #0F172A text-dark */
+    --foreground: 0 0% 14%;          /* clipupp-neutral-900 #252525 text-primary */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 263 70% 50%;          /* dark purple #6D28D9 */
+    --popover-foreground: 0 0% 14%;
+    --primary: 274 67% 48%;          /* Rakuten brand purple #8529CD */
     --primary-foreground: 0 0% 100%;
-    --secondary: 251 91% 95%;        /* light purple #EDE9FE */
-    --secondary-foreground: 263 69% 42%;
-    --muted: 210 40% 98%;            /* neutral-50 #F8FAFC */
-    --muted-foreground: 215 16% 47%; /* neutral-500 #64748B text-muted */
-    --accent: 263 70% 50%;           /* SAME as primary — collapsed accent */
+    --secondary: 250 79% 93%;        /* light purple #E4E0FC */
+    --secondary-foreground: 271 76% 41%;
+    --muted: 0 0% 98%;               /* neutral-50 #FAFAFA */
+    --muted-foreground: 0 0% 45%;    /* neutral-500 #737373 text-muted */
+    --accent: 274 67% 48%;           /* SAME as primary — collapsed accent */
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 73% 50%;
+    --destructive: 342 100% 36%;     /* Rakuten error #B90037 */
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;           /* neutral-200 #E2E8F0 */
-    --input: 214 32% 91%;
-    --ring: 263 70% 50%;
+    --border: 0 0% 87%;              /* neutral-200 #DDDDDD */
+    --input: 0 0% 87%;
+    --ring: 274 67% 48%;
     --radius: 0.5rem;
 
     /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
@@ -150,9 +185,8 @@
       "Helvetica Neue", "Segoe UI", Roboto, "Helvetica", Arial, sans-serif,
       "Apple Color Emoji", "Segoe UI Emoji";
     --font-display:
-      var(--font-manrope, "Manrope"), var(--font-inter, "Inter"),
-      -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto,
-      "Helvetica", Arial, sans-serif;
+      var(--font-zilla-slab, "Zilla Slab"), Georgia, "Times New Roman",
+      Times, serif;
     --font-mono:
       ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
@@ -169,28 +203,28 @@
           elements (featured/dragging) use lifted; modals + drawers use modal;
           glow shadows reserved for hot CTAs and focused inputs. */
     --clipupp-shadow-resting:
-      0 1px 2px rgba(15, 23, 42, 0.04),
-      0 1px 1px rgba(15, 23, 42, 0.06);
+      0 1px 2px rgba(10, 22, 70, 0.05),
+      0 1px 1px rgba(10, 22, 70, 0.07);
     --clipupp-shadow-hover:
-      0 4px 12px rgba(15, 23, 42, 0.08),
-      0 2px 4px rgba(15, 23, 42, 0.06);
+      0 4px 11px rgba(10, 22, 70, 0.12),
+      0 2px 4px rgba(10, 22, 70, 0.08);
     --clipupp-shadow-lifted:
-      0 12px 32px -8px rgba(15, 23, 42, 0.18),
-      0 4px 12px -4px rgba(15, 23, 42, 0.10);
+      0 12px 32px -8px rgba(10, 22, 70, 0.20),
+      0 4px 12px -4px rgba(10, 22, 70, 0.12);
     --clipupp-shadow-modal:
-      0 24px 48px -12px rgba(15, 23, 42, 0.25),
-      0 12px 24px -8px rgba(15, 23, 42, 0.15);
+      0 24px 48px -12px rgba(10, 22, 70, 0.28),
+      0 12px 24px -8px rgba(10, 22, 70, 0.16);
     /* Glow shadows: reserved for the primary CTA only. Single purple tone.
        (Accent alias maps to the same purple glow for consistency.) */
     --clipupp-shadow-glow-primary:
-      0 0 0 1px rgba(109, 40, 217, 0.18),
-      0 8px 20px -6px rgba(109, 40, 217, 0.32);
+      0 0 0 1px rgba(133, 41, 205, 0.18),
+      0 8px 20px -6px rgba(133, 41, 205, 0.32);
     --clipupp-shadow-glow-accent:
-      0 0 0 1px rgba(109, 40, 217, 0.18),
-      0 8px 20px -6px rgba(109, 40, 217, 0.32);
+      0 0 0 1px rgba(133, 41, 205, 0.18),
+      0 8px 20px -6px rgba(133, 41, 205, 0.32);
     --clipupp-shadow-glow-success:
-      0 0 0 1px rgba(16, 185, 129, 0.18),
-      0 8px 20px -6px rgba(16, 185, 129, 0.32);
+      0 0 0 1px rgba(51, 130, 63, 0.18),
+      0 8px 20px -6px rgba(51, 130, 63, 0.32);
 
     /* Legacy aliases kept for back-compat with components from Phase 1-7. */
     --clipupp-shadow-card:       var(--clipupp-shadow-resting);
@@ -339,10 +373,8 @@
     color: var(--clipupp-neutral-900);
   }
 
-  /* Eyebrow — section labels above a heading. Burnt orange (#C2410C) —
-     deeper than a bright orange, still complementary to the dark purple
-     primary, reads as confident-vibrant on white. Tiny bar after the text
-     picks up the same hue. */
+  /* Eyebrow — section labels above a heading. Brand purple (single-accent
+     system); the tiny bar after the text picks up the same hue. */
   .clipupp-eyebrow-vivid {
     @apply inline-flex items-center;
     font-family: var(--font-display);
@@ -351,7 +383,7 @@
     line-height: 1.3;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #C2410C;
+    color: var(--clipupp-primary);
     position: relative;
     padding-right: 56px;
   }
@@ -364,11 +396,10 @@
     width: 44px;
     height: 3px;
     border-radius: 2px;
-    background: #C2410C;
+    background: var(--clipupp-primary);
   }
-  /* Tone modifiers — opt-in overrides. Default eyebrow is burnt orange;
-     sections that want emphasis can layer one of these on the same element. */
-  .clipupp-eyebrow-vivid--accent { color: #C2410C; }
+  /* Tone modifiers — opt-in overrides on the same element. */
+  .clipupp-eyebrow-vivid--accent { color: var(--clipupp-primary); }
   .clipupp-eyebrow-vivid--success { color: var(--clipupp-success-strong); }
 
   /* Big savings number on row cards / hero overlays. Tabular nums so digits
@@ -675,25 +706,16 @@
   /* Primary CTA — the ONE allowed gradient button. Dark-purple range:
      #7C3AED (vibrant mid purple) → #5B21B6 (deeper purple) on hover.
      Used on the hero CTA, sign-in submit, "Get this deal", "Get code", etc. */
+  /* Flat brand fill — no gradient (Rakuten-style single solid CTA). */
   .clipupp-btn-primary-gradient {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-600) 0%,
-      var(--clipupp-primary-800) 100%
-    );
+    background: var(--clipupp-primary);
     color: var(--clipupp-primary-fg);
     min-height: 44px;
     line-height: 1;
     font-family: var(--font-sans);
   }
-  .clipupp-btn-primary-gradient:hover {
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-700) 0%,
-      var(--clipupp-primary-900) 100%
-    );
-  }
+  .clipupp-btn-primary-gradient:hover { background: var(--clipupp-primary-strong); }
   .clipupp-btn-primary-gradient:disabled { opacity: 0.4; pointer-events: none; }
 
   /* Accent variants collapse to the primary look. No second accent color
@@ -713,23 +735,13 @@
      animation (calm professional rhythm; no "shouting" CTAs). */
   .clipupp-btn-accent-gradient {
     @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-semibold transition-colors;
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-600) 0%,
-      var(--clipupp-primary-800) 100%
-    );
+    background: var(--clipupp-primary);
     color: var(--clipupp-primary-fg);
     min-height: 44px;
     line-height: 1;
     font-family: var(--font-sans);
   }
-  .clipupp-btn-accent-gradient:hover {
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-700) 0%,
-      var(--clipupp-primary-900) 100%
-    );
-  }
+  .clipupp-btn-accent-gradient:hover { background: var(--clipupp-primary-strong); }
   .clipupp-btn-accent-gradient:disabled { opacity: 0.4; pointer-events: none; }
 
   /* ── Coupon CTA — slide-to-reveal button (CouponFollow pattern) ────────
@@ -745,19 +757,11 @@
     font-weight: 800;
     letter-spacing: 0.02em;
     color: var(--clipupp-primary-fg);
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-600) 0%,
-      var(--clipupp-primary-800) 100%
-    );
+    background: var(--clipupp-primary);
     box-shadow: 0 6px 16px -6px rgba(var(--clipupp-primary-rgb), 0.5);
   }
   .clipupp-coupon-cta:hover {
-    background: linear-gradient(
-      135deg,
-      var(--clipupp-primary-700) 0%,
-      var(--clipupp-primary-900) 100%
-    );
+    background: var(--clipupp-primary-strong);
     box-shadow: 0 10px 22px -8px rgba(var(--clipupp-primary-rgb), 0.7);
   }
 

@@ -54,9 +54,9 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Clipupp Crimson + Amber palette — Phase 2 redesign.
-        // All hex source values live in app/globals.css as CSS vars. The
-        // RGB triplets (--clipupp-*-rgb) here let Tailwind's slash-opacity
+        // Clipupp Rakuten-inspired purple palette — single-source design system.
+        // All values live in app/globals.css as CSS vars (hex + RGB triplets).
+        // The RGB triplets (--clipupp-*-rgb) let Tailwind's slash-opacity
         // modifier work: `text-clipupp-primary/40`, `ring-clipupp-accent/30`, etc.
         "clipupp-primary": {
           DEFAULT: "rgb(var(--clipupp-primary-rgb) / <alpha-value>)",
@@ -64,32 +64,32 @@ const config = {
           soft:    "rgb(var(--clipupp-primary-soft-rgb) / <alpha-value>)",
           fg:      "rgb(var(--clipupp-primary-fg-rgb) / <alpha-value>)",
           // Full numeric scale for fine-grained use (e.g. text-clipupp-primary-700).
-          50:  "#FFF1F1",
-          100: "#FFE0E0",
-          200: "#FFC5C5",
-          300: "#FF9B9B",
-          400: "#FF6B6B",
-          500: "#EF4444",
-          600: "#DC2626",
-          700: "#B91C1C",
-          800: "#991B1B",
-          900: "#7F1D1D",
+          50:  "rgb(var(--clipupp-primary-50-rgb) / <alpha-value>)",
+          100: "rgb(var(--clipupp-primary-100-rgb) / <alpha-value>)",
+          200: "rgb(var(--clipupp-primary-200-rgb) / <alpha-value>)",
+          300: "rgb(var(--clipupp-primary-300-rgb) / <alpha-value>)",
+          400: "rgb(var(--clipupp-primary-400-rgb) / <alpha-value>)",
+          500: "rgb(var(--clipupp-primary-500-rgb) / <alpha-value>)",
+          600: "rgb(var(--clipupp-primary-600-rgb) / <alpha-value>)",
+          700: "rgb(var(--clipupp-primary-700-rgb) / <alpha-value>)",
+          800: "rgb(var(--clipupp-primary-800-rgb) / <alpha-value>)",
+          900: "rgb(var(--clipupp-primary-900-rgb) / <alpha-value>)",
         },
         "clipupp-accent": {
           DEFAULT: "rgb(var(--clipupp-accent-rgb) / <alpha-value>)",
           strong:  "rgb(var(--clipupp-accent-strong-rgb) / <alpha-value>)",
           soft:    "rgb(var(--clipupp-accent-soft-rgb) / <alpha-value>)",
           fg:      "rgb(var(--clipupp-accent-fg-rgb) / <alpha-value>)",
-          50:  "#FFFBEB",
-          100: "#FEF3C7",
-          200: "#FDE68A",
-          300: "#FCD34D",
-          400: "#FBBF24",
-          500: "#F59E0B",
-          600: "#D97706",
-          700: "#B45309",
-          800: "#92400E",
-          900: "#78350F",
+          50:  "rgb(var(--clipupp-accent-50-rgb) / <alpha-value>)",
+          100: "rgb(var(--clipupp-accent-100-rgb) / <alpha-value>)",
+          200: "rgb(var(--clipupp-accent-200-rgb) / <alpha-value>)",
+          300: "rgb(var(--clipupp-accent-300-rgb) / <alpha-value>)",
+          400: "rgb(var(--clipupp-accent-400-rgb) / <alpha-value>)",
+          500: "rgb(var(--clipupp-accent-500-rgb) / <alpha-value>)",
+          600: "rgb(var(--clipupp-accent-600-rgb) / <alpha-value>)",
+          700: "rgb(var(--clipupp-accent-700-rgb) / <alpha-value>)",
+          800: "rgb(var(--clipupp-accent-800-rgb) / <alpha-value>)",
+          900: "rgb(var(--clipupp-accent-900-rgb) / <alpha-value>)",
         },
         "clipupp-success": {
           DEFAULT: "rgb(var(--clipupp-success-rgb) / <alpha-value>)",

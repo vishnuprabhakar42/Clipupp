@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1280, height: 1000 } });
+await p.goto("http://localhost:3000/en", { waitUntil: "networkidle" });
+await p.waitForTimeout(800);
+await p.screenshot({ path: "/tmp/ds-home.png" });
+await p.goto("http://localhost:3000/en/stores/amazon-india", { waitUntil: "networkidle" });
+await p.waitForTimeout(800);
+const card = p.locator("article").first();
+await card.screenshot({ path: "/tmp/ds-card.png" });
+await b.close();
+console.log("ok");
