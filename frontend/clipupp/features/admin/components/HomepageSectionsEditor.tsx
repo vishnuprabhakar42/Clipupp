@@ -795,7 +795,7 @@ function SectionEditPanel({
             style={{
               background:
                 busy || !dirty || titleOver || subtitleOver
-                  ? "linear-gradient(120deg,#9ca3af 0%,#9ca3af 100%)"
+                  ? "linear-gradient(120deg,#B9B9B9 0%,#B9B9B9 100%)"
                   : styles.gradient,
             }}
           >

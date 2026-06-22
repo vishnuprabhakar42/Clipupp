@@ -76,24 +76,31 @@ No test suite is configured. `next.config.mjs` sets `typescript.ignoreBuildError
 
 **Path alias:** `@/*` → project root (`frontend/clipupp/`), not `src/`.
 
-## Design system — 3-color "Clean Blue" theme (uupm.cc-inspired)
+## Design system — Rakuten-inspired single-purple palette
 
-The site uses a strict **3-color "Clean Blue" palette** defined in `app/globals.css` `:root` as CSS variables, with matching Tailwind aliases in `tailwind.config.ts`. Adding a new role is a design decision, not a free-form choice.
+The site uses a **single-brand-purple, flat palette** (modeled on rakuten.com) defined in `app/globals.css` `:root` as CSS variables, with matching Tailwind aliases in `tailwind.config.ts`. One purple drives every action; status colors are used **only** for status. No gradients except the homepage hero band and the coupon-CTA sheen. Adding a new role is a design decision, not a free-form choice.
 
 | Role | Name | Mid | Strong | Soft | Foreground | Tailwind aliases |
 |---|---|---|---|---|---|---|
-| Primary | Blue | `#3B82F6` | `#1D4ED8` | `#DBEAFE` | `#ffffff` | `clipupp-primary`, `clipupp-primary-strong`, `clipupp-primary-soft`, `clipupp-primary-fg` |
-| Accent | Orange | `#F97316` | `#EA580C` | `#FFF7ED` | `#ffffff` | `clipupp-accent`, `clipupp-accent-strong`, `clipupp-accent-soft`, `clipupp-accent-fg` |
-| Success | Emerald | `#10b981` | `#059669` | `#ecfdf5` | `#ffffff` | `clipupp-success`, `clipupp-success-strong`, `clipupp-success-soft`, `clipupp-success-fg` |
-| Danger | Red | `#DC2626` | `#B91C1C` | `#fef2f2` | `#ffffff` | `clipupp-danger`, `clipupp-danger-strong`, `clipupp-danger-soft`, `clipupp-danger-fg` |
-| Neutral | Slate | scale | scale | scale | scale | `clipupp-neutral-{50…900}` (10-step) |
+| Primary | Purple | `#8529CD` | `#7119B8` | `#F4F3FE` | `#ffffff` | `clipupp-primary`, `clipupp-primary-strong`, `clipupp-primary-soft`, `clipupp-primary-fg` |
+| Accent | (= Primary) | `#8529CD` | `#7119B8` | `#F4F3FE` | `#ffffff` | `clipupp-accent*` — **collapsed to primary** (single-accent system) |
+| Success | Green | `#33823F` | `#134028` | `#ECF6EE` | `#ffffff` | `clipupp-success`, `clipupp-success-strong`, `clipupp-success-soft`, `clipupp-success-fg` |
+| Danger | Red | `#B90037` | `#720827` | `#FCE7EE` | `#ffffff` | `clipupp-danger`, `clipupp-danger-strong`, `clipupp-danger-soft`, `clipupp-danger-fg` |
+| Warning | Orange | `#EE6B00` | `#AE5308` | `#FFF3E0` | `#ffffff` | `clipupp-warning*` |
+| Info | Indigo | `#3E3E9D` | — | `#ECECF8` | — | `clipupp-info`, `clipupp-info-soft` |
+| Neutral | Warm grey | `#252525` (text) … `#FAFAFA` (bg) | | | | `clipupp-neutral-{0,50…900}` |
 
-- shadcn semantic tokens (`--primary`, `--accent`, `--destructive`, `--ring`, `--secondary`, `--muted`) are re-pointed to the 5-color palette in `globals.css`, so every shadcn primitive in `components/ui/*` auto-skins.
-- Use `bg-clipupp-primary` / `text-clipupp-accent-strong` / `border-clipupp-neutral-200` everywhere. **Do not introduce raw hex.**
-- Helper utility classes: `.clipupp-btn-primary`, `.clipupp-btn-ghost`, `.clipupp-gradient-text`, `.clipupp-color-strip`, `.clipupp-section-title`, `.clipupp-section-link`, `.clipupp-card`, `.clipupp-skeleton`, `.clipupp-pill`.
-- Two **legitimate hex exceptions** (both documented inline with a "Mirror of `--clipupp-*`" comment):
-  1. `app/og/{coupon,store}/[slug]/route.tsx` — edge runtime cannot read CSS variables; each route has a `CV = { primary: "#3B82F6", primaryStrong: "#1D4ED8", accent: "#F97316" } as const` block at the top mirroring the palette.
-  2. `features/admin/components/AnalyticsDashboard.tsx` — Recharts SVG `<Cell fill>` and `<stopColor>` props don't resolve CSS vars at render. `PIE_COLORS = ["#3B82F6","#F97316","#10b981","#DC2626","#475569"]`, the `accentMetric` map, and the bar/area `<linearGradient>` stops are inline literal hex.
+Fonts: **Zilla Slab** (slab-serif display/headings, open match to Rakuten's Stag) + **Inter** (body/UI), loaded via `next/font` in `app/[locale]/layout.tsx` and exposed as `--font-display` / `--font-sans`. Shadows are tinted with indigo `#0a1646`, not black.
+
+**Single source of truth:** every value lives in `globals.css` as a CSS var. Tailwind's numbered scale (`clipupp-primary-700`, etc.) reads the per-step `--clipupp-*-rgb` triplets — there are **no literal hex color scales in `tailwind.config.ts`**. (This was the old "Crimson + Amber" bug: config literals disagreed with the vars. Never reintroduce literal hex scales in the config.)
+
+- **Semantic role tokens** (`--color-text`, `--color-text-muted`, `--color-action`, `--color-cta`, `--color-surface`, `--color-border`, `--color-success/error/warning/info`) sit on top of the scale. Prefer these intent-named roles in new components over raw scale steps.
+- shadcn semantic tokens (`--primary`, `--accent`, `--destructive`, `--ring`, `--secondary`, `--muted`) are re-pointed to the purple palette in `globals.css`, so every shadcn primitive in `components/ui/*` auto-skins.
+- Use `bg-clipupp-primary` / `text-clipupp-neutral-600` / `border-clipupp-neutral-200` everywhere. **Do not introduce raw hex.**
+- CTAs are **flat** (`.clipupp-btn-primary-gradient` and `.clipupp-coupon-cta` resolve to solid purple despite the legacy `-gradient` names). The coupon CTA slide-reveal + sheen are interactions, not gradient fills.
+- Two **legitimate hex exceptions** (both mirror `--clipupp-*` and must be kept in sync):
+  1. `app/og/{coupon,store}/[slug]/route.tsx` — edge runtime cannot read CSS variables; each route mirrors the palette inline (purple `#8529CD` / `#7119B8`).
+  2. `features/admin/components/AnalyticsDashboard.tsx` — Recharts SVG `<Cell fill>` / `<stopColor>` props don't resolve CSS vars at render. `PIE_COLORS`, the `accentMetric` map, and the bar/area `<linearGradient>` stops are inline literal hex from the palette (`#8529CD` purple, `#33823F` green, `#3E3E9D` indigo, `#EE6B00` orange, `#575757` grey).
 
 **`HomepageSectionsEditor` accent contract:** `ACCENT_STYLES` is keyed by `"primary" | "accent" | "success" | "danger" | "neutral"` — exactly the 5 brand roles. When adding a new homepage section type, choose one of these 5 — don't introduce a 6th hue.
 
