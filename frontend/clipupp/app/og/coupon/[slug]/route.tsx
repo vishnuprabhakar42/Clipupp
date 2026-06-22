@@ -12,8 +12,8 @@ export const size = { width: 1200, height: 630 };
  * Keep in sync with globals.css when the brand palette changes.
  */
 const CV = {
-  primary:       "#6D28D9",
-  primaryStrong: "#5B21B6",
+  primary:       "#8529CD",
+  primaryStrong: "#7119B8",
 } as const;
 
 export async function GET(

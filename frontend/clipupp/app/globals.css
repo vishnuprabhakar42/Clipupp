@@ -74,7 +74,7 @@
     --clipupp-info:        #3E3E9D;
     --clipupp-info-soft:   #ECECF8;
 
-    /* ── Slate neutral scale (cool, professional) ──────────────────────── */
+    /* ── Rakuten warm neutral scale ────────────────────────────────────── */
     --clipupp-neutral-0:   #FFFFFF;   /* Background 1 */
     --clipupp-neutral-50:  #FAFAFA;   /* Background 2 — alternating sections */
     --clipupp-neutral-100: #F2F2F2;
@@ -86,6 +86,27 @@
     --clipupp-neutral-700: #404040;
     --clipupp-neutral-800: #303030;
     --clipupp-neutral-900: #252525;   /* Text primary — headings + body (Rakuten) */
+
+    /* ── Semantic ROLE tokens ───────────────────────────────────────────────
+       Components should reach for these intent-named roles, not raw scale
+       steps. This is the single layer that keeps the UI consistent: change a
+       role here and every consumer updates. (Raw scale stays available for
+       fine-grained one-offs, but prefer roles.) */
+    --color-text:        var(--clipupp-neutral-900);  /* primary copy */
+    --color-text-muted:  var(--clipupp-neutral-600);  /* secondary copy */
+    --color-text-subtle: var(--clipupp-neutral-500);  /* captions / meta */
+    --color-text-inverse:var(--clipupp-neutral-0);
+    --color-action:      var(--clipupp-primary);      /* links / actions */
+    --color-action-hover:var(--clipupp-primary-strong);
+    --color-cta:         var(--clipupp-primary);      /* button fill */
+    --color-cta-fg:      var(--clipupp-primary-fg);
+    --color-surface:     var(--clipupp-neutral-0);    /* card / page bg */
+    --color-surface-alt: var(--clipupp-neutral-50);   /* alternating bg */
+    --color-border:      var(--clipupp-neutral-200);  /* dividers */
+    --color-success:     var(--clipupp-success);
+    --color-error:       var(--clipupp-danger);
+    --color-warning:     var(--clipupp-warning);
+    --color-info:        var(--clipupp-info);
 
     /* ── RGB triplets for slash-opacity modifier ── */
     --clipupp-primary-rgb:        133 41 205;   /* #8529CD — Rakuten brand purple */
