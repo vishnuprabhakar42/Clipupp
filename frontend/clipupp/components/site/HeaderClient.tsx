@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
+import { Logo } from "@/components/site/Logo";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
 
@@ -192,7 +193,7 @@ export function HeaderClient({
       role="banner"
     >
       <div className="border-b">
-        <div className="container flex h-12 items-center gap-2 md:h-14">
+        <div className="clipupp-container flex h-12 items-center gap-2 md:h-14">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -209,31 +210,7 @@ export function HeaderClient({
             </SheetContent>
           </Sheet>
 
-          <Link
-            href="/"
-            aria-label="Clipupp home"
-            className="flex shrink-0 items-center gap-2 text-clipupp-primary-700"
-          >
-            <svg
-              viewBox="0 0 32 32"
-              width={32}
-              height={32}
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden
-            >
-              <path
-                d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.6}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="clipupp-text-gradient-hero font-display text-[1.25rem] font-extrabold tracking-tight">
-              clipupp
-            </span>
-          </Link>
+          <Logo height={36} priority />
 
           <div className="hidden lg:block">
             <DropdownMenu>
@@ -361,10 +338,21 @@ export function HeaderClient({
         and steal vertical space. Hidden on every route except "/". */}
     {isHome && (
       <div className="hidden border-b bg-background lg:block">
-        <div className="container relative px-2">
+        <div className="clipupp-container relative">
+          {/* Edge-fade mask: when chips are scrollable in a direction,
+              the corresponding edge fades to transparent so chips
+              disappear behind/into the floating scroll button instead
+              of being hard-cropped. Pulled in from the same pattern as
+              ScrollRail.tsx (used by trusted-brands etc). */}
           <div
             ref={stripRef}
-            className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5 pr-12"
+            className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5"
+            style={(() => {
+              const fadeLeft = canScrollLeft ? "transparent 0%, black 5%" : "black 0%, black 0%";
+              const fadeRight = canScrollRight ? "black 95%, transparent 100%" : "black 100%, black 100%";
+              const mask = `linear-gradient(to right, ${fadeLeft}, ${fadeRight})`;
+              return { maskImage: mask, WebkitMaskImage: mask };
+            })()}
           >
             <CategoryChip
               href="/offers"
@@ -390,14 +378,20 @@ export function HeaderClient({
             ))}
           </div>
 
+          {/* Scroll buttons match PromoBannersCarousel exactly:
+              h-9 w-9 white tile, h-4 w-4 chevron (strokeWidth 2.5),
+              border + shadow-card, centered on the safe-area edge via
+              translate(±50%, -50%). The edge-fade mask on the strip
+              above handles the smooth chip dissolve into the button. */}
           {canScrollLeft && (
             <button
               type="button"
               aria-label="Scroll categories left"
               onClick={() => scrollStrip("left")}
-              className="absolute left-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              style={{ left: 0, top: "50%", transform: "translate(-50%, -50%)" }}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
             </button>
           )}
 
@@ -406,9 +400,10 @@ export function HeaderClient({
               type="button"
               aria-label="Scroll categories right"
               onClick={() => scrollStrip("right")}
-              className="absolute right-0 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-600 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
+              style={{ right: 0, top: "50%", transform: "translate(50%, -50%)" }}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
             </button>
           )}
         </div>
@@ -532,20 +527,8 @@ function MobileMenu({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4 text-clipupp-primary-700">
-        <svg viewBox="0 0 32 32" width={28} height={28} aria-hidden>
-          <path
-            d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2.6}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="clipupp-text-gradient-hero font-display text-lg font-extrabold tracking-tight">
-          clipupp
-        </span>
+      <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4">
+        <Logo height={32} />
       </div>
 
       <nav

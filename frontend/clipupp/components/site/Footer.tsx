@@ -1,4 +1,5 @@
 import { Link } from "@/lib/i18n/navigation";
+import { Logo } from "@/components/site/Logo";
 import {
   Facebook,
   Headphones,
@@ -76,27 +77,10 @@ export async function Footer() {
   return (
     <footer className="bg-clipupp-neutral-900 text-gray-300" role="contentinfo">
       {/* ── Main grid: brand + columns ── */}
-      <div className="container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
+      <div className="clipupp-container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
         {/* ── Brand block ── */}
         <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white"
-          >
-            <svg viewBox="0 0 32 32" width={36} height={36} aria-hidden>
-              <path
-                d="M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.6}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span className="font-display text-2xl font-extrabold tracking-tight">
-              {brandName.toLowerCase()}
-            </span>
-          </Link>
+          <Logo variant="white" height={56} priority={false} />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-clipupp-neutral-400">{tagline}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -245,7 +229,7 @@ export async function Footer() {
 
       {/* ── Affiliate disclosure ── */}
       <div className="border-t border-white/10 bg-clipupp-neutral-900">
-        <div className="container py-5 text-xs leading-relaxed text-clipupp-neutral-500">
+        <div className="clipupp-container py-5 text-xs leading-relaxed text-clipupp-neutral-500">
           <p>
             <strong className="text-gray-300">Affiliate disclosure:</strong> {disclosure}{" "}
             <Link href="/affiliate-disclosure" className="hover:underline" style={{ color: accent }}>
@@ -258,7 +242,7 @@ export async function Footer() {
 
       {/* ── Bottom hashtag bar ── */}
       <div className="border-t border-white/10">
-        <div className="container py-7 text-center">
+        <div className="clipupp-container py-7 text-center">
           <p
             className="font-display text-3xl font-bold tracking-tight sm:text-4xl"
             style={{ color: accent }}
@@ -270,7 +254,7 @@ export async function Footer() {
 
       {/* ── Copyright strip ── */}
       <div className="border-t border-white/10">
-        <div className="container flex flex-col items-center justify-between gap-3 py-4 text-xs text-clipupp-neutral-500 sm:flex-row">
+        <div className="clipupp-container flex flex-col items-center justify-between gap-3 py-4 text-xs text-clipupp-neutral-500 sm:flex-row">
           <span>
             © {new Date().getFullYear()} {brandName}. All rights reserved.
           </span>
