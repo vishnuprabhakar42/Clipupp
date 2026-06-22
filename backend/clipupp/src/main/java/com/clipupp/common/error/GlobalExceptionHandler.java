@@ -20,6 +20,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Translates exceptions into RFC 7807 problem+json responses with stable
@@ -86,6 +87,36 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ProblemDetail> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
         return build(HttpStatus.FORBIDDEN, ErrorCode.FORBIDDEN, "Forbidden",
                 "You do not have permission to perform this action", req);
+    }
+
+    /** Multipart payload over the configured size limit (Spring throws before
+     *  the controller runs). 413 with the actual size in the body. */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ProblemDetail> handleUploadTooLarge(MaxUploadSizeExceededException ex,
+                                                              HttpServletRequest req) {
+        return build(HttpStatus.PAYLOAD_TOO_LARGE, ErrorCode.VALIDATION_FAILED, "Upload too large",
+                "File exceeds the upload size limit. " + ex.getMessage(), req);
+    }
+
+    /** Validation errors thrown manually from service code (e.g. unsupported
+     *  file type, empty file). 400 with the actual message so the UI can show
+     *  it to the user. */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalArg(IllegalArgumentException ex,
+                                                          HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED, "Invalid request",
+                ex.getMessage(), req);
+    }
+
+    /** External-service / configuration failures (R2 auth, missing bucket,
+     *  etc.). Surface the real reason in the response so misconfig is
+     *  diagnosable from the client without trawling Railway logs. */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ProblemDetail> handleIllegalState(IllegalStateException ex,
+                                                            HttpServletRequest req) {
+        log.error("Service error on {} {}: {}", req.getMethod(), req.getRequestURI(), ex.getMessage(), ex);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL, "Service error",
+                ex.getMessage(), req);
     }
 
     @ExceptionHandler(Exception.class)

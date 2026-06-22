@@ -1,155 +1,132 @@
+import Image from "next/image";
+
 import { Link } from "@/lib/i18n/navigation";
 
 /**
- * Clipupp logo — paperclip mark + "clipupp" wordmark.
+ * Clipupp brand assets.
  *
- * - `<LogoMark />`: icon-only paperclip on a rounded-square gradient tile.
- *   Use as the avatar in tight navbar spots, mobile drawer header,
- *   apple-touch-icon source, and OG image overlay.
- * - `<LogoWordmark />`: full inline-SVG wordmark with paperclip on the left,
- *   "clipupp" lowercase on the right. Uses `currentColor` for the strokes
- *   and fills so it adapts to any context (white on dark gradient, dark on
- *   light surfaces).
- * - `<Logo />`: convenience wrapper that links to `/` and renders the
- *   wordmark with a tinted brand-tile + gradient text wordmark. Used in
- *   the site header.
+ * Source-of-truth artwork lives in /public — all variants are crops of the
+ * same canonical design and stay pixel-aligned across variants:
  *
- * Path notes:
- *   The paperclip is a single stroke: outer "U" (left vertical, bottom
- *   semicircle, right vertical) + a top semicircle that wraps over to a
- *   shorter inner stub. `stroke="currentColor" fill="none"` keeps the
- *   shape light + ink-tinted.
+ *   logo.png               1151×334  icon + wordmark, transparent bg
+ *                                    (default for light-bg headers)
+ *   logo-on-dark.png       1151×334  same crop; "Clip" recolored white,
+ *                                    "upp" + icon stay purple
+ *                                    (footer + any dark-bg context)
+ *   logo-full.png          1250×504  full design with tagline
+ *                                    "CLIP MORE. SAVE MORE. EARN MORE."
+ *                                    (hero splashes, OG share cards, email)
+ *   logo-full-on-dark.png  1250×504  full design, dark-bg recolor
+ *                                    (dark hero / share-card variant)
+ *   logo-mark.png           332×332  icon-only square (favicon, compact spots)
+ *   logo-mark-white.png     332×332  icon-only, full white recolor
+ *                                    (drawer header on a dark gradient, etc.)
+ *
+ * Components:
+ *   <LogoMark variant>      — icon only
+ *   <LogoWordmark variant>  — icon + Clipupp wordmark (and optionally tagline)
+ *   <Logo variant>          — clickable wordmark linking to "/"
+ *
+ * All variants render through next/image so they ship as AVIF/WebP with the
+ * right srcset on retina screens.
  */
 
-const PAPERCLIP_D =
-  "M11 6 L11 22 A4.5 4.5 0 0 0 20 22 L20 10 A3.5 3.5 0 0 0 13 10 L13 19";
-const PAPERCLIP_VIEWBOX = "0 0 32 32";
+type WordmarkVariant = "default" | "on-dark" | "white" | "full" | "full-on-dark";
+type MarkVariant = "mark" | "mark-white";
+
+const VARIANT = {
+  default: { src: "/logo.png", w: 1151, h: 525 },
+  "on-dark": { src: "/logo-on-dark.png", w: 1151, h: 525 },
+  white: { src: "/logo-white.png", w: 1151, h: 525 },
+  full: { src: "/logo-full.png", w: 1250, h: 504 },
+  "full-on-dark": { src: "/logo-full-on-dark.png", w: 1250, h: 504 },
+  mark: { src: "/logo-mark.png", w: 455, h: 455 },
+  "mark-white": { src: "/logo-mark-white.png", w: 455, h: 455 },
+} as const;
 
 export function LogoMark({
+  variant = "mark",
   size = 40,
+  priority = false,
   className,
 }: {
+  variant?: MarkVariant;
   size?: number;
+  priority?: boolean;
   className?: string;
 }) {
+  const asset = VARIANT[variant];
   return (
-    <span
-      className={`grid place-items-center rounded-md text-white ${className ?? ""}`}
-      style={{
-        width: size,
-        height: size,
-        background:
-          "linear-gradient(135deg, var(--clipupp-primary-700), var(--clipupp-primary-500))",
-        boxShadow: "var(--clipupp-shadow-glow-primary)",
-      }}
-      aria-hidden
-    >
-      <svg
-        viewBox={PAPERCLIP_VIEWBOX}
-        width={Math.round(size * 0.65)}
-        height={Math.round(size * 0.65)}
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden
-      >
-        <path
-          d={PAPERCLIP_D}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2.6}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
+    <Image
+      src={asset.src}
+      alt="Clipupp"
+      width={size}
+      height={size}
+      priority={priority}
+      className={className}
+    />
   );
 }
 
-/**
- * Wordmark-only SVG. Uses currentColor so the same component renders
- * correctly on any background. Width auto-scales when `height` is set
- * and `width` is omitted by the consumer.
- */
 export function LogoWordmark({
-  height = 32,
+  variant = "default",
+  height = 40,
+  priority = false,
   className,
-  monochrome = false,
 }: {
+  variant?: WordmarkVariant;
   height?: number;
+  priority?: boolean;
   className?: string;
-  /** When true, the wordmark uses currentColor (e.g. white over hero
-   *  gradients). When false (default), the wordmark uses the crimson
-   *  gradient + the mark sits on a gradient tile. */
-  monochrome?: boolean;
 }) {
-  const width = Math.round((height * 220) / 56);
+  const asset = VARIANT[variant];
+  const aspect = asset.w / asset.h;
+  const width = Math.round(height * aspect);
   return (
-    <svg
-      viewBox="0 0 220 56"
+    <Image
+      src={asset.src}
+      alt="Clipupp"
       width={width}
       height={height}
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="Clipupp"
+      priority={priority}
       className={className}
-    >
-      {/* Paperclip mark — re-anchored into the 220×56 viewBox.
-          Path uses the same shape as PAPERCLIP_D but scaled+positioned
-          for the wordmark canvas (paperclip occupies x=14-32, y=10-42). */}
-      <path
-        d="M14 10 L14 42 A8 8 0 0 0 32 42 L32 18 A6 6 0 0 0 19 18 L19 36"
-        fill="none"
-        stroke={monochrome ? "currentColor" : "var(--clipupp-primary-600)"}
-        strokeWidth={4}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Wordmark — Manrope. Using `<text>` keeps the SVG small and the
-          font swap free at runtime. */}
-      <text
-        x={52}
-        y={40}
-        fontFamily="var(--font-display, 'Manrope'), 'Manrope', 'Inter', system-ui, sans-serif"
-        fontWeight={800}
-        fontSize={32}
-        letterSpacing="-0.02em"
-        fill={monochrome ? "currentColor" : "var(--clipupp-neutral-900)"}
-      >
-        clipupp
-      </text>
-    </svg>
+      style={{ height, width: "auto" }}
+    />
   );
 }
 
 /**
- * Full clickable logo for the site header. Tile mark + gradient wordmark,
- * sized for the 56-64px header row.
+ * Full clickable header logo: wordmark wrapped in a Link to "/".
+ * `height` sets the rendered pixel height; aspect-ratio is preserved.
+ *
+ * Pick `variant` to match the surrounding surface:
+ *   "default"      — purple icon, dark "Clip", purple "upp" (light bg, default)
+ *   "on-dark"      — purple icon, white "Clip", purple "upp" (dark bg accent)
+ *   "white"        — entire wordmark recoloured pure white (high-contrast
+ *                    footers / pure-monochrome use)
+ *   "full"         — adds the tagline below the wordmark
+ *   "full-on-dark" — tagline variant for dark backgrounds
  */
 export function Logo({
   href = "/",
-  showWordmark = true,
-  monochrome = false,
+  variant = "default",
+  height = 40,
+  priority = true,
+  className,
 }: {
   href?: string;
-  showWordmark?: boolean;
-  monochrome?: boolean;
+  variant?: WordmarkVariant;
+  height?: number;
+  priority?: boolean;
+  className?: string;
 }) {
   return (
     <Link
       href={href}
       aria-label="Clipupp home"
-      className="inline-flex shrink-0 items-center gap-2.5"
+      className={`inline-flex shrink-0 items-center ${className ?? ""}`}
     >
-      <LogoMark size={36} />
-      {showWordmark && (
-        <span
-          className={`hidden font-display text-[1.25rem] font-extrabold tracking-tight sm:inline-block ${
-            monochrome ? "text-current" : "clipupp-text-gradient-hero"
-          }`}
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          clipupp
-        </span>
-      )}
+      <LogoWordmark variant={variant} height={height} priority={priority} />
     </Link>
   );
 }
