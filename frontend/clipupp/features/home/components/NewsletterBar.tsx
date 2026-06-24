@@ -73,7 +73,7 @@ export function NewsletterBar({
       className="relative isolate overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #F5F3FF 0%, #FFFFFF 50%, #EDE9FE 100%)",
+          "linear-gradient(135deg, #F4F3FE 0%, #FFFFFF 50%, #E4E0FC 100%)",
       }}
     >
       {/* Atmospheric layer — two soft lavender orbs anchor the field. */}

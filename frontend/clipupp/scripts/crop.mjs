@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const p = await b.newPage({ viewport: { width: 1280, height: 1400 } });
+await p.goto("http://localhost:3000/en/stores/amazon-india", { waitUntil: "networkidle" });
+await p.waitForTimeout(600);
+const card = p.locator("article").first();
+await card.screenshot({ path: "/tmp/card-one.png" });
+await card.locator(".clipupp-coupon-cover").first().hover();
+await p.waitForTimeout(500);
+await card.screenshot({ path: "/tmp/card-one-hover.png" });
+await b.close();
+console.log("ok");

@@ -19,10 +19,14 @@ const PAGE_SIZE = 24;
 
 export function StoreTypeTabs({
   storeSlug,
+  storeName,
+  storeLogoUrl,
   initialCoupons,
   initialHasMore,
 }: {
   storeSlug: string;
+  storeName?: string | null;
+  storeLogoUrl?: string | null;
   initialCoupons: CouponSummary[];
   initialHasMore: boolean;
 }) {
@@ -106,7 +110,11 @@ export function StoreTypeTabs({
         <ul className="space-y-4">
           {filtered.map((c) => (
             <li key={c.id}>
-              <CouponSavingsRowCard coupon={c} />
+              <CouponSavingsRowCard
+                coupon={c}
+                fallbackStoreName={storeName}
+                fallbackStoreLogoUrl={storeLogoUrl}
+              />
             </li>
           ))}
         </ul>

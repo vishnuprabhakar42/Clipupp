@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
-import { Inter, Manrope } from "next/font/google";
+import { Inter, Zilla_Slab } from "next/font/google";
 import { isLocale } from "@/lib/i18n/config";
 import { notFound } from "next/navigation";
 import "../globals.css";
@@ -17,11 +17,13 @@ import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
 import { HindiBetaMarker } from "@/components/site/HindiBetaMarker";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
-// Typography: Inter (body) + Manrope (display) loaded via next/font.
-// Self-hosted, preloaded, no FOUT — Next handles the network roundtrip at
-// build, ships the woff2 with the app, and emits a preload link tag. The
-// `variable` option exposes each as a CSS custom property the design system
-// (app/globals.css) reaches for via `--font-sans` and `--font-display`.
+// Typography: Inter (body/UI) + Zilla Slab (display, slab-serif headings)
+// loaded via next/font. Self-hosted, preloaded, no FOUT — Next handles the
+// network roundtrip at build, ships the woff2 with the app, and emits a
+// preload link tag. The `variable` option exposes each as a CSS custom
+// property the design system (app/globals.css) reaches for via `--font-sans`
+// and `--font-display`. Zilla Slab is the open-source match to Rakuten's
+// proprietary Stag slab serif.
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -30,9 +32,9 @@ const inter = Inter({
   adjustFontFallback: true,
 });
 
-const manrope = Manrope({
+const zillaSlab = Zilla_Slab({
   subsets: ["latin", "latin-ext"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-display",
   adjustFontFallback: true,
@@ -108,8 +110,8 @@ export async function generateMetadata({
 
 export const viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#6D28D9" },
-    { media: "(prefers-color-scheme: dark)", color: "#5B21B6" },
+    { media: "(prefers-color-scheme: light)", color: "#8529CD" },
+    { media: "(prefers-color-scheme: dark)", color: "#7119B8" },
   ],
   colorScheme: "light" as const,
   width: "device-width",
@@ -136,7 +138,7 @@ export default async function LocaleLayout({
     <html
       lang={localeToBcp47[localeTyped]}
       dir={dirFor(localeTyped)}
-      className={`${inter.variable} ${manrope.variable}`}
+      className={`${inter.variable} ${zillaSlab.variable}`}
     >
       <head>
         {/* Preconnect to the image origins we use most so the first <Image>

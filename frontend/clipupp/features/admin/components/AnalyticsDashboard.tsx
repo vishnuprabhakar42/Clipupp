@@ -52,7 +52,7 @@ const RANGE_OPTIONS = [
 // Pie wedges cycle through the brand roles. Mirror of the --clipupp-* vars in
 // globals.css — kept inline because Recharts resolves the fill string at
 // render and doesn't read CSS variables for `<Cell fill="..."/>`.
-const PIE_COLORS = ["#6D28D9", "#10B981", "#10b981", "#6D28D9", "#475569"];
+const PIE_COLORS = ["#8529CD", "#33823F", "#3E3E9D", "#EE6B00", "#575757"];
 
 type Props = {
   initialDays: number;
@@ -161,9 +161,9 @@ export function AnalyticsDashboard({
   // Recharts <Area> needs a literal hex/var string at render — the SVG won't
   // resolve a Tailwind class. Map each timeseries metric to one brand role.
   const accentMetric: Record<TimeseriesMetric, string> = {
-    clicks:      "#6D28D9", // clipupp-primary (blue)
-    conversions: "#10b981", // clipupp-success (emerald)
-    signups:     "#10B981", // clipupp-accent (orange)
+    clicks:      "#8529CD", // clipupp-primary (purple)
+    conversions: "#33823F", // clipupp-success (green)
+    signups:     "#3E3E9D", // clipupp-info (indigo)
   };
   const metricColor = accentMetric[metric];
 
@@ -317,14 +317,14 @@ export function AnalyticsDashboard({
                   <stop offset="100%" stopColor={metricColor} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="day" fontSize={11} tickMargin={6} stroke="#94a3b8" />
-              <YAxis fontSize={11} width={40} stroke="#94a3b8" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#F2F2F2" />
+              <XAxis dataKey="day" fontSize={11} tickMargin={6} stroke="#949494" />
+              <YAxis fontSize={11} width={40} stroke="#949494" />
               <Tooltip
                 contentStyle={{
                   borderRadius: 8,
                   fontSize: 12,
-                  border: "1px solid #e5e7eb",
+                  border: "1px solid #DDDDDD",
                   boxShadow: "0 8px 24px -8px rgba(0,0,0,0.18)",
                 }}
                 labelStyle={{ fontSize: 11, fontWeight: 600 }}
@@ -390,13 +390,13 @@ export function AnalyticsDashboard({
                   >
                     <defs>
                       <linearGradient id="bar-brand" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#6D28D9" />
-                        <stop offset="100%" stopColor="#5B21B6" />
+                        <stop offset="0%" stopColor="#8529CD" />
+                        <stop offset="100%" stopColor="#7119B8" />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis type="number" fontSize={11} stroke="#94a3b8" />
-                    <YAxis type="category" dataKey="name" fontSize={11} width={110} stroke="#475569" />
+                    <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="#F2F2F2" />
+                    <XAxis type="number" fontSize={11} stroke="#949494" />
+                    <YAxis type="category" dataKey="name" fontSize={11} width={110} stroke="#575757" />
                     <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
                     <Bar dataKey="clicks" fill="url(#bar-brand)" radius={[0, 6, 6, 0]} />
                   </BarChart>
