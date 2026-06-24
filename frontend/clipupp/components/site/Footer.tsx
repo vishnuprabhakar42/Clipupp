@@ -40,7 +40,7 @@ export async function Footer() {
     "Striving towards making the world a better place to shop with great savings!"
   );
   const brandName = asString(settings["brand.name"], "Clipupp");
-  const accent = asString(settings["brand.accent_color"], "#F97316");
+  const accent = asString(settings["brand.accent_color"], "#8529CD");
   const commissionNote = asString(
     settings["footer.commission_note"],
     "We may earn a commission if you buy through links on Clipupp."
