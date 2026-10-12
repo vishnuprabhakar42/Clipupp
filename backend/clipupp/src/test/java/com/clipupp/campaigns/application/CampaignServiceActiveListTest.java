@@ -43,4 +43,23 @@ class CampaignServiceActiveListTest {
         verify(repo).findActiveAt(any(OffsetDateTime.class), page.capture());
         assertThat(page.getValue().getPageSize()).isEqualTo(10);
     }
+
+    @Test
+    void singleActiveCampaignTakesNewestWhenSeveralOverlap() {
+        OffsetDateTime now = OffsetDateTime.now();
+        Campaign newest = Campaign.create("bbd", "Big Billion Days", now.minusDays(1), now.plusDays(5));
+        Campaign older = Campaign.create("gif", "Great Indian Festival", now.minusDays(2), now.plusDays(5));
+        when(repo.findActiveAt(any(OffsetDateTime.class), any(Pageable.class))).thenReturn(List.of(newest, older));
+
+        assertThat(service.findActive()).isSameAs(newest);
+        ArgumentCaptor<Pageable> page = ArgumentCaptor.forClass(Pageable.class);
+        verify(repo).findActiveAt(any(OffsetDateTime.class), page.capture());
+        assertThat(page.getValue().getPageSize()).isEqualTo(1);
+    }
+
+    @Test
+    void singleActiveCampaignIsNullWhenNoneRunning() {
+        when(repo.findActiveAt(any(OffsetDateTime.class), any(Pageable.class))).thenReturn(List.of());
+        assertThat(service.findActive()).isNull();
+    }
 }
