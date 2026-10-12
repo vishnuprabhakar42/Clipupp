@@ -6,12 +6,10 @@ import { shortCount } from "@/lib/format/short";
 import type { FeedDeal, FeedStore } from "@/lib/home/feed";
 import { catTint } from "../lib/catTint";
 import { DealImage } from "./DealImage";
+import { CARD_HOVER } from "@/features/catalog/components/cardBits";
 import { displayShortName } from "@/lib/home/storeName";
 
 const nf = new Intl.NumberFormat("en-IN");
-
-const HOVER =
-  "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
 /** Product deal card (server). Prices render with `.clipupp-amt` so the rupee sign is CSS only. */
 export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedStore }) {
@@ -22,7 +20,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
     <article
       data-deal-card
       data-store={deal.store}
-      className={`flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${HOVER}`}
+      className={`flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${CARD_HOVER}`}
     >
       <div
         className="clipupp-ph relative aspect-square w-full"

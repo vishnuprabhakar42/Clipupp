@@ -5,9 +5,8 @@ import { shortCount } from "@/lib/format/short";
 import { expiresToday } from "@/features/catalog/lib/expiresToday";
 import { RevealButton } from "./RevealButton";
 import { StoreTile } from "./StoreTile";
+import { CARD_HOVER, Tag } from "./cardBits";
 
-const HOVER =
-  "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
 /**
  * Row variant of the coupon card. A plain (non-async) component using
@@ -38,7 +37,7 @@ export function CouponRow({
       data-coupon-card
       data-coupon-id={coupon.id}
       style={k}
-      className={`clipupp-rise grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] ${HOVER}`}
+      className={`clipupp-rise grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] ${CARD_HOVER}`}
     >
       <div className="grid h-14 w-14 shrink-0 place-content-center rounded-xl bg-clipupp-tint-100 text-center lg:h-16 lg:w-16">
         <span className="text-[19px] font-bold leading-none text-clipupp-primary lg:text-[21px]">{coupon.badge}</span>
@@ -65,12 +64,4 @@ export function CouponRow({
       </div>
     </article>
   );
-}
-
-function Tag({ tone, children }: { tone: "gold" | "bad"; children: React.ReactNode }) {
-  const cls = {
-    gold: "bg-clipupp-deep text-clipupp-gold",
-    bad: "bg-clipupp-bad-bg text-clipupp-danger",
-  }[tone];
-  return <span className={`rounded-md px-2 py-1 text-[11.5px] font-semibold leading-none ${cls}`}>{children}</span>;
 }

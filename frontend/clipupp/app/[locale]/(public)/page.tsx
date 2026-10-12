@@ -17,6 +17,7 @@ import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { AlertsSection } from "@/features/home/components/AlertsSection";
 import { FaqSection } from "@/features/home/components/FaqSection";
 import { RevealRoot } from "@/features/home/components/Reveal";
+import { SavedSheetSeed } from "@/features/home/components/SavedSheetSeed";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { canonicalFor } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
@@ -129,6 +130,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
 
   return (
     <RevealRoot>
+      <SavedSheetSeed seed={{ coupons: feed.coupons, stores: feed.stores, categories: feed.categories }} />
       {trending.length > 0 && (
         <JsonLd
           id="ld-trending"

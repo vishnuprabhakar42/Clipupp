@@ -7,11 +7,12 @@ import { Sheet, SheetHeader } from "@/components/site/Sheet";
 import { CouponRow } from "@/features/catalog/components/CouponRow";
 import { useSavedCoupons } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
+import { expandSeedCoupon, expandSeedStore } from "@/lib/home/savedSeed";
 import { loadSavedRows } from "../actions/savedRows";
 
 /**
  * Saved coupons sheet, mounted once. Rows resolve against the feed slices the
- * header seeded; only ids absent from the seed go through the server action,
+ * homepage seeded (`SavedSheetSeed`); only ids absent from the seed go through the server action,
  * once per open (and again on Retry).
  */
 export function SavedSheet() {
@@ -32,7 +33,10 @@ export function SavedSheet() {
       const store = st.get(c.store);
       if (!store) continue;
       const cat = c.cat ? ct.get(c.cat) : null;
-      m.set(c.id, <CouponRow coupon={c} store={store} category={cat ? { name: cat.name } : null} />);
+      m.set(
+        c.id,
+        <CouponRow coupon={expandSeedCoupon(c)} store={expandSeedStore(store)} category={cat ? { name: cat.name } : null} />,
+      );
     }
     return m;
   }, [coupons, stores, categories]);
