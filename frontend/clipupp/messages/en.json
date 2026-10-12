@@ -317,6 +317,14 @@
       "searchCta": "Find codes",
       "noResults": "No coupons for \"{q}\" yet, try Amazon India",
       "proof": "<verified></verified> codes verified this week · <stores></stores> stores"
+    },
+    "sections": {
+      "viewAllTrending": "View all trending coupons",
+      "browseAllStores": "Browse all stores A to Z",
+      "viewAllStores": "View all {count}+ stores",
+      "couponsCount": "{count, plural, =1 {1 coupon} other {# coupons}}",
+      "seeAllCategory": "See all {category} coupons",
+      "emptyTab": "No {category} coupons right now"
     }
   },
   "footer": {
