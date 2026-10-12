@@ -51,7 +51,7 @@ public class CampaignService {
         return repo.findById(id).orElseThrow(() -> ApiException.notFound("Campaign not found"));
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign create(CampaignDtos.Create input) {
         if (input.endsAt().isBefore(input.startsAt())) {
@@ -78,7 +78,7 @@ public class CampaignService {
         return saved;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign update(UUID id, CampaignDtos.Update input) {
         Campaign c = findById(id);
@@ -104,7 +104,7 @@ public class CampaignService {
         return c;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign activate(UUID id) {
         Campaign c = findById(id);
@@ -113,7 +113,7 @@ public class CampaignService {
         return c;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public void delete(UUID id) {
         Campaign c = findById(id);
