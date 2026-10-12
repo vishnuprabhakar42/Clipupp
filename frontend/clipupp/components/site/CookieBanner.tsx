@@ -6,6 +6,7 @@ import { Cookie, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { readConsent, writeConsent } from "@/lib/cookies/consent";
+import { useTranslations } from "next-intl";
 
 /**
  * GDPR cookie banner. Renders as a soft sheet at the bottom-right (desktop)
@@ -17,6 +18,7 @@ import { readConsent, writeConsent } from "@/lib/cookies/consent";
  * never blocks LCP.
  */
 export function CookieBanner() {
+  const t = useTranslations("chrome.cookie");
   const [open, setOpen] = useState(false);
   const [customize, setCustomize] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -42,12 +44,12 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookie consent"
+      aria-label={t("aria")}
       className="fixed inset-x-0 bottom-4 z-modal mx-auto w-[calc(100%-1.5rem)] max-w-2xl rounded-lg border border-clipupp-neutral-200 bg-card p-5 shadow-card sm:bottom-6"
     >
       <button
         onClick={() => setOpen(false)}
-        aria-label="Dismiss without saving"
+        aria-label={t("dismiss")}
         className="absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-md text-muted-foreground transition hover:bg-accent"
       >
         <X className="h-4 w-4" aria-hidden />
@@ -57,15 +59,14 @@ export function CookieBanner() {
           <Cookie className="h-5 w-5" aria-hidden />
         </span>
         <div className="flex-1">
-          <h2 className="text-base font-semibold">We respect your privacy</h2>
+          <h2 className="text-base font-semibold">{t("title")}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            We use cookies to keep the site running, remember your saved coupons,
-            and (with your permission) understand which deals work best.{" "}
+            {t("body")}{" "}
             <Link
               href="/cookie-policy"
               className="underline hover:text-foreground"
             >
-              Read our cookie policy
+              {t("policy")}
             </Link>
             .
           </p>
@@ -74,23 +75,23 @@ export function CookieBanner() {
             <div className="mt-4 space-y-3 rounded-lg border bg-background/40 p-3 text-sm">
               <Toggle
                 id="cookie-necessary"
-                title="Necessary"
-                desc="Essential for sign-in, saved coupons, and security."
+                title={t("necessary")}
+                desc={t("necessaryDesc")}
                 checked
                 disabled
                 onChange={() => undefined}
               />
               <Toggle
                 id="cookie-analytics"
-                title="Analytics"
-                desc="Helps us see which deals are useful. Never sold."
+                title={t("analytics")}
+                desc={t("analyticsDesc")}
                 checked={analytics}
                 onChange={setAnalytics}
               />
               <Toggle
                 id="cookie-marketing"
-                title="Marketing"
-                desc="Personalized recommendations + remarketing on partner sites."
+                title={t("marketing")}
+                desc={t("marketingDesc")}
                 checked={marketing}
                 onChange={setMarketing}
               />
@@ -104,10 +105,10 @@ export function CookieBanner() {
                   className="clipupp-btn-primary"
                   onClick={() => decide({ analytics, marketing })}
                 >
-                  Save preferences
+                  {t("save")}
                 </Button>
                 <Button variant="outline" onClick={() => setCustomize(false)}>
-                  Back
+                  {t("back")}
                 </Button>
               </>
             ) : (
@@ -116,19 +117,19 @@ export function CookieBanner() {
                   className="clipupp-btn-primary"
                   onClick={() => decide({ analytics: true, marketing: true })}
                 >
-                  Accept all
+                  {t("acceptAll")}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => decide({ analytics: false, marketing: false })}
                 >
-                  Reject all
+                  {t("rejectAll")}
                 </Button>
                 <Button
                   variant="ghost"
                   onClick={() => setCustomize(true)}
                 >
-                  Customize
+                  {t("customize")}
                 </Button>
               </>
             )}

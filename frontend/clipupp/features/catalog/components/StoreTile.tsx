@@ -1,20 +1,10 @@
-import Image from "next/image";
 import type { FeedStore } from "@/lib/home/feed";
+import { LogoImage } from "./LogoImage";
 
 /** Square store logo, or a monogram tile built from the store's colours. */
 export function StoreTile({ store, size = 44, className = "" }: { store: FeedStore; size?: number; className?: string }) {
   const style = { width: size, height: size } as const;
-  if (store.logo) {
-    return (
-      <span
-        className={"grid shrink-0 place-items-center overflow-hidden rounded-xl border border-clipupp-neutral-200 bg-white p-1 " + className}
-        style={style}
-      >
-        <Image src={store.logo} alt="" width={size} height={size} className="h-full w-full object-contain" />
-      </span>
-    );
-  }
-  return (
+  const mono = (
     <span
       aria-hidden
       className={"grid shrink-0 place-items-center rounded-xl font-bold tracking-tight " + className}
@@ -22,5 +12,18 @@ export function StoreTile({ store, size = 44, className = "" }: { store: FeedSto
     >
       {store.mono}
     </span>
+  );
+  if (!store.logo) return mono;
+  return (
+    <LogoImage
+      src={store.logo}
+      width={size}
+      height={size}
+      sizes={`${size}px`}
+      className="h-full w-full object-contain"
+      frameClassName={"grid shrink-0 place-items-center overflow-hidden rounded-xl border border-clipupp-neutral-200 bg-white p-1 " + className}
+      frameStyle={style}
+      fallback={mono}
+    />
   );
 }

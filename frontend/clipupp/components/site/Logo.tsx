@@ -62,6 +62,7 @@ export function LogoMark({
       alt="Clipupp"
       width={size}
       height={size}
+      sizes={`${size}px`}
       priority={priority}
       className={className}
     />
@@ -88,6 +89,7 @@ export function LogoWordmark({
       alt="Clipupp"
       width={width}
       height={height}
+      sizes={`${width}px`}
       priority={priority}
       className={className}
       style={{ height, width: "auto" }}

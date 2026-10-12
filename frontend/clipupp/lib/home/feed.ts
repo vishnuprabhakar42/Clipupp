@@ -46,6 +46,8 @@ export type FeedStore = {
   best: string | null;
   /** Popularity rank starting at 1, null when unranked. */
   popular: number | null;
+  /** "fixture" for demo-only stores the backend does not know; absent means "api". */
+  source?: "api" | "fixture";
 };
 
 export type FeedCoupon = {

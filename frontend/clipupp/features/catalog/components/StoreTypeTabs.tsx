@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import type { CouponSummary, CouponType } from "@/lib/api/types";
 import { storesApi } from "@/lib/api/stores";
 import { CouponSavingsRowCard } from "./CouponSavingsRowCard";
+import { useTranslations } from "next-intl";
 
 type TabId = "ALL" | CouponType;
 
@@ -30,6 +31,7 @@ export function StoreTypeTabs({
   initialCoupons: CouponSummary[];
   initialHasMore: boolean;
 }) {
+  const t = useTranslations("catalog.ui");
   const [activeTab, setActiveTab] = useState<TabId>("ALL");
   const [coupons, setCoupons] = useState(initialCoupons);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -101,7 +103,7 @@ export function StoreTypeTabs({
           <div className="grid h-14 w-14 place-items-center rounded-full bg-clipupp-primary-soft">
             <span className="text-2xl">🏷️</span>
           </div>
-          <p className="font-semibold text-gray-700">No offers found</p>
+          <p className="font-semibold text-gray-700">{t("noOffers")}</p>
           <p className="text-sm text-gray-400">
             No{activeTab !== "ALL" ? ` ${tab_label(activeTab).toLowerCase()}` : ""} offers available yet.
           </p>

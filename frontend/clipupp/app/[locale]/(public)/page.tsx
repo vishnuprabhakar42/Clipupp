@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { homepageApi, type HomepageLayout, type HomepageSectionPayload } from "@/lib/api/homepage";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
@@ -17,6 +17,9 @@ import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { AlertsSection } from "@/features/home/components/AlertsSection";
 import { FaqSection } from "@/features/home/components/FaqSection";
 import { RevealRoot } from "@/features/home/components/Reveal";
+import { JsonLd } from "@/lib/seo/jsonLd";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export async function generateMetadata({
   params,
@@ -58,11 +61,10 @@ type Ctx = {
 type SectionBuilder = (s: HomepageSectionPayload, ctx: Ctx) => ReactNode;
 
 /**
- * Seven-block homepage (spec 2026-10-12-homepage-v2-design.md). Order and
- * copy come from /api/v1/homepage; unknown or legacy codes render nothing,
- * so an admin re-enabling a retired section is harmless. Each renderer owns
- * its surface: hero (tint-50) and verify band (tint-100) are the only
- * tinted blocks.
+ * Twelve-block homepage (spec 2026-10-12-homepage-v3-design.md). Order comes
+ * from `feed.sectionOrder`; unknown or legacy codes render nothing, so an admin
+ * re-enabling a retired section is harmless. Each renderer takes the section
+ * payload and the feed.
  */
 const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   hero_search: (s, ctx) => <HeroSection feed={ctx.feed} section={s} />,
@@ -81,15 +83,8 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   faq: (_s, ctx) => <FaqSection feed={ctx.feed} />,
 };
 
-/** Wrapper ids: the hero is the "top" anchor; sections that carry their own id get none. */
-const WRAPPER_ID: Record<string, string | undefined> = {
-  hero_search: "top",
-  deals: undefined,
-  verify_band: undefined,
-  alerts: undefined,
-  newsletter: undefined,
-  faq: undefined,
-};
+/** Sections whose own `<section id>` equals the code; the wrapper skips the id so it is not duplicated. */
+const OWNS_ID = new Set(["deals", "alerts", "faq"]);
 
 const EMPTY_STATS = { verifiedLast7d: 0, activeCoupons: 0, activeStores: 0 };
 
@@ -115,8 +110,8 @@ const FALLBACK_SECTIONS: HomepageSectionPayload[] = [
 export default async function HomePage() {
   const [layout, feed] = await Promise.all([homepageApi.getPublic(), getHomeFeed()]);
   const base = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
-  // Order follows the feed (demo mode adds ticker and popular_stores, which
-  // have no backend row); step 10 finalises this.
+  // Order follows the feed; in demo mode the adapter has already inserted the
+  // design sections the backend lacks, in production only backend codes render.
   const sections = feed.sectionOrder.length
     ? feed.sectionOrder.map((code) => base.find((b) => b.code === code) ?? { ...FALLBACK_SECTIONS[0], code })
     : base;
@@ -125,18 +120,46 @@ export default async function HomePage() {
     stats: layout?.stats ?? EMPTY_STATS,
   };
 
+  const trending = feed.coupons
+    .filter((c) => c.trending != null)
+    .sort((a, b) => (a.trending ?? 0) - (b.trending ?? 0))
+    .slice(0, 10);
+
   return (
     <RevealRoot>
+      {trending.length > 0 && (
+        <JsonLd
+          id="ld-trending"
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            itemListElement: trending.map((c, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              name: c.title,
+              url: `${SITE_URL}/coupons/${c.slug}`,
+            })),
+          }}
+        />
+      )}
       <div className="bg-clipupp-neutral-50">
         {sections.map((s) => {
           const render = SECTION_RENDERERS[s.code];
           if (!render) return null;
           const node = render(s, ctx);
           if (!node) return null;
-          return (
-            <div key={s.code} id={s.code in WRAPPER_ID ? WRAPPER_ID[s.code] : s.code} className="scroll-mt-20">
+          const block = (
+            <div id={OWNS_ID.has(s.code) ? undefined : s.code} className="scroll-mt-[var(--clipupp-hv)]">
               {node}
             </div>
+          );
+          // The hero is also the "top" anchor.
+          return s.code === "hero_search" ? (
+            <div key={s.code} id="top" className="scroll-mt-[var(--clipupp-hv)]">
+              {block}
+            </div>
+          ) : (
+            <Fragment key={s.code}>{block}</Fragment>
           );
         })}
       </div>

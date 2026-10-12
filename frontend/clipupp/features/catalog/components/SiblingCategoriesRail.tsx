@@ -1,6 +1,7 @@
 import { Link } from "@/lib/i18n/navigation";
 import { categoriesApi } from "@/lib/api/categories";
 import { ScrollRail } from "@/components/site/ScrollRail";
+import { getTranslations } from "next-intl/server";
 
 type Sibling = { id: string; slug: string; title: string };
 
@@ -15,6 +16,7 @@ type Sibling = { id: string; slug: string; title: string };
  * nothing if siblings count <= 1.
  */
 export async function SiblingCategoriesRail({ currentSlug }: { currentSlug: string }) {
+  const t = await getTranslations("catalog.ui");
   let siblings: Sibling[] = [];
   try {
     const tree = await categoriesApi.tree();
@@ -32,10 +34,10 @@ export async function SiblingCategoriesRail({ currentSlug }: { currentSlug: stri
     <section aria-labelledby="sibling-categories-heading" className="clipupp-section">
       <div className="mb-5">
         <h2 id="sibling-categories-heading" className="clipupp-h2">
-          More categories to explore
+          {t("moreCategories")}
         </h2>
       </div>
-      <ScrollRail ariaLabel="Sibling categories" className="gap-3">
+      <ScrollRail ariaLabel={t("siblingCategories")} className="gap-3">
         {others.map((c) => (
           <Link
             key={c.id}

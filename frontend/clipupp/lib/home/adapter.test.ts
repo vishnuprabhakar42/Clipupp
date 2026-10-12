@@ -210,11 +210,90 @@ describe("toHomeFeed", () => {
     expect(feed.stats.storeCount).toBe(44);
   });
 
-  it("falls back to the fixture section order when the backend order lacks a code", () => {
+  it("inserts missing design sections into the backend order in demo mode", () => {
     const demo = toHomeFeed(layout(), {}, { demo: true, now: NOW });
-    expect(demo.sectionOrder).toEqual(fixture.sectionOrder);
+    expect(demo.sectionOrder).toEqual([
+      "hero_search",
+      "ticker",
+      "popular_stores",
+      "trending_coupons",
+      "deals",
+      "featured_stores",
+      "top_deals",
+      "bank_offers",
+      "sale_calendar",
+      "verify_band",
+      "alerts",
+      "faq",
+    ]);
     const real = toHomeFeed(layout(), {}, { demo: false, now: NOW });
-    expect(real.sectionOrder).not.toEqual(fixture.sectionOrder);
+    expect(real.sectionOrder).not.toContain("ticker");
+  });
+
+  it("reads the legacy newsletter row as alerts in demo mode", () => {
+    const l = layout();
+    l.sections.push(section("newsletter"));
+    const demo = toHomeFeed(l, {}, { demo: true, now: NOW });
+    expect(demo.sectionOrder.filter((c) => c === "alerts")).toHaveLength(1);
+    expect(demo.sectionOrder).not.toContain("newsletter");
+    // Production keeps the backend codes untouched.
+    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).sectionOrder).toContain("newsletter");
+  });
+
+  it("uses the fixture order for a null layout in demo mode", () => {
+    expect(toHomeFeed(null, {}, { demo: true, now: NOW }).sectionOrder).toEqual(fixture.sectionOrder);
+  });
+
+  it("maps fixture categories and stores onto backend slugs by name", () => {
+    const l = layout();
+    const hero = l.sections[0];
+    hero.categories = [
+      { slug: "fashion", title: "Fashion", icon: "shirt" },
+      { slug: "food-dining", title: "Food & Dining", icon: "utensils" },
+      { slug: "home-living", title: "Home & Living", icon: "sofa" },
+      { slug: "groceries", title: "Groceries", icon: "shopping-basket" },
+    ];
+    l.sections[2].stores = [store({ id: "s9", slug: "ajio", name: "Ajio" }), store({ id: "s1", slug: "amazon-india", name: "Amazon India" })];
+    const feed = toHomeFeed(l, {}, { demo: true, now: NOW });
+    const catIds = feed.categories.map((c) => c.id);
+    // Backend slugs stand in for the fixture ids; only unmatched fixture ids stay.
+    expect(catIds).toEqual(expect.arrayContaining(["food-dining", "home-living", "groceries"]));
+    expect(catIds).not.toEqual(expect.arrayContaining(["food", "home", "grocery"]));
+    const fixtureOnly = feed.categories.filter((c) => c.source === "fixture").map((c) => c.id);
+    expect(fixtureOnly).toEqual(expect.arrayContaining(["marketplace", "festive", "recharge"]));
+    expect(feed.categories.filter((c) => c.source === "fixture").every((c) => c.parent === null)).toBe(true);
+    expect(feed.categories.find((c) => c.id === "fashion")?.source).toBeUndefined();
+    // Fixture deals and sales follow the mapping.
+    expect(feed.deals.every((d) => d.cat !== "grocery" && d.cat !== "home")).toBe(true);
+    expect(feed.deals.some((d) => d.cat === "groceries")).toBe(true);
+    const ajio = feed.stores.filter((st) => st.id === "ajio");
+    expect(ajio).toHaveLength(1);
+    expect(ajio[0].source).toBeUndefined();
+    expect(feed.sales.find((x) => x.name === fixture.sales[4].name)?.store).toBe("ajio");
+    // "Amazon" (fixture) and "Amazon India" (backend) are the same store.
+    expect(feed.stores.filter((st) => st.id === "amazon-india")).toHaveLength(1);
+    const only = feed.stores.filter((st) => st.source === "fixture");
+    expect(only.length).toBeGreaterThan(0);
+    expect(only.every((st) => st.popular === null)).toBe(true);
+  });
+
+  it("names the spotlight store from the first resolvable pinned store id", () => {
+    const l = layout();
+    l.sections[4].campaigns![0].pinnedStoreIds = ["unknown", "s2"];
+    const feed = toHomeFeed(l, {}, { demo: false, now: NOW });
+    expect(feed.spotlight[0].store).toBe("myntra");
+    l.sections[4].campaigns![0].pinnedStoreIds = [];
+    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).spotlight[0].store).toBe("big-sale");
+  });
+
+  it("tops the spotlight up from the fixture only when no backend slide has perks", () => {
+    const demo = toHomeFeed(layout(), {}, { demo: true, now: NOW });
+    expect(demo.spotlight).toHaveLength(3);
+    expect(demo.spotlight[0].kicker).toBe("Big Sale");
+    expect(demo.spotlight.slice(1).every((x) => x.perks.length > 0)).toBe(true);
+    expect(toHomeFeed(layout(), {}, { demo: false, now: NOW }).spotlight).toHaveLength(1);
+    // Fixture slides never point at a coupon the merged feed does not carry.
+    demo.spotlight.forEach((x) => expect(x.couponId === null || demo.coupons.some((c) => c.id === x.couponId)).toBe(true));
   });
 
   it("returns an empty feed for a null layout with demo off", () => {

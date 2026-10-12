@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Check, Copy, ExternalLink, Lock } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
@@ -24,6 +25,7 @@ export function CouponReveal({
   code: string;
   couponId: string;
 }) {
+  const t = useTranslations("catalog.ui");
   const [revealed, setRevealed] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -69,7 +71,7 @@ export function CouponReveal({
         <button
           type="button"
           onClick={() => void copyToClipboard(code)}
-          aria-label="Copy code"
+          aria-label={t("copyCode")}
           className="inline-flex h-9 w-9 items-center justify-center rounded-md text-clipupp-accent-700 transition-colors hover:bg-clipupp-accent-100"
         >
           {copied ? (
@@ -84,7 +86,7 @@ export function CouponReveal({
         onClick={openMerchant}
         className="clipupp-btn-ghost text-[13px] font-bold"
       >
-        Visit merchant
+        {t("visitMerchant")}
         <ExternalLink className="h-3.5 w-3.5" aria-hidden />
       </button>
     </div>

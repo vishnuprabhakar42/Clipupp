@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 import type { HomeFeed } from "@/lib/home/feed";
+import { displayShortName } from "@/lib/home/storeName";
 import { toSearchFeed } from "@/lib/home/searchFeed";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
 import { SpotlightCarousel } from "./SpotlightCarousel";
@@ -34,7 +35,8 @@ export async function HeroSection({
   const subtitle = rawSub && rawSub !== LEGACY_SUBTITLE ? rawSub : t("subtitle");
   const popular = feed.stores
     .filter((s) => s.popular != null && s.popular <= 6)
-    .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0));
+    .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
+    .slice(0, 6);
   const { stats } = feed;
   const cell =
     "rounded-[14px] border border-clipupp-neutral-200 bg-clipupp-surface p-3 lg:flex lg:items-baseline lg:gap-1.5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0";
@@ -111,7 +113,7 @@ export async function HeroSection({
                   href={`/stores/${s.id}`}
                   className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-4 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
                 >
-                  {s.name}
+                  {displayShortName(s.name)}
                 </Link>
               ))}
             </div>
