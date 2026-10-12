@@ -115,6 +115,11 @@ const config = {
           800: "rgb(var(--clipupp-neutral-800-rgb) / <alpha-value>)",
           900: "rgb(var(--clipupp-neutral-900-rgb) / <alpha-value>)",
         },
+        "clipupp-tint": {
+          50:  "rgb(var(--clipupp-tint-50-rgb) / <alpha-value>)",
+          100: "rgb(var(--clipupp-tint-100-rgb) / <alpha-value>)",
+          200: "rgb(var(--clipupp-tint-200-rgb) / <alpha-value>)",
+        },
       },
       fontFamily: {
         // Inter (body) + Manrope (display) injected as CSS vars by next/font
@@ -173,6 +178,7 @@ const config = {
         "glow-primary": "var(--clipupp-shadow-glow-primary)",
         "glow-accent":  "var(--clipupp-shadow-glow-accent)",
         "glow-success": "var(--clipupp-shadow-glow-success)",
+        "clipupp-hover": "var(--clipupp-shadow-brand-hover)",
         // Legacy aliases kept for back-compat during sweep.
         card:        "var(--clipupp-shadow-resting)",
         "card-hover": "var(--clipupp-shadow-hover)",

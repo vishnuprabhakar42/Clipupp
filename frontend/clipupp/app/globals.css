@@ -114,6 +114,15 @@
     --clipupp-primary-soft-rgb:   244 243 254;  /* #F4F3FE — light purple */
     --clipupp-primary-fg-rgb:     255 255 255;
 
+    /* Homepage v2 purple tints: surfaces only, never text. */
+    --clipupp-tint-50:  #FAF6FD;
+    --clipupp-tint-100: #F5EEFB;
+    --clipupp-tint-200: #E7D4F5;
+    --clipupp-tint-50-rgb:  250 246 253;
+    --clipupp-tint-100-rgb: 245 238 251;
+    --clipupp-tint-200-rgb: 231 212 245;
+    --clipupp-shadow-brand-hover: 0 12px 32px rgba(133, 41, 205, 0.10);
+
     --clipupp-accent-rgb:         133 41 205;
     --clipupp-accent-strong-rgb:  113 25 184;
     --clipupp-accent-soft-rgb:    244 243 254;
@@ -1017,6 +1026,36 @@
       animation: clipupp-pulse-dot 1.4s ease-out infinite;
     }
   }
+
+  /* ── Homepage v2 motion ─────────────────────────────────────────────────
+     Entrance and scroll reveals run only when the user allows motion.
+     Resting state is fully visible so nothing is hidden without JS. */
+  .clipupp-reveal { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes clipupp-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .clipupp-fx {
+      animation: clipupp-up 500ms cubic-bezier(0.2, 0, 0, 1) both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+    .clipupp-fx-chip {
+      animation: clipupp-up 400ms cubic-bezier(0.2, 0, 0, 1) both;
+      animation-delay: calc(300ms + var(--i, 0) * 40ms);
+    }
+    .clipupp-reveal {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 400ms cubic-bezier(0.2, 0, 0, 1), transform 400ms cubic-bezier(0.2, 0, 0, 1);
+      transition-delay: calc(var(--i, 0) * 50ms);
+    }
+    .clipupp-reveal.in { opacity: 1; transform: none; }
+  }
+
+  /* Blurred code until revealed. */
+  .clipupp-code-peel { filter: blur(3px); user-select: none; }
+  .clipupp-code-peel.revealed { filter: none; user-select: text; }
 }
 
 /* =============================================================================
