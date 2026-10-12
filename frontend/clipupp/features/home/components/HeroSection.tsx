@@ -65,7 +65,7 @@ export async function HeroSection({
           <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[15px] leading-[1.55] text-clipupp-neutral-700 lg:text-[18px]" style={fx(2)}>
             {subtitle}
           </p>
-          <div className="clipupp-fx mt-7 hidden max-w-[560px] lg:block" style={fx(3)}>
+          <div role="group" aria-label={t("searchAria")} className="clipupp-fx mt-7 hidden max-w-[560px] lg:block" style={fx(3)}>
             <HeaderSearch variant="hero" feed={toSearchFeed(feed)} placeholder={t("searchPlaceholder")} ctaLabel={t("searchCta")} />
           </div>
           <div
@@ -99,6 +99,8 @@ export async function HeroSection({
           </div>
           {popular.length > 0 && (
             <div
+              role="group"
+              aria-label={t("popularAria")}
               className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0"
               style={fx(5)}
             >

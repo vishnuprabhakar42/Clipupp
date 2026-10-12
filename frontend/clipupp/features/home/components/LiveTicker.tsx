@@ -44,9 +44,11 @@ export async function LiveTicker({ coupons, stores }: { coupons: FeedCoupon[]; s
       aria-label={t("aria")}
       className="relative h-11 overflow-hidden border-y border-clipupp-neutral-200 bg-clipupp-surface motion-reduce:overflow-x-auto motion-reduce:clipupp-no-scrollbar"
     >
-      <div className="clipupp-marquee h-full items-center pl-24" style={{ "--dur": `${items.length * 5}s` } as React.CSSProperties}>
-        {list(false)}
-        <div className="flex motion-reduce:hidden">{list(true)}</div>
+      <div className="h-full w-max pl-24">
+        <div className="clipupp-marquee h-full items-center" style={{ "--dur": `${items.length * 5}s` } as React.CSSProperties}>
+          {list(false)}
+          <div className="flex motion-reduce:hidden">{list(true)}</div>
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center bg-gradient-to-r from-clipupp-surface from-75% to-transparent pl-4 pr-8">
         <span className="mr-2.5 h-2 w-2 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgb(var(--clipupp-success-rgb)/0.18)]" aria-hidden />

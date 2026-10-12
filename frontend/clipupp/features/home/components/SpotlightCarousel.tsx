@@ -21,7 +21,7 @@ function endLabel(iso: string | null): string | null {
 
 function fallbackStore(slug: string): FeedStore {
   return {
-    id: slug, name: slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), logo: null, mono: slug.slice(0, 2).toUpperCase(), bg: "#FFFFFF", fg: "#2A0F52",
+    id: slug, name: slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), logo: null, mono: slug.slice(0, 2).toUpperCase(), bg: "var(--clipupp-surface)", fg: "var(--clipupp-deep)",
     cat: null, url: null, coupons: 0, best: null, popular: null,
   };
 }
@@ -219,7 +219,7 @@ export function SpotlightCarousel({
                   mark();
                   goTo(i);
                 }}
-                className="group grid h-6 place-items-center px-0.5"
+                className="group grid h-6 w-6 place-items-center"
               >
                 <span
                   className={cn(
