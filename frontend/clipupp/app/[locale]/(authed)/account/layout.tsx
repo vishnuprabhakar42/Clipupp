@@ -135,7 +135,7 @@ export default async function AccountLayout({
       </main>
 
       <Footer />
-      <MobileBottomNav active="account" />
+      <MobileBottomNav />
     </div>
   );
 }

@@ -35,7 +35,7 @@ export async function Header() {
 
 async function safeStores(): Promise<NavStore[]> {
   try {
-    const page = await storesApi.list({ limit: 18 });
+    const page = await storesApi.list({ limit: 8 });
     return ((page.data ?? []) as NavStore[]).map((s) => ({
       id: s.id,
       slug: s.slug,

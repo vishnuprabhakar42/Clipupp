@@ -1,45 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  Baby,
-  Bookmark,
-  BookOpen,
-  Car,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  DollarSign,
-  Dumbbell,
-  Film,
-  Flame,
-  Footprints,
-  Gamepad2,
-  Gem,
-  Gift,
-  Heart,
-  Home,
-  Laptop,
-  Leaf,
-  LogIn,
-  LogOut,
-  LayoutGrid,
-  Menu,
-  Music,
-  PawPrint,
-  Percent,
-  Plane,
-  Search,
-  Shirt,
-  ShoppingBag,
-  ShoppingCart,
-  Sparkles,
-  Tag,
-  UtensilsCrossed,
-  Watch,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { Link, useRouter, usePathname } from "@/lib/i18n/navigation";
+import { useEffect, useState } from "react";
+import { ChevronDown, ChevronRight, LayoutGrid, LogOut, Menu } from "lucide-react";
+import { Link, useRouter } from "@/lib/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -55,97 +18,19 @@ import { Logo } from "@/components/site/Logo";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
 
-export type NavStore = {
-  id: string;
-  slug: string;
-  name: string;
-  logoUrl: string;
-};
-
-export type NavCategory = {
-  id: string;
-  slug: string;
-  title: string;
-};
-
-// Every category maps to one meaningful Lucide icon. Backgrounds + text
-// colours are uniform brand-primary across the strip so the rail reads
-// consistently. The first matching keyword wins; more-specific entries
-// (e.g. "grocer" before "food") come first.
-const CAT_ICON_MAP: Array<{ match: string[]; icon: LucideIcon }> = [
-  { match: ["grocer", "supermarket"], icon: ShoppingCart },
-  { match: ["pet", "animal"], icon: PawPrint },
-  { match: ["jewel", "gem", "ring"], icon: Gem },
-  { match: ["electron", "tech", "gadget", "computer", "mobile", "phone"], icon: Laptop },
-  { match: ["fashion", "cloth", "apparel", "wear", "dress"], icon: Shirt },
-  { match: ["food", "dining", "restaurant", "eat", "snack"], icon: UtensilsCrossed },
-  { match: ["travel", "flight", "hotel", "vacation", "holiday"], icon: Plane },
-  { match: ["beauty", "cosmetic", "skincare", "makeup", "hair"], icon: Sparkles },
-  { match: ["home", "furniture", "decor", "kitchen", "appliance"], icon: Home },
-  { match: ["sport", "fitness", "gym", "outdoor", "exercise", "yoga"], icon: Dumbbell },
-  { match: ["book", "education", "learning", "course", "study"], icon: BookOpen },
-  { match: ["health", "wellness", "pharmacy", "medical", "medicine"], icon: Heart },
-  { match: ["gift", "present", "occasion"], icon: Gift },
-  { match: ["bank", "finance", "financial", "insurance", "money", "invest", "credit"], icon: DollarSign },
-  { match: ["game", "gaming", "toy", "play"], icon: Gamepad2 },
-  { match: ["shoe", "footwear", "boot", "sandal"], icon: Footprints },
-  { match: ["accessory", "accessories", "watch", "bag", "purse"], icon: Watch },
-  { match: ["baby", "kid", "children", "toddler", "infant"], icon: Baby },
-  { match: ["garden", "plant", "flower", "lawn"], icon: Leaf },
-  { match: ["auto", "car", "vehicle", "motor", "bike"], icon: Car },
-  { match: ["movie", "film", "cinema", "entertain", "stream"], icon: Film },
-  { match: ["music", "audio", "concert", "headphone"], icon: Music },
-  { match: ["coupon", "percent", "discount", "saving", "deal"], icon: Percent },
-];
-
-function getCatIcon(slug: string, title: string): LucideIcon {
-  const text = `${slug} ${title}`.toLowerCase();
-  for (const entry of CAT_ICON_MAP) {
-    if (entry.match.some((m) => text.includes(m))) return entry.icon;
-  }
-  return Tag;
-}
+export type NavStore = { id: string; slug: string; name: string; logoUrl: string };
+export type NavCategory = { id: string; slug: string; title: string };
 
 /**
- * Collapse multi-word category names to a single word.
- *   "Food & Dining"          -> "Food"
- *   "Books and Education"    -> "Books"
- *   "Beauty / Personal Care" -> "Beauty"
- *   "Automotive"             -> "Automotive"
+ * Site header (spec block 0). 64px, white, 1px bottom border. The search is
+ * a field on every breakpoint: on desktop it sits centre, on mobile it drops
+ * to a second row under the wordmark so it never collapses to an icon.
+ * Right side: Stores, Categories (dropdown), Saved, then Sign in or the
+ * account menu. The locale switcher lives in the mobile drawer only.
  */
-function toSingleWord(label: string): string {
-  if (!label) return "";
-  const beforeJoiner = label.split(/\s*(?:&|\band\b|\/)\s*/i)[0]!.trim();
-  return beforeJoiner.split(/\s+/)[0] ?? beforeJoiner;
-}
-
-/**
- * HeaderClient — the interactive shell of the site header. Receives nav data
- * already fetched server-side (via the Header server wrapper) so this
- * component does NOT pull React Query. Owns: scroll-shadow, mobile drawer,
- * mobile search toggle, categories dropdown, category-strip scroll arrows,
- * user menu.
- */
-export function HeaderClient({
-  stores,
-  categories,
-}: {
-  stores: NavStore[];
-  categories: NavCategory[];
-}) {
+export function HeaderClient({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
   const auth = useAuth();
-  const pathname = usePathname();
-  // The category icon strip is homepage chrome — it's a wayfinding shortcut
-  // for first-time visitors landing on /, not a global nav element. On every
-  // other page it's just noise that competes with the page's own headings
-  // (store hero, category hero, coupon hero, etc.).
-  // next-intl's usePathname strips the [locale] segment, so home is just "/".
-  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -154,289 +39,93 @@ export function HeaderClient({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const topStores = stores.slice(0, 12);
   const topCategories = categories.slice(0, 12);
-  const stripCategories = categories;
-
-  useEffect(() => {
-    // Effect re-attaches when the strip mounts/unmounts (navigating into/out
-    // of the homepage), so `isHome` belongs in the deps even though it
-    // doesn't appear in the body.
-    if (!isHome) return;
-    const el = stripRef.current;
-    if (!el) return;
-    const update = () => {
-      const max = el.scrollWidth - el.clientWidth;
-      setCanScrollLeft(el.scrollLeft > 2);
-      setCanScrollRight(el.scrollLeft < max - 2);
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [stripCategories.length, isHome]);
-
-  function scrollStrip(dir: "left" | "right") {
-    stripRef.current?.scrollBy({ left: dir === "right" ? 260 : -260, behavior: "smooth" });
-  }
+  const navLink =
+    "inline-flex h-10 items-center gap-1 rounded-md px-2.5 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:text-clipupp-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary";
 
   return (
-    <>
     <header
+      role="banner"
       className={
-        "sticky top-0 z-sticky w-full bg-background transition-shadow " +
+        "sticky top-0 z-sticky w-full border-b border-clipupp-neutral-200 bg-white transition-shadow " +
         (scrolled ? "shadow-card" : "")
       }
-      role="banner"
     >
-      <div className="border-b">
-        <div className="clipupp-container flex h-12 items-center gap-2 md:h-14">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 lg:hidden"
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[320px] p-0">
-              <MobileMenu stores={topStores} categories={topCategories} />
-            </SheetContent>
-          </Sheet>
-
-          <Logo height={36} priority />
-
-          <div className="hidden lg:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-semibold text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary">
-                  <LayoutGrid className="h-4 w-4" aria-hidden />
-                  Categories
-                  <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[min(520px,calc(100vw-2rem))] p-3"
-                align="start"
-              >
-                <div className="grid grid-cols-2 gap-1">
-                  {topCategories.length === 0 && (
-                    <p className="col-span-2 px-3 py-3 text-sm text-muted-foreground">
-                      No categories yet.
-                    </p>
-                  )}
-                  {topCategories.map((c) => (
-                    <DropdownMenuItem asChild key={c.id} className="rounded-md">
-                      <Link
-                        href={`/categories/${c.slug}`}
-                        className="flex items-center gap-2 px-3 py-2 text-sm"
-                      >
-                        <span className="line-clamp-1">{c.title}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-md">
-                  <Link
-                    href="/categories"
-                    className="flex items-center justify-between px-3 py-2 text-sm font-medium text-clipupp-primary"
-                  >
-                    Browse all categories
-                    <ChevronRight className="h-4 w-4" aria-hidden />
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <div className="mx-auto hidden w-full max-w-2xl md:block">
-            <HeaderSearch variant="pill" />
-          </div>
-
-          <div className="ml-auto flex items-center gap-0.5">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              aria-label="Search"
-              aria-expanded={mobileSearchOpen}
-              onClick={() => setMobileSearchOpen((s) => !s)}
-            >
-              <Search className="h-5 w-5" />
+      <div className="clipupp-container flex h-16 items-center gap-4 lg:gap-7">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label="Open menu">
+              <Menu className="h-5 w-5" />
             </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[320px] p-0">
+            <MobileMenu stores={stores.slice(0, 8)} categories={topCategories} />
+          </SheetContent>
+        </Sheet>
 
-            <span className="hidden lg:inline-flex">
-              <LocaleSwitcher variant="pill" />
-            </span>
+        <Logo height={32} priority />
 
-            <Link
-              href="/account/saved-coupons"
-              className="hidden items-center gap-1 rounded-md px-2 py-1.5 text-sm font-semibold text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 sm:inline-flex"
-              aria-label="Saved coupons"
-            >
-              <Bookmark className="h-4 w-4" aria-hidden />
-              <span className="hidden lg:inline">Saved</span>
-            </Link>
-
-            {auth.user ? (
-              <UserMenu />
-            ) : (
-              <>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="ghost"
-                  className="hidden sm:inline-flex"
-                >
-                  <Link href="/sign-in">
-                    <LogIn className="mr-1.5 h-4 w-4" aria-hidden />
-                    Sign in
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  variant="primary"
-                  className="hidden px-4 sm:inline-flex"
-                >
-                  <Link href="/sign-up">Get started</Link>
-                </Button>
-                <Button
-                  asChild
-                  size="icon"
-                  variant="ghost"
-                  className="sm:hidden"
-                  aria-label="Sign in"
-                >
-                  <Link href="/sign-in">
-                    <LogIn className="h-5 w-5" aria-hidden />
-                  </Link>
-                </Button>
-              </>
-            )}
-          </div>
+        <div className="hidden min-w-0 flex-1 md:block">
+          <HeaderSearch variant="pill" />
         </div>
 
-        {mobileSearchOpen && (
-          <div className="border-t bg-background px-4 py-3 md:hidden">
-            <HeaderSearch variant="pill" />
-          </div>
-        )}
+        <nav aria-label="Primary" className="ml-auto hidden items-center gap-1 lg:flex">
+          <Link href="/stores" className={navLink}>Stores</Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={navLink}>
+                <LayoutGrid className="h-4 w-4" aria-hidden />
+                Categories
+                <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[min(520px,calc(100vw-2rem))] p-3" align="end">
+              <div className="grid grid-cols-2 gap-1">
+                {topCategories.map((c) => (
+                  <DropdownMenuItem asChild key={c.id} className="rounded-md">
+                    <Link href={`/categories/${c.slug}`} className="flex items-center gap-2 px-3 py-2 text-sm">
+                      <span className="line-clamp-1">{c.title}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="rounded-md">
+                <Link href="/categories" className="flex items-center justify-between px-3 py-2 text-sm font-medium text-clipupp-primary">
+                  Browse all categories
+                  <ChevronRight className="h-4 w-4" aria-hidden />
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Link href="/account/saved-coupons" className={navLink}>Saved</Link>
+          {auth.user ? (
+            <UserMenu />
+          ) : (
+            <Link
+              href="/sign-in"
+              className="ml-1 inline-flex h-10 items-center rounded-full border border-clipupp-primary px-5 text-[15px] font-medium text-clipupp-primary transition-colors hover:bg-clipupp-tint-100"
+            >
+              Sign in
+            </Link>
+          )}
+        </nav>
+
+        <div className="ml-auto lg:hidden">
+          {auth.user ? (
+            <UserMenu />
+          ) : (
+            <Link href="/sign-in" className="inline-flex h-10 items-center rounded-full border border-clipupp-primary px-4 text-[14px] font-medium text-clipupp-primary">
+              Sign in
+            </Link>
+          )}
+        </div>
+      </div>
+
+      <div className="clipupp-container pb-3 md:hidden">
+        <HeaderSearch variant="pill" />
       </div>
     </header>
-
-    {/* Category icon strip — homepage-only wayfinding for first-time visitors.
-        On detail pages (store, coupon, category) the page's own hero header
-        already orients the user, so this strip would just duplicate intent
-        and steal vertical space. Hidden on every route except "/". */}
-    {isHome && (
-      <div className="hidden border-b bg-background lg:block">
-        <div className="clipupp-container relative">
-          {/* Edge-fade mask: when chips are scrollable in a direction,
-              the corresponding edge fades to transparent so chips
-              disappear behind/into the floating scroll button instead
-              of being hard-cropped. Pulled in from the same pattern as
-              ScrollRail.tsx (used by trusted-brands etc). */}
-          <div
-            ref={stripRef}
-            className="clipupp-no-scrollbar flex items-start overflow-x-auto py-1.5"
-            style={(() => {
-              const fadeLeft = canScrollLeft ? "transparent 0%, black 5%" : "black 0%, black 0%";
-              const fadeRight = canScrollRight ? "black 95%, transparent 100%" : "black 100%, black 100%";
-              const mask = `linear-gradient(to right, ${fadeLeft}, ${fadeRight})`;
-              return { maskImage: mask, WebkitMaskImage: mask };
-            })()}
-          >
-            <CategoryChip
-              href="/offers"
-              label="Hot Deals"
-              icon={Flame}
-              tone="accent"
-            />
-            <CategoryChip
-              href="/coupons"
-              label="Coupons"
-              icon={Percent}
-              tone="success"
-            />
-
-            {stripCategories.map((cat) => (
-              <CategoryChip
-                key={cat.id}
-                href={`/categories/${cat.slug}`}
-                label={toSingleWord(cat.title)}
-                icon={getCatIcon(cat.slug, cat.title)}
-                tone="primary"
-              />
-            ))}
-          </div>
-
-          {/* Scroll buttons match PromoBannersCarousel exactly:
-              h-9 w-9 white tile, h-4 w-4 chevron (strokeWidth 2.5),
-              border + shadow-card, centered on the safe-area edge via
-              translate(±50%, -50%). The edge-fade mask on the strip
-              above handles the smooth chip dissolve into the button. */}
-          {canScrollLeft && (
-            <button
-              type="button"
-              aria-label="Scroll categories left"
-              onClick={() => scrollStrip("left")}
-              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
-              style={{ left: 0, top: "50%", transform: "translate(-50%, -50%)" }}
-            >
-              <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
-            </button>
-          )}
-
-          {canScrollRight && (
-            <button
-              type="button"
-              aria-label="Scroll categories right"
-              onClick={() => scrollStrip("right")}
-              className="absolute z-dropdown grid h-9 w-9 place-items-center rounded-full border border-clipupp-neutral-200 bg-white text-clipupp-neutral-700 shadow-card transition-colors hover:text-clipupp-neutral-900"
-              style={{ right: 0, top: "50%", transform: "translate(50%, -50%)" }}
-            >
-              <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
-            </button>
-          )}
-        </div>
-      </div>
-    )}
-    </>
-  );
-}
-
-function CategoryChip({
-  href,
-  label,
-  icon: Icon,
-}: {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  /** Deprecated — tone is ignored in the clean palette. All chips share
-   *  the same single soft-primary tile + primary icon treatment. */
-  tone?: "primary" | "accent" | "success";
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-lg px-2 py-2 text-center transition-colors hover:bg-clipupp-neutral-100"
-    >
-      <span className="grid h-11 w-11 place-items-center rounded-full bg-clipupp-primary-soft transition-colors">
-        <Icon className="h-5 w-5 text-clipupp-primary" aria-hidden strokeWidth={2} />
-      </span>
-      <span className="line-clamp-1 max-w-full text-[11px] font-semibold uppercase tracking-[0.04em] text-clipupp-neutral-700 group-hover:text-clipupp-neutral-900">
-        {label}
-      </span>
-    </Link>
   );
 }
 
@@ -467,39 +156,22 @@ function UserMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col gap-0.5">
           {name && <span className="truncate text-sm font-medium">{name}</span>}
-          <span className="truncate text-xs font-normal text-muted-foreground">
-            {email}
-          </span>
+          <span className="truncate text-xs font-normal text-muted-foreground">{email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/account">Overview</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/account/saved-coupons">Saved coupons</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/account/click-history">Click history</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/account/profile">Profile</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/account/preferences">Preferences</Link>
-        </DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account">Overview</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/saved-coupons">Saved coupons</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/click-history">Click history</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/profile">Profile</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/preferences">Preferences</Link></DropdownMenuItem>
         {isAdmin && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/admin">Admin dashboard</Link>
-            </DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/admin">Admin dashboard</Link></DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="text-destructive focus:text-destructive"
-          onSelect={handleLogout}
-        >
+        <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" aria-hidden />
           Sign out
         </DropdownMenuItem>
@@ -508,13 +180,7 @@ function UserMenu() {
   );
 }
 
-function MobileMenu({
-  stores,
-  categories,
-}: {
-  stores: NavStore[];
-  categories: NavCategory[];
-}) {
+function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
   const auth = useAuth();
   const router = useRouter();
   const user = auth.user;
@@ -525,45 +191,30 @@ function MobileMenu({
     router.refresh();
   }
 
+  const item = "flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-clipupp-neutral-100";
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4">
-        <Logo height={32} />
+        <Logo height={28} />
       </div>
-
-      <nav
-        className="flex-1 overflow-y-auto p-4 text-sm"
-        aria-label="Mobile navigation"
-      >
+      <nav className="flex-1 overflow-y-auto p-4 text-sm" aria-label="Mobile navigation">
         <ul className="space-y-1">
-          <MobileNavLink href="/coupons">All coupons</MobileNavLink>
-          <MobileNavLink href="/offers">Hot deals</MobileNavLink>
-          <MobileNavLink href="/stores">Browse stores</MobileNavLink>
-          <MobileNavLink href="/categories">Browse categories</MobileNavLink>
-          <MobileNavLink href="/blog">Blog</MobileNavLink>
+          <li><Link href="/coupons" className={item}>All coupons <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/stores" className={item}>Stores <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/categories" className={item}>Categories <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/account/saved-coupons" className={item}>Saved <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/blog" className={item}>Blog <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
         </ul>
-
         {stores.length > 0 && (
           <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Top stores
-            </p>
+            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Top stores</p>
             <ul className="grid grid-cols-2 gap-1">
-              {stores.slice(0, 8).map((s) => (
+              {stores.map((s) => (
                 <li key={s.id}>
-                  <Link
-                    href={`/stores/${s.slug}`}
-                    className="flex items-center gap-2 rounded-md p-2 hover:bg-accent"
-                  >
-                    <span className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded bg-muted">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={s.logoUrl}
-                        alt=""
-                        className="h-full w-full object-contain"
-                        loading="lazy"
-                      />
-                    </span>
+                  <Link href={`/stores/${s.slug}`} className="flex items-center gap-2 rounded-md p-2 hover:bg-clipupp-neutral-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.logoUrl} alt="" className="h-7 w-7 rounded object-contain" loading="lazy" />
                     <span className="line-clamp-1 text-xs">{s.name}</span>
                   </Link>
                 </li>
@@ -571,96 +222,35 @@ function MobileMenu({
             </ul>
           </>
         )}
-
         {categories.length > 0 && (
           <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Top categories
-            </p>
+            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Categories</p>
             <ul className="space-y-1">
               {categories.slice(0, 10).map((c) => (
                 <li key={c.id}>
-                  <Link
-                    href={`/categories/${c.slug}`}
-                    className="block rounded-md px-3 py-2 text-sm transition hover:bg-accent"
-                  >
-                    {c.title}
-                  </Link>
+                  <Link href={`/categories/${c.slug}`} className="block rounded-md px-3 py-2 text-sm hover:bg-clipupp-neutral-100">{c.title}</Link>
                 </li>
               ))}
             </ul>
           </>
         )}
       </nav>
-
       <div className="space-y-3 border-t p-4">
-        {/* Locale switcher first — both signed-in and signed-out users need
-            an accessible way to flip between en/hi from the mobile drawer. */}
         <div className="flex items-center justify-between rounded-md border border-clipupp-neutral-200 p-2">
-          <span className="px-2 text-xs font-semibold uppercase tracking-[0.04em] text-clipupp-neutral-500">
-            Language
-          </span>
+          <span className="px-2 text-xs font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Language</span>
           <LocaleSwitcher variant="pill" align="end" />
         </div>
-
         {user ? (
-          <div className="space-y-1">
-            <Link
-              href="/account"
-              className="flex items-center gap-3 rounded-md p-2 transition hover:bg-accent"
-            >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-white">
-                {(user.name || user.email)[0]?.toUpperCase()}
-              </span>
-              <span className="min-w-0 text-sm">
-                <span className="block truncate font-medium">
-                  {user.name || "Account"}
-                </span>
-                <span className="block truncate text-xs text-muted-foreground">
-                  {user.email}
-                </span>
-              </span>
-            </Link>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive transition hover:bg-destructive/10"
-            >
-              <LogOut className="h-4 w-4" aria-hidden />
-              Sign out
-            </button>
-          </div>
+          <button type="button" onClick={handleLogout} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
+            <LogOut className="h-4 w-4" aria-hidden /> Sign out
+          </button>
         ) : (
           <div className="flex flex-col gap-2">
-            <Button asChild variant="primary">
-              <Link href="/sign-up">Create account</Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
+            <Button asChild variant="primary"><Link href="/sign-up">Create account</Link></Button>
+            <Button asChild variant="secondary"><Link href="/sign-in">Sign in</Link></Button>
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-function MobileNavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <li>
-      <Link
-        href={href}
-        className="flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-clipupp-neutral-100"
-      >
-        {children}
-        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
-      </Link>
-    </li>
   );
 }

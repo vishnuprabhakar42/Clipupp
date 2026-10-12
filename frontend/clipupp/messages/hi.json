@@ -14,9 +14,9 @@
   },
   "mobileNav": {
     "home": "होम",
-    "browse": "ब्राउज़",
-    "saved": "सहेजे",
-    "account": "खाता"
+    "stores": "स्टोर",
+    "categories": "श्रेणियाँ",
+    "saved": "सहेजे गए"
   },
   "common": {
     "loading": "लोड हो रहा है…",
@@ -265,5 +265,22 @@
         "description": "चेकआउट पर कोड पेस्ट करें और तुरंत छूट पाएं।"
       }
     }
+  },
+  "footer": {
+    "blurb": "सिर्फ़ कूपन। कोई वॉलेट नहीं, कोई ट्रैकिंग नहीं। बस ऐसे कोड जो भारतीय स्टोर पर काम करते हैं।",
+    "coupons": "कूपन",
+    "stores": "स्टोर",
+    "company": "Clipupp",
+    "legal": "कानूनी",
+    "storesAZ": "A से Z स्टोर",
+    "howWeVerify": "हम कैसे जाँचते हैं",
+    "blog": "ब्लॉग",
+    "faq": "सवाल-जवाब",
+    "about": "हमारे बारे में",
+    "privacy": "गोपनीयता",
+    "terms": "शर्तें",
+    "disclosure": "एफ़िलिएट खुलासा",
+    "copyright": "© {year} Clipupp. भारत में निर्मित।",
+    "language": "English"
   }
 }
