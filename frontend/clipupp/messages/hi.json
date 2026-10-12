@@ -35,7 +35,11 @@
     "deal": "डील",
     "freeShipping": "मुफ़्त शिपिंग",
     "inStore": "स्टोर में",
-    "noCouponsYet": "अभी कोई कूपन नहीं।"
+    "noCouponsYet": "अभी कोई कूपन नहीं।",
+    "scrollLeft": "बाएं स्क्रॉल करें",
+    "scrollRight": "दाएं स्क्रॉल करें",
+    "close": "बंद करें",
+    "showMore": "और दिखाएं"
   },
   "stores": {
     "listTitle": "सभी स्टोर्स",
@@ -355,5 +359,21 @@
       "copied": "कॉपी हुआ {code}",
       "opened": "खुल गया"
     }
+  },
+  "sheet": {
+    "savedTitle": "सेव किए गए कूपन",
+    "savedCount": "{count, plural, =0 {कोई सेव कूपन नहीं} one {# सेव कूपन} other {# सेव कूपन}}",
+    "savedEmptyTitle": "अभी कुछ सेव नहीं किया",
+    "savedEmptyBody": "किसी भी कूपन पर दिल दबाकर उसे यहां रखें।"
+  },
+  "toast": {
+    "saved": "सेव हो गया",
+    "removed": "सेव से हटाया गया",
+    "saveFailed": "आपके सेव कूपन सिंक नहीं हो सके",
+    "codeCopied": "कोड {code} कॉपी हो गया",
+    "codeSelected": "कोड चुना गया, इस्तेमाल के लिए कॉपी दबाएं",
+    "emailCopied": "ईमेल कॉपी हो गया",
+    "reminderSet": "{name} शुरू होने पर हम आपको याद दिलाएंगे",
+    "reminderRemoved": "रिमाइंडर हटाया गया"
   }
 }
