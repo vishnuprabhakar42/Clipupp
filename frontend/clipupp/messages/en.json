@@ -292,22 +292,6 @@
     "noCouponsFound": "No coupons found"
   },
   "home": {
-    "howItWorks": {
-      "title": "How it works",
-      "subtitle": "Three simple steps between you and a discount.",
-      "step1": {
-        "title": "Find a coupon",
-        "description": "Browse hundreds of active coupons across 50+ stores. Filter by category or search by brand."
-      },
-      "step2": {
-        "title": "Click through",
-        "description": "Tap the code to copy it, then jump to the store with one click."
-      },
-      "step3": {
-        "title": "Save at checkout",
-        "description": "Paste the code at checkout to apply your discount instantly."
-      }
-    },
     "hero": {
       "eyebrow": "Checked today",
       "title": "Working coupon codes for every Indian store.",

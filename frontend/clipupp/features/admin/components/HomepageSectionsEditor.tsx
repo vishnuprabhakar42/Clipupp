@@ -33,6 +33,7 @@ import {
   GripVertical,
   HelpCircle,
   Images,
+  Landmark,
   LayoutGrid,
   Lightbulb,
   Mail,
@@ -75,6 +76,18 @@ type Theme = {
 };
 
 const THEMES: Record<string, Theme> = {
+  trending_coupons: {
+    Icon: TrendingUp, accent: "primary",
+    description: "Trending verified coupons rail.",
+  },
+  bank_offers: {
+    Icon: Landmark, accent: "success",
+    description: "Bank offers and festive sales cards.",
+  },
+  verify_band: {
+    Icon: ShieldCheck, accent: "primary",
+    description: "How we verify coupons band.",
+  },
   hero_search: {
     Icon: Search, accent: "primary",
     description: "Top-of-page search hero with category quick-jumps.",
