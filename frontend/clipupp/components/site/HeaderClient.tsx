@@ -46,8 +46,10 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
     >
       <div className="clipupp-container grid grid-cols-[auto_1fr] grid-rows-[58px_56px] items-center [grid-template-areas:'logo_actions'_'search_search'] lg:grid-cols-[auto_minmax(0,560px)_1fr] lg:grid-rows-[72px] lg:gap-x-7 lg:[grid-template-areas:'logo_search_actions']">
         <div className="[grid-area:logo]">
-          <Logo height={36} priority className="clipupp-logo-l" />
-          <Logo height={36} priority variant="on-dark" className="clipupp-logo-d" />
+          {/* The artwork has built-in padding (glyphs are 96% of the width, 65% of the height):
+              47px / 65px image heights give ~98px / ~136px wide wordmarks like the design. */}
+          <Logo height={65} priority className="clipupp-logo-l" imgClassName="!h-[47px] lg:!h-[65px]" />
+          <Logo height={65} priority variant="on-dark" className="clipupp-logo-d" imgClassName="!h-[47px] lg:!h-[65px]" />
         </div>
 
         <div className="[grid-area:search] min-w-0 pb-1.5 pt-1.5 lg:p-0">

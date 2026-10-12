@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { rootCategories } from "@/lib/home/categoryLabel";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import { CategoryRailClient } from "./CategoryRailClient";
 
@@ -9,5 +10,5 @@ const RAIL_MAX = 11;
 export async function CategoryRail() {
   const [feed, t] = await Promise.all([getHomeFeed(), getTranslations("header")]);
   if (feed.categories.length === 0) return null;
-  return <CategoryRailClient categories={feed.categories.slice(0, RAIL_MAX)} ariaLabel={t("categories")} />;
+  return <CategoryRailClient categories={rootCategories(feed.categories).slice(0, RAIL_MAX)} ariaLabel={t("categories")} />;
 }

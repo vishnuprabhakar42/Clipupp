@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
 import { CategoryGlyph } from "@/components/site/CategoryGlyph";
+import { shortCategoryLabel } from "@/lib/home/categoryLabel";
 import { emit, on, peek } from "@/lib/home/homeBus";
 import { cn } from "@/lib/utils";
 
@@ -12,13 +13,15 @@ type Cat = { id: string; name: string; icon: string; hot?: boolean };
 export function CategoryRailClient({ categories, ariaLabel }: { categories: Cat[]; ariaLabel: string }) {
   const isHome = usePathname() === "/";
   const firstCat = categories.find((c) => !c.hot)?.id ?? "";
-  const [pressed, setPressed] = useState(firstCat);
+  // Phone shows no pressed chip until a tab is chosen; lg+ defaults to the first category.
+  const [pressed, setPressed] = useState("");
 
   useEffect(() => {
     const last = peek("today:tab");
     if (last) setPressed(last);
+    else if (window.matchMedia("(min-width: 1024px)").matches) setPressed(firstCat);
     return on("today:tab", setPressed);
-  }, []);
+  }, [firstCat]);
 
   function choose(c: Cat) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -54,11 +57,11 @@ export function CategoryRailClient({ categories, ariaLabel }: { categories: Cat[
                 </span>
                 <span
                   className={cn(
-                    "text-center text-xs leading-tight lg:text-[13px]",
+                    "max-w-full truncate whitespace-nowrap text-center text-xs lg:text-[13px]",
                     on ? "font-semibold text-clipupp-primary" : "font-medium text-clipupp-neutral-700",
                   )}
                 >
-                  {c.name}
+                  {shortCategoryLabel(c.name)}
                 </span>
               </>
             );
@@ -67,11 +70,11 @@ export function CategoryRailClient({ categories, ariaLabel }: { categories: Cat[
             return (
               <li key={c.id} className="shrink-0">
                 {isHome ? (
-                  <button type="button" aria-pressed={c.hot ? undefined : on} onClick={() => choose(c)} className={cls}>
+                  <button type="button" title={c.name} aria-label={c.name} aria-pressed={c.hot ? undefined : on} onClick={() => choose(c)} className={cls}>
                     {inner}
                   </button>
                 ) : (
-                  <Link href={c.hot ? "/#calendar" : `/categories/${c.id}`} className={cls}>
+                  <Link href={c.hot ? "/#calendar" : `/categories/${c.id}`} title={c.name} aria-label={c.name} className={cls}>
                     {inner}
                   </Link>
                 )}

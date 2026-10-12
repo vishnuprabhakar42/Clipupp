@@ -11,6 +11,8 @@ export type FeedCategory = {
   name: string;
   /** Lucide icon name (see `lib/home/categoryIcon.ts`). */
   icon: string;
+  /** Parent category slug; null for a root. Undefined when the source has no hierarchy info. */
+  parent?: string | null;
   /** Marks a seasonal category that gets the hot treatment. */
   hot?: boolean;
   /** Number of coupons shown for the category. */

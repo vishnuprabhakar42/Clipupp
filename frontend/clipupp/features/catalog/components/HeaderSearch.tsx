@@ -288,7 +288,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
             role="combobox"
             aria-label={t("searchLabel")}
             aria-expanded={showPanel}
-            aria-controls={listId}
+            aria-controls={showPanel ? listId : undefined}
             aria-autocomplete="list"
             aria-activedescendant={showPanel && active >= 0 ? `${uid}-opt-${active}` : undefined}
             enterKeyHint="search"

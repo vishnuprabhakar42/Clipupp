@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { rootCategories } from "@/lib/home/categoryLabel";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import { AnnouncementStrip } from "@/features/home/components/AnnouncementStrip";
 import { HeaderClient, type HeaderFeed } from "./HeaderClient";
@@ -13,7 +14,7 @@ export async function Header() {
   const feed = await getHomeFeed();
   const storeName = new Map(feed.stores.map((s) => [s.id, s.name]));
   const light: HeaderFeed = {
-    categories: feed.categories.slice(0, 16),
+    categories: rootCategories(feed.categories).slice(0, 16),
     totalCoupons: feed.stats.activeCoupons,
     search: {
       stores: feed.stores.map((s) => ({ id: s.id, name: s.name, coupons: s.coupons, popular: s.popular })),
