@@ -27,13 +27,14 @@ const LABELS: Record<Locale, string> = {
  *
  * Variants:
  *   `pill` — labeled chip with globe icon; used inside the header desktop.
+ *   `segmented` — two-button English | हिन्दी group for the dark footer.
  *   `icon` — globe-only square button; used in the mobile bottom nav.
  */
 export function LocaleSwitcher({
   variant = "pill",
   align = "end",
 }: {
-  variant?: "pill" | "icon";
+  variant?: "pill" | "icon" | "segmented";
   align?: "start" | "end";
 }) {
   const locale = useLocale() as Locale;
@@ -46,6 +47,28 @@ export function LocaleSwitcher({
     startTransition(() => {
       router.replace(pathname, { locale: next });
     });
+  }
+
+  if (variant === "segmented") {
+    return (
+      <div role="group" aria-label="Language" className="inline-flex items-center gap-1">
+        {locales.map((loc) => (
+          <button
+            key={loc}
+            type="button"
+            lang={loc}
+            aria-pressed={loc === locale}
+            disabled={isPending}
+            onClick={() => switchTo(loc)}
+            className={`h-8 rounded-full px-3 text-[13px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent disabled:opacity-60 ${
+              loc === locale ? "bg-white/10 text-clipupp-ft-ink" : "text-clipupp-ft-ink-2 hover:text-clipupp-ft-ink"
+            }`}
+          >
+            {LABELS[loc]}
+          </button>
+        ))}
+      </div>
+    );
   }
 
   return (

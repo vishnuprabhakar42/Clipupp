@@ -201,6 +201,18 @@ function shiftFixture(delta: number): HomeFeed {
   return walk(demoFixture) as HomeFeed;
 }
 
+const SOCIAL_NETWORKS = ["instagram", "youtube", "x", "facebook", "linkedin"] as const;
+
+/** Social links from `social.<network>` settings; only http(s) URLs that are set. */
+function parseSocial(settings: Record<string, unknown>): HomeFeed["social"] {
+  const out: HomeFeed["social"] = [];
+  for (const network of SOCIAL_NETWORKS) {
+    const url = nonEmptyString(settings[`social.${network}`]);
+    if (url && /^https?:\/\//i.test(url)) out.push({ network, url });
+  }
+  return out;
+}
+
 /**
  * Adapt the backend homepage layout and public settings into the HomeFeed the
  * v3 page renders. With `demo` on, every top-level key the backend left empty
@@ -242,6 +254,9 @@ export function toHomeFeed(
     faq: parseFaq(settings["faq.items"]),
     popularSearches: parseSearches(settings["footer.popular_searches"]),
     telegramBot: nonEmptyString(settings["telegram.bot_username"]),
+    supportEmail: nonEmptyString(settings["support.email"]),
+    partnerEmail: nonEmptyString(settings["footer.partner_email"]),
+    social: parseSocial(settings),
     sectionOrder: (layout?.sections ?? []).map((s) => s.code),
   };
 
@@ -267,6 +282,9 @@ export function toHomeFeed(
   fill("faq");
   fill("popularSearches");
   fill("telegramBot");
+  fill("supportEmail");
+  fill("partnerEmail");
+  fill("social");
   if (!layout) merged.stats = fixture.stats;
 
   // The backend and the design use different section codes; unless the backend

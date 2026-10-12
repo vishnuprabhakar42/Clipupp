@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Bell, Heart, LogOut, User } from "lucide-react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Logo } from "@/components/site/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
-import { Sheet, SheetHeader } from "@/components/site/Sheet";
 import { CategoriesMenu, type MenuCategory } from "@/components/site/CategoriesMenu";
 import { HeaderSearch, type HeaderSearchFeed } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { useMergeSavedOnLogin, useSavedCoupons } from "@/lib/home/useSavedCoupons";
+import { useSavedSheet } from "@/lib/home/useSavedSheet";
 
 export type HeaderFeed = {
   categories: MenuCategory[];
@@ -103,30 +103,17 @@ function useCollapseOnScroll() {
 
 function SavedButton() {
   const t = useTranslations("header");
-  const ts = useTranslations("sheet");
   const { count, hydrated } = useSavedCoupons();
-  const [open, setOpen] = useState(false);
-  const titleId = useId();
+  const open = useSavedSheet((s) => s.open);
   return (
-    <>
-      <button type="button" aria-label={t("saved")} onClick={() => setOpen(true)} className={ICON_BTN}>
-        <Heart className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
-        {hydrated && count > 0 ? (
-          <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-clipupp-danger px-1 text-[11px] font-bold leading-none text-clipupp-danger-fg">
-            {count}
-          </span>
-        ) : null}
-      </button>
-      {/* Placeholder until the saved list sheet lands (Step 9). */}
-      <Sheet open={open} onClose={() => setOpen(false)} labelledBy={titleId} size="sheet">
-        <SheetHeader titleId={titleId} title={ts("savedTitle")} subtitle={ts("savedCount", { count })} onClose={() => setOpen(false)} />
-        <div className="px-5 pb-8 pt-4 text-center">
-          <Heart className="mx-auto h-8 w-8 text-clipupp-neutral-400" strokeWidth={1.8} aria-hidden="true" />
-          <p className="mt-3 font-bold text-clipupp-neutral-900">{ts("savedEmptyTitle")}</p>
-          <p className="mt-1 text-sm text-clipupp-neutral-600">{ts("savedEmptyBody")}</p>
-        </div>
-      </Sheet>
-    </>
+    <button type="button" aria-label={t("saved")} onClick={open} className={ICON_BTN}>
+      <Heart className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+      {hydrated && count > 0 ? (
+        <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-clipupp-danger px-1 text-[11px] font-bold leading-none text-clipupp-danger-fg">
+          {count}
+        </span>
+      ) : null}
+    </button>
   );
 }
 

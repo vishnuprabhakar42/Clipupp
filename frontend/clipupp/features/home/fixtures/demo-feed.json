@@ -1343,5 +1343,21 @@
     "verify_band",
     "alerts",
     "faq"
+  ],
+  "supportEmail": "help@clipupp.com",
+  "partnerEmail": "partners@clipupp.com",
+  "social": [
+    {
+      "network": "instagram",
+      "url": "https://www.instagram.com"
+    },
+    {
+      "network": "youtube",
+      "url": "https://www.youtube.com"
+    },
+    {
+      "network": "x",
+      "url": "https://x.com"
+    }
   ]
 }

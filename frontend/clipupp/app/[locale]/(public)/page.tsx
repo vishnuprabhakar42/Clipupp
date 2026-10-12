@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { homepageApi, type HomepageLayout, type HomepageSectionPayload } from "@/lib/api/homepage";
-import { getPublicSettings, asString } from "@/lib/api/settings";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import type { HomeFeed } from "@/lib/home/feed";
 import { LiveTicker } from "@/features/home/components/LiveTicker";
@@ -15,7 +14,8 @@ import { BankOffersRail } from "@/features/home/components/BankOffersRail";
 import { DealsRail } from "@/features/home/components/DealsRail";
 import { SaleCalendarRail } from "@/features/home/components/SaleCalendarRail";
 import { VerifyBand } from "@/features/home/components/VerifyBand";
-import { NewsletterBar } from "@/features/home/components/NewsletterBar";
+import { AlertsSection } from "@/features/home/components/AlertsSection";
+import { FaqSection } from "@/features/home/components/FaqSection";
 import { RevealRoot } from "@/features/home/components/Reveal";
 
 export async function generateMetadata({
@@ -53,7 +53,6 @@ export async function generateMetadata({
 type Ctx = {
   feed: HomeFeed;
   stats: HomepageLayout["stats"];
-  newsletter: { headline: string; subheadline: string; cta: string; whatsapp?: string };
 };
 
 type SectionBuilder = (s: HomepageSectionPayload, ctx: Ctx) => ReactNode;
@@ -75,8 +74,21 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   sale_calendar: (_s, ctx) => <SaleCalendarRail feed={ctx.feed} />,
   top_deals: (s, ctx) => <TodaysCoupons feed={ctx.feed} section={s} />,
   bank_offers: (_s, ctx) => <BankOffersRail feed={ctx.feed} />,
-  verify_band: (s) => <VerifyBand section={s} />,
-  newsletter: (s, ctx) => <NewsletterBar section={s} copy={ctx.newsletter} />,
+  verify_band: (_s, ctx) => <VerifyBand feed={ctx.feed} />,
+  alerts: (_s, ctx) => <AlertsSection feed={ctx.feed} />,
+  // Until the backend renames the row, the old newsletter code renders the alerts block.
+  newsletter: (_s, ctx) => <AlertsSection feed={ctx.feed} />,
+  faq: (_s, ctx) => <FaqSection feed={ctx.feed} />,
+};
+
+/** Wrapper ids: the hero is the "top" anchor; sections that carry their own id get none. */
+const WRAPPER_ID: Record<string, string | undefined> = {
+  hero_search: "top",
+  deals: undefined,
+  verify_band: undefined,
+  alerts: undefined,
+  newsletter: undefined,
+  faq: undefined,
 };
 
 const EMPTY_STATS = { verifiedLast7d: 0, activeCoupons: 0, activeStores: 0 };
@@ -101,7 +113,7 @@ const FALLBACK_SECTIONS: HomepageSectionPayload[] = [
 ];
 
 export default async function HomePage() {
-  const [layout, settings, feed] = await Promise.all([homepageApi.getPublic(), getPublicSettings(), getHomeFeed()]);
+  const [layout, feed] = await Promise.all([homepageApi.getPublic(), getHomeFeed()]);
   const base = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
   // Order follows the feed (demo mode adds ticker and popular_stores, which
   // have no backend row); step 10 finalises this.
@@ -111,13 +123,6 @@ export default async function HomePage() {
   const ctx: Ctx = {
     feed,
     stats: layout?.stats ?? EMPTY_STATS,
-    newsletter: {
-      // Empty means "use the localized default" inside NewsletterBar.
-      headline: asString(settings["newsletter.headline"], ""),
-      subheadline: asString(settings["newsletter.subheadline"], ""),
-      cta: asString(settings["newsletter.cta"], ""),
-      whatsapp: asString(settings["social.whatsapp"], "") || undefined,
-    },
   };
 
   return (
@@ -129,7 +134,7 @@ export default async function HomePage() {
           const node = render(s, ctx);
           if (!node) return null;
           return (
-            <div key={s.code} id={s.code === "deals" ? undefined : s.code} className="scroll-mt-20">
+            <div key={s.code} id={s.code in WRAPPER_ID ? WRAPPER_ID[s.code] : s.code} className="scroll-mt-20">
               {node}
             </div>
           );
