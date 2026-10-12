@@ -307,6 +307,16 @@
         "title": "Save at checkout",
         "description": "Paste the code at checkout to apply your discount instantly."
       }
+    },
+    "hero": {
+      "eyebrow": "Checked today",
+      "title": "Working coupon codes for every Indian store.",
+      "subtitle": "No wallet, no tracking, no waiting. Just codes that work.",
+      "searchPlaceholder": "Try Amazon, Myntra, Swiggy",
+      "searchLabel": "Search stores",
+      "searchCta": "Find codes",
+      "noResults": "No coupons for \"{q}\" yet, try Amazon India",
+      "proof": "<verified></verified> codes verified this week · <stores></stores> stores"
     }
   },
   "footer": {
