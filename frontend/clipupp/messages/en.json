@@ -325,6 +325,27 @@
       "couponsCount": "{count, plural, =1 {1 coupon} other {# coupons}}",
       "seeAllCategory": "See all {category} coupons",
       "emptyTab": "No {category} coupons right now"
+    },
+    "verify": {
+      "col1Title": "Tested daily by a human",
+      "col1Body": "Each code is applied at checkout every 24 hours. Not scraped, not guessed.",
+      "col2Title": "Verified time shown on every card",
+      "col2Body": "You see when we last checked a code before you copy anything.",
+      "col3Title": "Failed codes are pulled within the hour",
+      "col3Body": "Report a miss with one tap and it disappears for everyone.",
+      "cta": "See verified coupons"
+    },
+    "newsletter": {
+      "eyebrow": "Weekly digest",
+      "placeholder": "you@example.com",
+      "emailLabel": "Email address",
+      "whatsapp": "Get alerts on WhatsApp instead",
+      "success": "Check your inbox to confirm.",
+      "error": "Could not subscribe. Try again later."
+    },
+    "bank": {
+      "eyebrow": "Stack with codes",
+      "defaultCta": "See eligible offers"
     }
   },
   "footer": {
