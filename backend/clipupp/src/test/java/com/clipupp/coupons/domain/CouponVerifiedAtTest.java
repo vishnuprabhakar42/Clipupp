@@ -20,11 +20,39 @@ class CouponVerifiedAtTest {
     }
 
     @Test
-    void reVerifyingAlreadyVerifiedCouponRefreshesTimestamp() {
+    void applyingVerifiedToAlreadyVerifiedCouponKeepsTimestamp() {
         Coupon c = new Coupon();
         c.applyVerified(true, T1);
         c.applyVerified(true, T2);
+        assertThat(c.isVerified()).isTrue();
+        assertThat(c.getVerifiedAt()).isEqualTo(T1);
+    }
+
+    @Test
+    void reverifyAlwaysRefreshesTimestamp() {
+        Coupon c = new Coupon();
+        c.applyVerified(true, T1);
+        c.reverify(T2);
+        assertThat(c.isVerified()).isTrue();
         assertThat(c.getVerifiedAt()).isEqualTo(T2);
+    }
+
+    @Test
+    void reverifyOnUnverifiedCouponVerifiesAndStamps() {
+        Coupon c = new Coupon();
+        c.reverify(T1);
+        assertThat(c.isVerified()).isTrue();
+        assertThat(c.getVerifiedAt()).isEqualTo(T1);
+    }
+
+    @Test
+    void verifyingAfterUnverifyStampsAgain() {
+        Coupon c = new Coupon();
+        c.applyVerified(true, T1);
+        c.applyVerified(false, T2);
+        OffsetDateTime t3 = T2.plusHours(1);
+        c.applyVerified(true, t3);
+        assertThat(c.getVerifiedAt()).isEqualTo(t3);
     }
 
     @Test

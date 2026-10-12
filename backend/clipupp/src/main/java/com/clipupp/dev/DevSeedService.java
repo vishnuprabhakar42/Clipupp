@@ -541,7 +541,7 @@ public class DevSeedService {
             coupon.setCode(cd.code());
             coupon.setSavingsLabel(cd.savingsLabel());
             coupon.setExpiresAt(now.plusDays(cd.daysUntilExpiry()));
-            coupon.setVerified(cd.verified());
+            coupon.applyVerified(cd.verified(), OffsetDateTime.now());
             coupon.setExclusive(cd.exclusive());
             coupon.setPopularityScore(cd.popularityScore());
             coupon.setMetaTitle(cd.title() + " — " + s.name() + " | Clipupp");
