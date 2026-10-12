@@ -17,11 +17,6 @@ export async function Header() {
     categories: rootCategories(feed.categories).slice(0, 16),
     totalCoupons: feed.stats.activeCoupons,
     search: toSearchFeed(feed),
-    saved: {
-      coupons: feed.coupons,
-      stores: feed.stores,
-      categories: feed.categories.map((c) => ({ id: c.id, name: c.name })),
-    },
   };
   return (
     <>

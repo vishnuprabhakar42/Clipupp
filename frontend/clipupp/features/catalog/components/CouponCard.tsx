@@ -9,6 +9,7 @@ import { RevealButton } from "./RevealButton";
 import { SaveHeart } from "./SaveHeart";
 import { StoreTile } from "./StoreTile";
 import { CouponRow } from "./CouponRow";
+import { CARD_HOVER, Tag } from "./cardBits";
 
 export type CouponCardProps = {
   coupon: FeedCoupon;
@@ -19,8 +20,6 @@ export type CouponCardProps = {
   priority?: boolean;
 };
 
-const HOVER =
-  "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
 /**
  * Coupon card v3 (server). `card` is the ticket stub used in rails, `row` is
@@ -46,7 +45,7 @@ export async function CouponCard({ coupon, store, category = null, variant = "ca
       data-coupon-card
       data-coupon-id={coupon.id}
       style={k}
-      className={`clipupp-rise flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-[18px] ${HOVER}`}
+      className={`clipupp-rise flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-[18px] ${CARD_HOVER}`}
     >
       <div className="flex items-center gap-3">
         <StoreTile store={store} size={44} />
@@ -83,13 +82,4 @@ export async function CouponCard({ coupon, store, category = null, variant = "ca
       <RevealButton coupon={coupon} store={store} category={category} index={index} />
     </article>
   );
-}
-
-function Tag({ tone, children }: { tone: "ok" | "gold" | "bad"; children: React.ReactNode }) {
-  const cls = {
-    ok: "bg-clipupp-ok-bg text-clipupp-success",
-    gold: "bg-clipupp-deep text-clipupp-gold",
-    bad: "bg-clipupp-bad-bg text-clipupp-danger",
-  }[tone];
-  return <span className={`rounded-md px-2 py-1 text-[11.5px] font-semibold leading-none ${cls}`}>{children}</span>;
 }
