@@ -14,7 +14,7 @@ export async function TrendingCouponsRail({ section }: { section: HomepageSectio
   if (coupons.length === 0) return null;
   return (
     <section className="clipupp-container py-12 lg:py-24" aria-labelledby="trending-heading">
-      <SectionHeader eyebrow={section.subtitle} title={section.title} link={{ href: "/coupons", label: t("viewAllTrending") }} />
+      <SectionHeader id="trending-heading" eyebrow={section.subtitle} title={section.title} link={{ href: "/coupons", label: t("viewAllTrending") }} />
       <div className="clipupp-no-scrollbar -mx-4 grid snap-x snap-mandatory grid-flow-col auto-cols-[minmax(272px,1fr)] gap-6 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-[10px] lg:px-[10px]">
         {coupons.map((c, i) => (
           <div key={c.id} className="snap-start">
