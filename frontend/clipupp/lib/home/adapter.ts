@@ -7,7 +7,7 @@ import type {
 } from "@/lib/api/homepage";
 import demoFixture from "@/features/home/fixtures/demo-feed.json";
 import { badgeFor } from "@/lib/format/badge";
-import { categoryIcon } from "./categoryIcon";
+import { resolveCategoryIcon } from "./categoryIcon";
 import type {
   FeedCategory,
   FeedCoupon,
@@ -138,8 +138,8 @@ function buildCategories(
   layout: HomepageLayout | null,
   coupons: { feed: FeedCoupon; raw: HomepageCouponSummary }[],
 ): FeedCategory[] {
-  const base = new Map<string, { name: string; icon: string | null }>();
-  for (const c of sectionOf(layout, "hero_search")?.categories ?? []) base.set(c.slug, { name: c.title, icon: c.icon });
+  const base = new Map<string, { name: string; icon: string | null; root?: boolean }>();
+  for (const c of sectionOf(layout, "hero_search")?.categories ?? []) base.set(c.slug, { name: c.title, icon: c.icon, root: true });
   for (const tab of sectionOf(layout, "top_deals")?.categoryTabs ?? [])
     if (!base.has(tab.slug)) base.set(tab.slug, { name: tab.title, icon: null });
   for (const { raw } of coupons)
@@ -157,7 +157,9 @@ function buildCategories(
     return {
       id: slug,
       name: meta.name,
-      icon: categoryIcon(meta.icon),
+      icon: resolveCategoryIcon(meta.icon, slug, meta.name),
+      // hero_search lists the root categories; the rest come from tabs and coupon slugs.
+      ...(meta.root ? { parent: null } : {}),
       couponCount: tabCount.get(slug) ?? 0,
       topStores: [...top].map(([s, name]) => ({ slug: s, name })),
     };

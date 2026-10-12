@@ -135,7 +135,7 @@ describe("toHomeFeed", () => {
     expect(feed.categories.map((c) => [c.id, c.icon, c.couponCount])).toEqual([
       ["fashion", "shirt", 1],
       ["electronics", "smartphone", 0],
-      ["beauty", "tag", 0],
+      ["beauty", "sparkles", 0],
     ]);
     expect(feed.categories[0].topStores).toEqual([{ slug: "flipkart", name: "Flipkart" }]);
     expect(feed.spotlight).toEqual([

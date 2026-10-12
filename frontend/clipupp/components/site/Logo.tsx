@@ -113,12 +113,15 @@ export function Logo({
   height = 40,
   priority = true,
   className,
+  imgClassName,
 }: {
   href?: string;
   variant?: WordmarkVariant;
   height?: number;
   priority?: boolean;
   className?: string;
+  /** Classes for the <img>; use `!h-[..]` to override the inline height responsively. */
+  imgClassName?: string;
 }) {
   return (
     <Link
@@ -126,7 +129,7 @@ export function Logo({
       aria-label="Clipupp home"
       className={`inline-flex shrink-0 items-center ${className ?? ""}`}
     >
-      <LogoWordmark variant={variant} height={height} priority={priority} />
+      <LogoWordmark variant={variant} height={height} priority={priority} className={imgClassName} />
     </Link>
   );
 }
