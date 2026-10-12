@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,14 @@ public class CampaignService {
     @Transactional(readOnly = true)
     public Campaign findActive() {
         return repo.findActiveAt(OffsetDateTime.now()).orElse(null);
+    }
+
+    /** Up to {@code limit} active campaigns, newest start first. Feeds the homepage bank/festive tiles. */
+    @Cacheable(cacheNames = "campaigns.active", key = "'list:' + #limit", unless = "#result == null")
+    @Transactional(readOnly = true)
+    public List<Campaign> findActive(int limit) {
+        int capped = Math.max(1, Math.min(limit, 10));
+        return repo.findActiveAt(OffsetDateTime.now(), PageRequest.of(0, capped));
     }
 
     @Transactional(readOnly = true)
