@@ -119,6 +119,11 @@ public class StoreService {
         return storeRepo.findTopSlugs(PageRequest.of(0, capped));
     }
 
+    @Transactional(readOnly = true)
+    public long countActive() {
+        return storeRepo.countActive(StoreStatus.ACTIVE);
+    }
+
     /**
      * Top-N stores within a category, ordered by popularity. Reuses the
      * existing `listByCategorySlug` query (already filters ACTIVE +

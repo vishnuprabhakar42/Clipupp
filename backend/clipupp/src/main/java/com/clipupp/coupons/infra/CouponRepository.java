@@ -4,6 +4,7 @@ import com.clipupp.coupons.domain.Coupon;
 import com.clipupp.coupons.domain.CouponStatus;
 import com.clipupp.coupons.domain.CouponType;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -148,4 +149,46 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
                              @Param("status") CouponStatus status,
                              @Param("type") CouponType type,
                              Pageable pageable);
+
+    /** Trending = verified, active, most popular first, then most recently verified. */
+    @EntityGraph(attributePaths = "categories")
+    @Query("""
+           select c from Coupon c
+           where c.deletedAt is null
+             and c.status = 'ACTIVE'
+             and c.verified = true
+             and (c.expiresAt is null or c.expiresAt > :now)
+           order by c.popularityScore desc, c.verifiedAt desc nulls last, c.createdAt desc
+           """)
+    List<Coupon> findTrendingVerified(@Param("now") OffsetDateTime now, Pageable pageable);
+
+    /** One round-trip for N store tiles: [storeId, count]. Stores with 0 are absent. */
+    @Query("""
+           select c.storeId, count(c) from Coupon c
+           where c.deletedAt is null
+             and c.status = 'ACTIVE'
+             and c.storeId in :storeIds
+             and (c.expiresAt is null or c.expiresAt > :now)
+           group by c.storeId
+           """)
+    List<Object[]> countActiveByStoreIds(@Param("storeIds") Collection<UUID> storeIds,
+                                         @Param("now") OffsetDateTime now);
+
+    @Query("""
+           select count(c) from Coupon c
+           where c.deletedAt is null
+             and c.status = 'ACTIVE'
+             and c.verified = true
+             and c.verifiedAt >= :since
+             and (c.expiresAt is null or c.expiresAt > :now)
+           """)
+    long countVerifiedSince(@Param("since") OffsetDateTime since, @Param("now") OffsetDateTime now);
+
+    @Query("""
+           select count(c) from Coupon c
+           where c.deletedAt is null
+             and c.status = 'ACTIVE'
+             and (c.expiresAt is null or c.expiresAt > :now)
+           """)
+    long countActive(@Param("now") OffsetDateTime now);
 }
