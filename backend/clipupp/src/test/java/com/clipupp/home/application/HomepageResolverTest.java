@@ -3,12 +3,11 @@ package com.clipupp.home.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.clipupp.campaigns.application.CampaignService;
-import com.clipupp.campaigns.domain.Campaign;
 import com.clipupp.categories.application.CategoryService;
 import com.clipupp.categories.domain.Category;
 import com.clipupp.coupons.application.CouponService;
@@ -19,7 +18,6 @@ import com.clipupp.home.api.dto.PublicHomepageDtos.HomepageSectionPayload;
 import com.clipupp.home.domain.HomepageSection;
 import com.clipupp.stores.application.StoreService;
 import com.clipupp.stores.domain.Store;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -146,5 +144,58 @@ class HomepageResolverTest {
 
         assertThat(out.sections().get(0).categories()).hasSize(8);
         assertThat(out.sections().get(0).coupons()).isEmpty();
+    }
+
+    @Test
+    void zeroItemLimitOnTopDealsIsClampedAndStillReturnsPayload() {
+        List<Category> pinned = List.of(category("fashion", "Fashion"));
+        when(categoryService.findFeatured()).thenReturn(pinned);
+        when(couponService.topInCategoryWithStores(any(), anyInt())).thenReturn(List.of());
+
+        HomepageLayout out = resolver.resolve(List.of(section("top_deals", 0)));
+
+        HomepageSectionPayload p = out.sections().get(0);
+        assertThat(p.code()).isEqualTo("top_deals");
+        assertThat(p.categoryTabs()).hasSize(1);
+        verify(couponService).topInCategoryWithStores("fashion", 1);
+    }
+
+    @Test
+    void hugeItemLimitIsClampedToMax() {
+        when(couponService.trendingVerifiedWithStores(anyInt())).thenReturn(List.of());
+
+        resolver.resolve(List.of(section("trending_coupons", 100_000)));
+
+        verify(couponService).trendingVerifiedWithStores(HomepageResolver.MAX_LIMIT);
+    }
+
+    @Test
+    void failingSectionYieldsBarePayloadAndOthersStillResolve() {
+        when(couponService.trendingVerifiedWithStores(anyInt())).thenThrow(new IllegalStateException("db down"));
+        when(campaignService.findActive(2)).thenReturn(List.of());
+
+        HomepageLayout out = resolver.resolve(List.of(
+                section("trending_coupons", 7),
+                section("bank_offers", 2),
+                section("verify_band", null)));
+
+        assertThat(out.sections()).hasSize(3);
+        HomepageSectionPayload trending = out.sections().get(0);
+        assertThat(trending.code()).isEqualTo("trending_coupons");
+        assertThat(trending.title()).isEqualTo("trending_coupons title");
+        assertThat(trending.coupons()).isNull();
+        assertThat(out.sections().get(1).campaigns()).isEmpty();
+        assertThat(out.sections().get(2).code()).isEqualTo("verify_band");
+        assertThat(out.stats().activeStores()).isEqualTo(40L);
+    }
+
+    @Test
+    void failingStatsFallBackToZeros() {
+        when(couponService.countActive()).thenThrow(new IllegalStateException("db down"));
+
+        HomepageLayout out = resolver.resolve(List.of());
+
+        assertThat(out.stats().activeCoupons()).isZero();
+        assertThat(out.stats().verifiedLast7d()).isZero();
     }
 }

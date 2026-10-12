@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,6 +42,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class HomepageResolver {
 
+    private static final Logger log = LoggerFactory.getLogger(HomepageResolver.class);
+
     static final int HERO_CHIPS = 8;
     static final int HERO_FAN = 3;
     static final int DEFAULT_TRENDING = 7;
@@ -47,6 +51,8 @@ public class HomepageResolver {
     static final int DEFAULT_TABS = 7;
     static final int DEFAULT_PER_TAB = 4;
     static final int DEFAULT_CAMPAIGNS = 2;
+    /** Upper bound for any admin-set item_limit so one keystroke cannot load a whole table. */
+    static final int MAX_LIMIT = 50;
 
     private final HomepageService homepageService;
     private final StoreService storeService;
@@ -68,16 +74,34 @@ public class HomepageResolver {
 
     public HomepageLayout resolve(List<HomepageSection> sections) {
         List<HomepageSectionPayload> resolved = new ArrayList<>(sections.size());
-        for (HomepageSection s : sections) resolved.add(resolveSection(s));
+        for (HomepageSection s : sections) resolved.add(resolveSafely(s));
         return new HomepageLayout(resolved, stats());
     }
 
+    /**
+     * One failing section must not take the whole homepage down: log it and
+     * hand the frontend the bare copy so the renderer can still decide what to show.
+     */
+    private HomepageSectionPayload resolveSafely(HomepageSection s) {
+        try {
+            return resolveSection(s);
+        } catch (RuntimeException e) {
+            log.warn("Homepage section '{}' failed to resolve, serving bare payload", s.getCode(), e);
+            return HomepageSectionPayload.bare(s.getCode(), s.getTitle(), s.getSubtitle(), s.getItemLimit());
+        }
+    }
+
     private Stats stats() {
-        OffsetDateTime weekAgo = OffsetDateTime.now().minusDays(7);
-        return new Stats(
-                couponService.countVerifiedSince(weekAgo),
-                couponService.countActive(),
-                storeService.countActive());
+        try {
+            OffsetDateTime weekAgo = OffsetDateTime.now().minusDays(7);
+            return new Stats(
+                    couponService.countVerifiedSince(weekAgo),
+                    couponService.countActive(),
+                    storeService.countActive());
+        } catch (RuntimeException e) {
+            log.warn("Homepage stats failed to resolve, serving zeros", e);
+            return new Stats(0, 0, 0);
+        }
     }
 
     private HomepageSectionPayload resolveSection(HomepageSection s) {
@@ -90,15 +114,15 @@ public class HomepageResolver {
                     null, toSummaries(couponService.trendingVerifiedWithStores(HERO_FAN)),
                     categoryItems(HERO_CHIPS), null, null);
             case "trending_coupons" -> new HomepageSectionPayload(code, title, subtitle, limit,
-                    null, toSummaries(couponService.trendingVerifiedWithStores(or(limit, DEFAULT_TRENDING))),
+                    null, toSummaries(couponService.trendingVerifiedWithStores(limitOr(limit, DEFAULT_TRENDING))),
                     null, null, null);
             case "featured_stores" -> new HomepageSectionPayload(code, title, subtitle, limit,
-                    storesWithCounts(or(limit, DEFAULT_STORES)), null, null, null, null);
+                    storesWithCounts(limitOr(limit, DEFAULT_STORES)), null, null, null, null);
             case "top_deals" -> new HomepageSectionPayload(code, title, subtitle, limit,
-                    null, null, null, categoryTabs(or(limit, DEFAULT_PER_TAB)), null);
+                    null, null, null, categoryTabs(limitOr(limit, DEFAULT_PER_TAB)), null);
             case "bank_offers" -> new HomepageSectionPayload(code, title, subtitle, limit,
                     null, null, null, null,
-                    campaignService.findActive(or(limit, DEFAULT_CAMPAIGNS)).stream()
+                    campaignService.findActive(limitOr(limit, DEFAULT_CAMPAIGNS)).stream()
                             .map(CampaignDtos.Detail::from).toList());
             default -> HomepageSectionPayload.bare(code, title, subtitle, limit);
         };
@@ -140,7 +164,9 @@ public class HomepageResolver {
         return pairs.stream().map(p -> CouponSummary.from(p.coupon(), p.store())).toList();
     }
 
-    private static int or(Integer limit, int fallback) {
-        return limit == null ? fallback : limit;
+    /** Admin limit or the default, clamped to [1, MAX_LIMIT]. */
+    static int limitOr(Integer limit, int fallback) {
+        int value = limit == null ? fallback : limit;
+        return Math.max(1, Math.min(value, MAX_LIMIT));
     }
 }
