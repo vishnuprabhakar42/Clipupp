@@ -1,4 +1,5 @@
--- V034: Homepage v2 (spec: docs/superpowers/specs/2026-10-12-homepage-v2-design.md)
+-- V036: Homepage v2 (spec: docs/superpowers/specs/2026-10-12-homepage-v2-design.md)
+-- Numbered 036: a local dev DB already carried uncommitted 034/035 rows; Flyway allows gaps.
 
 -- 1. Admin-set verification timestamp. Drives "Verified 2h ago" on cards.
 alter table coupon add column if not exists verified_at timestamptz;
