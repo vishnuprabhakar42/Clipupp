@@ -30,7 +30,8 @@ public class CampaignService {
     @Cacheable(cacheNames = "campaigns.active", key = "'now'", unless = "#result == null")
     @Transactional(readOnly = true)
     public Campaign findActive() {
-        return repo.findActiveAt(OffsetDateTime.now()).orElse(null);
+        // Several campaigns can overlap (the homepage shows two); the newest start wins.
+        return repo.findActiveAt(OffsetDateTime.now(), PageRequest.of(0, 1)).stream().findFirst().orElse(null);
     }
 
     /** Up to {@code limit} active campaigns, newest start first. Feeds the homepage bank/festive tiles. */
