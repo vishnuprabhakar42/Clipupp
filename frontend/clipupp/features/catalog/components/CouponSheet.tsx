@@ -34,11 +34,18 @@ async function copyText(text: string): Promise<boolean> {
 
 /** Mount once in the public layout. Opens through `useCouponSheet().open`. */
 export function CouponSheetProvider() {
-  const { coupon, store, category, isOpen, close } = useCouponSheet();
+  const { coupon, store, category, isOpen, seq, copied, close } = useCouponSheet();
   return (
     <Sheet open={isOpen} onClose={close} labelledBy={TITLE_ID}>
-      {isOpen && coupon && store ? (
-        <CouponSheetBody key={coupon.id} coupon={coupon} store={store} category={category} onClose={close} />
+      {coupon && store ? (
+        <CouponSheetBody
+          key={seq}
+          coupon={coupon}
+          store={store}
+          category={category}
+          alreadyCopied={copied}
+          onClose={close}
+        />
       ) : null}
     </Sheet>
   );
@@ -48,11 +55,13 @@ function CouponSheetBody({
   coupon,
   store,
   category,
+  alreadyCopied,
   onClose,
 }: {
   coupon: FeedCoupon;
   store: FeedStore;
   category: { name: string } | null;
+  alreadyCopied: boolean;
   onClose: () => void;
 }) {
   const t = useTranslations("sheet");
@@ -65,16 +74,21 @@ function CouponSheetBody({
   const [feedback, setFeedback] = useState<string | null>(null);
   const codeRef = useRef<HTMLSpanElement>(null);
   const copyRef = useRef<HTMLButtonElement>(null);
+  const didInit = useRef(false);
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ago = timeAgo(coupon.verifiedAt);
+
+  function flashCopied() {
+    setCopied(true);
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+    copiedTimer.current = setTimeout(() => setCopied(false), 2200);
+  }
 
   async function copy(): Promise<boolean> {
     if (!code) return false;
     const ok = await copyText(code);
     if (ok) {
-      setCopied(true);
-      if (copiedTimer.current) clearTimeout(copiedTimer.current);
-      copiedTimer.current = setTimeout(() => setCopied(false), 2200);
+      flashCopied();
       notify(tt("codeCopied", { code }));
     } else {
       const el = codeRef.current;
@@ -92,10 +106,18 @@ function CouponSheetBody({
 
   // On open: mark revealed, copy, focus Copy, scramble the code once.
   useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
     markRevealed(coupon.id);
     if (!code) return;
-    void copy();
-    copyRef.current?.focus();
+    if (alreadyCopied) {
+      flashCopied();
+      notify(tt("codeCopied", { code }));
+    } else {
+      void copy();
+    }
+    // The dialog opens in the parent's effect, after this one.
+    requestAnimationFrame(() => copyRef.current?.focus());
     if (reducedMotion()) return;
     const start = performance.now();
     const id = setInterval(() => {
@@ -112,7 +134,7 @@ function CouponSheetBody({
       clearInterval(id);
       setShown(code);
     };
-    // Runs once per coupon: the body is keyed by coupon id.
+    // Runs once per coupon: the body is keyed by the open sequence.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -203,7 +225,7 @@ function CouponSheetBody({
         )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-clipupp-neutral-200 pt-4">
-          <span className="mr-auto text-[13.5px] font-medium text-clipupp-neutral-900" id="coupon-feedback-q">
+          <span className="mr-auto text-[13.5px] font-medium text-clipupp-neutral-900">
             {code ? t("feedbackCode") : t("feedbackDeal")}
           </span>
           {feedback ? (
