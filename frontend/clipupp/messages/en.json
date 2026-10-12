@@ -363,6 +363,37 @@
     },
     "popularStores": {
       "aria": "Popular stores"
+    },
+    "trending": {
+      "eyebrow": "Most copied in the last hour",
+      "title": "Trending coupons",
+      "filterAria": "Filter trending coupons",
+      "all": "All",
+      "railAria": "Trending coupons"
+    },
+    "today": {
+      "eyebrow": "All coupons",
+      "title": "Today’s top coupons",
+      "updated": "Updated {ago}",
+      "updating": "Updating...",
+      "refresh": "Refresh coupons",
+      "tabsAria": "Coupon categories",
+      "all": "All",
+      "count": "{count, plural, one {# coupon} other {# coupons}}",
+      "loading": "Loading coupons",
+      "sortLabel": "Sort coupons",
+      "sortPop": "Most used",
+      "sortNew": "Recently verified",
+      "sortEnd": "Ending soon",
+      "sortRate": "Best success rate",
+      "clearStore": "Clear store filter {store}",
+      "showMore": "Show more coupons",
+      "emptyTitle": "No coupons here yet.",
+      "emptyBody": "Try another category, or turn on alerts and we will tell you when one lands.",
+      "emptyCta": "Turn on alerts",
+      "loadError": "We could not load more coupons.",
+      "retry": "Try again",
+      "now": "just now"
     }
   },
   "footer": {

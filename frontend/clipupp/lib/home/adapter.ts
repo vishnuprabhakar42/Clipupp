@@ -6,7 +6,7 @@ import type {
   HomepageStoreSummary,
 } from "@/lib/api/homepage";
 import demoFixture from "@/features/home/fixtures/demo-feed.json";
-import { badgeFor } from "@/lib/format/badge";
+import { toFeedCoupon } from "./toFeedCoupon";
 import { resolveCategoryIcon } from "./categoryIcon";
 import type {
   FeedCategory,
@@ -52,25 +52,6 @@ function nonEmptyString(v: unknown): string | null {
   return typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-function toCoupon(c: HomepageCouponSummary, trending: number | null): FeedCoupon {
-  return {
-    id: c.id,
-    store: c.storeSlug ?? c.storeId,
-    title: c.title,
-    terms: c.description,
-    code: c.code,
-    badge: badgeFor({ savingsLabel: c.savingsLabel, title: c.title, code: c.code }),
-    verifiedAt: c.verifiedAt,
-    success: null,
-    uses: c.usedCount,
-    exclusive: c.exclusive,
-    trending,
-    expiresAt: c.expiresAt,
-    cat: c.categorySlugs[0] ?? null,
-    slug: c.slug,
-  };
-}
-
 function collectCoupons(layout: HomepageLayout | null): { feed: FeedCoupon; raw: HomepageCouponSummary }[] {
   const seen = new Set<string>();
   const out: { feed: FeedCoupon; raw: HomepageCouponSummary }[] = [];
@@ -78,7 +59,7 @@ function collectCoupons(layout: HomepageLayout | null): { feed: FeedCoupon; raw:
     (list ?? []).forEach((c, i) => {
       if (seen.has(c.id)) return;
       seen.add(c.id);
-      out.push({ feed: toCoupon(c, ranked ? i + 1 : null), raw: c });
+      out.push({ feed: toFeedCoupon(c, ranked ? i + 1 : null), raw: c });
     });
   };
   add(sectionOf(layout, "trending_coupons")?.coupons, true);
@@ -274,6 +255,7 @@ export function toHomeFeed(
     if (empty) merged[key] = fixture[key];
   };
   fill("categories");
+  if (merged.categories === fixture.categories) merged.categories = fixture.categories.map((c) => ({ ...c, source: "fixture" as const }));
   fill("stores");
   fill("spotlight");
   fill("coupons");

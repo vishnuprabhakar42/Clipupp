@@ -46,9 +46,9 @@ export function RevealButton({
     [],
   );
 
-  function openSheet(copied: boolean) {
+  function openSheet(copy: Promise<void> | null) {
     markRevealed(coupon.id);
-    open(coupon, store, category ?? null, { copied });
+    open(coupon, store, category ?? null, { copy });
     setPeeling(false);
   }
 
@@ -57,24 +57,25 @@ export function RevealButton({
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (!code) {
-      openSheet(false);
+      openSheet(null);
       return;
     }
     // Copy synchronously inside the click gesture (Safari and iOS require it).
-    let copied = false;
+    let copy: Promise<void> | null = null;
     try {
-      void navigator.clipboard?.writeText(code).catch(() => {});
-      copied = !!navigator.clipboard;
+      copy = navigator.clipboard?.writeText(code) ?? null;
+      // The sheet awaits this promise; keep an early handler so it never goes unhandled.
+      copy?.catch(() => {});
     } catch {}
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || isRevealed(coupon.id)) {
-      openSheet(copied);
+      openSheet(copy);
       return;
     }
     setPeeling(true);
     navigator.vibrate?.(12);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => openSheet(copied), 360);
+    timer.current = setTimeout(() => openSheet(copy), 360);
   }
 
   if (!code) {
@@ -119,7 +120,8 @@ export function RevealButton({
       <span
         aria-hidden
         className={
-          "clipupp-sheen absolute inset-y-0 left-0 z-10 flex w-[62%] items-center justify-center gap-1.5 bg-clipupp-primary text-[13px] font-semibold text-clipupp-primary-fg transition-[width] duration-200 [clip-path:polygon(0_0,100%_0,calc(100%-14px)_100%,0_100%)] lg:group-hover:w-[66%] " +
+          "clipupp-sheen absolute inset-y-0 left-0 z-10 flex items-center justify-center gap-1.5 bg-clipupp-primary text-[13px] font-semibold text-clipupp-primary-fg transition-[width] duration-200 [clip-path:polygon(0_0,100%_0,calc(100%-14px)_100%,0_100%)] " +
+          (size === "sm" ? "w-[67%] lg:group-hover:w-[70%] " : "w-[62%] lg:group-hover:w-[66%] ") +
           (peeling ? "clipupp-peel" : "")
         }
       >

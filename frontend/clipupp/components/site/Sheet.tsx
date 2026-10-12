@@ -31,6 +31,7 @@ export function Sheet({ open, onClose, title, labelledBy, children, size = "auto
     if (open && !d.open) {
       opener.current = document.activeElement as HTMLElement | null;
       d.showModal();
+      window.dispatchEvent(new Event("clipupp:dialog-open"));
     } else if (!open && d.open) {
       d.close();
     }

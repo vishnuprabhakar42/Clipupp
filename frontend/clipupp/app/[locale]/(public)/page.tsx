@@ -8,13 +8,12 @@ import type { HomeFeed } from "@/lib/home/feed";
 import { LiveTicker } from "@/features/home/components/LiveTicker";
 import { PopularStoresStrip } from "@/features/home/components/PopularStoresStrip";
 import { HeroSection } from "@/features/home/components/HeroSection";
-import { TrendingCouponsRail } from "@/features/home/components/TrendingCouponsRail";
+import { TrendingRail } from "@/features/home/components/TrendingRail";
 import { TopStoresGrid } from "@/features/home/components/TopStoresGrid";
-import { TabbedCoupons } from "@/features/home/components/TabbedCoupons";
+import { TodaysCoupons } from "@/features/home/components/TodaysCoupons";
 import { BankOffersHub } from "@/features/home/components/BankOffersHub";
 import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { NewsletterBar } from "@/features/home/components/NewsletterBar";
-import { SectionHeader } from "@/features/home/components/SectionHeader";
 import { RevealRoot } from "@/features/home/components/Reveal";
 
 export async function generateMetadata({
@@ -69,15 +68,9 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   hero_search: (s, ctx) => <HeroSection feed={ctx.feed} section={s} />,
   ticker: (_s, ctx) => <LiveTicker coupons={ctx.feed.coupons} stores={ctx.feed.stores} />,
   popular_stores: (_s, ctx) => <PopularStoresStrip stores={ctx.feed.stores} />,
-  trending_coupons: (s) => <TrendingCouponsRail section={s} />,
+  trending_coupons: (s, ctx) => <TrendingRail feed={ctx.feed} section={s} />,
   featured_stores: (s, ctx) => <TopStoresGrid section={s} stats={ctx.stats} />,
-  top_deals: (s) =>
-    (s.categoryTabs ?? []).length === 0 ? null : (
-      <section className="clipupp-container pb-12 lg:pb-24" id="today" aria-labelledby="today-heading">
-        <SectionHeader eyebrow={s.subtitle} title={s.title} id="today-heading" />
-        <TabbedCoupons tabs={s.categoryTabs ?? []} />
-      </section>
-    ),
+  top_deals: (s, ctx) => <TodaysCoupons feed={ctx.feed} section={s} />,
   bank_offers: (s, ctx) => <BankOffersHub section={s} banks={ctx.banks} />,
   verify_band: (s) => <VerifyBand section={s} />,
   newsletter: (s, ctx) => <NewsletterBar section={s} copy={ctx.newsletter} />,
@@ -130,7 +123,7 @@ export default async function HomePage() {
 
   return (
     <RevealRoot>
-      <div className="bg-white">
+      <div className="bg-clipupp-neutral-50">
         {sections.map((s) => {
           const render = SECTION_RENDERERS[s.code];
           if (!render) return null;

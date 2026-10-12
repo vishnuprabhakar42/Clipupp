@@ -34,7 +34,7 @@ async function copyText(text: string): Promise<boolean> {
 
 /** Mount once in the public layout. Opens through `useCouponSheet().open`. */
 export function CouponSheetProvider() {
-  const { coupon, store, category, isOpen, seq, copied, close } = useCouponSheet();
+  const { coupon, store, category, isOpen, seq, copy, close } = useCouponSheet();
   return (
     <Sheet open={isOpen} onClose={close} labelledBy={TITLE_ID}>
       {coupon && store ? (
@@ -43,7 +43,7 @@ export function CouponSheetProvider() {
           coupon={coupon}
           store={store}
           category={category}
-          alreadyCopied={copied}
+          pendingCopy={copy}
           onClose={close}
         />
       ) : null}
@@ -55,13 +55,13 @@ function CouponSheetBody({
   coupon,
   store,
   category,
-  alreadyCopied,
+  pendingCopy,
   onClose,
 }: {
   coupon: FeedCoupon;
   store: FeedStore;
   category: { name: string } | null;
-  alreadyCopied: boolean;
+  pendingCopy: Promise<void> | null;
   onClose: () => void;
 }) {
   const t = useTranslations("sheet");
@@ -76,6 +76,7 @@ function CouponSheetBody({
   const copyRef = useRef<HTMLButtonElement>(null);
   const didInit = useRef(false);
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrambleTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const ago = timeAgo(coupon.verifiedAt);
 
   function flashCopied() {
@@ -84,9 +85,17 @@ function CouponSheetBody({
     copiedTimer.current = setTimeout(() => setCopied(false), 2200);
   }
 
-  async function copy(): Promise<boolean> {
+  async function copy(pending?: Promise<void> | null): Promise<boolean> {
     if (!code) return false;
-    const ok = await copyText(code);
+    let ok: boolean;
+    if (pending) {
+      ok = await pending.then(
+        () => true,
+        () => false,
+      );
+    } else {
+      ok = await copyText(code);
+    }
     if (ok) {
       flashCopied();
       notify(tt("codeCopied", { code }));
@@ -110,12 +119,7 @@ function CouponSheetBody({
     didInit.current = true;
     markRevealed(coupon.id);
     if (!code) return;
-    if (alreadyCopied) {
-      flashCopied();
-      notify(tt("codeCopied", { code }));
-    } else {
-      void copy();
-    }
+    void copy(pendingCopy);
     // The dialog opens in the parent's effect, after this one.
     requestAnimationFrame(() => copyRef.current?.focus());
     if (reducedMotion()) return;
@@ -124,16 +128,14 @@ function CouponSheetBody({
       if (performance.now() - start >= 520) {
         setShown(code);
         clearInterval(id);
+        scrambleTimer.current = null;
         return;
       }
       setShown(
         Array.from(code, (c) => (c === " " || c === "-" ? c : ALPHABET[Math.floor(Math.random() * ALPHABET.length)])).join(""),
       );
     }, 45);
-    return () => {
-      clearInterval(id);
-      setShown(code);
-    };
+    scrambleTimer.current = id;
     // Runs once per coupon: the body is keyed by the open sequence.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -141,6 +143,7 @@ function CouponSheetBody({
   useEffect(
     () => () => {
       if (copiedTimer.current) clearTimeout(copiedTimer.current);
+      if (scrambleTimer.current) clearInterval(scrambleTimer.current);
     },
     [],
   );

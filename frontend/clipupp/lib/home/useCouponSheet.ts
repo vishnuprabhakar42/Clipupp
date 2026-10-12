@@ -8,13 +8,13 @@ type CouponSheetState = {
   isOpen: boolean;
   /** Increments on every open so the sheet body remounts and its effects rerun. */
   seq: number;
-  /** True when the opener already copied the code inside its own click gesture. */
-  copied: boolean;
+  /** Pending clipboard write started by the opener inside its own click gesture, null when none. */
+  copy: Promise<void> | null;
   open: (
     coupon: FeedCoupon,
     store: FeedStore,
     category?: { name: string } | null,
-    opts?: { copied?: boolean },
+    opts?: { copy?: Promise<void> | null },
   ) => void;
   close: () => void;
 };
@@ -26,9 +26,9 @@ export const useCouponSheet = create<CouponSheetState>((set) => ({
   category: null,
   isOpen: false,
   seq: 0,
-  copied: false,
+  copy: null,
   open: (coupon, store, category = null, opts) =>
-    set((s) => ({ coupon, store, category, isOpen: true, seq: s.seq + 1, copied: !!opts?.copied })),
+    set((s) => ({ coupon, store, category, isOpen: true, seq: s.seq + 1, copy: opts?.copy ?? null })),
   // Keep coupon/store so the sheet content does not blank during the close.
   close: () => set({ isOpen: false }),
 }));
