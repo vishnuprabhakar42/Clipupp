@@ -298,16 +298,18 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Hand-checked codes",
-      "title": "Working coupon codes for every Indian store.",
-      "subtitle": "No wallet, no tracking, no waiting. Just codes that work.",
-      "searchPlaceholder": "Try Amazon, Myntra, Swiggy",
-      "searchLabel": "Search stores",
+      "eyebrow": "Coupons tested by people, every day",
+      "title": "Codes that <em>actually work</em> at Indian stores.",
+      "subtitle": "Every code is applied at a real checkout before it reaches you. Copy it, paste it, pay less.",
+      "searchPlaceholder": "Try Myntra, Swiggy or 'HDFC'",
       "searchCta": "Find codes",
-      "noResults": "No coupons for \"{q}\" yet, try Amazon India",
-      "proof": "<verified></verified> codes verified this week · <stores></stores> stores",
-      "proofZero": "<coupons></coupons> active coupons · <stores></stores> stores",
-      "chipsLabel": "Browse by category"
+      "verifiedToday": "codes verified today",
+      "worked7d": "worked last 7 days",
+      "activeCoupons": "active coupons",
+      "stores": "Indian stores",
+      "popular": "Popular",
+      "trustAria": "Clipupp in numbers",
+      "popularAria": "Popular stores"
     },
     "sections": {
       "viewAllTrending": "View all trending coupons",
@@ -344,6 +346,23 @@
       "defaultCta": "See eligible offers",
       "range": "{from} to {to}",
       "banksLabel": "Participating banks"
+    },
+    "spotlight": {
+      "label": "Festive spotlight offers",
+      "cta": "Get this offer",
+      "till": "Offer till {date}",
+      "prev": "Previous offer",
+      "next": "Next offer",
+      "dot": "{store} offer",
+      "slide": "{i} of {n}"
+    },
+    "ticker": {
+      "label": "Live",
+      "verified": "verified {ago}",
+      "aria": "Recently verified coupons"
+    },
+    "popularStores": {
+      "aria": "Popular stores"
     }
   },
   "footer": {

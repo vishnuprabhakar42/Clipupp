@@ -18,9 +18,13 @@ export type HeaderSearchFeed = {
 };
 
 interface HeaderSearchProps {
-  variant?: "default" | "pill";
+  variant?: "default" | "pill" | "hero";
   feed?: HeaderSearchFeed;
   className?: string;
+  /** Overrides the placeholder (hero). */
+  placeholder?: string;
+  /** Hero only: label of the submit button inside the pill. */
+  ctaLabel?: string;
 }
 
 type Opt = {
@@ -57,7 +61,7 @@ function Highlight({ text, q }: { text: string; q: string }) {
   );
 }
 
-export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }: HeaderSearchProps) {
+export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className, placeholder, ctaLabel }: HeaderSearchProps) {
   const t = useTranslations("header");
   const router = useRouter();
   const uid = useId();
@@ -106,6 +110,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
   // "/" focuses the search from anywhere outside a field.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (variant === "hero") return;
       if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement | null;
       if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
@@ -115,7 +120,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, []);
+  }, [variant]);
 
   const q = debounced;
   const typed = q.length > 0;
@@ -270,18 +275,22 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
   }
 
   const showPanel = open && (options.length > 0 || typed);
-  const pill = variant === "pill";
+  const hero = variant === "hero";
+  const pill = variant === "pill" || hero;
 
   return (
     <div ref={wrapRef} className={cn("relative w-full", className)}>
       <form role="search" onSubmit={submit}>
         <div
           className={cn(
-            "flex h-11 items-center gap-2 border border-clipupp-neutral-200 bg-clipupp-neutral-50 px-3.5 transition focus-within:border-clipupp-primary focus-within:bg-clipupp-surface focus-within:ring-2 focus-within:ring-clipupp-primary/20 lg:h-[46px]",
+            "flex items-center border border-clipupp-neutral-200 transition focus-within:border-clipupp-primary focus-within:bg-clipupp-surface focus-within:ring-2 focus-within:ring-clipupp-primary/20",
+            hero
+              ? "h-[58px] gap-2.5 bg-clipupp-surface pl-5 pr-[7px] shadow-card"
+              : "h-11 gap-2 bg-clipupp-neutral-50 px-3.5 lg:h-[46px]",
             pill ? "rounded-full" : "rounded-lg",
           )}
         >
-          <Search className="h-[18px] w-[18px] shrink-0 text-clipupp-neutral-500" strokeWidth={1.8} aria-hidden="true" />
+          <Search className={cn("shrink-0 text-clipupp-neutral-500", hero ? "h-5 w-5" : "h-[18px] w-[18px]")} strokeWidth={1.8} aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
@@ -295,7 +304,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
-            placeholder={t("searchPlaceholder")}
+            placeholder={placeholder ?? t("searchPlaceholder")}
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -311,7 +320,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
               blurTimer.current = window.setTimeout(close, 150);
             }}
             onKeyDown={onKeyDown}
-            className="h-full min-w-0 flex-1 bg-transparent text-base text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500"
+            className={cn("h-full min-w-0 flex-1 bg-transparent text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500", hero ? "text-[17px]" : "text-base")}
           />
           {query ? (
             <button
@@ -326,7 +335,8 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
-          ) : (
+          ) : null}
+          {!query && !hero ? (
             <kbd
               title={t("kbdHint")}
               className={cn(
@@ -336,7 +346,15 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }:
             >
               /
             </kbd>
-          )}
+          ) : null}
+          {hero && ctaLabel ? (
+            <button
+              type="submit"
+              className="h-11 shrink-0 rounded-full bg-clipupp-primary px-6 text-[15px] font-semibold text-clipupp-primary-fg transition hover:bg-clipupp-primary-strong active:scale-[0.97]"
+            >
+              {ctaLabel}
+            </button>
+          ) : null}
         </div>
       </form>
 

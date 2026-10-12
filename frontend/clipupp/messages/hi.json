@@ -255,16 +255,18 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "हाथ से जाँचे गए कोड",
-      "title": "हर भारतीय स्टोर के लिए काम करने वाले कूपन कोड।",
-      "subtitle": "कोई वॉलेट नहीं, कोई ट्रैकिंग नहीं, कोई इंतज़ार नहीं। बस ऐसे कोड जो काम करते हैं।",
-      "searchPlaceholder": "Amazon, Myntra आज़माएँ",
-      "searchLabel": "स्टोर खोजें",
+      "eyebrow": "लोगों द्वारा जाँचे गए कूपन, हर दिन",
+      "title": "ऐसे कोड जो भारतीय स्टोर पर <em>सच में चलते हैं</em>।",
+      "subtitle": "हर कोड आप तक पहुँचने से पहले असली चेकआउट पर लगाकर देखा जाता है। कॉपी करें, पेस्ट करें, कम चुकाएँ।",
+      "searchPlaceholder": "Myntra, Swiggy या 'HDFC' आज़माएँ",
       "searchCta": "कोड ढूँढें",
-      "noResults": "\"{q}\" के लिए अभी कूपन नहीं, Amazon India आज़माएँ",
-      "proof": "इस हफ़्ते <verified></verified> कोड जाँचे गए · <stores></stores> स्टोर",
-      "proofZero": "<coupons></coupons> सक्रिय कूपन · <stores></stores> स्टोर",
-      "chipsLabel": "श्रेणी से देखें"
+      "verifiedToday": "कोड आज जाँचे गए",
+      "worked7d": "पिछले 7 दिन चले",
+      "activeCoupons": "सक्रिय कूपन",
+      "stores": "भारतीय स्टोर",
+      "popular": "लोकप्रिय",
+      "trustAria": "Clipupp आँकड़ों में",
+      "popularAria": "लोकप्रिय स्टोर"
     },
     "sections": {
       "viewAllTrending": "सभी ट्रेंडिंग कूपन देखें",
@@ -301,6 +303,23 @@
       "defaultCta": "योग्य ऑफ़र देखें",
       "range": "{from} से {to}",
       "banksLabel": "भाग लेने वाले बैंक"
+    },
+    "spotlight": {
+      "label": "त्योहार स्पॉटलाइट ऑफ़र",
+      "cta": "यह ऑफ़र पाएँ",
+      "till": "ऑफ़र {date} तक",
+      "prev": "पिछला ऑफ़र",
+      "next": "अगला ऑफ़र",
+      "dot": "{store} ऑफ़र",
+      "slide": "{n} में से {i}"
+    },
+    "ticker": {
+      "label": "लाइव",
+      "verified": "{ago} जाँचा गया",
+      "aria": "हाल में जाँचे गए कूपन"
+    },
+    "popularStores": {
+      "aria": "लोकप्रिय स्टोर"
     }
   },
   "footer": {
