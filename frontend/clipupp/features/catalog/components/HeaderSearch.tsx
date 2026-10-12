@@ -25,6 +25,8 @@ interface HeaderSearchProps {
   placeholder?: string;
   /** Hero only: label of the submit button inside the pill. */
   ctaLabel?: string;
+  /** Accessible name of the search landmark (the hero passes its own). */
+  "aria-label"?: string;
 }
 
 type Opt = {
@@ -61,7 +63,14 @@ function Highlight({ text, q }: { text: string; q: string }) {
   );
 }
 
-export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className, placeholder, ctaLabel }: HeaderSearchProps) {
+export function HeaderSearch({
+  variant = "pill",
+  feed = EMPTY_FEED,
+  className,
+  placeholder,
+  ctaLabel,
+  "aria-label": ariaLabel,
+}: HeaderSearchProps) {
   const t = useTranslations("header");
   const router = useRouter();
   const uid = useId();
@@ -280,7 +289,7 @@ export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className, p
 
   return (
     <div ref={wrapRef} className={cn("relative w-full", className)}>
-      <form role="search" onSubmit={submit}>
+      <form role="search" aria-label={ariaLabel ?? t("searchLabel")} onSubmit={submit}>
         <div
           className={cn(
             "flex items-center border border-clipupp-neutral-200 transition focus-within:border-clipupp-primary focus-within:bg-clipupp-surface focus-within:ring-2 focus-within:ring-clipupp-primary/20",

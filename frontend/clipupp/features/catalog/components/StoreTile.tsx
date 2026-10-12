@@ -21,7 +21,7 @@ export function StoreTile({ store, size = 44, className = "" }: { store: FeedSto
       height={size}
       sizes={`${size}px`}
       className="h-full w-full object-contain"
-      frameClassName={"grid shrink-0 place-items-center overflow-hidden rounded-xl border border-clipupp-neutral-200 bg-white p-1 " + className}
+      frameClassName={"grid shrink-0 place-items-center overflow-hidden rounded-xl border border-clipupp-neutral-200 bg-clipupp-logo-bg p-1 " + className}
       frameStyle={style}
       fallback={mono}
     />

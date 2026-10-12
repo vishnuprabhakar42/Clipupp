@@ -18,8 +18,9 @@ import { AlertsSection } from "@/features/home/components/AlertsSection";
 import { FaqSection } from "@/features/home/components/FaqSection";
 import { RevealRoot } from "@/features/home/components/Reveal";
 import { JsonLd } from "@/lib/seo/jsonLd";
+import { canonicalFor } from "@/lib/seo/urls";
+import type { Locale } from "@/lib/i18n/config";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export async function generateMetadata({
   params,
@@ -107,7 +108,8 @@ const FALLBACK_SECTIONS: HomepageSectionPayload[] = [
   },
 ];
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: Locale }> }) {
+  const { locale } = await params;
   const [layout, feed] = await Promise.all([homepageApi.getPublic(), getHomeFeed()]);
   const base = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
   // Order follows the feed; in demo mode the adapter has already inserted the
@@ -137,12 +139,12 @@ export default async function HomePage() {
               "@type": "ListItem",
               position: i + 1,
               name: c.title,
-              url: `${SITE_URL}/coupons/${c.slug}`,
+              url: canonicalFor(`/coupons/${c.slug}`, locale),
             })),
           }}
         />
       )}
-      <div className="bg-clipupp-neutral-50">
+      <div className="bg-clipupp-page">
         {sections.map((s) => {
           const render = SECTION_RENDERERS[s.code];
           if (!render) return null;

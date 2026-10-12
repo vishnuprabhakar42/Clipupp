@@ -17,8 +17,7 @@ const mono = (s: FeedStore) => (
 /** Round logos of the popular stores, ranked by `popular`. */
 export async function PopularStoresStrip({ stores }: { stores: FeedStore[] }) {
   const t = await getTranslations("home.popularStores");
-  const items = stores.filter((s) => s.popular != null).sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
-    .slice(0, 6);
+  const items = stores.filter((s) => s.popular != null).sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0));
   if (items.length < 4) return null;
   return (
     <section aria-label={t("aria")} className="clipupp-container pt-6 lg:pt-8">
@@ -33,7 +32,7 @@ export async function PopularStoresStrip({ stores }: { stores: FeedStore[] }) {
                   height={72}
                   sizes="72px"
                   className="h-full w-full object-contain"
-                  frameClassName="grid h-[62px] w-[62px] place-items-center overflow-hidden rounded-full bg-white p-3 shadow-card transition-transform group-hover:-translate-y-0.5 lg:h-[72px] lg:w-[72px] lg:p-3.5"
+                  frameClassName="grid h-[62px] w-[62px] place-items-center overflow-hidden rounded-full bg-clipupp-logo-bg p-3 shadow-card transition-transform group-hover:-translate-y-0.5 lg:h-[72px] lg:w-[72px] lg:p-3.5"
                   fallback={mono(s)}
                 />
               ) : (

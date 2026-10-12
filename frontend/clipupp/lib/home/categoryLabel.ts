@@ -11,3 +11,12 @@ export function rootCategories<T extends Pick<FeedCategory, "parent" | "hot">>(c
   const hasHierarchy = cats.some((c) => c.parent === null);
   return hasHierarchy ? cats.filter((c) => c.parent === null || c.hot) : cats;
 }
+
+/**
+ * Root slug for a category: itself when it is a root or has no known parent,
+ * else its `parent`. Used to turn leaf coupon categories into root chips.
+ */
+export function rootCategoryOf(slug: string, cats: Pick<FeedCategory, "id" | "parent">[]): string {
+  const c = cats.find((x) => x.id === slug);
+  return c?.parent && cats.some((x) => x.id === c.parent) ? c.parent : slug;
+}

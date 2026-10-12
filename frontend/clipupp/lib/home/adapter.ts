@@ -129,7 +129,17 @@ function buildCategories(
   const tabCount = new Map<string, number>();
   for (const tab of sectionOf(layout, "top_deals")?.categoryTabs ?? []) tabCount.set(tab.slug, tab.coupons.length);
 
+  // A leaf's parent is inferred as the single root present on every coupon that
+  // carries the leaf (the payload has no tree); ambiguous leaves stay undefined.
+  const roots = [...base].filter(([, m]) => m.root).map(([slug]) => slug);
+  const parentOf = (slug: string): string | undefined => {
+    const lists = coupons.map(({ raw }) => raw.categorySlugs).filter((l) => l.includes(slug));
+    const common = roots.filter((r) => lists.length > 0 && lists.every((l) => l.includes(r)));
+    return common.length === 1 ? common[0] : undefined;
+  };
+
   return [...base].map(([slug, meta]) => {
+    const parent = meta.root ? null : roots.length ? parentOf(slug) : undefined;
     const top = new Map<string, string>();
     for (const { feed, raw } of coupons) {
       if (top.size >= 3) break;
@@ -140,7 +150,7 @@ function buildCategories(
       name: meta.name,
       icon: resolveCategoryIcon(meta.icon, slug, meta.name),
       // hero_search lists the root categories; the rest come from tabs and coupon slugs.
-      ...(meta.root ? { parent: null } : {}),
+      ...(parent !== undefined ? { parent } : {}),
       couponCount: tabCount.get(slug) ?? 0,
       topStores: [...top].map(([s, name]) => ({ slug: s, name })),
     };
@@ -244,22 +254,6 @@ function parseFaq(v: unknown): { q: string; a: string }[] {
     }
     return [];
   });
-}
-
-/**
- * Demo section order: the backend order, with the legacy `newsletter` row read
- * as `alerts`, and every design section the backend lacks inserted right after
- * the design section that precedes it.
- */
-function demoSectionOrder(backend: string[], design: string[]): string[] {
-  if (backend.length === 0) return design;
-  const order = backend.map((c) => (c === "newsletter" && !backend.includes("alerts") ? "alerts" : c));
-  design.forEach((code, i) => {
-    if (order.includes(code)) return;
-    const prev = design.slice(0, i).reverse().find((c) => order.includes(c));
-    order.splice(prev ? order.indexOf(prev) + 1 : 0, 0, code);
-  });
-  return order;
 }
 
 /** Deep copy of the fixture with every ISO timestamp moved forward by `delta` ms. */
@@ -390,6 +384,7 @@ export function toHomeFeed(
         ? [...backendSlides, ...extra].slice(0, 3)
         : backendSlides;
 
-  merged.sectionOrder = demoSectionOrder(feed.sectionOrder, fixture.sectionOrder);
+  // Demo: the design order in full; backend positions still win in production.
+  merged.sectionOrder = [...fixture.sectionOrder];
   return merged;
 }

@@ -125,6 +125,8 @@ const config = {
         "clipupp-warn-bg": "rgb(var(--clipupp-warn-bg-rgb) / <alpha-value>)",
         "clipupp-skel":    "rgb(var(--clipupp-skel-rgb) / <alpha-value>)",
         "clipupp-surface": "rgb(var(--clipupp-surface-rgb) / <alpha-value>)",
+        "clipupp-page":    "rgb(var(--clipupp-page-rgb) / <alpha-value>)",
+        "clipupp-logo-bg": "rgb(var(--clipupp-logo-bg-rgb) / <alpha-value>)",
         "clipupp-ft": {
           bg:      "rgb(var(--clipupp-ft-bg-rgb) / <alpha-value>)",
           card:    "rgb(var(--clipupp-ft-card-rgb) / <alpha-value>)",

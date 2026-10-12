@@ -6,6 +6,7 @@ import { shortCount } from "@/lib/format/short";
 import type { FeedDeal, FeedStore } from "@/lib/home/feed";
 import { catTint } from "../lib/catTint";
 import { DealImage } from "./DealImage";
+import { displayShortName } from "@/lib/home/storeName";
 
 const nf = new Intl.NumberFormat("en-IN");
 
@@ -51,26 +52,28 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
             {deal.reviews != null && <span>({shortCount(deal.reviews)})</span>}
           </p>
         )}
-        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+        {/* Price and MRP share a line (the MRP drops whole below a long price, never
+            truncated); "% off" always sits on its own line so cards align. */}
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 whitespace-nowrap">
           <span className="clipupp-amt text-[22px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
             {nf.format(deal.price)}
           </span>
           {deal.mrp != null && deal.mrp > deal.price && (
-            <>
-              <span className="clipupp-amt text-[12.5px] text-clipupp-neutral-500 line-through">{nf.format(deal.mrp)}</span>
-              {showOff && <span className="text-[13px] font-semibold text-clipupp-success">{t("off", { pct: deal.off })}</span>}
-            </>
+            <span className="clipupp-amt text-[12.5px] text-clipupp-neutral-500 line-through">{nf.format(deal.mrp)}</span>
           )}
         </p>
+        {showOff && deal.mrp != null && deal.mrp > deal.price && (
+          <p className="mt-1 text-[13px] font-semibold text-clipupp-success">{t("off", { pct: deal.off })}</p>
+        )}
         {deal.lowest30d && <p className="mt-2 text-[11.5px] font-semibold text-clipupp-success">{t("lowest")}</p>}
         <div className="mt-auto pt-3">
           <a
             href={deal.url}
             target="_blank"
             rel="noopener sponsored nofollow"
-            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-2 text-[13.5px] whitespace-nowrap font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-3 text-[13.5px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
           >
-            {t("buy", { store: store.name })}
+            <span className="truncate">{t("buy", { store: displayShortName(store.name) })}</span>
           </a>
         </div>
       </div>
