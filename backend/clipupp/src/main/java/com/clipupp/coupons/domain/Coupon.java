@@ -72,6 +72,10 @@ public class Coupon extends AuditableEntity {
     @Column(name = "verified", nullable = false)
     private boolean verified;
 
+    /** When an admin last marked this coupon verified. Null when not verified. */
+    @Column(name = "verified_at")
+    private OffsetDateTime verifiedAt;
+
     @Column(name = "exclusive", nullable = false)
     private boolean exclusive;
 
@@ -164,7 +168,19 @@ public class Coupon extends AuditableEntity {
     public CouponStatus getStatus() { return status; }
     public void setStatus(CouponStatus status) { this.status = status; }
     public boolean isVerified() { return verified; }
-    public void setVerified(boolean v) { this.verified = v; }
+    public OffsetDateTime getVerifiedAt() { return verifiedAt; }
+
+    /**
+     * The only way verification state changes. Verifying always refreshes the
+     * timestamp (an admin re-checking a code is a fresh verification);
+     * unverifying clears it so the UI never shows a stale "Verified 3d ago".
+     */
+    public void applyVerified(boolean verified, OffsetDateTime now) {
+        this.verified = verified;
+        this.verifiedAt = verified ? now : null;
+    }
+
+    public void setVerified(boolean v) { applyVerified(v, OffsetDateTime.now()); }
     public boolean isExclusive() { return exclusive; }
     public void setExclusive(boolean e) { this.exclusive = e; }
     public int getUsedCount() { return usedCount; }
