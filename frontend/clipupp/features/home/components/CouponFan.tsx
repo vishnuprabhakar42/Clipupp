@@ -1,4 +1,4 @@
-import { CouponCard, type CouponCardData } from "@/features/catalog/components/CouponCard";
+import { CouponCardLegacy, type CouponCardData } from "@/features/catalog/components/CouponCardLegacy";
 
 const SLOTS = [
   { rot: "-6deg", y: "-92px", z: 1 },
@@ -23,7 +23,7 @@ export function CouponFan({ coupons }: { coupons: CouponCardData[] }) {
             className="absolute left-1/2 top-1/2 w-[330px] [&>article]:shadow-[0_16px_40px_rgba(10,22,70,0.12)]"
             style={{ transform: `translate(-50%, -50%) rotate(${s.rot}) translateY(${s.y})`, zIndex: s.z }}
           >
-            <CouponCard coupon={c} interactive={false} />
+            <CouponCardLegacy coupon={c} interactive={false} />
           </div>
         );
       })}
