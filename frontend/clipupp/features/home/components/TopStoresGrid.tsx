@@ -15,7 +15,7 @@ export async function TopStoresGrid({ section }: { section: HomepageSectionPaylo
   if (stores.length === 0) return null;
   return (
     <section className="clipupp-container pb-12 lg:pb-24" aria-labelledby="stores-heading" id="stores">
-      <SectionHeader eyebrow={section.subtitle} title={section.title} link={{ href: "/stores", label: t("browseAllStores") }} />
+      <SectionHeader id="stores-heading" eyebrow={section.subtitle} title={section.title} link={{ href: "/stores", label: t("browseAllStores") }} />
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {stores.map((s, i) => (
           <li key={s.id} className={i >= 8 ? "hidden lg:block" : undefined}>
