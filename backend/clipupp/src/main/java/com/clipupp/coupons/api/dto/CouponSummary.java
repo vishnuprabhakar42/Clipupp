@@ -22,6 +22,7 @@ public record CouponSummary(
         String savingsLabel,
         OffsetDateTime expiresAt,
         boolean verified,
+        OffsetDateTime verifiedAt,
         boolean exclusive,
         int usedCount,
         int popularityScore,
@@ -41,7 +42,7 @@ public record CouponSummary(
                 s == null ? null : s.getBrandColor(),
                 c.getType(), c.getCode(),
                 c.getTitle(), c.getDescription(), c.getSavingsLabel(), c.getExpiresAt(),
-                c.isVerified(), c.isExclusive(), c.getUsedCount(), c.getPopularityScore(),
+                c.isVerified(), c.getVerifiedAt(), c.isExclusive(), c.getUsedCount(), c.getPopularityScore(),
                 c.getCategories().stream().map(cat -> cat.getSlug()).toList());
     }
 }
