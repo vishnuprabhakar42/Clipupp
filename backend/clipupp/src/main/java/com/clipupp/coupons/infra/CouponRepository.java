@@ -99,7 +99,10 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
                                        @Param("status") CouponStatus status,
                                        @Param("now") OffsetDateTime now);
 
-    @EntityGraph(attributePaths = "categories")
+    /**
+     * No @EntityGraph here: a fetch join plus Pageable makes Hibernate paginate
+     * in memory (HHH90003004). Categories are @BatchSize-loaded by the caller.
+     */
     @Query("""
            select c from Coupon c
            where c.deletedAt is null
@@ -150,8 +153,10 @@ public interface CouponRepository extends JpaRepository<Coupon, UUID> {
                              @Param("type") CouponType type,
                              Pageable pageable);
 
-    /** Trending = verified, active, most popular first, then most recently verified. */
-    @EntityGraph(attributePaths = "categories")
+    /**
+     * Trending = verified, active, most popular first, then most recently verified.
+     * No @EntityGraph (see findHomepageTop): categories load in one batched query.
+     */
     @Query("""
            select c from Coupon c
            where c.deletedAt is null
