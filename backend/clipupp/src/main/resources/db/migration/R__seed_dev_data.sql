@@ -497,12 +497,16 @@ SELECT
   rs.id,
   rn.id,
   'ADV-' || upper(substr(rs.slug, 1, 6)) || '-' || (1000 + rs.rn + 1)::text,
-  'https://track.clipupp.in/r?store=' || rs.slug || '&sub_id={click_id}&url={url}',
+  'https://track.clipupp.in/r?store=' || rs.slug || '&sub_id={click_id}&url={merchantUrl}',
   1,
   TRUE
 FROM ranked_stores rs
 JOIN ranked_networks rn ON rn.rn = rs.rn % (SELECT cnt FROM net_count)
-ON CONFLICT (store_id, network_id) DO NOTHING;
+-- {url} is not a LinkTemplateEngine placeholder (it is {merchantUrl}); rows
+-- seeded with it made every /r/{id} click fail with 400, so repair them.
+ON CONFLICT (store_id, network_id) DO UPDATE
+  SET deeplink_template = EXCLUDED.deeplink_template
+  WHERE merchant_network_link.deeplink_template LIKE '%{url}%';
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 10. COUPONS  (~12 per store = 600+ total)
