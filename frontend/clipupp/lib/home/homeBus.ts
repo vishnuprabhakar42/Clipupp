@@ -8,16 +8,21 @@ export type HomeBusEvents = {
   "today:tab": string;
   /** Store slug to filter Today's list by; empty string clears the filter. */
   "today:store": string;
+  /** The page data was refreshed; Today's list reloads its first page. */
+  "today:refresh": string;
 };
 
-type Handler<K extends keyof HomeBusEvents> = (payload: HomeBusEvents[K]) => void;
+/** Who emitted. Subscribers compare `meta.source` with their own token to ignore their own echo. */
+export type EmitMeta = { source?: unknown };
+
+type Handler<K extends keyof HomeBusEvents> = (payload: HomeBusEvents[K], meta: EmitMeta) => void;
 
 const handlers = new Map<keyof HomeBusEvents, Set<Handler<keyof HomeBusEvents>>>();
 const last = new Map<keyof HomeBusEvents, HomeBusEvents[keyof HomeBusEvents]>();
 
-export function emit<K extends keyof HomeBusEvents>(name: K, payload: HomeBusEvents[K]): void {
+export function emit<K extends keyof HomeBusEvents>(name: K, payload: HomeBusEvents[K], source?: unknown): void {
   last.set(name, payload);
-  handlers.get(name)?.forEach((fn) => (fn as Handler<K>)(payload));
+  handlers.get(name)?.forEach((fn) => (fn as Handler<K>)(payload, { source }));
 }
 
 /** Subscribe. Returns the unsubscribe function. */
