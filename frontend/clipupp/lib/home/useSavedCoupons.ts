@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -88,9 +88,21 @@ const MERGE_FLAG = "clipupp:saved-merged";
 export function useMergeSavedOnLogin() {
   const { user } = useAuth();
   const userId = user?.id ?? null;
+  const prevUserId = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    const prev = prevUserId.current;
+    prevUserId.current = userId;
+    if (!userId) {
+      // Logout (value to null): drop this account's saves from the device.
+      if (prev) {
+        useSavedStore.getState().setIds([]);
+        try {
+          sessionStorage.removeItem(MERGE_FLAG);
+        } catch {}
+      }
+      return;
+    }
     ensureHydrated();
     try {
       if (sessionStorage.getItem(MERGE_FLAG) === userId) return;

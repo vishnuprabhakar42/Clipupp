@@ -5,8 +5,8 @@ import { Toaster as Sonner } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
-// Design pill: ink-filled, centred, above the mobile bottom nav (offset set in
-// globals.css via .clipupp-toaster). Single Toaster for the whole app, mounted
+// Design pill: ink-filled, centred, above the mobile bottom nav (offset props here, 28px at lg+ in
+// globals.css). Single Toaster for the whole app, mounted
 // in app/[locale]/layout.tsx. Use notify()/notifyError() from
 // components/site/Toast for the app-level helpers.
 const Toaster = ({ ...props }: ToasterProps) => {
@@ -14,6 +14,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       position="bottom-center"
       duration={2300}
+      offset={{ bottom: "76px" }}
+      mobileOffset={{ bottom: "calc(76px + env(safe-area-inset-bottom))" }}
       className="toaster group clipupp-toaster"
       icons={{
         success: <Check size={16} aria-hidden />,
