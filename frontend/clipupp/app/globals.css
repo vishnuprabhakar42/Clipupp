@@ -1495,16 +1495,9 @@
   .clipupp-rail::-webkit-scrollbar { display: none; }
   .clipupp-rail > * { scroll-snap-align: start; }
 
-  /* Toasts sit above the mobile bottom nav, 28px from the edge on desktop. */
-  .clipupp-toaster[data-sonner-toaster] {
-    --offset: calc(76px + env(safe-area-inset-bottom)) !important;
-    --mobile-offset: calc(76px + env(safe-area-inset-bottom)) !important;
-  }
+  /* Toasts: Sonner's offset props set 76px (above the mobile nav); 28px at lg+. */
   @media (min-width: 1024px) {
-    .clipupp-toaster[data-sonner-toaster] {
-      --offset: 28px !important;
-      --mobile-offset: 28px !important;
-    }
+    [data-sonner-toaster] { --offset-bottom: 28px !important; }
   }
 
   /* Rail columns: per-breakpoint widths from Rail's inline vars. */
