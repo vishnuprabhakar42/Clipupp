@@ -626,13 +626,13 @@
     @apply border-border;
   }
   html {
-    scroll-padding-top: calc(var(--header-h) + 16px);
+    scroll-padding-top: calc(var(--clipupp-hv) + 16px);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
   }
   @media (min-width: 1024px) {
     html {
-      scroll-padding-top: calc(var(--header-h-lg) + 16px);
+      scroll-padding-top: calc(var(--clipupp-hv) + 16px);
     }
   }
   body {
@@ -1661,3 +1661,23 @@
     to   { translate: -50% 0; }
   }
 }
+
+/* Header height for sticky offsets (Step 4). Phone: 58 + 56; row 1 collapsed
+   on scroll-down (html.clipupp-hdr-c): 56; lg+: 72. */
+:root { --clipupp-hv: 114px; }
+:root.clipupp-hdr-c { --clipupp-hv: 56px; }
+@media (min-width: 1024px) {
+  :root, :root.clipupp-hdr-c { --clipupp-hv: 72px; }
+}
+.clipupp-hdr { transition: translate 250ms cubic-bezier(0.2, 0, 0, 1); }
+@media (max-width: 1023.98px) {
+  :root.clipupp-hdr-c .clipupp-hdr { translate: 0 -58px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clipupp-hdr { transition: none; }
+}
+
+/* Header logo: the default artwork has a dark "Clip", so swap in the on-dark one. */
+.clipupp-logo-d { display: none; }
+:root[data-theme="dark"] .clipupp-logo-l { display: none; }
+:root[data-theme="dark"] .clipupp-logo-d { display: inline-flex; }

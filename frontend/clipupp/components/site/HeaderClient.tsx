@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, ChevronRight, LayoutGrid, LogOut, Menu } from "lucide-react";
+import { Bell, Heart, LogOut, User } from "lucide-react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,121 +12,135 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
 import { Logo } from "@/components/site/Logo";
-import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
+import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { Sheet, SheetHeader } from "@/components/site/Sheet";
+import { CategoriesMenu, type MenuCategory } from "@/components/site/CategoriesMenu";
+import { HeaderSearch, type HeaderSearchFeed } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { useMergeSavedOnLogin, useSavedCoupons } from "@/lib/home/useSavedCoupons";
 
-export type NavStore = { id: string; slug: string; name: string; logoUrl: string };
-export type NavCategory = { id: string; slug: string; title: string };
+export type HeaderFeed = {
+  categories: MenuCategory[];
+  totalCoupons: number;
+  search: HeaderSearchFeed;
+};
+
+const ICON_BTN =
+  "relative inline-flex h-11 w-11 items-center justify-center rounded-full text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary";
 
 /**
- * Site header (spec block 0). 64px, white, 1px bottom border. The search is
- * a field on every breakpoint: on desktop it sits centre, on mobile it drops
- * to a second row under the wordmark so it never collapses to an icon.
- * Right side: Stores, Categories (dropdown), Saved, then Sign in or the
- * account menu. The locale switcher lives in the mobile drawer only.
+ * Site header. One DOM, two layouts via grid areas: phone is two rows
+ * (logo + actions 58px, search 56px, row 1 collapses on scroll-down), lg+ is
+ * one 72px row (logo, search, actions).
  */
-export function HeaderClient({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
-  const auth = useAuth();
+export function HeaderClient({ feed }: { feed: HeaderFeed }) {
   const t = useTranslations("header");
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const topCategories = categories.slice(0, 12);
-  const navLink =
-    "inline-flex h-10 items-center gap-1 rounded-md px-2.5 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:text-clipupp-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary";
+  useMergeSavedOnLogin();
+  useCollapseOnScroll();
 
   return (
     <header
       role="banner"
-      className={
-        "sticky top-0 z-sticky w-full border-b border-clipupp-neutral-200 bg-white transition-shadow " +
-        (scrolled ? "shadow-card" : "")
-      }
+      className="clipupp-hdr sticky top-[env(safe-area-inset-top)] z-sticky w-full border-b border-clipupp-neutral-200 bg-clipupp-surface"
     >
-      <div className="clipupp-container flex h-16 items-center gap-4 lg:gap-7">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label={t("openMenu")}>
-              <Menu className="h-5 w-5" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[320px] p-0">
-            <MobileMenu stores={stores.slice(0, 8)} categories={topCategories} />
-          </SheetContent>
-        </Sheet>
-
-        <Logo height={32} priority />
-
-        <div className="hidden min-w-0 flex-1 md:block">
-          <HeaderSearch variant="pill" />
+      <div className="clipupp-container grid grid-cols-[auto_1fr] grid-rows-[58px_56px] items-center [grid-template-areas:'logo_actions'_'search_search'] lg:grid-cols-[auto_minmax(0,560px)_1fr] lg:grid-rows-[72px] lg:gap-x-7 lg:[grid-template-areas:'logo_search_actions']">
+        <div className="[grid-area:logo]">
+          <Logo height={36} priority className="clipupp-logo-l" />
+          <Logo height={36} priority variant="on-dark" className="clipupp-logo-d" />
         </div>
 
-        <nav aria-label={t("primaryNav")} className="ml-auto hidden items-center gap-1 lg:flex">
-          <Link href="/stores" className={navLink}>{t("stores")}</Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className={navLink}>
-                <LayoutGrid className="h-4 w-4" aria-hidden />
-                {t("categories")}
-                <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[min(520px,calc(100vw-2rem))] p-3" align="end">
-              <div className="grid grid-cols-2 gap-1">
-                {topCategories.map((c) => (
-                  <DropdownMenuItem asChild key={c.id} className="rounded-md">
-                    <Link href={`/categories/${c.slug}`} className="flex items-center gap-2 px-3 py-2 text-sm">
-                      <span className="line-clamp-1">{c.title}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="rounded-md">
-                <Link href="/categories" className="flex items-center justify-between px-3 py-2 text-sm font-medium text-clipupp-primary">
-                  {t("browseAllCategories")}
-                  <ChevronRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Link href="/account/saved-coupons" className={navLink}>{t("saved")}</Link>
-          {auth.user ? (
-            <UserMenu />
-          ) : (
-            <Link
-              href="/sign-in"
-              className="ml-1 inline-flex h-10 items-center rounded-full border border-clipupp-primary px-5 text-[15px] font-medium text-clipupp-primary transition-colors hover:bg-clipupp-tint-100"
-            >
-              {t("signIn")}
-            </Link>
-          )}
+        <div className="[grid-area:search] min-w-0 pb-1.5 pt-1.5 lg:p-0">
+          <HeaderSearch variant="pill" feed={feed.search} />
+        </div>
+
+        <nav aria-label={t("primaryNav")} className="flex items-center justify-end gap-0.5 [grid-area:actions] lg:gap-1">
+          <CategoriesMenu categories={feed.categories} totalCoupons={feed.totalCoupons} />
+          <Link
+            href="/stores"
+            className="hidden h-11 items-center rounded-full px-3 text-[15px] font-medium text-clipupp-neutral-800 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary lg:inline-flex"
+          >
+            {t("stores")}
+          </Link>
+          <ThemeToggle />
+          <SavedButton />
+          <Link href="/#alerts" aria-label={t("alerts")} className={ICON_BTN}>
+            <Bell className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+          </Link>
+          <Account />
         </nav>
-
-        <div className="ml-auto lg:hidden">
-          {auth.user ? (
-            <UserMenu />
-          ) : (
-            <Link href="/sign-in" className="inline-flex h-10 items-center rounded-full border border-clipupp-primary px-4 text-[14px] font-medium text-clipupp-primary">
-              {t("signIn")}
-            </Link>
-          )}
-        </div>
-      </div>
-
-      <div className="clipupp-container pb-3 md:hidden">
-        <HeaderSearch variant="pill" />
       </div>
     </header>
+  );
+}
+
+/** Row 1 collapses below lg: past 160px while scrolling down 6px+, back on 6px up or above 80px. */
+function useCollapseOnScroll() {
+  useEffect(() => {
+    const html = document.documentElement;
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (window.innerWidth >= 1024 || y < 80) {
+        html.classList.remove("clipupp-hdr-c");
+        last = y;
+        return;
+      }
+      const d = y - last;
+      if (d >= 6 && y > 160) html.classList.add("clipupp-hdr-c");
+      else if (d <= -6) html.classList.remove("clipupp-hdr-c");
+      if (Math.abs(d) >= 6) last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      html.classList.remove("clipupp-hdr-c");
+    };
+  }, []);
+}
+
+function SavedButton() {
+  const t = useTranslations("header");
+  const ts = useTranslations("sheet");
+  const { count, hydrated } = useSavedCoupons();
+  const [open, setOpen] = useState(false);
+  const titleId = useId();
+  return (
+    <>
+      <button type="button" aria-label={t("saved")} onClick={() => setOpen(true)} className={ICON_BTN}>
+        <Heart className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+        {hydrated && count > 0 ? (
+          <span className="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-clipupp-danger px-1 text-[11px] font-bold leading-none text-clipupp-danger-fg">
+            {count}
+          </span>
+        ) : null}
+      </button>
+      {/* Placeholder until the saved list sheet lands (Step 9). */}
+      <Sheet open={open} onClose={() => setOpen(false)} labelledBy={titleId} size="sheet">
+        <SheetHeader titleId={titleId} title={ts("savedTitle")} subtitle={ts("savedCount", { count })} onClose={() => setOpen(false)} />
+        <div className="px-5 pb-8 pt-4 text-center">
+          <Heart className="mx-auto h-8 w-8 text-clipupp-neutral-400" strokeWidth={1.8} aria-hidden="true" />
+          <p className="mt-3 font-bold text-clipupp-neutral-900">{ts("savedEmptyTitle")}</p>
+          <p className="mt-1 text-sm text-clipupp-neutral-600">{ts("savedEmptyBody")}</p>
+        </div>
+      </Sheet>
+    </>
+  );
+}
+
+function Account() {
+  const auth = useAuth();
+  const t = useTranslations("header");
+  if (auth.user) return <UserMenu />;
+  return (
+    <Link
+      href="/sign-in"
+      aria-label={t("signIn")}
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full text-clipupp-neutral-700 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary lg:ml-1 lg:h-10 lg:w-auto lg:border lg:border-clipupp-primary lg:px-5 lg:text-[15px] lg:font-medium lg:text-clipupp-primary lg:hover:bg-clipupp-primary-100"
+    >
+      <User className="h-5 w-5 lg:hidden" strokeWidth={1.8} aria-hidden="true" />
+      <span className="hidden lg:inline">{t("signIn")}</span>
+    </Link>
   );
 }
 
@@ -150,7 +163,7 @@ function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2"
+          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-clipupp-primary-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2"
           aria-label={t("openAccountMenu")}
         >
           {initial}
@@ -180,81 +193,5 @@ function UserMenu() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
-  const auth = useAuth();
-  const t = useTranslations("header");
-  const router = useRouter();
-  const user = auth.user;
-
-  async function handleLogout() {
-    await auth.logout();
-    router.push("/");
-    router.refresh();
-  }
-
-  const item = "flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-clipupp-neutral-100";
-
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4">
-        <Logo height={28} />
-      </div>
-      <nav className="flex-1 overflow-y-auto p-4 text-sm" aria-label={t("mobileNav")}>
-        <ul className="space-y-1">
-          <li><Link href="/coupons" className={item}>{t("allCoupons")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/stores" className={item}>{t("stores")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/categories" className={item}>{t("categories")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/account/saved-coupons" className={item}>{t("saved")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/blog" className={item}>{t("blog")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-        </ul>
-        {stores.length > 0 && (
-          <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("topStores")}</p>
-            <ul className="grid grid-cols-2 gap-1">
-              {stores.map((s) => (
-                <li key={s.id}>
-                  <Link href={`/stores/${s.slug}`} className="flex items-center gap-2 rounded-md p-2 hover:bg-clipupp-neutral-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.logoUrl} alt="" className="h-7 w-7 rounded object-contain" loading="lazy" />
-                    <span className="line-clamp-1 text-xs">{s.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-        {categories.length > 0 && (
-          <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("categories")}</p>
-            <ul className="space-y-1">
-              {categories.slice(0, 10).map((c) => (
-                <li key={c.id}>
-                  <Link href={`/categories/${c.slug}`} className="block rounded-md px-3 py-2 text-sm hover:bg-clipupp-neutral-100">{c.title}</Link>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </nav>
-      <div className="space-y-3 border-t p-4">
-        <div className="flex items-center justify-between rounded-md border border-clipupp-neutral-200 p-2">
-          <span className="px-2 text-xs font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("language")}</span>
-          <LocaleSwitcher variant="pill" align="end" />
-        </div>
-        {user ? (
-          <button type="button" onClick={handleLogout} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
-            <LogOut className="h-4 w-4" aria-hidden /> {t("signOut")}
-          </button>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <Button asChild variant="primary"><Link href="/sign-up">{t("createAccount")}</Link></Button>
-            <Button asChild variant="secondary"><Link href="/sign-in">{t("signIn")}</Link></Button>
-          </div>
-        )}
-      </div>
-    </div>
   );
 }

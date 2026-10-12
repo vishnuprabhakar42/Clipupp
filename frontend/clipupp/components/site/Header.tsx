@@ -1,57 +1,39 @@
 import { Suspense } from "react";
-import { storesApi } from "@/lib/api/stores";
-import { categoriesApi } from "@/lib/api/categories";
-import { AnnouncementBar } from "@/features/home/components/AnnouncementBar";
-import { HeaderClient, type NavStore, type NavCategory } from "./HeaderClient";
+import { getHomeFeed } from "@/lib/home/getHomeFeed";
+import { AnnouncementStrip } from "@/features/home/components/AnnouncementStrip";
+import { HeaderClient, type HeaderFeed } from "./HeaderClient";
 
 /**
- * Header — server wrapper. Fetches nav data (top stores + category tree)
- * server-side via the same cached backend endpoints used elsewhere, then
- * hands them to HeaderClient for the interactive shell. The announcement
- * bar above it is also a server component (cookie-gated dismissal via a
- * server action).
- *
- * This split means the header no longer pulls React Query into the client
- * bundle for nav data — the data is in the SSR HTML and the client island
- * just hydrates the interactivity (scroll-shadow, mobile drawer, dropdowns,
- * scroll arrows).
+ * Header - server wrapper. Reads the cached HomeFeed (the same call the page
+ * makes), maps it to light DTOs for the mega menu and search, and renders the
+ * announcement strip above the interactive shell. The strip reads cookies(),
+ * so it streams in inside Suspense and the rest of the shell stays static.
  */
 export async function Header() {
-  const [stores, categories] = await Promise.all([safeStores(), safeCategories()]);
+  const feed = await getHomeFeed();
+  const storeName = new Map(feed.stores.map((s) => [s.id, s.name]));
+  const light: HeaderFeed = {
+    categories: feed.categories.slice(0, 16),
+    totalCoupons: feed.stats.activeCoupons,
+    search: {
+      stores: feed.stores.map((s) => ({ id: s.id, name: s.name, coupons: s.coupons, popular: s.popular })),
+      coupons: feed.coupons.map((c) => ({
+        id: c.id,
+        slug: c.slug,
+        title: c.title,
+        code: c.code,
+        storeName: storeName.get(c.store) ?? c.store,
+      })),
+      deals: feed.deals.map((d) => ({ id: d.id, title: d.title, price: d.price })),
+      bankOfferCount: feed.bankOffers.length,
+    },
+  };
   return (
     <>
-      {/* AnnouncementBar reads the dismiss cookie via cookies(), which is a
-          dynamic API and forces the entire enclosing route to be dynamically
-          rendered. Wrapping in <Suspense fallback={null}> lets the static
-          shell of every page pre-render while the bar streams in at request
-          time as a dynamic hole — keeping SSG benefits for the body. */}
       <Suspense fallback={null}>
-        <AnnouncementBar />
+        <AnnouncementStrip />
       </Suspense>
-      <HeaderClient stores={stores} categories={categories} />
+      <HeaderClient feed={light} />
     </>
   );
-}
-
-async function safeStores(): Promise<NavStore[]> {
-  try {
-    const page = await storesApi.list({ limit: 8 });
-    return ((page.data ?? []) as NavStore[]).map((s) => ({
-      id: s.id,
-      slug: s.slug,
-      name: s.name,
-      logoUrl: s.logoUrl,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-async function safeCategories(): Promise<NavCategory[]> {
-  try {
-    const tree = await categoriesApi.tree();
-    return (tree ?? []).map((c) => ({ id: c.id, slug: c.slug, title: c.title }));
-  } catch {
-    return [];
-  }
 }

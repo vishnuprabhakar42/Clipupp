@@ -89,7 +89,10 @@
     "listSubtitle": "नवीनतम कूपन और डील्स ब्राउज़ करने के लिए श्रेणी चुनें।",
     "emptyState": "अभी कोई श्रेणी नहीं। टीम वर्गीकरण तैयार कर रही है, जल्द ही वापस आएँ।",
     "loadError": "श्रेणियाँ लोड नहीं हो सकीं।",
-    "noCouponsInCategory": "{category} में अभी कोई सक्रिय कूपन नहीं।"
+    "noCouponsInCategory": "{category} में अभी कोई सक्रिय कूपन नहीं।",
+    "sheetTitle": "श्रेणियाँ",
+    "verifiedCount": "{count} सत्यापित कूपन",
+    "festiveSub": "सेल कैलेंडर और बैंक ऑफर"
   },
   "search": {
     "title": "खोजें",
@@ -341,7 +344,24 @@
     "clickHistory": "क्लिक इतिहास",
     "profile": "प्रोफ़ाइल",
     "preferences": "पसंद",
-    "adminDashboard": "एडमिन डैशबोर्ड"
+    "adminDashboard": "एडमिन डैशबोर्ड",
+    "shopByCategory": "श्रेणी के अनुसार खोजें",
+    "alerts": "डील अलर्ट",
+    "searchPlaceholder": "Myntra, Swiggy, बैंक ऑफर खोजें...",
+    "searchLabel": "स्टोर, कूपन और डील खोजें",
+    "clear": "खोज साफ़ करें",
+    "recent": "हाल की",
+    "popularStores": "लोकप्रिय स्टोर",
+    "jumpBank": "बैंक और कार्ड ऑफर",
+    "jumpBankMeta": "{count} ऑफर",
+    "groupStores": "स्टोर",
+    "groupCoupons": "कूपन",
+    "groupDeals": "डील",
+    "noMatch": "“{q}” के लिए कोई नतीजा नहीं। Myntra या Swiggy जैसा स्टोर नाम आज़माएं।",
+    "kbdHint": "खोजने के लिए / दबाएं",
+    "couponCount": "{count} कूपन",
+    "jumpTo": "यहाँ जाएं",
+    "themeForced": "थीम पेज के अनुसार है"
   },
   "catalog": {
     "card": {
@@ -375,5 +395,9 @@
     "emailCopied": "ईमेल कॉपी हो गया",
     "reminderSet": "{name} शुरू होने पर हम आपको याद दिलाएंगे",
     "reminderRemoved": "रिमाइंडर हटाया गया"
+  },
+  "strip": {
+    "seeOffers": "ऑफर देखें",
+    "dismiss": "घोषणा बंद करें"
   }
 }
