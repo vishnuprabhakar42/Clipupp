@@ -55,6 +55,7 @@ export async function GET(
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- ImageResponse (Satori) renders plain <img>; next/image is not available here
             <img
               src={logoUrl}
               width={96}
