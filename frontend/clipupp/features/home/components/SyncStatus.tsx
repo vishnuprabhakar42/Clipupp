@@ -2,14 +2,22 @@
 
 import { RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { emit } from "@/lib/home/homeBus";
 
 /** "Updated {ago}" plus a refresh button that re-renders the server tree. */
 export function SyncStatus({ label }: { label: string }) {
   const t = useTranslations("home.today");
   const router = useRouter();
   const [pending, start] = useTransition();
+  const was = useRef(false);
+
+  // When the refresh settles, reload Today's first page so the list matches the label.
+  useEffect(() => {
+    if (was.current && !pending) emit("today:refresh", "");
+    was.current = pending;
+  }, [pending]);
   return (
     <div className="flex items-center gap-1 text-[13.5px] text-clipupp-neutral-500">
       <span aria-live="polite">{pending ? t("updating") : label}</span>

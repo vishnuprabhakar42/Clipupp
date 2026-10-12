@@ -7,6 +7,9 @@ import { loadTodayCoupons } from "../actions/todayCoupons";
 import { emit, on, peek } from "@/lib/home/homeBus";
 import type { RowItem } from "../lib/todayRows";
 import { sortItems, type Sort } from "../lib/todaySort";
+import { applyPage, safeLoad } from "../lib/todayState";
+
+type Req = { mode: "reset" | "append"; tab: string; store: string; cursor: string | null; startIndex: number };
 
 type Tab = { id: string; label: string; title: string; count: number };
 
@@ -56,9 +59,11 @@ export function TodaysCouponsClient({
   const [now, setNow] = useState<number | null>(null);
 
   const gen = useRef(0);
+  const lastReq = useRef<Req | null>(null);
+  const self = useRef(Symbol("today"));
   const busy = useRef(false);
-  const state = useRef({ tab, store, cursor, count: items.length });
-  state.current = { tab, store, cursor, count: items.length };
+  const state = useRef({ tab, store, cursor, count: items.length, items });
+  state.current = { tab, store, cursor, count: items.length, items };
   const sentinel = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -68,7 +73,7 @@ export function TodaysCouponsClient({
   );
 
   const run = useCallback(
-    async (mode: "reset" | "append") => {
+    async (mode: "reset" | "append", retry?: Req) => {
       if (mode === "append" && busy.current) return;
       const my = mode === "reset" ? ++gen.current : gen.current;
       busy.current = true;
@@ -76,39 +81,38 @@ export function TodaysCouponsClient({
       setResetting(mode === "reset");
       setError(false);
       const s = state.current;
-      const page = await loadTodayCoupons({
-        tab: s.tab,
-        store: s.store,
-        cursor: mode === "reset" ? null : s.cursor,
-        limit: pageSize,
-        startIndex: mode === "reset" ? 0 : s.count,
-      });
+      const req: Req =
+        retry ?? {
+          mode,
+          tab: s.tab,
+          store: s.store,
+          cursor: mode === "reset" ? null : s.cursor,
+          startIndex: mode === "reset" ? 0 : s.count,
+        };
+      lastReq.current = req;
+      const page = await safeLoad(() =>
+        loadTodayCoupons({ tab: req.tab, store: req.store, cursor: req.cursor, limit: pageSize, startIndex: req.startIndex }),
+      );
       if (my !== gen.current) return;
       busy.current = false;
       setFetching(false);
       setResetting(false);
-      if (!page.ok) {
-        setError(true);
-        return;
-      }
-      setCursor(page.nextCursor);
-      setHasMore(page.nextCursor != null);
-      setItems((prev) => {
-        if (mode === "reset") return page.items;
-        const seen = new Set(prev.map((p) => p.coupon.id));
-        return [...prev, ...page.items.filter((p) => !seen.has(p.coupon.id))];
-      });
+      const next = applyPage<RowItem>({ items: state.current.items, cursor: state.current.cursor, hasMore: true, error: false }, mode, page);
+      setError(next.error);
+      setItems(next.items);
+      setCursor(next.cursor);
+      setHasMore(next.hasMore);
     },
     [pageSize],
   );
 
   // Fresh first page whenever the tab or store changes (the initial "All" page is server-rendered).
-  const first = useRef(true);
+  // Keyed so a StrictMode double effect run does not fetch twice.
+  const loadedKey = useRef("all|");
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      if (tab === "all" && !store) return;
-    }
+    const key = `${tab}|${store}`;
+    if (key === loadedKey.current) return;
+    loadedKey.current = key;
     void run("reset");
   }, [tab, store, run]);
 
@@ -118,7 +122,7 @@ export function TodaysCouponsClient({
     setStore("");
     setTab(id);
     write(id);
-    if (notify) emit("today:tab", id);
+    if (notify) emit("today:tab", id, self.current);
   }, []);
 
   // Header rail and store tiles drive the list; restore the saved tab.
@@ -128,10 +132,10 @@ export function TodaysCouponsClient({
     const saved = fromBus ?? read();
     if (saved && saved !== "all" && known(saved)) {
       setTab(saved);
-      if (!fromBus) emit("today:tab", saved);
+      if (!fromBus) emit("today:tab", saved, self.current);
     }
-    const offTab = on("today:tab", (id) => {
-      if (!known(id)) return;
+    const offTab = on("today:tab", (id, meta) => {
+      if (meta.source === self.current || !known(id)) return;
       setStore("");
       setTab(id);
       write(id);
@@ -139,15 +143,19 @@ export function TodaysCouponsClient({
     const offStore = on("today:store", (slug) => {
       setStore(slug);
       if (slug) {
+        // Own echo is excluded, so the tab handler does not clear the store again.
         setTab("all");
-        emit("today:tab", "all");
+        write("all");
+        emit("today:tab", "all", self.current);
       }
     });
+    const offRefresh = on("today:refresh", () => void run("reset"));
     return () => {
       offTab();
       offStore();
+      offRefresh();
     };
-  }, [tabs]);
+  }, [tabs, run]);
 
   // Auto-load the next page near the end of the list.
   useEffect(() => {
@@ -293,7 +301,7 @@ export function TodaysCouponsClient({
           <span className="mr-auto">{t("loadError")}</span>
           <button
             type="button"
-            onClick={() => void run(items.length === 0 || resetting ? "reset" : "append")}
+            onClick={() => void run(lastReq.current?.mode ?? "reset", lastReq.current ?? undefined)}
             className="font-semibold underline underline-offset-2"
           >
             {t("retry")}
