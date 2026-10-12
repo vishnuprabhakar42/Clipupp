@@ -11,7 +11,7 @@ import { readConsent, writeConsent } from "@/lib/cookies/consent";
  * GDPR cookie banner. Renders as a soft sheet at the bottom-right (desktop)
  * or full-width sticky bar (mobile). Defaults reject everything except
  * Necessary; "Accept all" and "Customize" are equally prominent so the choice
- * is genuinely free — required under GDPR.
+ * is genuinely free, required under GDPR.
  *
  * Lazy-rendered on the client only after the document is interactive so it
  * never blocks LCP.
@@ -83,7 +83,7 @@ export function CookieBanner() {
               <Toggle
                 id="cookie-analytics"
                 title="Analytics"
-                desc="Helps us see which deals are useful — never sold."
+                desc="Helps us see which deals are useful. Never sold."
                 checked={analytics}
                 onChange={setAnalytics}
               />

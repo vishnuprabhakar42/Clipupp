@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Clipupp",
-    "tagline": "Coupon Codes, Cashback & Deals"
+    "tagline": "Coupon Codes & Deals"
   },
   "nav": {
     "stores": "Top Stores",
@@ -39,8 +39,8 @@
   },
   "stores": {
     "listTitle": "All stores",
-    "listSubtitle": "Discover verified coupons and cashback offers from thousands of brands.",
-    "emptyState": "No stores match your filters yet. Check back soon — we're adding partners every week.",
+    "listSubtitle": "Discover verified coupons and deals from thousands of brands.",
+    "emptyState": "No stores match your filters yet. Check back soon, we're adding partners every week.",
     "loadError": "We couldn't load stores right now. Please try again in a moment.",
     "viewDeals": "View deals",
     "visit": "Visit {brand}",
@@ -76,14 +76,14 @@
   "offers": {
     "listTitle": "Offers & deals",
     "listSubtitle": "Click-through promotions, free-shipping deals, and limited-time discounts.",
-    "emptyState": "No active offers right now — check back tomorrow.",
+    "emptyState": "No active offers right now. Check back tomorrow.",
     "loadError": "We couldn't load offers right now. Please try again in a moment.",
     "activate": "Activate offer at {brand}"
   },
   "categories": {
     "listTitle": "Categories",
     "listSubtitle": "Pick a category to browse the latest coupons and deals.",
-    "emptyState": "No categories yet. The team is curating taxonomies — check back soon.",
+    "emptyState": "No categories yet. The team is curating taxonomies, check back soon.",
     "loadError": "We couldn't load categories right now.",
     "noCouponsInCategory": "No active coupons in {category} right now."
   },
@@ -92,7 +92,7 @@
     "placeholder": "Search stores, coupons, categories…",
     "emptyHelp": "Try searching for a brand, a category, or an offer keyword from the header.",
     "resultsFor": "Results for \"{query}\"",
-    "noMatches": "No matches yet — try a broader keyword.",
+    "noMatches": "No matches yet. Try a broader keyword.",
     "tempUnavailable": "Search is temporarily unavailable. Please try again.",
     "matchesCount": "{count, plural, one {# match} other {# matches}} across stores, coupons, and categories.",
     "kindStore": "Store",
@@ -193,8 +193,6 @@
     },
     "savedTitle": "Saved coupons",
     "savedComingSoon": "Saving coupons opens up in Sprint 5. Until then, click any coupon to jump straight to the merchant.",
-    "cashbackTitle": "Cashback",
-    "cashbackComingSoon": "Cashback rewards land in Phase 2. Your click history is already being recorded so you don't miss any earnings when it does.",
     "profile": {
       "title": "Profile",
       "displayName": "Display name",
@@ -209,7 +207,7 @@
       "title": "Preferences",
       "loading": "Loading preferences…",
       "preferredCurrency": "Preferred currency",
-      "currencyHint": "ISO 4217 — for example INR, USD, GBP. Used for cashback display in Phase 2.",
+      "currencyHint": "ISO 4217, for example INR, USD, GBP.",
       "transactional": "Transactional emails",
       "transactionalDesc": "Verification, password resets, and other essential account messages.",
       "weekly": "Weekly deals digest",
@@ -228,24 +226,24 @@
   },
   "metadata": {
     "homepage": {
-      "title": "Clipupp — Coupon Codes, Cashback & Deals",
-      "description": "Save with verified coupon codes, cashback, and exclusive deals from 1000+ top brands. Updated daily."
+      "title": "Clipupp | Coupon codes and deals for Indian stores",
+      "description": "Working coupon codes and deals for Indian stores, checked by our team before they go live."
     },
     "stores": {
       "title": "All Stores",
-      "description": "Browse 1000+ verified stores. Find coupon codes, cashback, and exclusive deals from your favorite brands."
+      "description": "Browse verified stores. Find coupon codes and exclusive deals from your favorite brands."
     },
     "coupons": {
       "title": "Coupons & Promo Codes",
-      "description": "Active coupon codes from top stores. Verified daily — copy and paste at checkout to save."
+      "description": "Active coupon codes from top stores. Verified daily, copy and paste at checkout to save."
     },
     "offers": {
       "title": "Offers & Deals",
-      "description": "Live deals, free shipping, and limited-time offers from your favorite stores — no code required."
+      "description": "Live deals, free shipping, and limited-time offers from your favorite stores. No code required."
     },
     "categories": {
       "title": "Browse by Category",
-      "description": "Find coupons by category — fashion, electronics, food, travel, and more."
+      "description": "Find coupons by category: fashion, electronics, food, travel, and more."
     }
   },
   "legacy": {
@@ -293,30 +291,34 @@
   },
   "home": {
     "hero": {
-      "eyebrow": "Checked today",
+      "eyebrow": "Hand-checked codes",
       "title": "Working coupon codes for every Indian store.",
       "subtitle": "No wallet, no tracking, no waiting. Just codes that work.",
       "searchPlaceholder": "Try Amazon, Myntra, Swiggy",
       "searchLabel": "Search stores",
       "searchCta": "Find codes",
       "noResults": "No coupons for \"{q}\" yet, try Amazon India",
-      "proof": "<verified></verified> codes verified this week · <stores></stores> stores"
+      "proof": "<verified></verified> codes verified this week · <stores></stores> stores",
+      "proofZero": "<coupons></coupons> active coupons · <stores></stores> stores",
+      "chipsLabel": "Browse by category"
     },
     "sections": {
       "viewAllTrending": "View all trending coupons",
       "browseAllStores": "Browse all stores A to Z",
-      "viewAllStores": "View all {count}+ stores",
+      "viewAllStores": "View all {count} stores",
       "couponsCount": "{count, plural, =1 {1 coupon} other {# coupons}}",
       "seeAllCategory": "See all {category} coupons",
-      "emptyTab": "No {category} coupons right now"
+      "emptyTab": "No {category} coupons right now",
+      "storesEyebrow": "{count, plural, =1 {1 store} other {# stores}}",
+      "tabsLabel": "Coupon categories"
     },
     "verify": {
-      "col1Title": "Tested daily by a human",
-      "col1Body": "Each code is applied at checkout every 24 hours. Not scraped, not guessed.",
-      "col2Title": "Verified time shown on every card",
+      "col1Title": "Checked by our team",
+      "col1Body": "Each code is checked at checkout before it goes live and re-checked on a schedule.",
+      "col2Title": "Verified time on every card",
       "col2Body": "You see when we last checked a code before you copy anything.",
-      "col3Title": "Failed codes are pulled within the hour",
-      "col3Body": "Report a miss with one tap and it disappears for everyone.",
+      "col3Title": "Failed codes come down fast",
+      "col3Body": "Tell us a code failed and we take it down after review.",
       "cta": "See verified coupons"
     },
     "newsletter": {
@@ -352,6 +354,47 @@
     "terms": "Terms",
     "disclosure": "Affiliate disclosure",
     "copyright": "© {year} Clipupp. Made in India.",
-    "language": "English"
+    "language": "English",
+    "nameCoupons": "{name} coupons"
+  },
+  "header": {
+    "primaryNav": "Primary",
+    "mobileNav": "Mobile navigation",
+    "openMenu": "Open menu",
+    "openAccountMenu": "Open account menu",
+    "stores": "Stores",
+    "categories": "Categories",
+    "browseAllCategories": "Browse all categories",
+    "saved": "Saved",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "createAccount": "Create account",
+    "allCoupons": "All coupons",
+    "blog": "Blog",
+    "topStores": "Top stores",
+    "language": "Language",
+    "overview": "Overview",
+    "savedCoupons": "Saved coupons",
+    "clickHistory": "Click history",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "adminDashboard": "Admin dashboard"
+  },
+  "catalog": {
+    "card": {
+      "typeCode": "Code",
+      "typeDeal": "Deal",
+      "typeFreeShipping": "Free shipping",
+      "typeInStore": "In-store",
+      "endsToday": "Ends today",
+      "revealHint": "Reveal to copy",
+      "codeLabel": "Code",
+      "verifiedAgo": "✓ Verified {unit, select, now {just now} m {{n}m ago} h {{n}h ago} other {{n}d ago}}",
+      "usedTimes": "Used {count} times",
+      "showCode": "Show code",
+      "getDeal": "Get deal",
+      "copied": "Copied {code}",
+      "opened": "Opened"
+    }
   }
 }

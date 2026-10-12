@@ -51,7 +51,7 @@ export function FirstVisitModal() {
     setSubmitting(true);
     try {
       await newsletterApi.subscribe(email.trim(), locale);
-      toast.success("Almost there — check your inbox to confirm.");
+      toast.success("Almost there. Check your inbox to confirm.");
       dismiss();
     } catch (err) {
       toast.error(isApiError(err) ? err.message : "Could not subscribe right now.");
@@ -79,7 +79,7 @@ export function FirstVisitModal() {
             Welcome to Clipupp
           </span>
           <h2 className="mt-3 text-2xl font-bold leading-tight">
-            Save smarter — get the best deals first.
+            Save smarter. Get the best deals first.
           </h2>
           <p className="mt-1.5 text-sm text-white/80">
             Drop your email for a weekly digest of the highest-value coupons
@@ -109,7 +109,7 @@ export function FirstVisitModal() {
             No thanks, I&apos;ll browse first
           </button>
           <p className="text-[11px] text-muted-foreground">
-            We&apos;ll send a confirmation link first — double opt-in. Unsubscribe
+            We&apos;ll send a confirmation link first (double opt-in). Unsubscribe
             anytime in one click. We never sell your email.
           </p>
         </form>
