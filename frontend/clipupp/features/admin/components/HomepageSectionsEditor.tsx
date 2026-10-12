@@ -23,7 +23,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   BadgeCheck,
+  BellRing,
   BookOpen,
+  CalendarDays,
   ChevronUp,
   Clock,
   Eye,
@@ -76,6 +78,26 @@ type Theme = {
 };
 
 const THEMES: Record<string, Theme> = {
+  ticker: {
+    Icon: Clock, accent: "accent",
+    description: "Live ticker of recently verified coupons under the hero.",
+  },
+  popular_stores: {
+    Icon: Store, accent: "primary",
+    description: "Round logos of the most popular stores.",
+  },
+  deals: {
+    Icon: Flame, accent: "danger",
+    description: "Live product deals rail with prices and discounts.",
+  },
+  sale_calendar: {
+    Icon: CalendarDays, accent: "accent",
+    description: "Upcoming and live store sales calendar.",
+  },
+  alerts: {
+    Icon: BellRing, accent: "primary",
+    description: "Deal alerts: email signup and Telegram link.",
+  },
   trending_coupons: {
     Icon: TrendingUp, accent: "primary",
     description: "Trending verified coupons rail.",

@@ -1,3 +1,4 @@
+import { displayShortName } from "@/lib/home/storeName";
 import { getTranslations } from "next-intl/server";
 import { RailArrows } from "@/components/site/Rail";
 import type { HomeFeed } from "@/lib/home/feed";
@@ -26,7 +27,7 @@ export async function DealsRail({ feed }: { feed: HomeFeed }) {
   const seen = new Set<string>();
   const chips = deals
     .filter((d) => (seen.has(d.store) ? false : (seen.add(d.store), true)))
-    .map((d) => ({ id: d.store, label: stores.get(d.store)!.name }));
+    .map((d) => ({ id: d.store, label: displayShortName(stores.get(d.store)!.name) }));
   return (
     <section id="deals" className="clipupp-container py-12 lg:py-20" aria-labelledby="deals-heading">
       <SectionHeader

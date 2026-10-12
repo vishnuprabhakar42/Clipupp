@@ -174,6 +174,7 @@ export function CouponSavingsRowCard({
                   alt=""
                   width={20}
                   height={20}
+                  sizes="20px"
                   className="h-5 w-5 rounded-[4px] object-contain"
                   aria-hidden
                 />

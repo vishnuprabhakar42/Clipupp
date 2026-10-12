@@ -154,7 +154,7 @@ export function SpotlightCarousel({
                 </div>
                 {s.flag && (
                   <span className="shrink-0 rounded-full bg-clipupp-gold px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] text-clipupp-deep">
-                    {s.flag}
+                    {s.flag === "Live now" ? t("liveNow") : s.flag}
                   </span>
                 )}
               </div>

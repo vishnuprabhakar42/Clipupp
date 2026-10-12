@@ -98,6 +98,8 @@ export type HomepageCampaign = {
   ctaLabel: string | null;
   ctaUrl: string | null;
   themeColor: string | null;
+  /** Store ids the campaign pins; the first one that resolves names the spotlight store. */
+  pinnedStoreIds?: string[];
 };
 
 export type HomepageStats = {

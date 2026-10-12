@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 type Variant = "chevron" | "arrow";
 
@@ -42,6 +43,7 @@ export function ScrollRail({
    *  background. The arrow buttons sit on the parent and are unaffected. */
   edgeFade?: boolean;
 }) {
+  const t = useTranslations("common");
   const railRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
@@ -119,7 +121,7 @@ export function ScrollRail({
       <div className="relative">
         <button
           type="button"
-          aria-label="Scroll left"
+          aria-label={t("scrollLeft")}
           onClick={() => scroll("left")}
           disabled={!canLeft}
           className={`${arrowPos.left} ${buttonClass}`}
@@ -143,7 +145,7 @@ export function ScrollRail({
 
         <button
           type="button"
-          aria-label="Scroll right"
+          aria-label={t("scrollRight")}
           onClick={() => scroll("right")}
           disabled={!canRight}
           className={`${arrowPos.right} ${buttonClass}`}

@@ -235,7 +235,7 @@
   },
   "metadata": {
     "homepage": {
-      "title": "Clipupp | Coupon codes and deals for Indian stores",
+      "title": "Clipupp | Verified coupon codes, deals and bank offers for Indian stores",
       "description": "Working coupon codes and deals for Indian stores, checked by our team before they go live."
     },
     "stores": {
@@ -314,12 +314,6 @@
       "popularAria": "Popular stores",
       "searchAria": "Search coupons and stores"
     },
-    "sections": {
-      "viewAllTrending": "View all trending coupons",
-      "seeAllCategory": "See all {category} coupons",
-      "emptyTab": "No {category} coupons right now",
-      "tabsLabel": "Coupon categories"
-    },
     "verify": {
       "eyebrow": "How we verify",
       "title": "Every code is tested before you see it.",
@@ -355,7 +349,8 @@
       "prev": "Previous offer",
       "next": "Next offer",
       "dot": "{store} offer",
-      "slide": "{i} of {n}"
+      "slide": "{i} of {n}",
+      "liveNow": "Live now"
     },
     "ticker": {
       "label": "Live",
@@ -405,7 +400,6 @@
       "off": "{pct}% off",
       "lowest": "Lowest price in 30 days",
       "buy": "Buy on {store}",
-      "empty": "No live deals right now. Check back in a bit.",
       "rating": "Rated {rating} out of 5"
     },
     "calendar": {
@@ -490,17 +484,14 @@
   "header": {
     "primaryNav": "Primary",
     "mobileNav": "Mobile navigation",
-    "openMenu": "Open menu",
     "openAccountMenu": "Open account menu",
     "stores": "Stores",
     "categories": "Categories",
-    "browseAllCategories": "Browse all categories",
     "saved": "Saved",
     "themeDark": "Switch to dark theme",
     "themeLight": "Switch to light theme",
     "signIn": "Sign in",
     "signOut": "Sign out",
-    "createAccount": "Create account",
     "allCoupons": "All coupons",
     "blog": "Blog",
     "topStores": "Top stores",
@@ -531,19 +522,11 @@
   },
   "catalog": {
     "card": {
-      "typeCode": "Code",
-      "typeDeal": "Deal",
-      "typeFreeShipping": "Free shipping",
-      "typeInStore": "In-store",
       "endsToday": "Ends today",
-      "revealHint": "Reveal to copy",
-      "codeLabel": "Code",
       "verifiedAgo": "✓ Verified {unit, select, now {just now} m {{n}m ago} h {{n}h ago} other {{n}d ago}}",
-      "usedTimes": "Used {count} times",
       "showCode": "Show code",
       "getDeal": "Get deal",
       "copied": "Copied {code}",
-      "opened": "Opened",
       "showCodeFor": "Show code for {store}",
       "codeLabelFull": "Code {code}, open details",
       "verified": "Verified {ago}",
@@ -555,6 +538,21 @@
       "deal": "DEAL",
       "save": "Save {store} coupon",
       "unsave": "Remove {store} coupon"
+    },
+    "ui": {
+      "shareDeal": "Share this deal",
+      "share": "Share",
+      "copyCode": "Copy code",
+      "visitMerchant": "Visit merchant",
+      "jumpToLetter": "Jump to letter",
+      "category": "Category",
+      "noOffers": "No offers found",
+      "filterRegion": "Filter stores by region",
+      "filterStoreCategory": "Filter stores by category",
+      "filterCategory": "Filter by category",
+      "allCategories": "All categories",
+      "moreCategories": "More categories to explore",
+      "siblingCategories": "Sibling categories"
     }
   },
   "sheet": {
@@ -594,5 +592,45 @@
   "strip": {
     "seeOffers": "See offers",
     "dismiss": "Dismiss announcement"
+  },
+  "chrome": {
+    "language": "Language",
+    "changeLanguage": "Change language",
+    "beta": "Beta",
+    "hindiBeta": {
+      "placeholderNote": "Some pages may show English placeholder text.",
+      "switchToEnglish": "Switch to English"
+    },
+    "cookie": {
+      "aria": "Cookie consent",
+      "dismiss": "Dismiss without saving",
+      "title": "We respect your privacy",
+      "body": "We use cookies to keep the site running, remember your saved coupons, and (with your permission) understand which deals work best.",
+      "policy": "Read our cookie policy",
+      "necessary": "Necessary",
+      "necessaryDesc": "Essential for sign-in, saved coupons, and security.",
+      "analytics": "Analytics",
+      "analyticsDesc": "Helps us see which deals are useful. Never sold.",
+      "marketing": "Marketing",
+      "marketingDesc": "Personalized recommendations and remarketing on partner sites.",
+      "save": "Save preferences",
+      "back": "Back",
+      "acceptAll": "Accept all",
+      "rejectAll": "Reject all",
+      "customize": "Customize"
+    },
+    "firstVisit": {
+      "welcome": "Welcome to Clipupp",
+      "title": "Save smarter. Get the best deals first.",
+      "body": "Drop your email for a weekly digest of the highest-value coupons across 1,000+ stores. One email, hand-curated.",
+      "placeholder": "you@example.com",
+      "emailLabel": "Email address",
+      "submit": "Get the weekly digest",
+      "sending": "Sending…",
+      "skip": "No thanks, I’ll browse first",
+      "fine": "We’ll send a confirmation link first (double opt-in). Unsubscribe anytime in one click. We never sell your email.",
+      "success": "Almost there. Check your inbox to confirm.",
+      "fail": "Could not subscribe right now."
+    }
   }
 }

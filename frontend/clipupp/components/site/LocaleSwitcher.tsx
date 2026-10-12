@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
 import {
   DropdownMenu,
@@ -37,6 +37,7 @@ export function LocaleSwitcher({
   variant?: "pill" | "icon" | "segmented";
   align?: "start" | "end";
 }) {
+  const t = useTranslations("chrome");
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +52,7 @@ export function LocaleSwitcher({
 
   if (variant === "segmented") {
     return (
-      <div role="group" aria-label="Language" className="inline-flex items-center gap-1">
+      <div role="group" aria-label={t("language")} className="inline-flex items-center gap-1">
         {locales.map((loc) => (
           <button
             key={loc}
@@ -77,7 +78,7 @@ export function LocaleSwitcher({
         {variant === "icon" ? (
           <button
             type="button"
-            aria-label="Change language"
+            aria-label={t("changeLanguage")}
             disabled={isPending}
             className="inline-flex h-9 w-9 items-center justify-center rounded-md text-clipupp-neutral-600 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 disabled:opacity-40"
           >
@@ -86,7 +87,7 @@ export function LocaleSwitcher({
         ) : (
           <button
             type="button"
-            aria-label="Change language"
+            aria-label={t("changeLanguage")}
             disabled={isPending}
             className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-semibold text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 disabled:opacity-40"
           >
@@ -106,7 +107,7 @@ export function LocaleSwitcher({
             {LABELS[loc]}
             {loc === "hi" && (
               <span className="ml-auto rounded-sm bg-clipupp-accent-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-clipupp-accent-strong">
-                Beta
+                {t("beta")}
               </span>
             )}
           </DropdownMenuItem>

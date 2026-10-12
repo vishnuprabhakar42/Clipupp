@@ -1,5 +1,6 @@
 import { Globe } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 /**
  * Slim inline marker shown above the page chrome on /hi/* routes. Tells
@@ -9,6 +10,7 @@ import { Link } from "@/lib/i18n/navigation";
  * Render conditionally from the locale layout (`locale === "hi"`).
  */
 export function HindiBetaMarker() {
+  const t = useTranslations("chrome.hindiBeta");
   return (
     <div
       role="status"
@@ -21,13 +23,13 @@ export function HindiBetaMarker() {
         </span>
         <span className="hidden sm:inline text-clipupp-accent/60" aria-hidden>·</span>
         <span>
-          Some pages may show English placeholder text.{" "}
+          {t("placeholderNote")}{" "}
           <Link
             href="/"
             locale="en"
             className="font-semibold underline-offset-2 hover:underline"
           >
-            Switch to English
+            {t("switchToEnglish")}
           </Link>
         </span>
       </div>

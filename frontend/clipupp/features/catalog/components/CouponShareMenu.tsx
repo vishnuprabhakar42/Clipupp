@@ -10,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 /**
  * Reusable "share" affordance for coupons. Tries the native share sheet first
@@ -26,6 +27,7 @@ export function CouponShareMenu({
   title: string;
   iconOnly?: boolean;
 }) {
+  const t = useTranslations("catalog.ui");
   const [copied, setCopied] = useState(false);
   const shareUrl = withUtm(url);
 
@@ -57,14 +59,14 @@ export function CouponShareMenu({
       type="button"
       variant="ghost"
       size={iconOnly ? "icon" : "sm"}
-      aria-label="Share this deal"
+      aria-label={t("shareDeal")}
       onClick={async (e) => {
         if (await tryNativeShare()) e.preventDefault();
       }}
       className={iconOnly ? "h-8 w-8" : ""}
     >
       <Share2 className="h-4 w-4" aria-hidden />
-      {!iconOnly && <span className="ml-2 text-xs">Share</span>}
+      {!iconOnly && <span className="ml-2 text-xs">{t("share")}</span>}
     </Button>
   );
 
