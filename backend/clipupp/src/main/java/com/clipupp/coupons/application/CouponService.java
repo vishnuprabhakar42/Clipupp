@@ -15,6 +15,7 @@ import com.clipupp.stores.domain.Store;
 import com.clipupp.stores.infra.StoreRepository;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -105,12 +106,49 @@ public class CouponService {
     /** Same as {@link #homepageTop(int)} but with stores eagerly batched in for card rendering. */
     @Transactional(readOnly = true)
     public List<CouponWithStore> homepageTopWithStores(int limit) {
-        List<Coupon> coupons = couponRepo.findHomepageTop(OffsetDateTime.now(), PageRequest.of(0, limit));
+        return attachStores(couponRepo.findHomepageTop(OffsetDateTime.now(), PageRequest.of(0, limit)));
+    }
+
+    /** Verified + active coupons by popularity, stores batched in. Feeds the trending rail. */
+    @Transactional(readOnly = true)
+    public List<CouponWithStore> trendingVerifiedWithStores(int limit) {
+        List<Coupon> coupons = couponRepo.findTrendingVerified(OffsetDateTime.now(), PageRequest.of(0, limit));
+        return attachStores(coupons);
+    }
+
+    /** Active coupons for a category, stores batched in. Feeds the tabbed section. */
+    @Transactional(readOnly = true)
+    public List<CouponWithStore> topInCategoryWithStores(String categorySlug, int limit) {
+        List<Coupon> coupons = couponRepo.listByCategorySlug(categorySlug, PageRequest.of(0, limit)).getContent();
+        return attachStores(coupons);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<UUID, Integer> activeCountsByStore(Collection<UUID> storeIds) {
+        if (storeIds.isEmpty()) return Map.of();
+        Map<UUID, Integer> out = new HashMap<>();
+        for (Object[] row : couponRepo.countActiveByStoreIds(storeIds, OffsetDateTime.now())) {
+            out.put((UUID) row[0], ((Number) row[1]).intValue());
+        }
+        return out;
+    }
+
+    @Transactional(readOnly = true)
+    public long countVerifiedSince(OffsetDateTime since) {
+        return couponRepo.countVerifiedSince(since, OffsetDateTime.now());
+    }
+
+    @Transactional(readOnly = true)
+    public long countActive() {
+        return couponRepo.countActive(OffsetDateTime.now());
+    }
+
+    private List<CouponWithStore> attachStores(List<Coupon> coupons) {
         if (coupons.isEmpty()) return List.of();
         coupons.forEach(c -> c.getCategories().size()); // materialize lazy categories
         Set<UUID> storeIds = new HashSet<>();
         for (Coupon c : coupons) storeIds.add(c.getStoreId());
-        Map<UUID, Store> storeMap = new java.util.HashMap<>();
+        Map<UUID, Store> storeMap = new HashMap<>();
         for (Store s : storeRepo.findAllById(storeIds)) storeMap.put(s.getId(), s);
         return coupons.stream()
                 .map(c -> new CouponWithStore(c, storeMap.get(c.getStoreId())))

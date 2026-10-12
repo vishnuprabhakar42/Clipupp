@@ -108,4 +108,7 @@ public interface StoreRepository extends JpaRepository<Store, UUID> {
     Page<Store> findSimilarTo(@Param("excludeId") UUID excludeId,
                               @Param("status") StoreStatus status,
                               Pageable pageable);
+
+    @Query("select count(s) from Store s where s.status = :status and s.deletedAt is null")
+    long countActive(@Param("status") StoreStatus status);
 }
