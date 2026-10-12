@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { LanguageProvider } from "@/components/language-provider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { GoogleOAuthProvider } from "@/components/providers/GoogleOAuthProvider";
 import { getServerSession } from "@/lib/auth/server";
 import { Toaster } from "@/components/ui/sonner";
@@ -156,22 +157,24 @@ export default async function LocaleLayout({
       </head>
       <body className="font-sans">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <LanguageProvider>
-            <GoogleOAuthProvider>
-              <AuthProvider initialUser={session}>
-                <a
-                  href="#main"
-                  className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-clipupp-primary focus:px-3 focus:py-2 focus:text-white"
-                >
-                  Skip to content
-                </a>
-                {locale === "hi" && <HindiBetaMarker />}
-                {children}
-                <DeferredClientWidgets />
-              </AuthProvider>
-            </GoogleOAuthProvider>
-            <Toaster />
-          </LanguageProvider>
+          <ThemeProvider>
+            <LanguageProvider>
+              <GoogleOAuthProvider>
+                <AuthProvider initialUser={session}>
+                  <a
+                    href="#main"
+                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-clipupp-primary focus:px-3 focus:py-2 focus:text-white"
+                  >
+                    Skip to content
+                  </a>
+                  {locale === "hi" && <HindiBetaMarker />}
+                  {children}
+                  <DeferredClientWidgets />
+                </AuthProvider>
+              </GoogleOAuthProvider>
+              <Toaster />
+            </LanguageProvider>
+          </ThemeProvider>
         </NextIntlClientProvider>
         <JsonLd id="ld-organization" data={organizationSchema(SITE_URL)} />
         <JsonLd id="ld-website" data={webSiteSchema(SITE_URL)} />

@@ -366,6 +366,8 @@
     "categories": "Categories",
     "browseAllCategories": "Browse all categories",
     "saved": "Saved",
+    "themeDark": "Switch to dark theme",
+    "themeLight": "Switch to light theme",
     "signIn": "Sign in",
     "signOut": "Sign out",
     "createAccount": "Create account",

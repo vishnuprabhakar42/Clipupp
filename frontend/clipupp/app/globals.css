@@ -260,6 +260,41 @@
     --clipupp-shadow-card:       var(--clipupp-shadow-resting);
     --clipupp-shadow-card-hover: var(--clipupp-shadow-hover);
 
+    /* ── Homepage v3 tokens (light). Brand stays #8529CD. ───────────────── */
+    --clipupp-deep: #2A0F52;
+    --clipupp-deep-2: #3D1A72;
+    --clipupp-deep-rgb: 42 15 82;
+    --clipupp-deep-2-rgb: 61 26 114;
+    --clipupp-gold: #FFD77A;
+    --clipupp-gold-rgb: 255 215 122;
+    --clipupp-ok-bg: #E6F4EB;
+    --clipupp-bad-bg: #FDECEF;
+    --clipupp-warn-bg: #FEF3E2;
+    --clipupp-ok-bg-rgb: 230 244 235;
+    --clipupp-bad-bg-rgb: 253 236 239;
+    --clipupp-warn-bg-rgb: 254 243 226;
+    --clipupp-skel: #EBE8F0;
+    --clipupp-skel-hi: #F6F4F9;
+    --clipupp-skel-rgb: 235 232 240;
+    --clipupp-skel-hi-rgb: 246 244 249;
+    --clipupp-surface: #FFFFFF;
+    --clipupp-surface-rgb: 255 255 255;
+    --clipupp-shadow-pop: 0 24px 60px rgba(20, 8, 48, 0.24);
+    /* Footer: dark in both themes, so never overridden. */
+    --clipupp-ft-bg: #170A2E;
+    --clipupp-ft-card: #211240;
+    --clipupp-ft-ink: #F3EDFF;
+    --clipupp-ft-ink-2: #BCAEDB;
+    --clipupp-ft-ink-3: #9486B3;
+    --clipupp-ft-line: rgba(255, 255, 255, 0.11);
+    --clipupp-ft-accent: #C9A6FF;
+    --clipupp-ft-bg-rgb: 23 10 46;
+    --clipupp-ft-card-rgb: 33 18 64;
+    --clipupp-ft-ink-rgb: 243 237 255;
+    --clipupp-ft-ink-2-rgb: 188 174 219;
+    --clipupp-ft-ink-3-rgb: 148 134 179;
+    --clipupp-ft-accent-rgb: 201 166 255;
+
     /* ── Z-index scale ─────────────────────────────────────────────────── */
     --z-base:            0;
     --z-dropdown:        100;
@@ -267,6 +302,322 @@
     --z-modal-backdrop:  300;
     --z-modal:           400;
     --z-toast:           500;
+  }
+
+  /* ── Dark palette. The two blocks below (explicit data-theme and the
+        system-preference fallback) MUST stay identical; plain PostCSS has no
+        nesting here, so the declarations are duplicated. ────────────────── */
+  :root[data-theme="dark"] {
+    --clipupp-primary-50: #1B1626;
+    --clipupp-primary-50-rgb: 27 22 38;
+    --clipupp-primary-100: #241C35;
+    --clipupp-primary-100-rgb: 36 28 53;
+    --clipupp-primary-200: #352852;
+    --clipupp-primary-200-rgb: 53 40 82;
+    --clipupp-primary-300: #4A3775;
+    --clipupp-primary-300-rgb: 74 55 117;
+    --clipupp-primary-400: #BB94F8;
+    --clipupp-primary-400-rgb: 187 148 248;
+    --clipupp-primary-500: #A979F5;
+    --clipupp-primary-500-rgb: 169 121 245;
+    --clipupp-primary-600: #9561EE;
+    --clipupp-primary-600-rgb: 149 97 238;
+    --clipupp-primary-700: #D3B8FF;
+    --clipupp-primary-700-rgb: 211 184 255;
+    --clipupp-primary-800: #E0CCFF;
+    --clipupp-primary-800-rgb: 224 204 255;
+    --clipupp-primary-900: #EDE0FF;
+    --clipupp-primary-900-rgb: 237 224 255;
+    --clipupp-accent-50: #1B1626;
+    --clipupp-accent-50-rgb: 27 22 38;
+    --clipupp-accent-100: #241C35;
+    --clipupp-accent-100-rgb: 36 28 53;
+    --clipupp-accent-200: #352852;
+    --clipupp-accent-200-rgb: 53 40 82;
+    --clipupp-accent-300: #4A3775;
+    --clipupp-accent-300-rgb: 74 55 117;
+    --clipupp-accent-400: #BB94F8;
+    --clipupp-accent-400-rgb: 187 148 248;
+    --clipupp-accent-500: #A979F5;
+    --clipupp-accent-500-rgb: 169 121 245;
+    --clipupp-accent-600: #9561EE;
+    --clipupp-accent-600-rgb: 149 97 238;
+    --clipupp-accent-700: #D3B8FF;
+    --clipupp-accent-700-rgb: 211 184 255;
+    --clipupp-accent-800: #E0CCFF;
+    --clipupp-accent-800-rgb: 224 204 255;
+    --clipupp-accent-900: #EDE0FF;
+    --clipupp-accent-900-rgb: 237 224 255;
+    --clipupp-success: #5FCF80;
+    --clipupp-success-rgb: 95 207 128;
+    --clipupp-success-strong: #8EE0A6;
+    --clipupp-success-strong-rgb: 142 224 166;
+    --clipupp-success-soft: #15291C;
+    --clipupp-success-soft-rgb: 21 41 28;
+    --clipupp-success-fg: #0B1A10;
+    --clipupp-success-fg-rgb: 11 26 16;
+    --clipupp-danger: #FF7393;
+    --clipupp-danger-rgb: 255 115 147;
+    --clipupp-danger-strong: #FFA3B6;
+    --clipupp-danger-strong-rgb: 255 163 182;
+    --clipupp-danger-soft: #33161E;
+    --clipupp-danger-soft-rgb: 51 22 30;
+    --clipupp-danger-fg: #2A0A12;
+    --clipupp-danger-fg-rgb: 42 10 18;
+    --clipupp-warning: #F3A84A;
+    --clipupp-warning-rgb: 243 168 74;
+    --clipupp-warning-strong: #F7C37E;
+    --clipupp-warning-strong-rgb: 247 195 126;
+    --clipupp-warning-soft: #33240F;
+    --clipupp-warning-soft-rgb: 51 36 15;
+    --clipupp-warning-fg: #2A1A05;
+    --clipupp-warning-fg-rgb: 42 26 5;
+    --clipupp-info: #8E8EE8;
+    --clipupp-info-soft: #1E1E36;
+    --clipupp-neutral-0: #1B1920;
+    --clipupp-neutral-50: #111015;
+    --clipupp-neutral-50-rgb: 17 16 21;
+    --clipupp-neutral-100: #232029;
+    --clipupp-neutral-100-rgb: 35 32 41;
+    --clipupp-neutral-200: #2D2A35;
+    --clipupp-neutral-200-rgb: 45 42 53;
+    --clipupp-neutral-300: #433F4D;
+    --clipupp-neutral-300-rgb: 67 63 77;
+    --clipupp-neutral-400: #6F6A7C;
+    --clipupp-neutral-400-rgb: 111 106 124;
+    --clipupp-neutral-500: #938D9F;
+    --clipupp-neutral-500-rgb: 147 141 159;
+    --clipupp-neutral-600: #A8A2B4;
+    --clipupp-neutral-600-rgb: 168 162 180;
+    --clipupp-neutral-700: #BDB7C8;
+    --clipupp-neutral-700-rgb: 189 183 200;
+    --clipupp-neutral-800: #BDB7C8;
+    --clipupp-neutral-800-rgb: 189 183 200;
+    --clipupp-neutral-900: #F1EFF5;
+    --clipupp-neutral-900-rgb: 241 239 245;
+    --clipupp-tint-50: #1B1626;
+    --clipupp-tint-50-rgb: 27 22 38;
+    --clipupp-tint-100: #241C35;
+    --clipupp-tint-100-rgb: 36 28 53;
+    --clipupp-tint-200: #352852;
+    --clipupp-tint-200-rgb: 53 40 82;
+    --clipupp-ok-bg: #15291C;
+    --clipupp-ok-bg-rgb: 21 41 28;
+    --clipupp-bad-bg: #33161E;
+    --clipupp-bad-bg-rgb: 51 22 30;
+    --clipupp-warn-bg: #33240F;
+    --clipupp-warn-bg-rgb: 51 36 15;
+    --clipupp-skel: #24212B;
+    --clipupp-skel-rgb: 36 33 43;
+    --clipupp-skel-hi: #2E2A36;
+    --clipupp-skel-hi-rgb: 46 42 54;
+    --clipupp-deep: #251047;
+    --clipupp-deep-rgb: 37 16 71;
+    --clipupp-deep-2: #321764;
+    --clipupp-deep-2-rgb: 50 23 100;
+    --clipupp-surface: #1B1920;
+    --clipupp-surface-rgb: 27 25 32;
+    --clipupp-primary: #A979F5;
+    --clipupp-primary-strong: #BB94F8;
+    --clipupp-primary-soft: #1B1626;
+    --clipupp-primary-fg: #170A2E;
+    --clipupp-accent: #A979F5;
+    --clipupp-accent-strong: #BB94F8;
+    --clipupp-accent-soft: #1B1626;
+    --clipupp-accent-fg: #170A2E;
+    --clipupp-primary-rgb: 169 121 245;
+    --clipupp-primary-strong-rgb: 187 148 248;
+    --clipupp-primary-soft-rgb: 27 22 38;
+    --clipupp-primary-fg-rgb: 23 10 46;
+    --clipupp-accent-rgb: 169 121 245;
+    --clipupp-accent-strong-rgb: 187 148 248;
+    --clipupp-accent-soft-rgb: 27 22 38;
+    --clipupp-accent-fg-rgb: 23 10 46;
+    --clipupp-shadow-resting: 0 1px 2px rgba(0,0,0,.4);
+    --clipupp-shadow-hover: 0 14px 34px rgba(0,0,0,.5);
+    --clipupp-shadow-lifted: 0 12px 32px -8px rgba(0,0,0,.6);
+    --clipupp-shadow-modal: 0 24px 48px -12px rgba(0,0,0,.7);
+    --clipupp-shadow-brand-hover: 0 14px 34px rgba(0,0,0,.5);
+    --clipupp-shadow-pop: 0 24px 60px rgba(0,0,0,.6);
+    --clipupp-shadow-glow-primary: 0 0 0 1px rgba(169,121,245,.28), 0 8px 20px -6px rgba(169,121,245,.4);
+    --clipupp-shadow-glow-accent: 0 0 0 1px rgba(169,121,245,.28), 0 8px 20px -6px rgba(169,121,245,.4);
+    --background: 252 13.5% 7.3%;
+    --foreground: 260 23.1% 94.9%;
+    --card: 257.1 12.3% 11.2%;
+    --card-foreground: 260 23.1% 94.9%;
+    --popover: 257.1 12.3% 11.2%;
+    --popover-foreground: 260 23.1% 94.9%;
+    --primary: 263.2 86.1% 71.8%;
+    --primary-foreground: 261.7 64.3% 11%;
+    --secondary: 259.2 30.9% 15.9%;
+    --secondary-foreground: 262.8 100% 86.1%;
+    --muted: 260 12.3% 14.3%;
+    --muted-foreground: 260 8.6% 58.8%;
+    --accent: 263.2 86.1% 71.8%;
+    --accent-foreground: 261.7 64.3% 11%;
+    --destructive: 346.3 100% 72.5%;
+    --destructive-foreground: 261.7 64.3% 11%;
+    --border: 256.4 11.6% 18.6%;
+    --input: 256.4 11.6% 18.6%;
+    --ring: 263.2 86.1% 71.8%;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --clipupp-primary-50: #1B1626;
+      --clipupp-primary-50-rgb: 27 22 38;
+      --clipupp-primary-100: #241C35;
+      --clipupp-primary-100-rgb: 36 28 53;
+      --clipupp-primary-200: #352852;
+      --clipupp-primary-200-rgb: 53 40 82;
+      --clipupp-primary-300: #4A3775;
+      --clipupp-primary-300-rgb: 74 55 117;
+      --clipupp-primary-400: #BB94F8;
+      --clipupp-primary-400-rgb: 187 148 248;
+      --clipupp-primary-500: #A979F5;
+      --clipupp-primary-500-rgb: 169 121 245;
+      --clipupp-primary-600: #9561EE;
+      --clipupp-primary-600-rgb: 149 97 238;
+      --clipupp-primary-700: #D3B8FF;
+      --clipupp-primary-700-rgb: 211 184 255;
+      --clipupp-primary-800: #E0CCFF;
+      --clipupp-primary-800-rgb: 224 204 255;
+      --clipupp-primary-900: #EDE0FF;
+      --clipupp-primary-900-rgb: 237 224 255;
+      --clipupp-accent-50: #1B1626;
+      --clipupp-accent-50-rgb: 27 22 38;
+      --clipupp-accent-100: #241C35;
+      --clipupp-accent-100-rgb: 36 28 53;
+      --clipupp-accent-200: #352852;
+      --clipupp-accent-200-rgb: 53 40 82;
+      --clipupp-accent-300: #4A3775;
+      --clipupp-accent-300-rgb: 74 55 117;
+      --clipupp-accent-400: #BB94F8;
+      --clipupp-accent-400-rgb: 187 148 248;
+      --clipupp-accent-500: #A979F5;
+      --clipupp-accent-500-rgb: 169 121 245;
+      --clipupp-accent-600: #9561EE;
+      --clipupp-accent-600-rgb: 149 97 238;
+      --clipupp-accent-700: #D3B8FF;
+      --clipupp-accent-700-rgb: 211 184 255;
+      --clipupp-accent-800: #E0CCFF;
+      --clipupp-accent-800-rgb: 224 204 255;
+      --clipupp-accent-900: #EDE0FF;
+      --clipupp-accent-900-rgb: 237 224 255;
+      --clipupp-success: #5FCF80;
+      --clipupp-success-rgb: 95 207 128;
+      --clipupp-success-strong: #8EE0A6;
+      --clipupp-success-strong-rgb: 142 224 166;
+      --clipupp-success-soft: #15291C;
+      --clipupp-success-soft-rgb: 21 41 28;
+      --clipupp-success-fg: #0B1A10;
+      --clipupp-success-fg-rgb: 11 26 16;
+      --clipupp-danger: #FF7393;
+      --clipupp-danger-rgb: 255 115 147;
+      --clipupp-danger-strong: #FFA3B6;
+      --clipupp-danger-strong-rgb: 255 163 182;
+      --clipupp-danger-soft: #33161E;
+      --clipupp-danger-soft-rgb: 51 22 30;
+      --clipupp-danger-fg: #2A0A12;
+      --clipupp-danger-fg-rgb: 42 10 18;
+      --clipupp-warning: #F3A84A;
+      --clipupp-warning-rgb: 243 168 74;
+      --clipupp-warning-strong: #F7C37E;
+      --clipupp-warning-strong-rgb: 247 195 126;
+      --clipupp-warning-soft: #33240F;
+      --clipupp-warning-soft-rgb: 51 36 15;
+      --clipupp-warning-fg: #2A1A05;
+      --clipupp-warning-fg-rgb: 42 26 5;
+      --clipupp-info: #8E8EE8;
+      --clipupp-info-soft: #1E1E36;
+      --clipupp-neutral-0: #1B1920;
+      --clipupp-neutral-50: #111015;
+      --clipupp-neutral-50-rgb: 17 16 21;
+      --clipupp-neutral-100: #232029;
+      --clipupp-neutral-100-rgb: 35 32 41;
+      --clipupp-neutral-200: #2D2A35;
+      --clipupp-neutral-200-rgb: 45 42 53;
+      --clipupp-neutral-300: #433F4D;
+      --clipupp-neutral-300-rgb: 67 63 77;
+      --clipupp-neutral-400: #6F6A7C;
+      --clipupp-neutral-400-rgb: 111 106 124;
+      --clipupp-neutral-500: #938D9F;
+      --clipupp-neutral-500-rgb: 147 141 159;
+      --clipupp-neutral-600: #A8A2B4;
+      --clipupp-neutral-600-rgb: 168 162 180;
+      --clipupp-neutral-700: #BDB7C8;
+      --clipupp-neutral-700-rgb: 189 183 200;
+      --clipupp-neutral-800: #BDB7C8;
+      --clipupp-neutral-800-rgb: 189 183 200;
+      --clipupp-neutral-900: #F1EFF5;
+      --clipupp-neutral-900-rgb: 241 239 245;
+      --clipupp-tint-50: #1B1626;
+      --clipupp-tint-50-rgb: 27 22 38;
+      --clipupp-tint-100: #241C35;
+      --clipupp-tint-100-rgb: 36 28 53;
+      --clipupp-tint-200: #352852;
+      --clipupp-tint-200-rgb: 53 40 82;
+      --clipupp-ok-bg: #15291C;
+      --clipupp-ok-bg-rgb: 21 41 28;
+      --clipupp-bad-bg: #33161E;
+      --clipupp-bad-bg-rgb: 51 22 30;
+      --clipupp-warn-bg: #33240F;
+      --clipupp-warn-bg-rgb: 51 36 15;
+      --clipupp-skel: #24212B;
+      --clipupp-skel-rgb: 36 33 43;
+      --clipupp-skel-hi: #2E2A36;
+      --clipupp-skel-hi-rgb: 46 42 54;
+      --clipupp-deep: #251047;
+      --clipupp-deep-rgb: 37 16 71;
+      --clipupp-deep-2: #321764;
+      --clipupp-deep-2-rgb: 50 23 100;
+      --clipupp-surface: #1B1920;
+      --clipupp-surface-rgb: 27 25 32;
+      --clipupp-primary: #A979F5;
+      --clipupp-primary-strong: #BB94F8;
+      --clipupp-primary-soft: #1B1626;
+      --clipupp-primary-fg: #170A2E;
+      --clipupp-accent: #A979F5;
+      --clipupp-accent-strong: #BB94F8;
+      --clipupp-accent-soft: #1B1626;
+      --clipupp-accent-fg: #170A2E;
+      --clipupp-primary-rgb: 169 121 245;
+      --clipupp-primary-strong-rgb: 187 148 248;
+      --clipupp-primary-soft-rgb: 27 22 38;
+      --clipupp-primary-fg-rgb: 23 10 46;
+      --clipupp-accent-rgb: 169 121 245;
+      --clipupp-accent-strong-rgb: 187 148 248;
+      --clipupp-accent-soft-rgb: 27 22 38;
+      --clipupp-accent-fg-rgb: 23 10 46;
+      --clipupp-shadow-resting: 0 1px 2px rgba(0,0,0,.4);
+      --clipupp-shadow-hover: 0 14px 34px rgba(0,0,0,.5);
+      --clipupp-shadow-lifted: 0 12px 32px -8px rgba(0,0,0,.6);
+      --clipupp-shadow-modal: 0 24px 48px -12px rgba(0,0,0,.7);
+      --clipupp-shadow-brand-hover: 0 14px 34px rgba(0,0,0,.5);
+      --clipupp-shadow-pop: 0 24px 60px rgba(0,0,0,.6);
+      --clipupp-shadow-glow-primary: 0 0 0 1px rgba(169,121,245,.28), 0 8px 20px -6px rgba(169,121,245,.4);
+      --clipupp-shadow-glow-accent: 0 0 0 1px rgba(169,121,245,.28), 0 8px 20px -6px rgba(169,121,245,.4);
+      --background: 252 13.5% 7.3%;
+      --foreground: 260 23.1% 94.9%;
+      --card: 257.1 12.3% 11.2%;
+      --card-foreground: 260 23.1% 94.9%;
+      --popover: 257.1 12.3% 11.2%;
+      --popover-foreground: 260 23.1% 94.9%;
+      --primary: 263.2 86.1% 71.8%;
+      --primary-foreground: 261.7 64.3% 11%;
+      --secondary: 259.2 30.9% 15.9%;
+      --secondary-foreground: 262.8 100% 86.1%;
+      --muted: 260 12.3% 14.3%;
+      --muted-foreground: 260 8.6% 58.8%;
+      --accent: 263.2 86.1% 71.8%;
+      --accent-foreground: 261.7 64.3% 11%;
+      --destructive: 346.3 100% 72.5%;
+      --destructive-foreground: 261.7 64.3% 11%;
+      --border: 256.4 11.6% 18.6%;
+      --input: 256.4 11.6% 18.6%;
+      --ring: 263.2 86.1% 71.8%;
+      color-scheme: dark;
+    }
   }
 }
 
@@ -1120,4 +1471,143 @@
 
 @media (prefers-reduced-motion: reduce) {
   .clipupp-fade-in-up { animation: none; }
+}
+
+/* =============================================================================
+   Homepage v3 motion + utilities
+   transform / opacity / translate only. No fill-mode holds transform on a
+   hoverable element, except clipupp-peel whose cover is never hovered after.
+   ========================================================================== */
+
+@layer components {
+  /* Rail: horizontal scroll-snap grid. Gap and column width come from vars. */
+  .clipupp-rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--rail-col, 280px);
+    gap: var(--rail-gap, 16px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .clipupp-rail::-webkit-scrollbar { display: none; }
+  .clipupp-rail > * { scroll-snap-align: start; }
+
+  /* Numerals: tabular lining Inter. */
+  .clipupp-num {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  h1 .clipupp-num, h2 .clipupp-num, h3 .clipupp-num {
+    font-size: 0.9em;
+    font-weight: 800;
+  }
+  .clipupp-amt::before {
+    content: "\20B9";
+    font-size: 0.64em;
+    margin-inline-end: 0.08em;
+  }
+
+  /* Skeleton base (static). The shimmer is added under no-preference below. */
+  .clipupp-skel {
+    background: linear-gradient(90deg, var(--clipupp-skel) 0%, var(--clipupp-skel-hi) 50%, var(--clipupp-skel) 100%);
+    background-size: 200% 100%;
+    border-radius: 8px;
+  }
+
+  /* Marquee: reduced motion users get a manually scrollable row. */
+  .clipupp-marquee { display: flex; width: max-content; }
+  @media (prefers-reduced-motion: reduce) {
+    .clipupp-marquee { width: auto; overflow-x: auto; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .clipupp-pulse { animation: clipupp-pulse 2s infinite; }
+    .clipupp-skel { animation: clipupp-shim 1.3s linear infinite; }
+    .clipupp-mega-in { animation: clipupp-mega-in 0.2s ease-out; }
+    .clipupp-sheet-up { animation: clipupp-sheet-up 0.3s cubic-bezier(0.2, 0, 0, 1); }
+    .clipupp-sheen {
+      position: relative;
+      overflow: hidden;
+    }
+    .clipupp-sheen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+      animation: clipupp-sheen 3.6s infinite;
+    }
+    .clipupp-peel { animation: clipupp-peel 0.42s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+    .clipupp-code-in { animation: clipupp-code-in 0.42s ease-out; }
+    .clipupp-stamp { animation: clipupp-stamp 0.35s ease-out; }
+    .clipupp-heart { animation: clipupp-heart 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
+    .clipupp-okpop { animation: clipupp-okpop 0.35s ease-out; }
+    .clipupp-rise > * {
+      animation: clipupp-rise 0.42s cubic-bezier(0.2, 0, 0, 1) backwards;
+      animation-delay: calc(var(--k, 0) * 45ms);
+    }
+    .clipupp-rot { animation: clipupp-rot 0.8s linear infinite; }
+    .clipupp-marquee { animation: clipupp-marq var(--dur, 60s) linear infinite; }
+    .clipupp-marquee:hover { animation-play-state: paused; }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes clipupp-pulse {
+    0%   { box-shadow: 0 0 0 4px rgb(var(--clipupp-primary-rgb) / 0.35); }
+    70%  { box-shadow: 0 0 0 7px rgb(var(--clipupp-primary-rgb) / 0); }
+    100% { box-shadow: 0 0 0 4px rgb(var(--clipupp-primary-rgb) / 0); }
+  }
+  @keyframes clipupp-shim {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+  @keyframes clipupp-mega-in {
+    from { opacity: 0; translate: 0 -6px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  @keyframes clipupp-sheet-up {
+    from { opacity: 0.4; translate: 0 40%; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  @keyframes clipupp-sheen {
+    from { translate: -120% 0; }
+    to   { translate: 120% 0; }
+  }
+  @keyframes clipupp-peel {
+    to { translate: -102% 0; transform: skewX(-8deg); opacity: 0.3; }
+  }
+  @keyframes clipupp-code-in {
+    from { letter-spacing: 0.4em; opacity: 0.3; }
+    to   { letter-spacing: 0.1em; opacity: 1; }
+  }
+  @keyframes clipupp-stamp {
+    from { scale: 0.96; }
+    to   { scale: 1; }
+  }
+  @keyframes clipupp-heart {
+    0%   { scale: 0.6; }
+    60%  { scale: 1.25; }
+    100% { scale: 1; }
+  }
+  @keyframes clipupp-okpop {
+    0%, 100% { scale: 1; }
+    50%      { scale: 1.08; }
+  }
+  @keyframes clipupp-rise {
+    from { opacity: 0; translate: 0 10px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+  @keyframes clipupp-rot {
+    to { rotate: 360deg; }
+  }
+  @keyframes clipupp-marq {
+    from { translate: 0 0; }
+    to   { translate: -50% 0; }
+  }
 }
