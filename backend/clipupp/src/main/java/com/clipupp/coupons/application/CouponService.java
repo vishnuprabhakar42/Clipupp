@@ -87,11 +87,6 @@ public class CouponService {
         return CursorPage.from(result, c -> c);
     }
 
-    @Transactional(readOnly = true)
-    public List<Coupon> homepageTop(int limit) {
-        return couponRepo.findHomepageTop(OffsetDateTime.now(), PageRequest.of(0, limit));
-    }
-
     /**
      * Top-N active coupon slugs by popularity. Slug-only projection —
      * consumed by the frontend's generateStaticParams at build time to
@@ -103,7 +98,7 @@ public class CouponService {
         return couponRepo.findTopSlugs(OffsetDateTime.now(), PageRequest.of(0, capped));
     }
 
-    /** Same as {@link #homepageTop(int)} but with stores eagerly batched in for card rendering. */
+    /** Top active coupons by popularity, with stores and categories batched in for card rendering. */
     @Transactional(readOnly = true)
     public List<CouponWithStore> homepageTopWithStores(int limit) {
         return attachStores(couponRepo.findHomepageTop(OffsetDateTime.now(), PageRequest.of(0, limit)));
@@ -442,10 +437,12 @@ public class CouponService {
                     }
                 }
                 case VERIFY -> {
-                    if (!c.isVerified()) { c.setVerified(true); updated++; }
+                    // Explicit re-check: always re-stamp, even when already verified.
+                    c.reverify(OffsetDateTime.now());
+                    updated++;
                 }
                 case UNVERIFY -> {
-                    if (c.isVerified()) { c.setVerified(false); updated++; }
+                    if (c.isVerified()) { c.applyVerified(false, OffsetDateTime.now()); updated++; }
                 }
                 case FEATURE -> {
                     if (!c.isFeatured()) { c.setFeatured(true); updated++; }
@@ -565,7 +562,7 @@ public class CouponService {
         if (minPurchaseCurrency != null) c.setMinPurchaseCurrency(minPurchaseCurrency);
         if (startsAt != null) c.setStartsAt(startsAt);
         if (expiresAt != null) c.setExpiresAt(expiresAt);
-        if (verified != null) c.setVerified(verified);
+        if (verified != null) c.applyVerified(verified, OffsetDateTime.now());
         if (exclusive != null) c.setExclusive(exclusive);
         if (popularityScore != null) c.setPopularityScore(popularityScore);
         if (affiliateUrlOverride != null) c.setAffiliateUrlOverride(affiliateUrlOverride);
