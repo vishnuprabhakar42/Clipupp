@@ -1,43 +1,53 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import { StoreTile } from "@/features/catalog/components/StoreTile";
 import { Link } from "@/lib/i18n/navigation";
-import type { HomepageSectionPayload, HomepageStats } from "@/lib/api/homepage";
+import type { HomeFeed } from "@/lib/home/feed";
+import { AllStoresExpander } from "./AllStoresExpander";
 import { SectionHeader } from "./SectionHeader";
 
+const DESKTOP = 12;
+const COMPACT = 7;
+
 /**
- * Block 3: 6 x 2 store tiles on desktop, 2 x 4 on mobile (the rest hidden
- * with a "View all" link). Each tile: 56px logo, name, live coupon count,
- * deal label in brand purple. `cashbackRate` is the repurposed deal label.
+ * Top stores v3: 12 tiles at lg+, 7 plus an "All stores" tile below. All tiles
+ * render on the server; CSS (`.clipupp-stores`) and the expander decide which show.
  */
-export async function TopStoresGrid({ section, stats }: { section: HomepageSectionPayload; stats: HomepageStats }) {
-  const t = await getTranslations("home.sections");
-  const stores = section.stores ?? [];
+export async function TopStoresGrid({ feed }: { feed: HomeFeed }) {
+  const t = await getTranslations("home.stores");
+  const stores = [...feed.stores].sort((a, b) => {
+    if (a.popular != null && b.popular != null) return a.popular - b.popular;
+    if (a.popular != null) return -1;
+    if (b.popular != null) return 1;
+    return a.name.localeCompare(b.name);
+  });
   if (stores.length === 0) return null;
-  // The store count is live (stats.activeStores), never a hardcoded "500+".
-  const storeCount = Math.max(stats.activeStores, stores.length);
-  const eyebrow = section.subtitle?.trim() || t("storesEyebrow", { count: storeCount });
+  const count = Math.max(feed.stats.storeCount, stores.length);
   return (
-    <section className="clipupp-container pb-12 lg:pb-24" aria-labelledby="stores-heading" id="stores">
-      <SectionHeader id="stores-heading" eyebrow={eyebrow} title={section.title} link={{ href: "/stores", label: t("browseAllStores") }} />
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <section id="stores" className="clipupp-container py-12 lg:py-20" aria-labelledby="stores-heading">
+      <SectionHeader
+        id="stores-heading"
+        eyebrow={t("eyebrow", { count: new Intl.NumberFormat("en-IN").format(count) })}
+        title={t("title")}
+      />
+      <AllStoresExpander total={stores.length} hasMore={stores.length > COMPACT}>
         {stores.map((s, i) => (
-          <li key={s.id} className={i >= 8 ? "hidden lg:block" : undefined}>
-            <Link href={`/stores/${s.slug}`}
-              className="clipupp-reveal flex h-full min-w-0 flex-col items-start gap-2.5 rounded-xl border border-clipupp-neutral-200 bg-white px-4 py-5 transition-[opacity,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-clipupp-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-              style={{ "--i": Math.min(i, 5) } as React.CSSProperties}>
-              <span className="grid h-14 w-14 place-items-center rounded-xl border border-clipupp-neutral-100 bg-white p-2">
-                <Image src={s.logoUrl} alt="" width={56} height={56} className="h-full w-full object-contain" />
-              </span>
-              <b className="font-semibold leading-[1.3] text-clipupp-neutral-900 [overflow-wrap:anywhere]">{s.name}</b>
-              <span className="text-[13px] tabular-nums text-clipupp-neutral-500">{t("couponsCount", { count: s.activeCouponCount ?? 0 })}</span>
-              {s.cashbackRate && <span className="mt-auto text-[13px] font-medium text-clipupp-primary">{s.cashbackRate}</span>}
+          <li key={s.id} data-tier={i >= DESKTOP ? "x" : i >= COMPACT ? "m" : undefined} className="min-w-0">
+            <Link
+              href={`/stores/${s.id}`}
+              className="flex h-full min-w-0 flex-col items-center gap-1 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface px-1.5 py-3 text-center transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:items-start lg:gap-1.5 lg:p-[18px] lg:text-left lg:hover:-translate-y-0.5 lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0"
+            >
+              <StoreTile store={s} size={52} className="!h-[46px] !w-[46px] lg:!h-[52px] lg:!w-[52px]" />
+              <b className="mt-1 w-full truncate text-[12.5px] font-semibold leading-snug text-clipupp-neutral-900 lg:whitespace-normal lg:text-[15px]">
+                {s.name}
+              </b>
+              <span className="text-[11.5px] text-clipupp-neutral-500 lg:text-[13px]">{t("coupons", { count: s.coupons })}</span>
+              {s.best && (
+                <span className="mt-auto hidden pt-2 text-[13px] font-semibold text-clipupp-success lg:block">{s.best}</span>
+              )}
             </Link>
           </li>
         ))}
-      </ul>
-      <p className="mt-5 lg:hidden">
-        <Link href="/stores" className="text-[15px] font-medium text-clipupp-primary hover:underline">{t("viewAllStores", { count: storeCount })} →</Link>
-      </p>
+      </AllStoresExpander>
     </section>
   );
 }

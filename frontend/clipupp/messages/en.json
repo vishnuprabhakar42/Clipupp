@@ -314,12 +314,8 @@
     },
     "sections": {
       "viewAllTrending": "View all trending coupons",
-      "browseAllStores": "Browse all stores A to Z",
-      "viewAllStores": "View all {count} stores",
-      "couponsCount": "{count, plural, =1 {1 coupon} other {# coupons}}",
       "seeAllCategory": "See all {category} coupons",
       "emptyTab": "No {category} coupons right now",
-      "storesEyebrow": "{count, plural, =1 {1 store} other {# stores}}",
       "tabsLabel": "Coupon categories"
     },
     "verify": {
@@ -343,10 +339,14 @@
       "defaultCta": "Subscribe"
     },
     "bank": {
-      "eyebrow": "Stack with codes",
-      "defaultCta": "See eligible offers",
-      "range": "{from} to {to}",
-      "banksLabel": "Participating banks"
+      "eyebrow": "Stack with any coupon",
+      "title": "Bank and card offers",
+      "sub": "Applied when you pay, on top of the code you copy here.",
+      "all": "All",
+      "filterAria": "Filter by bank",
+      "railAria": "Bank and card offers",
+      "on": "On {store}",
+      "onAria": "Show {store} coupons"
     },
     "spotlight": {
       "label": "Festive spotlight offers",
@@ -395,6 +395,38 @@
       "loadError": "We could not load more coupons.",
       "retry": "Try again",
       "now": "just now"
+    },
+    "deals": {
+      "eyebrow": "Live price drops",
+      "title": "Deals from Amazon, Flipkart and more",
+      "all": "All deals",
+      "filterAria": "Filter deals by store",
+      "railAria": "Live deals",
+      "off": "{pct}% off",
+      "lowest": "Lowest price in 30 days",
+      "buy": "Buy on {store}",
+      "empty": "No live deals right now. Check back in a bit.",
+      "rating": "Rated {rating} out of 5"
+    },
+    "calendar": {
+      "eyebrow": "Plan your cart",
+      "title": "Festive sale calendar",
+      "sub": "Tap Remind me and we will tell you the morning a sale opens.",
+      "railAria": "Festive sales",
+      "live": "Live now",
+      "soon": "Coming up",
+      "ended": "Ended",
+      "seeCodes": "See {store} codes",
+      "remind": "Remind me",
+      "reminderSet": "Reminder set",
+      "remindAria": "Remind me when {name} opens"
+    },
+    "stores": {
+      "eyebrow": "{count} stores",
+      "title": "Top stores",
+      "coupons": "{count, plural, =1 {1 coupon} other {# coupons}}",
+      "all": "All stores",
+      "listed": "{count} listed"
     }
   },
   "footer": {

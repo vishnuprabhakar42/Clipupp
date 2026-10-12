@@ -12,6 +12,7 @@ export function SectionHeader({
   link,
   id,
   actions,
+  eyebrowTone = "brand",
 }: {
   eyebrow?: string | null;
   title: string;
@@ -19,11 +20,12 @@ export function SectionHeader({
   id?: string;
   link?: { href: string; label: string };
   actions?: ReactNode;
+  eyebrowTone?: "brand" | "danger";
 }) {
   return (
     <div className="clipupp-reveal mb-7 flex flex-col items-start justify-between gap-3 md:flex-row md:items-end md:gap-6">
       <div>
-        {eyebrow && <span className="text-[12px] font-medium uppercase tracking-[0.04em] text-clipupp-primary">{eyebrow}</span>}
+        {eyebrow && <span className={`text-[12px] font-medium uppercase tracking-[0.04em] ${eyebrowTone === "danger" ? "text-clipupp-danger" : "text-clipupp-primary"}`}>{eyebrow}</span>}
         <h2 id={id} className="font-display text-[clamp(28px,3vw,32px)] font-semibold leading-[1.15] tracking-[-0.02em] text-clipupp-neutral-900">{title}</h2>
         {sub && <p className="mt-1.5 text-[15px] text-clipupp-neutral-500">{sub}</p>}
       </div>

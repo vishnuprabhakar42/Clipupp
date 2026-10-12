@@ -74,6 +74,9 @@ const nextConfig = {
       { protocol: "https", hostname: "**.cloudfront.net" },
       // Real brand logos for stores (seeded by the backend)
       { protocol: "https", hostname: "logo.clearbit.com" },
+      // Marketplace product images (live deals)
+      { protocol: "https", hostname: "m.media-amazon.com" },
+      { protocol: "https", hostname: "rukminim2.flixcart.com" },
       // Free editorial / banner photography
       { protocol: "https", hostname: "images.unsplash.com" },
       // Author / generic avatars
