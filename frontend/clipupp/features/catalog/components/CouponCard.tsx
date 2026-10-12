@@ -19,7 +19,7 @@ export type CouponCardProps = {
 };
 
 const HOVER =
-  "transition-[translate,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
+  "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
 /**
  * Coupon card v3 (server). `card` is the ticket stub used in rails, `row` is

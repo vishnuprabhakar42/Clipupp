@@ -22,6 +22,9 @@ describe("wrapNumbers", () => {
   it("returns plain text when there are no numbers", () => {
     expect(html("Free shipping")).toBe("Free shipping");
   });
+  it("does not swallow a trailing period", () => {
+    expect(html("Get 3.")).toBe('Get <span class="clipupp-num">3</span>.');
+  });
   it("keeps thousands separators together", () => {
     expect(html("Up to ₹1,500 off")).toBe('Up to <span class="clipupp-num">₹1,500</span> off');
   });

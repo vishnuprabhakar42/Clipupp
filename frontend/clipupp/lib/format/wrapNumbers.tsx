@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const NUMBER = /(₹?\d[\d,.]*%?)/;
+const NUMBER = /(₹?\d+(?:[,.]\d+)*%?)/;
 
 /**
  * Splits a headline on numbers, percentages and rupee amounts and wraps each

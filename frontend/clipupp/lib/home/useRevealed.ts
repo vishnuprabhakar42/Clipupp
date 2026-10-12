@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+import { create } from "zustand";
 
 const KEY = "clipupp:revealed";
 
@@ -14,31 +15,45 @@ function read(): string[] {
   }
 }
 
+type RevealedState = {
+  ids: string[];
+  hydrated: boolean;
+  hydrate: () => void;
+  add: (id: string) => void;
+};
+
+/** Shared across every hook instance so all cards for a coupon reveal together. */
+const useRevealedStore = create<RevealedState>((set, get) => ({
+  ids: [],
+  hydrated: false,
+  hydrate: () => {
+    if (get().hydrated) return;
+    set({ ids: Array.from(new Set([...read(), ...get().ids])), hydrated: true });
+  },
+  add: (id) => {
+    if (get().ids.includes(id)) return;
+    const ids = [...get().ids, id];
+    set({ ids });
+    try {
+      // Merge with storage so other tabs' reveals are not lost.
+      localStorage.setItem(KEY, JSON.stringify(Array.from(new Set([...read(), ...ids]))));
+    } catch {}
+  },
+}));
+
 /**
  * Coupon ids whose code the visitor has revealed, persisted in localStorage.
  * Empty on the server and first client render, filled in an effect.
  */
 export function useRevealed() {
-  const [ids, setIds] = useState<string[]>([]);
+  const ids = useRevealedStore((s) => s.ids);
+  const hydrate = useRevealedStore((s) => s.hydrate);
+  const add = useRevealedStore((s) => s.add);
 
   useEffect(() => {
-    setIds(read());
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
   const isRevealed = useCallback((id: string) => ids.includes(id), [ids]);
-
-  const markRevealed = useCallback((id: string) => {
-    setIds((prev) => {
-      if (prev.includes(id)) return prev;
-      const next = [...prev, id];
-      try {
-        // Merge with storage so other tabs' reveals are not lost.
-        const merged = Array.from(new Set([...read(), ...next]));
-        localStorage.setItem(KEY, JSON.stringify(merged));
-      } catch {}
-      return next;
-    });
-  }, []);
-
-  return { isRevealed, markRevealed };
+  return { isRevealed, markRevealed: add };
 }

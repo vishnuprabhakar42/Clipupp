@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FeedCoupon, FeedStore } from "@/lib/home/feed";
@@ -39,27 +39,42 @@ export function RevealButton({
   const href = `/r/${coupon.id}`;
   const revealed = !!code && (isRevealed(coupon.id) || peeling);
 
-  function openSheet() {
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  function openSheet(copied: boolean) {
     markRevealed(coupon.id);
-    open(coupon, store, category ?? null);
+    open(coupon, store, category ?? null, { copied });
     setPeeling(false);
   }
 
   function onClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    // Let the browser handle new-tab gestures natively.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     if (!code) {
-      openSheet();
+      openSheet(false);
       return;
     }
+    // Copy synchronously inside the click gesture (Safari and iOS require it).
+    let copied = false;
+    try {
+      void navigator.clipboard?.writeText(code).catch(() => {});
+      copied = !!navigator.clipboard;
+    } catch {}
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || isRevealed(coupon.id)) {
-      openSheet();
+      openSheet(copied);
       return;
     }
     setPeeling(true);
     navigator.vibrate?.(12);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(openSheet, 360);
+    timer.current = setTimeout(() => openSheet(copied), 360);
   }
 
   if (!code) {
