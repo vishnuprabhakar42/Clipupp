@@ -47,6 +47,11 @@ public class CategoryService {
         return repo.findFeatured();
     }
 
+    @Transactional(readOnly = true)
+    public List<Category> activeRoots() {
+        return repo.findActiveRoots();
+    }
+
     @CacheEvict(cacheNames = {"category.tree", "homepage.layout"}, allEntries = true)
     @Transactional
     public void setFeatured(List<SlugPosition> assignments) {
