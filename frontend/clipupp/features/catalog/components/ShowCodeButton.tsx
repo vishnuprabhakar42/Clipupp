@@ -1,34 +1,36 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
-
 /**
- * The one hot button on every coupon card. Click: reveal the code on the
- * card (via the data-peel sibling), copy it, open the merchant through the
- * affiliate redirect in a new tab, then swap to "Copied ✓ CODE". Deals have
- * no code: skip the clipboard, keep the redirect. Works without clipboard
- * permissions (the catch keeps the UI moving).
+ * The one hot button on every coupon card. It is a real link to the
+ * same-origin affiliate redirect (`/r/{id}`, proxied to the backend by the
+ * Next rewrite), so it works before hydration and without JS, is never
+ * popup-blocked, and carries the first-party refresh cookie for click
+ * attribution. On click (default navigation is kept): reveal the code on the
+ * card via the `.clipupp-code-peel` sibling, copy the code while this tab
+ * still has focus, then swap the label. Deals have no code: no clipboard,
+ * the label reads "Get deal" and then "Opened".
  */
 export function ShowCodeButton({
   couponId,
   code,
-  label,
+  labelKey,
   className = "",
 }: {
   couponId: string;
   code: string | null;
-  label: string;
+  labelKey: "showCode" | "getDeal";
   className?: string;
 }) {
+  const t = useTranslations("catalog.card");
   const [state, setState] = useState<"idle" | "copied" | "opened">("idle");
 
-  function onClick(e: React.MouseEvent<HTMLButtonElement>) {
+  function onClick(e: React.MouseEvent<HTMLAnchorElement>) {
     const card = e.currentTarget.closest("[data-coupon-card]");
-    card?.querySelector(".clipupp-code-peel")?.classList.add("revealed");
-    window.open(`${API_BASE}/r/${couponId}`, "_blank", "noopener,noreferrer");
+    card?.querySelectorAll(".clipupp-code-peel").forEach((el) => el.classList.add("revealed"));
     if (code && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(code).then(
         () => setState("copied"),
@@ -40,11 +42,13 @@ export function ShowCodeButton({
   }
 
   const done = state !== "idle";
-  const text = state === "copied" ? `Copied ${code}` : state === "opened" ? "Opened" : label;
+  const text = state === "copied" ? t("copied", { code: code ?? "" }) : state === "opened" ? t("opened") : t(labelKey);
 
   return (
-    <button
-      type="button"
+    <a
+      href={`/r/${couponId}`}
+      target="_blank"
+      rel="nofollow sponsored noopener noreferrer"
       onClick={onClick}
       aria-live="polite"
       className={
@@ -55,6 +59,6 @@ export function ShowCodeButton({
     >
       {done && <Check className="h-4 w-4" aria-hidden strokeWidth={2.5} />}
       <span className="tabular-nums">{text}</span>
-    </button>
+    </a>
   );
 }

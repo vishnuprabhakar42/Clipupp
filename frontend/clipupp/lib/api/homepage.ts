@@ -121,14 +121,22 @@ export type HomepageSectionPayload = {
 export type HomepageLayout = { sections: HomepageSectionPayload[]; stats: HomepageStats };
 
 export const homepageApi = {
-  /** Public read — anonymous, suitable for server components. */
+  /**
+   * Public read, anonymous, suitable for server components. Never throws:
+   * a non-OK status, a network rejection or a malformed body all yield null,
+   * and the page falls back to a hero built from message defaults.
+   */
   getPublic: async (): Promise<HomepageLayout | null> => {
-    const res = await fetch(`${API_BASE}/api/v1/homepage`, {
-      headers: { Accept: "application/json" },
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as HomepageLayout;
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/homepage`, {
+        headers: { Accept: "application/json" },
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) return null;
+      return (await res.json()) as HomepageLayout;
+    } catch {
+      return null;
+    }
   },
 
   // Admin

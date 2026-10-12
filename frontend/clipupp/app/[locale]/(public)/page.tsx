@@ -6,7 +6,7 @@ import { getPublicSettings, asString } from "@/lib/api/settings";
 import { HeroSection } from "@/features/home/components/HeroSection";
 import { TrendingCouponsRail } from "@/features/home/components/TrendingCouponsRail";
 import { TopStoresGrid } from "@/features/home/components/TopStoresGrid";
-import { TabbedCouponsClient } from "@/features/home/components/TabbedCoupons";
+import { TabbedCoupons } from "@/features/home/components/TabbedCoupons";
 import { BankOffersHub } from "@/features/home/components/BankOffersHub";
 import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { NewsletterBar } from "@/features/home/components/NewsletterBar";
@@ -63,12 +63,12 @@ type SectionBuilder = (s: HomepageSectionPayload, ctx: Ctx) => ReactNode;
 const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   hero_search: (s, ctx) => <HeroSection section={s} stats={ctx.stats} />,
   trending_coupons: (s) => <TrendingCouponsRail section={s} />,
-  featured_stores: (s) => <TopStoresGrid section={s} />,
+  featured_stores: (s, ctx) => <TopStoresGrid section={s} stats={ctx.stats} />,
   top_deals: (s) =>
     (s.categoryTabs ?? []).length === 0 ? null : (
       <section className="clipupp-container pb-12 lg:pb-24" id="today" aria-labelledby="today-heading">
         <SectionHeader eyebrow={s.subtitle} title={s.title} id="today-heading" />
-        <TabbedCouponsClient tabs={s.categoryTabs ?? []} />
+        <TabbedCoupons tabs={s.categoryTabs ?? []} />
       </section>
     ),
   bank_offers: (s, ctx) => <BankOffersHub section={s} banks={ctx.banks} />,
@@ -78,9 +78,28 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
 
 const EMPTY_STATS = { verifiedLast7d: 0, activeCoupons: 0, activeStores: 0 };
 
+/**
+ * Used when /api/v1/homepage is unreachable or returns nothing: a bare hero
+ * renders from message defaults (H1, subline, search) so the page always has
+ * its heading and search instead of an empty band between header and footer.
+ */
+const FALLBACK_SECTIONS: HomepageSectionPayload[] = [
+  {
+    code: "hero_search",
+    title: "",
+    subtitle: null,
+    itemLimit: null,
+    stores: null,
+    coupons: null,
+    categories: null,
+    categoryTabs: null,
+    campaigns: null,
+  },
+];
+
 export default async function HomePage() {
   const [layout, settings] = await Promise.all([homepageApi.getPublic(), getPublicSettings()]);
-  const sections = layout?.sections ?? [];
+  const sections = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
   const ctx: Ctx = {
     stats: layout?.stats ?? EMPTY_STATS,
     banks: asString(settings["bank_offers.banks"], "")
@@ -88,9 +107,10 @@ export default async function HomePage() {
       .map((b) => b.trim())
       .filter(Boolean),
     newsletter: {
-      headline: asString(settings["newsletter.headline"], "Best deals, once a week."),
+      // Empty means "use the localized default" inside NewsletterBar.
+      headline: asString(settings["newsletter.headline"], ""),
       subheadline: asString(settings["newsletter.subheadline"], ""),
-      cta: asString(settings["newsletter.cta"], "Subscribe"),
+      cta: asString(settings["newsletter.cta"], ""),
       whatsapp: asString(settings["social.whatsapp"], "") || undefined,
     },
   };

@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import { ctaLabel, headline } from "./couponCta";
 
 describe("ctaLabel", () => {
-  it("is Show code only when a code exists", () => {
-    expect(ctaLabel({ type: "CODE", code: "MYNTRA12" })).toBe("Show code");
-    expect(ctaLabel({ type: "CODE", code: null })).toBe("Get deal");
-    expect(ctaLabel({ type: "DEAL", code: null })).toBe("Get deal");
-    expect(ctaLabel({ type: "FREE_SHIPPING", code: "SHIP" })).toBe("Show code");
+  it("is showCode only when a code exists", () => {
+    expect(ctaLabel({ type: "CODE", code: "MYNTRA12" })).toBe("showCode");
+    expect(ctaLabel({ type: "CODE", code: null })).toBe("getDeal");
+    expect(ctaLabel({ type: "DEAL", code: null })).toBe("getDeal");
+    expect(ctaLabel({ type: "FREE_SHIPPING", code: "SHIP" })).toBe("showCode");
   });
 });
 

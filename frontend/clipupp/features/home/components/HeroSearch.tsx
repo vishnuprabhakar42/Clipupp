@@ -3,13 +3,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
-import { Link, useRouter } from "@/lib/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { Link, getPathname, useRouter } from "@/lib/i18n/navigation";
 import { searchApi } from "@/lib/api/search";
 import type { SearchHit } from "@/lib/api/types";
 
 /**
- * Hero search with 3-row autosuggest. The form GETs /search?q= so it works
- * without JS; the island only adds suggestions (150ms debounce, max 3) and
+ * Hero search with 3-row autosuggest. The form GETs the locale's /search?q=
+ * so it works without JS; the island only adds suggestions (150ms debounce, max 3) and
  * the empty state. Keyboard: Escape closes, Enter submits.
  */
 export function HeroSearch({
@@ -24,6 +25,8 @@ export function HeroSearch({
   noResults: string;
 }) {
   const router = useRouter();
+  const locale = useLocale();
+  const tSearch = useTranslations("search");
   const id = useId();
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<SearchHit[]>([]);
@@ -84,7 +87,7 @@ export function HeroSearch({
 
   return (
     <div ref={wrap} className="relative max-w-[560px]">
-      <form action="/search" method="get" role="search" onSubmit={submit}
+      <form action={getPathname({ href: "/search", locale })} method="get" role="search" onSubmit={submit}
         className="flex h-14 items-center gap-2.5 rounded-full border border-clipupp-neutral-200 bg-white pl-5 pr-1.5 transition-shadow focus-within:border-clipupp-primary focus-within:shadow-[0_0_0_3px_#E7D4F5]">
         <Search className="h-5 w-5 shrink-0 text-clipupp-neutral-500" aria-hidden />
         <label htmlFor={id} className="sr-only">{label}</label>
@@ -104,8 +107,12 @@ export function HeroSearch({
           aria-controls={`${id}-list`}
           className="min-w-0 flex-1 bg-transparent text-[17px] text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500"
         />
-        <button type="submit" className="inline-flex h-11 items-center rounded-full bg-clipupp-primary px-5 text-[15px] font-medium text-white transition-colors hover:bg-clipupp-primary-strong">
-          {cta}
+        {/* Below sm the button is a 44px round icon so the placeholder is not
+            truncated on a 390px phone; the text label returns from sm up. */}
+        <button type="submit" aria-label={cta}
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-clipupp-primary text-[15px] font-medium text-white transition-colors hover:bg-clipupp-primary-strong sm:w-auto sm:px-5">
+          <Search className="h-5 w-5 sm:hidden" aria-hidden />
+          <span className="hidden sm:inline">{cta}</span>
         </button>
       </form>
       {open && (
@@ -124,7 +131,7 @@ export function HeroSearch({
                   </span>
                 )}
                 <span className="line-clamp-1 flex-1">{h.title}</span>
-                <small className="text-clipupp-neutral-500">{h.kind === "STORE" ? "Store" : h.kind === "CATEGORY" ? "Category" : "Coupon"}</small>
+                <small className="text-clipupp-neutral-500">{h.kind === "STORE" ? tSearch("kindStore") : h.kind === "CATEGORY" ? tSearch("kindCategory") : tSearch("kindCoupon")}</small>
               </Link>
             ))
           )}
