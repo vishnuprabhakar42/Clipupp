@@ -14,9 +14,9 @@
   },
   "mobileNav": {
     "home": "Home",
-    "browse": "Browse",
-    "saved": "Saved",
-    "account": "Account"
+    "stores": "Stores",
+    "categories": "Categories",
+    "saved": "Saved"
   },
   "common": {
     "loading": "Loading…",
@@ -308,5 +308,22 @@
         "description": "Paste the code at checkout to apply your discount instantly."
       }
     }
+  },
+  "footer": {
+    "blurb": "Coupons only. No wallet, no tracking, no games. Just codes that work at Indian stores.",
+    "coupons": "Coupons",
+    "stores": "Stores",
+    "company": "Clipupp",
+    "legal": "Legal",
+    "storesAZ": "Top stores A to Z",
+    "howWeVerify": "How we verify",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "disclosure": "Affiliate disclosure",
+    "copyright": "© {year} Clipupp. Made in India.",
+    "language": "English"
   }
 }

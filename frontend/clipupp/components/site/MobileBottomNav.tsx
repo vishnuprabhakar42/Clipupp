@@ -1,4 +1,4 @@
-import { Home, LayoutGrid, Bookmark, User } from "lucide-react";
+import { Home, Store, LayoutGrid, Bookmark } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 
@@ -10,7 +10,7 @@ import { getTranslations } from "next-intl/server";
  * as a server component and let the layout decide which key is active by
  * passing `active`. Falls back to no active state if omitted.
  */
-type MobileNavKey = "home" | "browse" | "saved" | "account";
+type MobileNavKey = "home" | "stores" | "categories" | "saved";
 
 export async function MobileBottomNav({
   active,
@@ -25,9 +25,9 @@ export async function MobileBottomNav({
     icon: typeof Home;
   }> = [
     { key: "home", href: "/", label: t("home"), icon: Home },
-    { key: "browse", href: "/stores", label: t("browse"), icon: LayoutGrid },
+    { key: "stores", href: "/stores", label: t("stores"), icon: Store },
+    { key: "categories", href: "/categories", label: t("categories"), icon: LayoutGrid },
     { key: "saved", href: "/account/saved-coupons", label: t("saved"), icon: Bookmark },
-    { key: "account", href: "/account", label: t("account"), icon: User },
   ];
 
   return (
