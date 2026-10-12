@@ -1,0 +1,79 @@
+import { getTranslations } from "next-intl/server";
+import { CategoryGlyph } from "@/components/site/CategoryGlyph";
+import { StoreTile } from "@/features/catalog/components/StoreTile";
+import { resolveCategoryIcon } from "@/lib/home/categoryIcon";
+import { shortCount } from "@/lib/format/short";
+import type { FeedDeal, FeedStore } from "@/lib/home/feed";
+import { catTint } from "../lib/catTint";
+import { DealImage } from "./DealImage";
+
+const nf = new Intl.NumberFormat("en-IN");
+
+const HOVER =
+  "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
+
+/** Product deal card (server). Prices render with `.clipupp-amt` so the rupee sign is CSS only. */
+export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedStore }) {
+  const t = await getTranslations("home.deals");
+  const tint = catTint(deal.cat);
+  const showOff = deal.off > 0;
+  return (
+    <article
+      data-deal-card
+      data-store={deal.store}
+      className={`flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${HOVER}`}
+    >
+      <div
+        className="clipupp-ph relative aspect-square w-full"
+        style={{ "--t-bg": tint.bg, "--t-fg": tint.fg } as React.CSSProperties}
+      >
+        <span className="absolute inset-0 grid place-items-center" aria-hidden>
+          <CategoryGlyph name={resolveCategoryIcon(null, deal.cat)} className="h-[44%] w-[44%]" />
+        </span>
+        {deal.image && <DealImage src={deal.image} sizes="(min-width: 1024px) 16vw, (min-width: 640px) 30vw, 46vw" />}
+        {showOff && (
+          <span className="absolute left-2.5 top-2.5 rounded-md bg-clipupp-danger px-2 py-1 text-[12px] font-bold leading-none text-clipupp-danger-fg">
+            {t("off", { pct: deal.off })}
+          </span>
+        )}
+        <StoreTile store={store} size={30} className="absolute right-2.5 top-2.5 !rounded-lg !p-1 shadow-card" />
+      </div>
+      <div className="flex flex-1 flex-col p-3.5">
+        <h3 className="line-clamp-2 text-[13.5px] font-medium leading-snug text-clipupp-neutral-900">{deal.title}</h3>
+        {deal.rating != null && (
+          <p className="mt-2 flex items-center gap-1.5 text-[12px] text-clipupp-neutral-500">
+            <span
+              className="rounded bg-clipupp-success px-1.5 py-0.5 text-[11.5px] font-bold leading-none text-clipupp-success-fg"
+              aria-label={t("rating", { rating: deal.rating.toFixed(1) })}
+            >
+              {deal.rating.toFixed(1)} ★
+            </span>
+            {deal.reviews != null && <span>({shortCount(deal.reviews)})</span>}
+          </p>
+        )}
+        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span className="clipupp-amt text-[22px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
+            {nf.format(deal.price)}
+          </span>
+          {deal.mrp != null && deal.mrp > deal.price && (
+            <>
+              <span className="clipupp-amt text-[12.5px] text-clipupp-neutral-500 line-through">{nf.format(deal.mrp)}</span>
+              {showOff && <span className="text-[13px] font-semibold text-clipupp-success">{t("off", { pct: deal.off })}</span>}
+            </>
+          )}
+        </p>
+        {deal.lowest30d && <p className="mt-2 text-[11.5px] font-semibold text-clipupp-success">{t("lowest")}</p>}
+        <div className="mt-auto pt-3">
+          <a
+            href={deal.url}
+            target="_blank"
+            rel="noopener sponsored nofollow"
+            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-2 text-[13.5px] whitespace-nowrap font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+          >
+            {t("buy", { store: store.name })}
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}

@@ -1698,3 +1698,24 @@
 .clipupp-logo-d { display: none; }
 :root[data-theme="dark"] .clipupp-logo-l { display: none; }
 :root[data-theme="dark"] .clipupp-logo-d { display: inline-flex; }
+
+/* Deal image placeholder: category tint, mixed into the card surface in dark. */
+.clipupp-ph {
+  --ph-mix: 100%;
+  --ph-fg-mix: 100%;
+  background: color-mix(in srgb, var(--t-bg) var(--ph-mix), var(--clipupp-surface));
+  color: color-mix(in srgb, var(--t-fg) var(--ph-fg-mix), white);
+}
+:root[data-theme="dark"] .clipupp-ph { --ph-mix: 16%; --ph-fg-mix: 60%; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .clipupp-ph { --ph-mix: 16%; --ph-fg-mix: 60%; }
+}
+
+/* Top stores grid: tier 1 (index 7 to 11) hides below lg until expanded, tier 2 (12+) never shows at lg. */
+@media (max-width: 1023.98px) {
+  .clipupp-stores:not([data-open]) > li[data-tier] { display: none; }
+}
+@media (min-width: 1024px) {
+  .clipupp-stores > li[data-tier] { display: none; }
+  .clipupp-stores > li[data-tier="m"] { display: block; }
+}

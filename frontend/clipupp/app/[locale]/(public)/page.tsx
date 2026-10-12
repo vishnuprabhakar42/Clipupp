@@ -11,7 +11,9 @@ import { HeroSection } from "@/features/home/components/HeroSection";
 import { TrendingRail } from "@/features/home/components/TrendingRail";
 import { TopStoresGrid } from "@/features/home/components/TopStoresGrid";
 import { TodaysCoupons } from "@/features/home/components/TodaysCoupons";
-import { BankOffersHub } from "@/features/home/components/BankOffersHub";
+import { BankOffersRail } from "@/features/home/components/BankOffersRail";
+import { DealsRail } from "@/features/home/components/DealsRail";
+import { SaleCalendarRail } from "@/features/home/components/SaleCalendarRail";
 import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { NewsletterBar } from "@/features/home/components/NewsletterBar";
 import { RevealRoot } from "@/features/home/components/Reveal";
@@ -51,7 +53,6 @@ export async function generateMetadata({
 type Ctx = {
   feed: HomeFeed;
   stats: HomepageLayout["stats"];
-  banks: string[];
   newsletter: { headline: string; subheadline: string; cta: string; whatsapp?: string };
 };
 
@@ -69,9 +70,11 @@ const SECTION_RENDERERS: Record<string, SectionBuilder> = {
   ticker: (_s, ctx) => <LiveTicker coupons={ctx.feed.coupons} stores={ctx.feed.stores} />,
   popular_stores: (_s, ctx) => <PopularStoresStrip stores={ctx.feed.stores} />,
   trending_coupons: (s, ctx) => <TrendingRail feed={ctx.feed} section={s} />,
-  featured_stores: (s, ctx) => <TopStoresGrid section={s} stats={ctx.stats} />,
+  featured_stores: (_s, ctx) => <TopStoresGrid feed={ctx.feed} />,
+  deals: (_s, ctx) => <DealsRail feed={ctx.feed} />,
+  sale_calendar: (_s, ctx) => <SaleCalendarRail feed={ctx.feed} />,
   top_deals: (s, ctx) => <TodaysCoupons feed={ctx.feed} section={s} />,
-  bank_offers: (s, ctx) => <BankOffersHub section={s} banks={ctx.banks} />,
+  bank_offers: (_s, ctx) => <BankOffersRail feed={ctx.feed} />,
   verify_band: (s) => <VerifyBand section={s} />,
   newsletter: (s, ctx) => <NewsletterBar section={s} copy={ctx.newsletter} />,
 };
@@ -108,10 +111,6 @@ export default async function HomePage() {
   const ctx: Ctx = {
     feed,
     stats: layout?.stats ?? EMPTY_STATS,
-    banks: asString(settings["bank_offers.banks"], "")
-      .split(",")
-      .map((b) => b.trim())
-      .filter(Boolean),
     newsletter: {
       // Empty means "use the localized default" inside NewsletterBar.
       headline: asString(settings["newsletter.headline"], ""),
@@ -130,7 +129,7 @@ export default async function HomePage() {
           const node = render(s, ctx);
           if (!node) return null;
           return (
-            <div key={s.code} id={s.code} className="scroll-mt-20">
+            <div key={s.code} id={s.code === "deals" ? undefined : s.code} className="scroll-mt-20">
               {node}
             </div>
           );

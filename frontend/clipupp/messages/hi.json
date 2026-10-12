@@ -271,12 +271,8 @@
     },
     "sections": {
       "viewAllTrending": "सभी ट्रेंडिंग कूपन देखें",
-      "browseAllStores": "A से Z सभी स्टोर",
-      "viewAllStores": "सभी {count} स्टोर देखें",
-      "couponsCount": "{count, plural, =1 {1 कूपन} other {# कूपन}}",
       "seeAllCategory": "सभी {category} कूपन देखें",
       "emptyTab": "अभी {category} कूपन नहीं हैं",
-      "storesEyebrow": "{count, plural, =1 {1 स्टोर} other {# स्टोर}}",
       "tabsLabel": "कूपन श्रेणियाँ"
     },
     "verify": {
@@ -300,10 +296,14 @@
       "defaultCta": "सब्सक्राइब करें"
     },
     "bank": {
-      "eyebrow": "कोड के साथ जोड़ें",
-      "defaultCta": "योग्य ऑफ़र देखें",
-      "range": "{from} से {to}",
-      "banksLabel": "भाग लेने वाले बैंक"
+      "eyebrow": "किसी भी कूपन के साथ जोड़ें",
+      "title": "बैंक और कार्ड ऑफ़र",
+      "sub": "भुगतान करते समय लागू होता है, यहाँ से कॉपी किए कोड के ऊपर।",
+      "all": "सभी",
+      "filterAria": "बैंक के अनुसार फ़िल्टर करें",
+      "railAria": "बैंक और कार्ड ऑफ़र",
+      "on": "{store} पर",
+      "onAria": "{store} के कूपन दिखाएँ"
     },
     "spotlight": {
       "label": "त्योहार स्पॉटलाइट ऑफ़र",
@@ -352,6 +352,38 @@
       "loadError": "और कूपन लोड नहीं हो सके।",
       "retry": "फिर कोशिश करें",
       "now": "अभी"
+    },
+    "deals": {
+      "eyebrow": "लाइव प्राइस ड्रॉप",
+      "title": "Amazon, Flipkart और अन्य से डील",
+      "all": "सभी डील",
+      "filterAria": "स्टोर के अनुसार डील फ़िल्टर करें",
+      "railAria": "लाइव डील",
+      "off": "{pct}% की छूट",
+      "lowest": "30 दिनों में सबसे कम कीमत",
+      "buy": "{store} पर खरीदें",
+      "empty": "अभी कोई लाइव डील नहीं है। थोड़ी देर बाद देखें।",
+      "rating": "5 में से {rating} रेटिंग"
+    },
+    "calendar": {
+      "eyebrow": "अपना कार्ट प्लान करें",
+      "title": "त्योहारी सेल कैलेंडर",
+      "sub": "रिमाइंड मी दबाएँ, सेल खुलने की सुबह हम आपको बता देंगे।",
+      "railAria": "त्योहारी सेल",
+      "live": "अभी लाइव",
+      "soon": "जल्द आ रहा है",
+      "ended": "खत्म",
+      "seeCodes": "{store} के कोड देखें",
+      "remind": "याद दिलाएँ",
+      "reminderSet": "रिमाइंडर सेट",
+      "remindAria": "{name} खुलने पर याद दिलाएँ"
+    },
+    "stores": {
+      "eyebrow": "{count} स्टोर",
+      "title": "टॉप स्टोर",
+      "coupons": "{count, plural, =1 {1 कूपन} other {# कूपन}}",
+      "all": "सभी स्टोर",
+      "listed": "{count} सूचीबद्ध"
     }
   },
   "footer": {
