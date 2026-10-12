@@ -31,7 +31,7 @@ public class SiteSettingService {
             "seo.default_title_template", "seo.default_description", "seo.og_image",
             // Savings stats strip (V029) — rendered on the public homepage.
             "stats.coupons", "stats.stores", "stats.verified", "stats.savings",
-            // Homepage v2 bank chip row (V034).
+            // Homepage v2 bank chip row (V036).
             "bank_offers.banks"
     );
 
