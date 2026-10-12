@@ -16,7 +16,7 @@ export async function BankOffersHub({ section, banks }: { section: HomepageSecti
   if (campaigns.length === 0) return null;
   return (
     <section className="clipupp-container pb-12 lg:pb-24" aria-labelledby="bank-heading" id="bank">
-      <SectionHeader eyebrow={section.subtitle ?? t("eyebrow")} title={section.title} />
+      <SectionHeader eyebrow={section.subtitle ?? t("eyebrow")} title={section.title} id="bank-heading" />
       <div className="grid gap-6 md:grid-cols-2">
         {campaigns.map((c, i) => {
           const href = c.ctaUrl?.trim() || "/offers";
