@@ -25,7 +25,7 @@ export async function HeroSection({ section, stats }: { section: HomepageSection
           <span className="clipupp-fx text-[12px] font-medium uppercase tracking-[0.04em] text-clipupp-primary" style={{ "--i": 0 } as React.CSSProperties}>
             {t("eyebrow")}
           </span>
-          <h1 id="hero-heading" className="clipupp-fx mt-3.5 max-w-[14ch] font-display text-[clamp(40px,5vw,60px)] font-semibold leading-[1.05] tracking-[-0.02em] text-clipupp-neutral-900" style={{ "--i": 1 } as React.CSSProperties}>
+          <h1 id="hero-heading" className="clipupp-fx mt-3.5 max-w-[22ch] font-display text-[clamp(40px,5vw,60px)] font-semibold leading-[1.05] tracking-[-0.02em] text-clipupp-neutral-900" style={{ "--i": 1 } as React.CSSProperties}>
             {title}
           </h1>
           <p className="clipupp-fx mb-7 mt-4 max-w-[42ch] text-[18px] text-clipupp-neutral-700" style={{ "--i": 2 } as React.CSSProperties}>
