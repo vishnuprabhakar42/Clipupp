@@ -19,11 +19,14 @@ import { HeaderSearch, type HeaderSearchFeed } from "@/features/catalog/componen
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { useMergeSavedOnLogin, useSavedCoupons } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
+import type { FeedCoupon, FeedStore } from "@/lib/home/feed";
 
 export type HeaderFeed = {
   categories: MenuCategory[];
   totalCoupons: number;
   search: HeaderSearchFeed;
+  /** Feed slices that seed the saved sheet so it renders without a fetch. */
+  saved: { coupons: FeedCoupon[]; stores: FeedStore[]; categories: { id: string; name: string }[] };
 };
 
 const ICON_BTN =
@@ -38,6 +41,10 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
   const t = useTranslations("header");
   useMergeSavedOnLogin();
   useCollapseOnScroll();
+  const seed = useSavedSheet((s) => s.seed);
+  useEffect(() => {
+    seed(feed.saved.coupons, feed.saved.stores, feed.saved.categories);
+  }, [seed, feed.saved]);
 
   return (
     <header
