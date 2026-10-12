@@ -29,6 +29,7 @@ export function HeroSearch({
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [open, setOpen] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchedTerm, setSearchedTerm] = useState("");
   const wrap = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,18 +40,24 @@ export function HeroSearch({
       setSearched(false);
       return;
     }
+    let cancelled = false;
     const t = window.setTimeout(async () => {
+      let next: SearchHit[] = [];
       try {
-        const res = await searchApi.suggest(term);
-        setHits(res.slice(0, 3));
+        next = (await searchApi.suggest(term)).slice(0, 3);
       } catch {
-        setHits([]);
-      } finally {
-        setSearched(true);
-        setOpen(true);
+        next = [];
       }
+      if (cancelled) return;
+      setHits(next);
+      setSearchedTerm(term);
+      setSearched(true);
+      setOpen(true);
     }, 150);
-    return () => window.clearTimeout(t);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
   }, [q]);
 
   useEffect(() => {
@@ -92,6 +99,7 @@ export function HeroSearch({
           onFocus={() => searched && setOpen(true)}
           onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
           role="combobox"
+          aria-autocomplete="list"
           aria-expanded={open}
           aria-controls={`${id}-list`}
           className="min-w-0 flex-1 bg-transparent text-[17px] text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500"
@@ -103,7 +111,7 @@ export function HeroSearch({
       {open && (
         <div id={`${id}-list`} role="listbox" className="absolute inset-x-0 top-[64px] z-dropdown rounded-xl border border-clipupp-neutral-200 bg-white p-1.5 shadow-[0_12px_32px_rgba(10,22,70,0.10)]">
           {hits.length === 0 ? (
-            <p className="px-3 py-2.5 text-[14px] text-clipupp-neutral-700">{noResults.replace("{q}", q.trim())}</p>
+            <p className="px-3 py-2.5 text-[14px] text-clipupp-neutral-700">{noResults.replace("{q}", () => searchedTerm)}</p>
           ) : (
             hits.map((h) => (
               <Link key={`${h.kind}-${h.id}`} href={pathFor(h)} role="option" onClick={() => setOpen(false)}
