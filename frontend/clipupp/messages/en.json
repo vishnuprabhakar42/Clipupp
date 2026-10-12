@@ -35,7 +35,11 @@
     "deal": "Deal",
     "freeShipping": "Free shipping",
     "inStore": "In-store",
-    "noCouponsYet": "No coupons yet."
+    "noCouponsYet": "No coupons yet.",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "close": "Close",
+    "showMore": "Show more"
   },
   "stores": {
     "listTitle": "All stores",
@@ -398,5 +402,21 @@
       "copied": "Copied {code}",
       "opened": "Opened"
     }
+  },
+  "sheet": {
+    "savedTitle": "Saved coupons",
+    "savedCount": "{count, plural, =0 {No saved coupons} one {# saved coupon} other {# saved coupons}}",
+    "savedEmptyTitle": "Nothing saved yet",
+    "savedEmptyBody": "Tap the heart on any coupon to keep it here."
+  },
+  "toast": {
+    "saved": "Saved",
+    "removed": "Removed from saved",
+    "saveFailed": "Could not sync your saved coupons",
+    "codeCopied": "Code {code} copied",
+    "codeSelected": "Code selected, press copy to use it",
+    "emailCopied": "Email copied",
+    "reminderSet": "We will remind you when {name} opens",
+    "reminderRemoved": "Reminder removed"
   }
 }

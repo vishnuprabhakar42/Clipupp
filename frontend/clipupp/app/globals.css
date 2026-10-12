@@ -1495,6 +1495,63 @@
   .clipupp-rail::-webkit-scrollbar { display: none; }
   .clipupp-rail > * { scroll-snap-align: start; }
 
+  /* Toasts sit above the mobile bottom nav, 28px from the edge on desktop. */
+  .clipupp-toaster[data-sonner-toaster] {
+    --offset: calc(76px + env(safe-area-inset-bottom)) !important;
+    --mobile-offset: calc(76px + env(safe-area-inset-bottom)) !important;
+  }
+  @media (min-width: 1024px) {
+    .clipupp-toaster[data-sonner-toaster] {
+      --offset: 28px !important;
+      --mobile-offset: 28px !important;
+    }
+  }
+
+  /* Rail columns: per-breakpoint widths from Rail's inline vars. */
+  .clipupp-rail {
+    --rail-col: var(--rail-col-base, 280px);
+    --rail-gap: var(--rail-gap-base, 16px);
+  }
+  @media (min-width: 640px) {
+    .clipupp-rail { --rail-col: var(--rail-col-sm, var(--rail-col-base, 280px)); }
+  }
+  @media (min-width: 1024px) {
+    .clipupp-rail {
+      --rail-col: var(--rail-col-lg, var(--rail-col-sm, var(--rail-col-base, 280px)));
+      --rail-gap: var(--rail-gap-lg, 24px);
+    }
+  }
+
+  /* Sheet: native <dialog>. Bottom sheet below lg, centred modal at lg+. */
+  dialog.clipupp-sheet {
+    padding: 0;
+    border: 0;
+    background: rgb(var(--clipupp-surface-rgb));
+    color: rgb(var(--clipupp-ft-ink-rgb));
+    overflow: hidden;
+    margin: auto auto 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - env(safe-area-inset-top) - 24px);
+    border-radius: 22px 22px 0 0;
+  }
+  dialog.clipupp-sheet:not([open]) { display: none; }
+  dialog.clipupp-sheet::backdrop { background: rgba(14, 6, 30, 0.55); }
+  dialog.clipupp-sheet[data-size="modal"] {
+    margin: auto;
+    max-width: 480px;
+    border-radius: 22px;
+  }
+  dialog.clipupp-sheet[data-size="modal"] .clipupp-sheet-handle { display: none; }
+  @media (min-width: 1024px) {
+    dialog.clipupp-sheet:not([data-size="sheet"]) {
+      margin: auto;
+      max-width: 480px;
+      border-radius: 22px;
+    }
+    dialog.clipupp-sheet:not([data-size="sheet"]) .clipupp-sheet-handle { display: none; }
+  }
+
   /* Numerals: tabular lining Inter. */
   .clipupp-num {
     font-family: var(--font-sans);
