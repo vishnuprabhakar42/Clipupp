@@ -264,6 +264,16 @@
         "title": "चेकआउट पर बचाएं",
         "description": "चेकआउट पर कोड पेस्ट करें और तुरंत छूट पाएं।"
       }
+    },
+    "hero": {
+      "eyebrow": "आज जाँचा गया",
+      "title": "हर भारतीय स्टोर के लिए काम करने वाले कूपन कोड।",
+      "subtitle": "कोई वॉलेट नहीं, कोई ट्रैकिंग नहीं, कोई इंतज़ार नहीं। बस ऐसे कोड जो काम करते हैं।",
+      "searchPlaceholder": "Amazon, Myntra, Swiggy आज़माएँ",
+      "searchLabel": "स्टोर खोजें",
+      "searchCta": "कोड ढूँढें",
+      "noResults": "\"{q}\" के लिए अभी कूपन नहीं, Amazon India आज़माएँ",
+      "proof": "इस हफ़्ते <verified></verified> कोड जाँचे गए · <stores></stores> स्टोर"
     }
   },
   "footer": {
