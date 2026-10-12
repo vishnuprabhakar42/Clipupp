@@ -1034,20 +1034,20 @@
      class is never added, so every .clipupp-reveal stays fully visible. If
      JS runs but hydration never arrives, the failsafe animation shows the
      content after 3s anyway; .in (added by RevealRoot) reveals it earlier. */
-  .clipupp-reveal { opacity: 1; transform: none; }
+  .clipupp-reveal { opacity: 1; }
   @media (prefers-reduced-motion: no-preference) {
     @keyframes clipupp-up {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: none; }
+      from { opacity: 0; translate: 0 8px; }
+      to   { opacity: 1; translate: 0 0; }
     }
     /* Transform-only entrance for the LCP element (hero H1): it is painted
        at full opacity in the first frame so LCP is not held back. */
     @keyframes clipupp-up-lcp {
-      from { transform: translateY(8px); }
-      to   { transform: none; }
+      from { translate: 0 8px; }
+      to   { translate: 0 0; }
     }
     @keyframes clipupp-reveal-failsafe {
-      to { opacity: 1; transform: none; }
+      to { opacity: 1; translate: 0 0; }
     }
     .clipupp-fx {
       animation: clipupp-up 500ms cubic-bezier(0.2, 0, 0, 1) both;
@@ -1063,12 +1063,12 @@
     }
     html.js .clipupp-reveal {
       opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 400ms cubic-bezier(0.2, 0, 0, 1), transform 400ms cubic-bezier(0.2, 0, 0, 1);
+      translate: 0 8px;
+      transition: opacity 400ms cubic-bezier(0.2, 0, 0, 1), translate 400ms cubic-bezier(0.2, 0, 0, 1);
       transition-delay: calc(var(--i, 0) * 50ms);
       animation: clipupp-reveal-failsafe 0s 3s forwards;
     }
-    html.js .clipupp-reveal.in { opacity: 1; transform: none; }
+    html.js .clipupp-reveal.in { opacity: 1; translate: 0 0; }
   }
 
   /* Blurred code until revealed. */
