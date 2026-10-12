@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { RailArrows } from "@/components/site/Rail";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
 import type { HomeFeed } from "@/lib/home/feed";
-import { shortCategoryLabel } from "@/lib/home/categoryLabel";
+import { rootCategoryOf, shortCategoryLabel } from "@/lib/home/categoryLabel";
 import { buildItems, isLive } from "../lib/todayRows";
 import { SectionHeader } from "./SectionHeader";
 import { TrendingRailClient, type TrendingEntry } from "./TrendingRailClient";
@@ -29,9 +29,10 @@ export async function TrendingRail({
   const rest = live.filter((c) => c.trending == null);
   const stores = new Map(feed.stores.map((s) => [s.id, s]));
   const items = buildItems([...trending, ...rest].slice(0, MAX_CANDIDATES), stores, feed, "card");
+  // Chips and filtering work on root categories; a leaf maps to its root when known.
   const entries: TrendingEntry[] = items.map((i) => ({
     id: i.coupon.id,
-    cat: i.coupon.cat,
+    cat: i.coupon.cat ? rootCategoryOf(i.coupon.cat, feed.categories) : null,
     trending: i.coupon.trending,
     node: i.node,
   }));

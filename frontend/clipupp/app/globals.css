@@ -279,6 +279,12 @@
     --clipupp-skel-hi-rgb: 246 244 249;
     --clipupp-surface: #FFFFFF;
     --clipupp-surface-rgb: 255 255 255;
+    /* Homepage page background (design --page) and store logo tiles, which
+       stay white in both themes (design --logo-bg, never overridden). */
+    --clipupp-page: #F6F5F9;
+    --clipupp-page-rgb: 246 245 249;
+    --clipupp-logo-bg: #FFFFFF;
+    --clipupp-logo-bg-rgb: 255 255 255;
     --clipupp-shadow-pop: 0 24px 60px rgba(20, 8, 48, 0.24);
     /* Footer: dark in both themes, so never overridden. */
     --clipupp-ft-bg: #170A2E;
@@ -417,6 +423,8 @@
     --clipupp-deep-2-rgb: 50 23 100;
     --clipupp-surface: #1B1920;
     --clipupp-surface-rgb: 27 25 32;
+    --clipupp-page: #111015;
+    --clipupp-page-rgb: 17 16 21;
     --clipupp-primary: #A979F5;
     --clipupp-primary-strong: #BB94F8;
     --clipupp-primary-soft: #1B1626;
@@ -573,6 +581,8 @@
       --clipupp-deep-2-rgb: 50 23 100;
       --clipupp-surface: #1B1920;
       --clipupp-surface-rgb: 27 25 32;
+      --clipupp-page: #111015;
+      --clipupp-page-rgb: 17 16 21;
       --clipupp-primary: #A979F5;
       --clipupp-primary-strong: #BB94F8;
       --clipupp-primary-soft: #1B1626;

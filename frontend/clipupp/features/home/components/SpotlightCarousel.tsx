@@ -21,7 +21,7 @@ function endLabel(iso: string | null): string | null {
 
 function fallbackStore(slug: string): FeedStore {
   return {
-    id: slug, name: slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), logo: null, mono: slug.slice(0, 2).toUpperCase(), bg: "var(--clipupp-surface)", fg: "var(--clipupp-deep)",
+    id: slug, name: slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), logo: null, mono: slug.slice(0, 2).toUpperCase(), bg: "var(--clipupp-logo-bg)", fg: "var(--clipupp-deep)",
     cat: null, url: null, coupons: 0, best: null, popular: null,
   };
 }

@@ -210,34 +210,16 @@ describe("toHomeFeed", () => {
     expect(feed.stats.storeCount).toBe(44);
   });
 
-  it("inserts missing design sections into the backend order in demo mode", () => {
-    const demo = toHomeFeed(layout(), {}, { demo: true, now: NOW });
-    expect(demo.sectionOrder).toEqual([
-      "hero_search",
-      "ticker",
-      "popular_stores",
-      "trending_coupons",
-      "deals",
-      "featured_stores",
-      "top_deals",
-      "bank_offers",
-      "sale_calendar",
-      "verify_band",
-      "alerts",
-      "faq",
-    ]);
-    const real = toHomeFeed(layout(), {}, { demo: false, now: NOW });
-    expect(real.sectionOrder).not.toContain("ticker");
-  });
-
-  it("reads the legacy newsletter row as alerts in demo mode", () => {
+  it("uses the fixture section order in full in demo mode", () => {
     const l = layout();
     l.sections.push(section("newsletter"));
     const demo = toHomeFeed(l, {}, { demo: true, now: NOW });
-    expect(demo.sectionOrder.filter((c) => c === "alerts")).toHaveLength(1);
-    expect(demo.sectionOrder).not.toContain("newsletter");
-    // Production keeps the backend codes untouched.
-    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).sectionOrder).toContain("newsletter");
+    expect(demo.sectionOrder).toEqual(fixture.sectionOrder);
+    expect(demo.sectionOrder.indexOf("top_deals")).toBeLessThan(demo.sectionOrder.indexOf("featured_stores"));
+    // Production keeps the backend codes and order untouched.
+    const real = toHomeFeed(l, {}, { demo: false, now: NOW });
+    expect(real.sectionOrder).toEqual(l.sections.map((s) => s.code));
+    expect(real.sectionOrder).not.toContain("ticker");
   });
 
   it("uses the fixture order for a null layout in demo mode", () => {
@@ -303,5 +285,20 @@ describe("toHomeFeed", () => {
     expect(feed.stores).toEqual([]);
     expect(feed.sectionOrder).toEqual([]);
     expect(feed.stats).toEqual({ verifiedToday: 0, successRate7d: null, storeCount: 0, activeCoupons: 0 });
+  });
+
+  it("infers a leaf category's root parent from the coupons that carry it", () => {
+    const l = layout();
+    l.sections[1].coupons = [
+      coupon({ id: "k2", categorySlugs: ["mens-clothing", "fashion"] }),
+      coupon({ id: "k4", categorySlugs: ["mens-clothing", "fashion", "electronics"] }),
+      coupon({ id: "k5", categorySlugs: ["gadgets", "fashion", "electronics"] }),
+    ];
+    const cats = toHomeFeed(l, {}, { demo: false, now: NOW }).categories;
+    const byId = new Map(cats.map((c) => [c.id, c]));
+    expect(byId.get("fashion")?.parent).toBeNull();
+    expect(byId.get("mens-clothing")?.parent).toBe("fashion");
+    // Two roots on every coupon: ambiguous, so no parent.
+    expect(byId.get("gadgets")?.parent).toBeUndefined();
   });
 });

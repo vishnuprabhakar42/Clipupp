@@ -67,7 +67,7 @@ export async function CouponCard({ coupon, store, category = null, variant = "ca
       </div>
       <div
         aria-hidden
-        className="relative -mx-[18px] my-4 border-t-2 border-dashed border-clipupp-neutral-200 before:absolute before:-left-3 before:-top-3 before:h-6 before:w-6 before:rounded-full before:bg-clipupp-neutral-50 before:content-[''] after:absolute after:-right-3 after:-top-3 after:h-6 after:w-6 after:rounded-full after:bg-clipupp-neutral-50 after:content-['']"
+        className="relative -mx-[18px] my-4 border-t-2 border-dashed border-clipupp-neutral-200 before:absolute before:-left-3 before:-top-3 before:h-6 before:w-6 before:rounded-full before:bg-clipupp-page before:content-[''] after:absolute after:-right-3 after:-top-3 after:h-6 after:w-6 after:rounded-full after:bg-clipupp-page after:content-['']"
       />
       <div className="mb-3 flex items-center justify-between gap-2 text-[12.5px]">
         {success ? (

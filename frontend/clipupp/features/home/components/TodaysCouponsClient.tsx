@@ -196,7 +196,7 @@ export function TodaysCouponsClient({
 
   return (
     <div>
-      <div className="sticky top-[calc(env(safe-area-inset-top)+var(--clipupp-hv))] z-10 -mx-4 bg-clipupp-neutral-50 px-4 sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:px-0">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+var(--clipupp-hv))] z-10 -mx-4 bg-clipupp-page px-4 sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:px-0">
         <div
           role="tablist"
           aria-label={t("tabsAria")}

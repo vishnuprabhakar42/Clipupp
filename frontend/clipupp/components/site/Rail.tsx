@@ -57,21 +57,23 @@ function ArrowButton({
       aria-controls={railId}
       disabled={disabled}
       onClick={() => scrollRail(railId, dir)}
-      className={`grid h-11 w-11 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 shadow-card transition-opacity hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
+      className={`grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 shadow-card transition-opacity hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
     >
       <Icon size={20} aria-hidden />
     </button>
   );
 }
 
-/** Left/right button pair bound to a Rail by id. Rendered lg+ only. */
+/**
+ * Left/right button pair bound to a Rail by id. Rendered lg+ only. Always
+ * present (as the design shows): both disabled when every card fits.
+ */
 export function RailArrows({ railId, className = "" }: RailArrowsProps) {
   const e = useRailEdges((s) => s.edges[railId]) ?? NO_EDGES;
-  if (!e.scrollable) return null;
   return (
     <div className={`hidden items-center gap-2 lg:flex ${className}`}>
-      <ArrowButton dir={-1} railId={railId} disabled={e.atStart} />
-      <ArrowButton dir={1} railId={railId} disabled={e.atEnd} />
+      <ArrowButton dir={-1} railId={railId} disabled={!e.scrollable || e.atStart} />
+      <ArrowButton dir={1} railId={railId} disabled={!e.scrollable || e.atEnd} />
     </div>
   );
 }
