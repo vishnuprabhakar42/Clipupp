@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import type { HomepageSectionPayload, HomepageStats } from "@/lib/api/homepage";
-import { formatCount } from "@/lib/format/number";
 import { CouponFan } from "./CouponFan";
 import { HeroSearch } from "./HeroSearch";
 import { ProofCount } from "./ProofCount";
@@ -9,7 +8,8 @@ import { ProofCount } from "./ProofCount";
 /**
  * Hero (spec block 1). Flat tint-50 band, left-aligned 7/5 grid. Admin copy
  * from the section row wins over the message defaults. H1 is the LCP
- * element: plain text, server-rendered, no image above it.
+ * element: plain text, server-rendered, no image above it, and its entrance
+ * animates transform only (clipupp-fx-lcp) so it paints at full opacity.
  */
 export async function HeroSection({ section, stats }: { section: HomepageSectionPayload; stats: HomepageStats }) {
   const t = await getTranslations("home.hero");
@@ -17,6 +17,10 @@ export async function HeroSection({ section, stats }: { section: HomepageSection
   const subtitle = section.subtitle?.trim() || t("subtitle");
   const chips = section.categories ?? [];
   const fan = section.coupons ?? [];
+  // Never advertise "0 codes verified this week": fall back to the live
+  // active-coupon count, and hide the line when there are no stats at all
+  // (homepage API down).
+  const showProof = stats.verifiedLast7d > 0 || stats.activeCoupons > 0;
 
   return (
     <section className="border-b border-clipupp-neutral-100 bg-clipupp-tint-50" aria-labelledby="hero-heading">
@@ -25,7 +29,7 @@ export async function HeroSection({ section, stats }: { section: HomepageSection
           <span className="clipupp-fx text-[12px] font-medium uppercase tracking-[0.04em] text-clipupp-primary" style={{ "--i": 0 } as React.CSSProperties}>
             {t("eyebrow")}
           </span>
-          <h1 id="hero-heading" className="clipupp-fx mt-3.5 max-w-[22ch] font-display text-[clamp(40px,5vw,60px)] font-semibold leading-[1.05] tracking-[-0.02em] text-clipupp-neutral-900" style={{ "--i": 1 } as React.CSSProperties}>
+          <h1 id="hero-heading" className="clipupp-fx-lcp mt-3.5 max-w-[22ch] font-display text-[clamp(40px,5vw,60px)] font-semibold leading-[1.05] tracking-[-0.02em] text-clipupp-neutral-900" style={{ "--i": 1 } as React.CSSProperties}>
             {title}
           </h1>
           <p className="clipupp-fx mb-7 mt-4 max-w-[42ch] text-[18px] text-clipupp-neutral-700" style={{ "--i": 2 } as React.CSSProperties}>
@@ -35,7 +39,7 @@ export async function HeroSection({ section, stats }: { section: HomepageSection
             <HeroSearch placeholder={t("searchPlaceholder")} label={t("searchLabel")} cta={t("searchCta")} noResults={t("noResults", { q: "{q}" })} />
           </div>
           {chips.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2" aria-label="Browse by category">
+            <div className="mt-5 flex flex-wrap gap-2" aria-label={t("chipsLabel")}>
               {chips.map((c, i) => (
                 <Link key={c.slug} href={`/categories/${c.slug}`}
                   className="clipupp-fx-chip inline-flex h-9 items-center rounded-full border border-clipupp-neutral-200 bg-white px-3.5 text-[14px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
@@ -45,15 +49,22 @@ export async function HeroSection({ section, stats }: { section: HomepageSection
               ))}
             </div>
           )}
-          <p className="clipupp-fx mt-7 flex items-center gap-2.5 text-[15px] font-medium text-clipupp-neutral-700 tabular-nums" style={{ "--i": 5 } as React.CSSProperties}>
-            <span className="h-2 w-2 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgba(51,130,63,0.15)]" aria-hidden />
-            <span>
-              {t.rich("proof", {
-                verified: () => <ProofCount to={stats.verifiedLast7d} />,
-                stores: () => <b className="font-semibold text-clipupp-neutral-900">{formatCount(stats.activeStores)}</b>,
-              })}
-            </span>
-          </p>
+          {showProof && (
+            <p className="clipupp-fx mt-7 flex items-center gap-2.5 text-[15px] font-medium text-clipupp-neutral-700 tabular-nums" style={{ "--i": 5 } as React.CSSProperties}>
+              <span className="h-2 w-2 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgba(51,130,63,0.15)]" aria-hidden />
+              <span>
+                {stats.verifiedLast7d > 0
+                  ? t.rich("proof", {
+                      verified: () => <ProofCount value={stats.verifiedLast7d} />,
+                      stores: () => <ProofCount value={stats.activeStores} />,
+                    })
+                  : t.rich("proofZero", {
+                      coupons: () => <ProofCount value={stats.activeCoupons} />,
+                      stores: () => <ProofCount value={stats.activeStores} />,
+                    })}
+              </span>
+            </p>
+          )}
         </div>
         <CouponFan coupons={fan} />
       </div>

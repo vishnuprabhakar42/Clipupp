@@ -10,12 +10,12 @@ describe("timeAgo", () => {
     expect(timeAgo("not a date", now)).toBeNull();
   });
   it("formats minutes, hours and days", () => {
-    expect(timeAgo("2026-10-12T11:59:40Z", now)).toBe("just now");
-    expect(timeAgo("2026-10-12T11:35:00Z", now)).toBe("25m ago");
-    expect(timeAgo("2026-10-12T10:00:00Z", now)).toBe("2h ago");
-    expect(timeAgo("2026-10-09T12:00:00Z", now)).toBe("3d ago");
+    expect(timeAgo("2026-10-12T11:59:40Z", now)).toEqual({ unit: "now", n: 0 });
+    expect(timeAgo("2026-10-12T11:35:00Z", now)).toEqual({ unit: "m", n: 25 });
+    expect(timeAgo("2026-10-12T10:00:00Z", now)).toEqual({ unit: "h", n: 2 });
+    expect(timeAgo("2026-10-09T12:00:00Z", now)).toEqual({ unit: "d", n: 3 });
   });
-  it("treats future timestamps as just now", () => {
-    expect(timeAgo("2026-10-12T13:00:00Z", now)).toBe("just now");
+  it("treats future timestamps as now", () => {
+    expect(timeAgo("2026-10-12T13:00:00Z", now)).toEqual({ unit: "now", n: 0 });
   });
 });

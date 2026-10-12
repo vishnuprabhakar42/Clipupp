@@ -60,7 +60,7 @@ export async function generateMetadata({
   return {
     title: {
       default: t("title"),
-      template: `%s — Clipupp`,
+      template: "%s | Clipupp",
     },
     description: t("description"),
     metadataBase: new URL(SITE_URL),
@@ -136,11 +136,16 @@ export default async function LocaleLayout({
 
   return (
     <html
+      suppressHydrationWarning
       lang={localeToBcp47[localeTyped]}
       dir={dirFor(localeTyped)}
       className={`${inter.variable} ${zillaSlab.variable}`}
     >
       <head>
+        {/* Marks the document as JS-capable before first paint. The scroll
+            reveal hides content only under html.js, so without JavaScript
+            everything stays visible. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         {/* Preconnect to the image origins we use most so the first <Image>
             on the page doesn't pay the TCP+TLS handshake cost. */}
         <link rel="preconnect" href="https://logo.clearbit.com" />

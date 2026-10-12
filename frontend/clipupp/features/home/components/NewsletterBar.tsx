@@ -10,9 +10,10 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 type Copy = { headline?: string; subheadline?: string; cta?: string; whatsapp?: string };
 
 /**
- * Block 7: white newsletter band. Headline from the section row, fallback to
- * the newsletter.* site settings. Form posts through newsletterApi; on
- * success the button reads "Subscribed ✓" and stays disabled.
+ * Block 7: white newsletter band. Headline from the section row, then the
+ * newsletter.* site settings, then the localized message default. Form
+ * posts through newsletterApi; on success the button shows the localized
+ * "subscribed" label and stays disabled.
  */
 export function NewsletterBar({ section, copy }: { section?: HomepageSectionPayload | null; copy?: Copy }) {
   const t = useTranslations("home.newsletter");
@@ -57,7 +58,7 @@ export function NewsletterBar({ section, copy }: { section?: HomepageSectionPayl
         </form>
         {copy?.whatsapp && (
           <p className="mt-3.5 text-[14px]">
-            <a href={copy.whatsapp} className="font-medium text-clipupp-primary hover:underline">{t("whatsapp")} →</a>
+            <a href={copy.whatsapp} target="_blank" rel="noopener noreferrer" className="font-medium text-clipupp-primary hover:underline">{t("whatsapp")} →</a>
           </p>
         )}
       </div>
