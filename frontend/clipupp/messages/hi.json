@@ -274,6 +274,14 @@
       "searchCta": "कोड ढूँढें",
       "noResults": "\"{q}\" के लिए अभी कूपन नहीं, Amazon India आज़माएँ",
       "proof": "इस हफ़्ते <verified></verified> कोड जाँचे गए · <stores></stores> स्टोर"
+    },
+    "sections": {
+      "viewAllTrending": "सभी ट्रेंडिंग कूपन देखें",
+      "browseAllStores": "A से Z सभी स्टोर",
+      "viewAllStores": "सभी {count}+ स्टोर देखें",
+      "couponsCount": "{count, plural, =1 {1 कूपन} other {# कूपन}}",
+      "seeAllCategory": "सभी {category} कूपन देखें",
+      "emptyTab": "अभी {category} कूपन नहीं हैं"
     }
   },
   "footer": {
