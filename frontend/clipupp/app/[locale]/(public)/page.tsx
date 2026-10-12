@@ -3,6 +3,10 @@ import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { homepageApi, type HomepageLayout, type HomepageSectionPayload } from "@/lib/api/homepage";
 import { getPublicSettings, asString } from "@/lib/api/settings";
+import { getHomeFeed } from "@/lib/home/getHomeFeed";
+import type { HomeFeed } from "@/lib/home/feed";
+import { LiveTicker } from "@/features/home/components/LiveTicker";
+import { PopularStoresStrip } from "@/features/home/components/PopularStoresStrip";
 import { HeroSection } from "@/features/home/components/HeroSection";
 import { TrendingCouponsRail } from "@/features/home/components/TrendingCouponsRail";
 import { TopStoresGrid } from "@/features/home/components/TopStoresGrid";
@@ -46,6 +50,7 @@ export async function generateMetadata({
 }
 
 type Ctx = {
+  feed: HomeFeed;
   stats: HomepageLayout["stats"];
   banks: string[];
   newsletter: { headline: string; subheadline: string; cta: string; whatsapp?: string };
@@ -61,7 +66,9 @@ type SectionBuilder = (s: HomepageSectionPayload, ctx: Ctx) => ReactNode;
  * tinted blocks.
  */
 const SECTION_RENDERERS: Record<string, SectionBuilder> = {
-  hero_search: (s, ctx) => <HeroSection section={s} stats={ctx.stats} />,
+  hero_search: (s, ctx) => <HeroSection feed={ctx.feed} section={s} />,
+  ticker: (_s, ctx) => <LiveTicker coupons={ctx.feed.coupons} stores={ctx.feed.stores} />,
+  popular_stores: (_s, ctx) => <PopularStoresStrip stores={ctx.feed.stores} />,
   trending_coupons: (s) => <TrendingCouponsRail section={s} />,
   featured_stores: (s, ctx) => <TopStoresGrid section={s} stats={ctx.stats} />,
   top_deals: (s) =>
@@ -98,9 +105,15 @@ const FALLBACK_SECTIONS: HomepageSectionPayload[] = [
 ];
 
 export default async function HomePage() {
-  const [layout, settings] = await Promise.all([homepageApi.getPublic(), getPublicSettings()]);
-  const sections = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
+  const [layout, settings, feed] = await Promise.all([homepageApi.getPublic(), getPublicSettings(), getHomeFeed()]);
+  const base = layout?.sections?.length ? layout.sections : FALLBACK_SECTIONS;
+  // Order follows the feed (demo mode adds ticker and popular_stores, which
+  // have no backend row); step 10 finalises this.
+  const sections = feed.sectionOrder.length
+    ? feed.sectionOrder.map((code) => base.find((b) => b.code === code) ?? { ...FALLBACK_SECTIONS[0], code })
+    : base;
   const ctx: Ctx = {
+    feed,
     stats: layout?.stats ?? EMPTY_STATS,
     banks: asString(settings["bank_offers.banks"], "")
       .split(",")

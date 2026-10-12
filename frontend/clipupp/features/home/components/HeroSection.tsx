@@ -1,72 +1,121 @@
+import type { CSSProperties } from "react";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
-import type { HomepageSectionPayload, HomepageStats } from "@/lib/api/homepage";
-import { CouponFan } from "./CouponFan";
-import { HeroSearch } from "./HeroSearch";
-import { ProofCount } from "./ProofCount";
+import type { HomepageSectionPayload } from "@/lib/api/homepage";
+import type { HomeFeed } from "@/lib/home/feed";
+import { toSearchFeed } from "@/lib/home/searchFeed";
+import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
+import { SpotlightCarousel } from "./SpotlightCarousel";
+
+const fx = (i: number) => ({ "--i": i }) as CSSProperties;
+// The v2 migration seeded these into the hero row; they are not admin edits.
+const LEGACY_TITLE = "Working coupon codes for every Indian store.";
+const LEGACY_SUBTITLE = "No wallet, no tracking, no waiting. Just codes that work.";
+const fmt = (n: number) => n.toLocaleString("en-IN");
 
 /**
- * Hero (spec block 1). Flat tint-50 band, left-aligned 7/5 grid. Admin copy
- * from the section row wins over the message defaults. H1 is the LCP
- * element: plain text, server-rendered, no image above it, and its entrance
- * animates transform only (clipupp-fx-lcp) so it paints at full opacity.
+ * Hero (v3). Tint band with a corner glow; copy on the left, spotlight
+ * carousel on the right at lg+. The H1 is the LCP element: plain server text
+ * whose entrance animates transform only (clipupp-fx-lcp). Admin copy from
+ * the section row wins over the message defaults. Numbers are rendered final
+ * (no count-up) so there is no hydration jump.
  */
-export async function HeroSection({ section, stats }: { section: HomepageSectionPayload; stats: HomepageStats }) {
+export async function HeroSection({
+  feed,
+  section,
+}: {
+  feed: HomeFeed;
+  section: Pick<HomepageSectionPayload, "title" | "subtitle">;
+}) {
   const t = await getTranslations("home.hero");
-  const title = section.title?.trim() || t("title");
-  const subtitle = section.subtitle?.trim() || t("subtitle");
-  const chips = section.categories ?? [];
-  const fan = section.coupons ?? [];
-  // Never advertise "0 codes verified this week": fall back to the live
-  // active-coupon count, and hide the line when there are no stats at all
-  // (homepage API down).
-  const showProof = stats.verifiedLast7d > 0 || stats.activeCoupons > 0;
+  const rawTitle = section.title?.trim();
+  const rawSub = section.subtitle?.trim();
+  const title = rawTitle && rawTitle !== LEGACY_TITLE ? rawTitle : "";
+  const subtitle = rawSub && rawSub !== LEGACY_SUBTITLE ? rawSub : t("subtitle");
+  const popular = feed.stores
+    .filter((s) => s.popular != null && s.popular <= 6)
+    .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0));
+  const { stats } = feed;
+  const cell =
+    "rounded-[14px] border border-clipupp-neutral-200 bg-clipupp-surface p-3 lg:flex lg:items-baseline lg:gap-1.5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0";
+  const num = "clipupp-num block text-[20px] font-bold leading-tight text-clipupp-neutral-900 lg:inline lg:text-[16px]";
+  const lab = "mt-0.5 block text-[12px] leading-snug text-clipupp-neutral-600 lg:mt-0 lg:inline lg:text-[15px]";
 
   return (
-    <section className="border-b border-clipupp-neutral-100 bg-clipupp-tint-50" aria-labelledby="hero-heading">
-      <div className="clipupp-container grid items-center gap-12 py-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:py-20">
-        <div>
-          <span className="clipupp-fx text-[12px] font-medium uppercase tracking-[0.04em] text-clipupp-primary" style={{ "--i": 0 } as React.CSSProperties}>
+    <section
+      aria-labelledby="hero-heading"
+      className="border-b border-clipupp-neutral-100"
+      style={{ background: "radial-gradient(900px 300px at 90% -20%, var(--clipupp-tint-200), transparent), var(--clipupp-tint-50)" }}
+    >
+      <div className="clipupp-container grid items-center gap-7 py-6 sm:py-[52px] lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
+        <div className="min-w-0">
+          <p className="clipupp-fx text-[12px] font-semibold uppercase tracking-[0.07em] text-clipupp-primary" style={fx(0)}>
             {t("eyebrow")}
-          </span>
-          <h1 id="hero-heading" className="clipupp-fx-lcp mt-3.5 max-w-[22ch] font-display text-[clamp(40px,5vw,60px)] font-semibold leading-[1.05] tracking-[-0.02em] text-clipupp-neutral-900" style={{ "--i": 1 } as React.CSSProperties}>
-            {title}
+          </p>
+          <h1
+            id="hero-heading"
+            className="clipupp-fx-lcp mt-2.5 max-w-[17ch] sm:max-w-none font-display text-[28px] font-bold leading-[1.08] tracking-[-0.01em] text-clipupp-neutral-900 [text-wrap:balance] sm:text-[40px] lg:mt-3.5 lg:text-[56px]"
+            style={fx(1)}
+          >
+            {title ||
+              t.rich("title", {
+                em: (chunks) => <em className="not-italic text-clipupp-primary">{chunks}</em>,
+              })}
           </h1>
-          <p className="clipupp-fx mb-7 mt-4 max-w-[42ch] text-[18px] text-clipupp-neutral-700" style={{ "--i": 2 } as React.CSSProperties}>
+          <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[15px] leading-[1.55] text-clipupp-neutral-700 lg:text-[18px]" style={fx(2)}>
             {subtitle}
           </p>
-          <div className="clipupp-fx" style={{ "--i": 3 } as React.CSSProperties}>
-            <HeroSearch placeholder={t("searchPlaceholder")} label={t("searchLabel")} cta={t("searchCta")} noResults={t("noResults", { q: "{q}" })} />
+          <div className="clipupp-fx mt-7 hidden max-w-[560px] lg:block" style={fx(3)}>
+            <HeaderSearch variant="hero" feed={toSearchFeed(feed)} placeholder={t("searchPlaceholder")} ctaLabel={t("searchCta")} />
           </div>
-          {chips.length > 0 && (
-            <div className="mt-5 flex flex-wrap gap-2" aria-label={t("chipsLabel")}>
-              {chips.map((c, i) => (
-                <Link key={c.slug} href={`/categories/${c.slug}`}
-                  className="clipupp-fx-chip inline-flex h-9 items-center rounded-full border border-clipupp-neutral-200 bg-white px-3.5 text-[14px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
-                  style={{ "--i": i } as React.CSSProperties}>
-                  {c.title}
+          <div
+            role="group"
+            aria-label={t("trustAria")}
+            className="clipupp-fx mt-5 grid grid-cols-3 gap-2.5 lg:mt-6 lg:flex lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2"
+            style={fx(4)}
+          >
+            <div className={cell}>
+              <span className="flex items-center gap-2 lg:contents">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgb(var(--clipupp-success-rgb)/0.18)]" aria-hidden />
+                <b className={num + " !inline lg:!inline lg:ml-1"}>{fmt(stats.verifiedToday)}</b>
+              </span>
+              <span className={lab}>{t("verifiedToday")}</span>
+            </div>
+            {stats.successRate7d != null ? (
+              <div className={cell}>
+                <b className={num}>{stats.successRate7d}%</b>
+                <span className={lab}>{t("worked7d")}</span>
+              </div>
+            ) : (
+              <div className={cell}>
+                <b className={num}>{fmt(stats.activeCoupons)}</b>
+                <span className={lab}>{t("activeCoupons")}</span>
+              </div>
+            )}
+            <div className={cell}>
+              <b className={num}>{fmt(stats.storeCount)}+</b>
+              <span className={lab}>{t("stores")}</span>
+            </div>
+          </div>
+          {popular.length > 0 && (
+            <div
+              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0"
+              style={fx(5)}
+            >
+              <span className="shrink-0 text-[14px] text-clipupp-neutral-600">{t("popular")}</span>
+              {popular.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/stores/${s.id}`}
+                  className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-4 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
+                >
+                  {s.name}
                 </Link>
               ))}
             </div>
           )}
-          {showProof && (
-            <p className="clipupp-fx mt-7 flex items-center gap-2.5 text-[15px] font-medium text-clipupp-neutral-700 tabular-nums" style={{ "--i": 5 } as React.CSSProperties}>
-              <span className="h-2 w-2 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgba(51,130,63,0.15)]" aria-hidden />
-              <span>
-                {stats.verifiedLast7d > 0
-                  ? t.rich("proof", {
-                      verified: () => <ProofCount value={stats.verifiedLast7d} />,
-                      stores: () => <ProofCount value={stats.activeStores} />,
-                    })
-                  : t.rich("proofZero", {
-                      coupons: () => <ProofCount value={stats.activeCoupons} />,
-                      stores: () => <ProofCount value={stats.activeStores} />,
-                    })}
-              </span>
-            </p>
-          )}
         </div>
-        <CouponFan coupons={fan} />
+        <SpotlightCarousel slides={feed.spotlight} stores={feed.stores} coupons={feed.coupons} />
       </div>
     </section>
   );

@@ -1402,11 +1402,11 @@
     }
     .clipupp-fx {
       animation: clipupp-up 500ms cubic-bezier(0.2, 0, 0, 1) both;
-      animation-delay: calc(var(--i, 0) * 80ms);
+      animation-delay: calc(var(--i, 0) * var(--fx-step, 60ms));
     }
     .clipupp-fx-lcp {
       animation: clipupp-up-lcp 500ms cubic-bezier(0.2, 0, 0, 1) both;
-      animation-delay: calc(var(--i, 0) * 80ms);
+      animation-delay: calc(var(--i, 0) * var(--fx-step, 60ms));
     }
     .clipupp-fx-chip {
       animation: clipupp-up 400ms cubic-bezier(0.2, 0, 0, 1) both;
