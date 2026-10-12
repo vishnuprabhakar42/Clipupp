@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { HomepageSectionPayload } from "@/lib/api/homepage";
-import { CouponCard } from "@/features/catalog/components/CouponCard";
+import { CouponCardLegacy } from "@/features/catalog/components/CouponCardLegacy";
 import { SectionHeader } from "./SectionHeader";
 
 /**
@@ -19,7 +19,7 @@ export async function TrendingCouponsRail({ section }: { section: HomepageSectio
       <div className="clipupp-no-scrollbar -mx-4 grid snap-x snap-mandatory grid-flow-col auto-cols-[minmax(272px,1fr)] gap-6 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:-mx-[10px] lg:px-[10px]">
         {coupons.map((c, i) => (
           <div key={c.id} className="snap-start">
-            <CouponCard coupon={c} index={i} />
+            <CouponCardLegacy coupon={c} index={i} />
           </div>
         ))}
       </div>

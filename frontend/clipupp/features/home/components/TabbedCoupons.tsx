@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/i18n/navigation";
 import type { HomepageCategoryTab } from "@/lib/api/homepage";
-import { CouponCard } from "@/features/catalog/components/CouponCard";
+import { CouponCardLegacy } from "@/features/catalog/components/CouponCardLegacy";
 import { TabSwitcher } from "./TabSwitcher";
 
 /**
@@ -29,7 +29,7 @@ export async function TabbedCoupons({ tabs }: { tabs: HomepageCategoryTab[] }) {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {tab.coupons.map((c, i) => (
-                  <CouponCard key={c.id} coupon={c} variant="row" index={i} />
+                  <CouponCardLegacy key={c.id} coupon={c} variant="row" index={i} />
                 ))}
               </div>
             )}

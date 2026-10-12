@@ -3,6 +3,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { HomeOnly } from "@/components/site/HomeOnly";
 import { CategoryRail } from "@/features/home/components/CategoryRail";
+import { CouponSheetProvider } from "@/features/catalog/components/CouponSheet";
 import { MobileBottomNav } from "@/components/site/MobileBottomNav";
 
 /**
@@ -21,6 +22,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       </main>
       <Footer />
       <MobileBottomNav active="home" />
+      <CouponSheetProvider />
     </div>
   );
 }
