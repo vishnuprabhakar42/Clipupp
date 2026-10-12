@@ -30,13 +30,13 @@ export async function Footer() {
           </div>
           <FooterColumn title={t("coupons")}>
             {categories.map((c) => (
-              <FooterLink key={c.id} href={`/categories/${c.slug}`}>{c.title} {t("coupons").toLowerCase()}</FooterLink>
+              <FooterLink key={c.id} href={`/categories/${c.slug}`}>{t("nameCoupons", { name: c.title })}</FooterLink>
             ))}
           </FooterColumn>
           <FooterColumn title={t("stores")}>
             <FooterLink href="/stores">{t("storesAZ")}</FooterLink>
             {stores.map((s) => (
-              <FooterLink key={s.id} href={`/stores/${s.slug}`}>{s.name} {t("coupons").toLowerCase()}</FooterLink>
+              <FooterLink key={s.id} href={`/stores/${s.slug}`}>{t("nameCoupons", { name: s.name })}</FooterLink>
             ))}
           </FooterColumn>
           <FooterColumn title={t("company")}>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight, LayoutGrid, LogOut, Menu } from "lucide-react";
 import { Link, useRouter } from "@/lib/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export type NavCategory = { id: string; slug: string; title: string };
  */
 export function HeaderClient({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
   const auth = useAuth();
+  const t = useTranslations("header");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
       <div className="clipupp-container flex h-16 items-center gap-4 lg:gap-7">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label="Open menu">
+            <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" aria-label={t("openMenu")}>
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -69,13 +71,13 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
           <HeaderSearch variant="pill" />
         </div>
 
-        <nav aria-label="Primary" className="ml-auto hidden items-center gap-1 lg:flex">
-          <Link href="/stores" className={navLink}>Stores</Link>
+        <nav aria-label={t("primaryNav")} className="ml-auto hidden items-center gap-1 lg:flex">
+          <Link href="/stores" className={navLink}>{t("stores")}</Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className={navLink}>
                 <LayoutGrid className="h-4 w-4" aria-hidden />
-                Categories
+                {t("categories")}
                 <ChevronDown className="h-3.5 w-3.5" aria-hidden />
               </button>
             </DropdownMenuTrigger>
@@ -92,13 +94,13 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="rounded-md">
                 <Link href="/categories" className="flex items-center justify-between px-3 py-2 text-sm font-medium text-clipupp-primary">
-                  Browse all categories
+                  {t("browseAllCategories")}
                   <ChevronRight className="h-4 w-4" aria-hidden />
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link href="/account/saved-coupons" className={navLink}>Saved</Link>
+          <Link href="/account/saved-coupons" className={navLink}>{t("saved")}</Link>
           {auth.user ? (
             <UserMenu />
           ) : (
@@ -106,7 +108,7 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
               href="/sign-in"
               className="ml-1 inline-flex h-10 items-center rounded-full border border-clipupp-primary px-5 text-[15px] font-medium text-clipupp-primary transition-colors hover:bg-clipupp-tint-100"
             >
-              Sign in
+              {t("signIn")}
             </Link>
           )}
         </nav>
@@ -116,7 +118,7 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
             <UserMenu />
           ) : (
             <Link href="/sign-in" className="inline-flex h-10 items-center rounded-full border border-clipupp-primary px-4 text-[14px] font-medium text-clipupp-primary">
-              Sign in
+              {t("signIn")}
             </Link>
           )}
         </div>
@@ -131,6 +133,7 @@ export function HeaderClient({ stores, categories }: { stores: NavStore[]; categ
 
 function UserMenu() {
   const auth = useAuth();
+  const t = useTranslations("header");
   const router = useRouter();
   if (!auth.user) return null;
   const { name, email, roles } = auth.user;
@@ -148,7 +151,7 @@ function UserMenu() {
       <DropdownMenuTrigger asChild>
         <button
           className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2"
-          aria-label="Open account menu"
+          aria-label={t("openAccountMenu")}
         >
           {initial}
         </button>
@@ -159,21 +162,21 @@ function UserMenu() {
           <span className="truncate text-xs font-normal text-muted-foreground">{email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild><Link href="/account">Overview</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/saved-coupons">Saved coupons</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/click-history">Click history</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/profile">Profile</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/preferences">Preferences</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account">{t("overview")}</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/saved-coupons">{t("savedCoupons")}</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/click-history">{t("clickHistory")}</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/profile">{t("profile")}</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/account/preferences">{t("preferences")}</Link></DropdownMenuItem>
         {isAdmin && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/admin">Admin dashboard</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/admin">{t("adminDashboard")}</Link></DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" aria-hidden />
-          Sign out
+          {t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -182,6 +185,7 @@ function UserMenu() {
 
 function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: NavCategory[] }) {
   const auth = useAuth();
+  const t = useTranslations("header");
   const router = useRouter();
   const user = auth.user;
 
@@ -198,17 +202,17 @@ function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: Na
       <div className="flex items-center gap-2 border-b border-clipupp-neutral-200 px-5 py-4">
         <Logo height={28} />
       </div>
-      <nav className="flex-1 overflow-y-auto p-4 text-sm" aria-label="Mobile navigation">
+      <nav className="flex-1 overflow-y-auto p-4 text-sm" aria-label={t("mobileNav")}>
         <ul className="space-y-1">
-          <li><Link href="/coupons" className={item}>All coupons <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/stores" className={item}>Stores <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/categories" className={item}>Categories <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/account/saved-coupons" className={item}>Saved <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
-          <li><Link href="/blog" className={item}>Blog <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/coupons" className={item}>{t("allCoupons")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/stores" className={item}>{t("stores")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/categories" className={item}>{t("categories")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/account/saved-coupons" className={item}>{t("saved")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
+          <li><Link href="/blog" className={item}>{t("blog")} <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" aria-hidden /></Link></li>
         </ul>
         {stores.length > 0 && (
           <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Top stores</p>
+            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("topStores")}</p>
             <ul className="grid grid-cols-2 gap-1">
               {stores.map((s) => (
                 <li key={s.id}>
@@ -224,7 +228,7 @@ function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: Na
         )}
         {categories.length > 0 && (
           <>
-            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Categories</p>
+            <p className="mb-2 mt-5 px-3 text-[11px] font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("categories")}</p>
             <ul className="space-y-1">
               {categories.slice(0, 10).map((c) => (
                 <li key={c.id}>
@@ -237,17 +241,17 @@ function MobileMenu({ stores, categories }: { stores: NavStore[]; categories: Na
       </nav>
       <div className="space-y-3 border-t p-4">
         <div className="flex items-center justify-between rounded-md border border-clipupp-neutral-200 p-2">
-          <span className="px-2 text-xs font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">Language</span>
+          <span className="px-2 text-xs font-medium uppercase tracking-[0.04em] text-clipupp-neutral-500">{t("language")}</span>
           <LocaleSwitcher variant="pill" align="end" />
         </div>
         {user ? (
           <button type="button" onClick={handleLogout} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive hover:bg-destructive/10">
-            <LogOut className="h-4 w-4" aria-hidden /> Sign out
+            <LogOut className="h-4 w-4" aria-hidden /> {t("signOut")}
           </button>
         ) : (
           <div className="flex flex-col gap-2">
-            <Button asChild variant="primary"><Link href="/sign-up">Create account</Link></Button>
-            <Button asChild variant="secondary"><Link href="/sign-in">Sign in</Link></Button>
+            <Button asChild variant="primary"><Link href="/sign-up">{t("createAccount")}</Link></Button>
+            <Button asChild variant="secondary"><Link href="/sign-in">{t("signIn")}</Link></Button>
           </div>
         )}
       </div>
