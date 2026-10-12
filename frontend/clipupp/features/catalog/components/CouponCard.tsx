@@ -4,6 +4,7 @@ import type { HomepageCouponSummary } from "@/lib/api/homepage";
 import { timeAgo } from "@/lib/format/timeAgo";
 import { formatCount } from "@/lib/format/number";
 import { ctaLabel, headline } from "@/features/catalog/lib/couponCta";
+import { expiresToday } from "@/features/catalog/lib/expiresToday";
 import { ShowCodeButton } from "./ShowCodeButton";
 
 export type CouponCardData = Pick<
@@ -21,13 +22,6 @@ const TYPE_LABEL: Record<CouponCardData["type"], string> = {
 };
 
 const USAGE_FLOOR = 50;
-
-function expiresToday(iso: string | null): boolean {
-  if (!iso) return false;
-  const t = new Date(iso);
-  const now = new Date();
-  return t.getTime() > now.getTime() && t.toDateString() === now.toDateString();
-}
 
 function categoryLabel(c: CouponCardData): string {
   const slug = c.categorySlugs?.[0];
