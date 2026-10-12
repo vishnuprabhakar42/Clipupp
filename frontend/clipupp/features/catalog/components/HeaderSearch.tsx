@@ -1,156 +1,400 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Link, useRouter } from "@/lib/i18n/navigation";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Landmark, Search, X } from "lucide-react";
+import { useRouter } from "@/lib/i18n/navigation";
 import { searchApi } from "@/lib/api/search";
-import type { SearchHit } from "@/lib/api/types";
+import { cn } from "@/lib/utils";
+
+export type SearchStore = { id: string; name: string; coupons: number; popular: number | null };
+export type SearchCoupon = { id: string; slug: string; title: string; code: string | null; storeName: string };
+export type SearchDeal = { id: string; title: string; price: number };
+export type HeaderSearchFeed = {
+  stores: SearchStore[];
+  coupons: SearchCoupon[];
+  deals: SearchDeal[];
+  bankOfferCount: number;
+};
 
 interface HeaderSearchProps {
   variant?: "default" | "pill";
+  feed?: HeaderSearchFeed;
+  className?: string;
 }
 
-export function HeaderSearch({ variant = "default" }: HeaderSearchProps) {
+type Opt = {
+  key: string;
+  group: "recent" | "popular" | "jump" | "stores" | "coupons" | "deals";
+  label: string;
+  meta?: string;
+  href?: string;
+  query?: string;
+};
+
+const RECENT_KEY = "clipupp:recent";
+const BANK_RE = /bank|card|hdfc|sbi|icici|axis|kotak|rbl/i;
+const EMPTY_FEED: HeaderSearchFeed = { stores: [], coupons: [], deals: [], bankOfferCount: 0 };
+
+function readRecent(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]");
+    return Array.isArray(v) ? v.filter((x) => typeof x === "string").slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
+function Highlight({ text, q }: { text: string; q: string }) {
+  const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  if (i < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, i)}
+      <mark className="bg-transparent font-bold text-clipupp-primary">{text.slice(i, i + q.length)}</mark>
+      {text.slice(i + q.length)}
+    </>
+  );
+}
+
+export function HeaderSearch({ variant = "pill", feed = EMPTY_FEED, className }: HeaderSearchProps) {
+  const t = useTranslations("header");
   const router = useRouter();
+  const uid = useId();
+  const listId = `${uid}-list`;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const blurTimer = useRef<number | undefined>(undefined);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchHit[]>([]);
+  const [debounced, setDebounced] = useState("");
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [remote, setRemote] = useState<{ q: string; hits: { id: string; slug: string; title: string }[] }>({
+    q: "",
+    hits: [],
+  });
+
+  useEffect(() => setRecent(readRecent()), []);
 
   useEffect(() => {
-    if (query.trim().length < 2) {
-      setResults([]);
-      setOpen(false);
-      return;
-    }
-    const handle = window.setTimeout(async () => {
-      setLoading(true);
-      try {
-        const hits = await searchApi.suggest(query.trim());
-        setResults(hits);
-        setOpen(true);
-      } catch {
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 200);
-    return () => window.clearTimeout(handle);
+    const id = window.setTimeout(() => setDebounced(query.trim()), 60);
+    return () => window.clearTimeout(id);
   }, [query]);
 
   useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (!wrapperRef.current) return;
-      if (!wrapperRef.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    if (debounced.length < 2) return;
+    let cancelled = false;
+    searchApi
+      .suggest(debounced)
+      .then((hits) => {
+        if (cancelled) return;
+        setRemote({
+          q: debounced,
+          hits: hits.filter((h) => h.kind === "COUPON").map((h) => ({ id: String(h.id), slug: h.slug, title: h.title })),
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setRemote({ q: debounced, hits: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [debounced]);
+
+  // "/" focuses the search from anywhere outside a field.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || el.isContentEditable)) return;
+      if (document.querySelector("dialog[open]")) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, []);
+
+  const q = debounced;
+  const typed = q.length > 0;
+
+  const { options, sections } = useMemo(() => {
+    const opts: Opt[] = [];
+    const secs: { id: string; title: string; from: number; to: number }[] = [];
+    const add = (id: string, title: string, items: Opt[]) => {
+      if (!items.length) return;
+      secs.push({ id, title, from: opts.length, to: opts.length + items.length });
+      opts.push(...items);
+    };
+    if (!typed) {
+      add(
+        "recent",
+        t("recent"),
+        recent.map((r) => ({ key: `r-${r}`, group: "recent" as const, label: r, query: r })),
+      );
+      add(
+        "popular",
+        t("popularStores"),
+        feed.stores
+          .filter((s) => s.popular != null)
+          .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
+          .slice(0, 4)
+          .map((s) => ({
+            key: `p-${s.id}`,
+            group: "popular" as const,
+            label: s.name,
+            meta: t("couponCount", { count: s.coupons }),
+            href: `/stores/${s.id}`,
+          })),
+      );
+    } else {
+      const lq = q.toLowerCase();
+      if (BANK_RE.test(q)) {
+        add("jump", t("jumpTo"), [
+          {
+            key: "jump-bank",
+            group: "jump",
+            label: t("jumpBank"),
+            meta: t("jumpBankMeta", { count: feed.bankOfferCount }),
+            href: "/#bank",
+          },
+        ]);
+      }
+      add(
+        "stores",
+        t("groupStores"),
+        feed.stores
+          .filter((s) => s.name.toLowerCase().includes(lq))
+          .slice(0, 5)
+          .map((s) => ({
+            key: `s-${s.id}`,
+            group: "stores" as const,
+            label: s.name,
+            meta: t("couponCount", { count: s.coupons }),
+            href: `/stores/${s.id}`,
+          })),
+      );
+      const seen = new Set<string>();
+      const coupons: Opt[] = [];
+      const pushCoupon = (slug: string, title: string, meta: string) => {
+        if (seen.has(slug) || coupons.length >= 5) return;
+        seen.add(slug);
+        coupons.push({ key: `c-${slug}`, group: "coupons", label: title, meta, href: `/coupons/${slug}` });
+      };
+      if (remote.q === q) remote.hits.forEach((h) => pushCoupon(h.slug, h.title, ""));
+      feed.coupons.forEach((c) => {
+        if (`${c.storeName} ${c.title} ${c.code ?? ""}`.toLowerCase().includes(lq)) pushCoupon(c.slug, c.title, c.storeName);
+      });
+      add("coupons", t("groupCoupons"), coupons);
+      add(
+        "deals",
+        t("groupDeals"),
+        feed.deals
+          .filter((d) => d.title.toLowerCase().includes(lq))
+          .slice(0, 3)
+          .map((d) => ({
+            key: `d-${d.id}`,
+            group: "deals" as const,
+            label: d.title,
+            meta: `₹${d.price.toLocaleString("en-IN")}`,
+            href: "/#deals",
+          })),
+      );
+    }
+    return { options: opts, sections: secs };
+  }, [typed, q, recent, feed, remote, t]);
+
+  useEffect(() => setActive(-1), [options]);
+
+  useEffect(() => {
+    if (active < 0) return;
+    document.getElementById(`${uid}-opt-${active}`)?.scrollIntoView({ block: "nearest" });
+  }, [active, uid]);
+
+  const remember = useCallback((text: string) => {
+    const v = text.trim();
+    if (!v) return;
+    const next = [v, ...readRecent().filter((r) => r.toLowerCase() !== v.toLowerCase())].slice(0, 5);
+    try {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+    } catch {
+      /* private mode */
+    }
+    setRecent(next);
+  }, []);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setActive(-1);
+  }, []);
+
+  const pick = useCallback(
+    (o: Opt) => {
+      close();
+      inputRef.current?.blur();
+      if (o.group === "recent") {
+        remember(o.label);
+        setQuery(o.label);
+        router.push(`/search?q=${encodeURIComponent(o.label)}`);
+        return;
+      }
+      remember(o.group === "popular" || o.group === "jump" ? o.label : o.group === "coupons" ? query : o.label);
+      if (o.href) router.push(o.href);
+    },
+    [close, remember, router, query],
+  );
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!query.trim()) return;
-    setOpen(false);
-    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    const v = query.trim();
+    const chosen = active >= 0 ? options[active] : typed && debounced === v ? options[0] : undefined;
+    if (chosen) return pick(chosen);
+    if (!v) return;
+    remember(v);
+    close();
+    inputRef.current?.blur();
+    router.push(`/search?q=${encodeURIComponent(v)}`);
   }
 
-  function pathFor(hit: SearchHit) {
-    switch (hit.kind) {
-      case "STORE":
-        return `/stores/${hit.slug}`;
-      case "CATEGORY":
-        return `/categories/${hit.slug}`;
-      default:
-        return `/coupons/${hit.slug}`;
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setOpen(true);
+      if (!options.length) return;
+      setActive((a) => (e.key === "ArrowDown" ? Math.min(a + 1, options.length - 1) : Math.max(a - 1, 0)));
+    } else if (e.key === "Escape") {
+      close();
     }
   }
 
-  if (variant === "pill") {
-    return (
-      <div ref={wrapperRef} className="relative w-full">
-        <form onSubmit={submit}>
-          <div className="flex h-11 overflow-hidden rounded-full border border-border bg-background shadow-sm ring-0 transition focus-within:border-clipupp-primary focus-within:ring-2 focus-within:ring-clipupp-primary/20">
-            <span className="grid w-11 shrink-0 place-items-center text-muted-foreground">
-              <Search className="h-4 w-4" aria-hidden />
-            </span>
-            <input
-              type="search"
-              placeholder="Search stores, coupons, categories…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onFocus={() => results.length > 0 && setOpen(true)}
-              className="h-full flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-            <button
-              type="submit"
-              className="m-1.5 grid w-9 shrink-0 place-items-center rounded-full bg-clipupp-primary text-white transition hover:bg-clipupp-primary-strong"
-              aria-label="Search"
-            >
-              <Search className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-        </form>
-        {open && results.length > 0 && (
-          <div className="absolute left-0 right-0 z-dropdown mt-1.5 max-h-96 overflow-y-auto rounded-md border border-clipupp-neutral-200 bg-popover p-1 shadow-card">
-            {loading && (
-              <p className="px-3 py-2 text-xs text-muted-foreground">Searching…</p>
-            )}
-            {results.map((hit) => (
-              <Link
-                key={`${hit.kind}-${hit.id}`}
-                href={pathFor(hit)}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm hover:bg-accent"
-              >
-                <span className="shrink-0 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-secondary-foreground">
-                  {hit.kind === "COUPON" ? "Coupon" : hit.kind === "STORE" ? "Store" : "Cat"}
-                </span>
-                <span className="line-clamp-1 flex-1 font-medium">{hit.title}</span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
+  const showPanel = open && (options.length > 0 || typed);
+  const pill = variant === "pill";
 
   return (
-    <div ref={wrapperRef} className="relative w-full max-w-md">
-      <form onSubmit={submit}>
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search stores, coupons, categories…"
+    <div ref={wrapRef} className={cn("relative w-full", className)}>
+      <form role="search" onSubmit={submit}>
+        <div
+          className={cn(
+            "flex h-11 items-center gap-2 border border-clipupp-neutral-200 bg-clipupp-neutral-50 px-3.5 transition focus-within:border-clipupp-primary focus-within:bg-clipupp-surface focus-within:ring-2 focus-within:ring-clipupp-primary/20 lg:h-[46px]",
+            pill ? "rounded-full" : "rounded-lg",
+          )}
+        >
+          <Search className="h-[18px] w-[18px] shrink-0 text-clipupp-neutral-500" strokeWidth={1.8} aria-hidden="true" />
+          <input
+            ref={inputRef}
+            type="text"
+            role="combobox"
+            aria-label={t("searchLabel")}
+            aria-expanded={showPanel}
+            aria-controls={listId}
+            aria-autocomplete="list"
+            aria-activedescendant={showPanel && active >= 0 ? `${uid}-opt-${active}` : undefined}
+            enterKeyHint="search"
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            placeholder={t("searchPlaceholder")}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => results.length > 0 && setOpen(true)}
-            className="pl-9"
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpen(true);
+            }}
+            onFocus={() => {
+              window.clearTimeout(blurTimer.current);
+              setFocused(true);
+              setOpen(true);
+            }}
+            onBlur={() => {
+              setFocused(false);
+              blurTimer.current = window.setTimeout(close, 150);
+            }}
+            onKeyDown={onKeyDown}
+            className="h-full min-w-0 flex-1 bg-transparent text-base text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500"
           />
+          {query ? (
+            <button
+              type="button"
+              aria-label={t("clear")}
+              onClick={() => {
+                setQuery("");
+                setDebounced("");
+                inputRef.current?.focus();
+              }}
+              className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-clipupp-neutral-500 hover:bg-clipupp-neutral-100"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : (
+            <kbd
+              title={t("kbdHint")}
+              className={cn(
+                "hidden h-6 min-w-6 shrink-0 place-items-center rounded-md border border-clipupp-neutral-200 bg-clipupp-surface px-1.5 font-mono text-xs text-clipupp-neutral-500 lg:grid",
+                focused && "lg:hidden",
+              )}
+            >
+              /
+            </kbd>
+          )}
         </div>
       </form>
-      {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 z-dropdown mt-1 max-h-96 overflow-y-auto rounded-md border border-clipupp-neutral-200 bg-popover p-1 shadow-card">
-          {loading && (
-            <p className="px-3 py-2 text-xs text-muted-foreground">Searching…</p>
+
+      {showPanel ? (
+        <div
+          id={listId}
+          role="listbox"
+          aria-label={t("searchLabel")}
+          onMouseDown={(e) => e.preventDefault()}
+          className="absolute inset-x-0 top-full z-dropdown mt-1.5 max-h-[min(66vh,460px)] overflow-y-auto overscroll-contain rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-2 shadow-clipupp-pop"
+        >
+          {options.length === 0 ? (
+            <p className="px-3 py-4 text-sm text-clipupp-neutral-600">{t("noMatch", { q: debounced })}</p>
+          ) : (
+            sections.map((s) => (
+              <Fragment key={s.id}>
+                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-clipupp-neutral-500">
+                  {s.title}
+                </p>
+                <div className={s.id === "recent" ? "flex flex-wrap gap-2 px-2 pb-1" : undefined}>
+                  {options.slice(s.from, s.to).map((o, j) => {
+                    const idx = s.from + j;
+                    const isActive = idx === active;
+                    const isChip = o.group === "recent";
+                    return (
+                      <div
+                        key={o.key}
+                        id={`${uid}-opt-${idx}`}
+                        role="option"
+                        aria-selected={isActive}
+                        onClick={() => pick(o)}
+                        onMouseEnter={() => setActive(idx)}
+                        className={cn(
+                          "cursor-pointer",
+                          isChip
+                            ? "inline-flex min-h-9 items-center rounded-full border border-clipupp-neutral-200 px-3.5 text-sm"
+                            : "flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm",
+                          isActive ? "bg-clipupp-primary-100" : "hover:bg-clipupp-neutral-100",
+                        )}
+                      >
+                        {o.group === "jump" ? (
+                          <Landmark className="h-[18px] w-[18px] shrink-0 text-clipupp-primary" aria-hidden="true" />
+                        ) : null}
+                        <span className={cn("min-w-0 flex-1 truncate", !isChip && "font-medium text-clipupp-neutral-900")}>
+                          <Highlight text={o.label} q={typed ? q : ""} />
+                        </span>
+                        {o.meta ? (
+                          <span className="shrink-0 text-xs text-clipupp-neutral-500">{o.meta}</span>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Fragment>
+            ))
           )}
-          {results.map((hit) => (
-            <Link
-              key={`${hit.kind}-${hit.id}`}
-              href={pathFor(hit)}
-              onClick={() => setOpen(false)}
-              className="flex items-start gap-2 rounded px-3 py-2 text-sm hover:bg-accent"
-            >
-              <span className="mt-0.5 rounded-full bg-secondary px-1.5 py-0.5 text-[10px] uppercase text-secondary-foreground">
-                {hit.kind === "COUPON" ? "Coupon" : hit.kind === "STORE" ? "Store" : "Category"}
-              </span>
-              <span className="line-clamp-1 flex-1 font-medium">{hit.title}</span>
-            </Link>
-          ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -133,17 +133,17 @@ export function SheetHeader({ titleId, title, subtitle, logo, actions, onClose }
     <div className="flex items-center gap-3 px-5 pb-3 pt-2">
       {logo ? <div className="shrink-0">{logo}</div> : null}
       <div className="min-w-0 flex-1">
-        <h2 id={titleId} className="truncate text-[17px] font-bold leading-tight text-clipupp-ft-ink">
+        <h2 id={titleId} className="truncate text-[17px] font-bold leading-tight text-clipupp-neutral-900">
           {title}
         </h2>
-        {subtitle ? <p className="mt-0.5 truncate text-[13px] text-clipupp-ft-ink-3">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-0.5 truncate text-[13px] text-clipupp-neutral-500">{subtitle}</p> : null}
       </div>
       {actions}
       <button
         type="button"
         aria-label={t("close")}
         onClick={onClose}
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-clipupp-ft-ink hover:bg-clipupp-neutral-100"
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-clipupp-neutral-800 hover:bg-clipupp-neutral-100"
       >
         <X size={20} aria-hidden />
       </button>

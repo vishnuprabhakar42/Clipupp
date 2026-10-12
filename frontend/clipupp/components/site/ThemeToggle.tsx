@@ -11,13 +11,28 @@ const BTN =
 
 export function ThemeToggle({ className }: { className?: string }) {
   const t = useTranslations("header");
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme, forcedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   // Neutral placeholder until mounted so server and client markup match.
   if (!mounted) {
     return <span aria-hidden="true" className={cn("inline-block h-11 w-11", className)} />;
+  }
+
+  if (forcedTheme) {
+    // Routes that are not migrated yet are pinned to light: show why the toggle is inert.
+    return (
+      <button
+        type="button"
+        disabled
+        aria-label={t("themeForced")}
+        title={t("themeForced")}
+        className={cn(BTN, "cursor-not-allowed opacity-45 hover:bg-transparent", className)}
+      >
+        <Moon className="h-5 w-5" aria-hidden="true" />
+      </button>
+    );
   }
 
   const dark = resolvedTheme === "dark";

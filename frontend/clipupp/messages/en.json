@@ -89,7 +89,10 @@
     "listSubtitle": "Pick a category to browse the latest coupons and deals.",
     "emptyState": "No categories yet. The team is curating taxonomies, check back soon.",
     "loadError": "We couldn't load categories right now.",
-    "noCouponsInCategory": "No active coupons in {category} right now."
+    "noCouponsInCategory": "No active coupons in {category} right now.",
+    "sheetTitle": "Categories",
+    "verifiedCount": "{count, plural, one {# verified coupon} other {# verified coupons}}",
+    "festiveSub": "Sale calendar and bank offers"
   },
   "search": {
     "title": "Search",
@@ -384,7 +387,24 @@
     "clickHistory": "Click history",
     "profile": "Profile",
     "preferences": "Preferences",
-    "adminDashboard": "Admin dashboard"
+    "adminDashboard": "Admin dashboard",
+    "shopByCategory": "Shop by category",
+    "alerts": "Deal alerts",
+    "searchPlaceholder": "Search Myntra, Swiggy, bank offers...",
+    "searchLabel": "Search stores, coupons and deals",
+    "clear": "Clear search",
+    "recent": "Recent",
+    "popularStores": "Popular stores",
+    "jumpBank": "Bank and card offers",
+    "jumpBankMeta": "{count} offers",
+    "groupStores": "Stores",
+    "groupCoupons": "Coupons",
+    "groupDeals": "Deals",
+    "noMatch": "No match for “{q}”. Try a store name like Myntra or Swiggy.",
+    "kbdHint": "Press / to search",
+    "couponCount": "{count, plural, one {# coupon} other {# coupons}}",
+    "jumpTo": "Jump to",
+    "themeForced": "Theme follows the page"
   },
   "catalog": {
     "card": {
@@ -418,5 +438,9 @@
     "emailCopied": "Email copied",
     "reminderSet": "We will remind you when {name} opens",
     "reminderRemoved": "Reminder removed"
+  },
+  "strip": {
+    "seeOffers": "See offers",
+    "dismiss": "Dismiss announcement"
   }
 }
