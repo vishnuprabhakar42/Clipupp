@@ -341,11 +341,16 @@
       "emailLabel": "Email address",
       "whatsapp": "Get alerts on WhatsApp instead",
       "success": "Check your inbox to confirm.",
-      "error": "Could not subscribe. Try again later."
+      "error": "Could not subscribe. Try again later.",
+      "subscribed": "Subscribed ✓",
+      "defaultHeadline": "Best deals, once a week.",
+      "defaultCta": "Subscribe"
     },
     "bank": {
       "eyebrow": "Stack with codes",
-      "defaultCta": "See eligible offers"
+      "defaultCta": "See eligible offers",
+      "range": "{from} to {to}",
+      "banksLabel": "Participating banks"
     }
   },
   "footer": {
