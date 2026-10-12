@@ -1,18 +1,22 @@
 package com.clipupp.support;
 
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
  * Base for repository and migration tests that need a real Postgres.
  *
- * One container is started per JVM (singleton pattern) and shared by every
- * subclass, so the Flyway history V001..latest is applied to a fresh database
- * exactly once per test run. Requires a running Docker daemon; such tests carry
- * the "docker" tag so they can be excluded where Docker is unavailable
- * (for example {@code ./gradlew test -PexcludeTags=docker}).
+ * One container is started lazily per JVM (singleton pattern) and shared by
+ * every subclass, so the Flyway history V001..latest is applied to a fresh
+ * database exactly once per test run. Needs a Docker daemon: when none is
+ * reachable, {@link #requireDocker()} aborts the class via a JUnit assumption,
+ * so the tests are reported as skipped instead of failing the build. Such
+ * tests also carry the "docker" tag.
  */
 @Tag("docker")
 public abstract class AbstractPostgresIT {
@@ -23,8 +27,18 @@ public abstract class AbstractPostgresIT {
                     .withUsername("clipupp")
                     .withPassword("clipupp");
 
-    static {
-        POSTGRES.start();
+    @BeforeAll
+    static void requireDocker() {
+        Assumptions.assumeTrue(
+                DockerClientFactory.instance().isDockerAvailable(),
+                "Docker not available; skipping Postgres integration tests");
+        startPostgres();
+    }
+
+    private static synchronized void startPostgres() {
+        if (!POSTGRES.isRunning()) {
+            POSTGRES.start();
+        }
     }
 
     @DynamicPropertySource
