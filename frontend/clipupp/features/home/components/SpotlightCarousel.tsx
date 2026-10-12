@@ -175,7 +175,17 @@ export function SpotlightCarousel({
                 {coupon ? (
                   <button
                     type="button"
-                    onClick={() => openSheet(coupon, store)}
+                    onClick={() => {
+                      // Copy inside the click gesture; the sheet reports the outcome.
+                      let copy: Promise<void> | null = null;
+                      try {
+                        if (coupon.code) {
+                          copy = navigator.clipboard?.writeText(coupon.code.trim()) ?? null;
+                          copy?.catch(() => {});
+                        }
+                      } catch {}
+                      openSheet(coupon, store, null, { copy });
+                    }}
                     className="h-[46px] rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep transition active:scale-[0.97] hover:bg-white/90"
                   >
                     {t("cta")}

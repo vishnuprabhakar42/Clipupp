@@ -57,7 +57,7 @@ function ArrowButton({
       aria-controls={railId}
       disabled={disabled}
       onClick={() => scrollRail(railId, dir)}
-      className={`grid h-11 w-11 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-ft-ink shadow-card transition-opacity hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
+      className={`grid h-11 w-11 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 shadow-card transition-opacity hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
     >
       <Icon size={20} aria-hidden />
     </button>

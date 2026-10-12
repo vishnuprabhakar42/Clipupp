@@ -1,10 +1,13 @@
 /**
  * Tiny in-page event bus for the homepage. The category rail emits
  * "today:tab" with a category slug, and the Today tab bar listens.
+ * Store tiles emit "today:store" with a store slug.
  * `peek` returns the last payload so a late subscriber can sync.
  */
 export type HomeBusEvents = {
   "today:tab": string;
+  /** Store slug to filter Today's list by; empty string clears the filter. */
+  "today:store": string;
 };
 
 type Handler<K extends keyof HomeBusEvents> = (payload: HomeBusEvents[K]) => void;

@@ -1495,6 +1495,22 @@
   .clipupp-rail::-webkit-scrollbar { display: none; }
   .clipupp-rail > * { scroll-snap-align: start; }
 
+  /* Toast layer: a manual popover so toasts stay above modal dialogs (top layer). */
+  .clipupp-toast-layer {
+    position: fixed;
+    inset: 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .clipupp-toast-layer [data-sonner-toast] { pointer-events: auto; }
+
   /* Toasts: Sonner's offset props set 76px (above the mobile nav); 28px at lg+. */
   @media (min-width: 1024px) {
     [data-sonner-toaster] { --offset-bottom: 28px !important; }
@@ -1520,7 +1536,7 @@
     padding: 0;
     border: 0;
     background: rgb(var(--clipupp-surface-rgb));
-    color: rgb(var(--clipupp-ft-ink-rgb));
+    color: rgb(var(--clipupp-neutral-900-rgb));
     overflow: hidden;
     margin: auto auto 0;
     width: 100%;

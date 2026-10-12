@@ -15,6 +15,8 @@ export type FeedCategory = {
   parent?: string | null;
   /** Marks a seasonal category that gets the hot treatment. */
   hot?: boolean;
+  /** "fixture" for demo-only categories the backend does not know; absent means "api". */
+  source?: "api" | "fixture";
   /** Number of coupons shown for the category. */
   couponCount: number;
   /** Up to three stores to name-drop in the mega menu. */
