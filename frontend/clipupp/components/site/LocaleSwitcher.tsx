@@ -13,22 +13,22 @@ import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { locales, type Locale } from "@/lib/i18n/config";
 
 // Display labels for each supported locale. Native script for each language
-// is the convention — Wikipedia, Google etc. all do this.
+// is the convention - Wikipedia, Google etc. all do this.
 const LABELS: Record<Locale, string> = {
   en: "English",
   hi: "हिन्दी",
 };
 
 /**
- * Locale switcher — uses next-intl's locale-aware router so the URL
+ * Locale switcher - uses next-intl's locale-aware router so the URL
  * actually changes to /hi/<path> (or strips /hi when switching back to
  * English). This is the right pattern for SEO hreflang: each locale has a
  * distinct, canonical URL that crawlers can index independently.
  *
  * Variants:
- *   `pill` — labeled chip with globe icon; used inside the header desktop.
- *   `segmented` — two-button English | हिन्दी group for the dark footer.
- *   `icon` — globe-only square button; used in the mobile bottom nav.
+ *   `pill` - labeled chip with globe icon; used inside the header desktop.
+ *   `segmented` - two-button English | हिन्दी group for the dark footer.
+ *   `icon` - globe-only square button; used in the mobile bottom nav.
  */
 export function LocaleSwitcher({
   variant = "pill",

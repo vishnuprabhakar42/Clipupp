@@ -576,7 +576,9 @@
     "thanksYes": "Thanks! That helps other shoppers.",
     "thanksNo": "Thanks for telling us. We will re-check this code.",
     "seeAll": "See all {count} {store} coupons",
-    "rate": "{rate}% of shoppers say it worked"
+    "rate": "{rate}% of shoppers say it worked",
+    "savedError": "We could not load your saved coupons.",
+    "retry": "Retry"
   },
   "toast": {
     "saved": "Saved",
