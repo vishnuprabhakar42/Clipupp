@@ -21,7 +21,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
-      <MobileBottomNav active="home" />
+      <MobileBottomNav />
       <CouponSheetProvider />
     </div>
   );

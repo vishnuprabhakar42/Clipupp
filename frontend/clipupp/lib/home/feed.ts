@@ -199,6 +199,12 @@ export type HomeFeed = {
   popularSearches: { label: string; href: string }[];
   /** Telegram bot username, null when not configured. */
   telegramBot: string | null;
+  /** Support address shown in the FAQ, null when not configured. */
+  supportEmail: string | null;
+  /** Address merchants write to, shown in the footer partner card. */
+  partnerEmail: string | null;
+  /** Social profile links that are configured, in display order. */
+  social: { network: "instagram" | "youtube" | "x" | "facebook" | "linkedin"; url: string }[];
   /** Section codes in render order. */
   sectionOrder: string[];
 };
