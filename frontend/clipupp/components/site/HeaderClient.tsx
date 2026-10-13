@@ -29,6 +29,8 @@ export type HeaderFeed = {
   anchors: HomeAnchor[];
 };
 
+const LOGO_SIZE = "!h-[47px] !w-[103px] lg:!h-[65px] lg:!w-[143px]";
+
 const ICON_BTN =
   "relative inline-flex h-11 w-11 items-center justify-center rounded-full text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary";
 
@@ -51,9 +53,11 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
       <div className="clipupp-container grid grid-cols-[auto_1fr] grid-rows-[58px_56px] items-center [grid-template-areas:'logo_actions'_'search_search'] lg:grid-cols-[auto_minmax(0,560px)_1fr] lg:grid-rows-[72px] lg:gap-x-7 lg:[grid-template-areas:'logo_search_actions']">
         <div className="[grid-area:logo]">
           {/* The artwork has built-in padding (glyphs are 96% of the width, 65% of the height):
-              47px / 65px image heights give ~98px / ~136px wide wordmarks like the design. */}
-          <Logo height={65} priority className="clipupp-logo-l" imgClassName="!h-[47px] lg:!h-[65px]" />
-          <Logo height={65} priority variant="on-dark" className="clipupp-logo-d" imgClassName="!h-[47px] lg:!h-[65px]" />
+              47px / 65px image heights give ~98px / ~136px wide wordmarks like the design.
+              Widths are the 1151:525 aspect rounded (103 / 143, the lg pair equals the
+              attributes). Only the light variant is preloaded; the dark one loads when shown. */}
+          <Logo height={65} priority className="clipupp-logo-l" imgClassName={LOGO_SIZE} />
+          <Logo height={65} priority={false} variant="on-dark" className="clipupp-logo-d" imgClassName={LOGO_SIZE} />
         </div>
 
         <div className="[grid-area:search] min-w-0 pb-1.5 pt-1.5 lg:p-0">
