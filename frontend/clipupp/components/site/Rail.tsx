@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { create } from "zustand";
+import { edges as scrollEdges } from "@/lib/home/scrollEdges";
 
 type Edges = { atStart: boolean; atEnd: boolean; scrollable: boolean };
 const NO_EDGES: Edges = { atStart: true, atEnd: true, scrollable: false };
@@ -57,7 +58,7 @@ function ArrowButton({
       aria-controls={railId}
       disabled={disabled}
       onClick={() => scrollRail(railId, dir)}
-      className={`grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 shadow-card transition-opacity hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
+      className={`grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 shadow-card clipupp-press hover:bg-clipupp-neutral-50 disabled:cursor-default disabled:opacity-40 ${className}`}
     >
       <Icon size={20} aria-hidden />
     </button>
@@ -113,11 +114,9 @@ export function Rail({
   const measure = useCallback(() => {
     const el = trackRef.current;
     if (!el) return;
-    const max = el.scrollWidth - el.clientWidth;
     setEdges(id, {
-      scrollable: max > EDGE_PX,
-      atStart: el.scrollLeft <= EDGE_PX,
-      atEnd: el.scrollLeft >= max - EDGE_PX,
+      scrollable: el.scrollWidth - el.clientWidth > EDGE_PX,
+      ...scrollEdges(el.scrollLeft, el.scrollWidth, el.clientWidth, EDGE_PX),
     });
   }, [id, setEdges]);
 

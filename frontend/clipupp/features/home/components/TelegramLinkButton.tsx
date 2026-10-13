@@ -14,7 +14,7 @@ function TelegramIcon() {
 export function TelegramLinkButton({ bot }: { bot: string | null }) {
   const t = useTranslations("home.alerts");
   const cls =
-    "inline-flex h-12 items-center gap-2 rounded-full px-6 text-[15px] font-semibold bg-clipupp-primary text-clipupp-primary-fg";
+    "clipupp-press inline-flex h-12 items-center gap-2 rounded-full px-6 text-[15px] font-semibold bg-clipupp-primary text-clipupp-primary-fg";
   if (!bot) {
     return (
       <div className="flex flex-wrap items-center gap-3">
@@ -31,7 +31,7 @@ export function TelegramLinkButton({ bot }: { bot: string | null }) {
       href={`https://t.me/${encodeURIComponent(bot)}?start=web`}
       target="_blank"
       rel="noopener"
-      className={cls + " transition-colors hover:bg-clipupp-primary-strong"}
+      className={cls + " hover:bg-clipupp-primary-strong"}
     >
       <TelegramIcon />
       {t("tgCta")}

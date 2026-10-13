@@ -52,7 +52,7 @@ export function NewsletterForm() {
         <button
           type="submit"
           disabled={state === "busy"}
-          className="inline-flex h-12 items-center justify-center rounded-full bg-clipupp-primary px-6 text-[15px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong disabled:opacity-70"
+          className="inline-flex h-12 items-center justify-center rounded-full bg-clipupp-primary px-6 text-[15px] font-semibold text-clipupp-primary-fg clipupp-press hover:bg-clipupp-primary-strong disabled:opacity-70"
         >
           {t("mailCta")}
         </button>

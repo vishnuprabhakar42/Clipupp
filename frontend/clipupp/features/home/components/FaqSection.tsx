@@ -16,7 +16,7 @@ export async function FaqSection({ feed }: { feed: HomeFeed }) {
     })),
   };
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-8 sm:pt-12 md:grid-cols-[4fr_7fr] md:gap-12 lg:gap-16 lg:pt-16">
+    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-10 md:grid-cols-[4fr_7fr] md:gap-12 md:pt-14 lg:gap-16 lg:pt-[72px]">
       <JsonLd data={ld} />
       <div className="clipupp-reveal">
         <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>

@@ -19,7 +19,7 @@ export async function SaleCalendarRail({ feed }: { feed: HomeFeed }) {
     .sort((a, b) => ORDER[a.state] - ORDER[b.state] || Date.parse(a.s.startAt) - Date.parse(b.s.startAt));
   if (sales.length === 0) return null;
   return (
-    <section id="calendar" className="clipupp-container pt-8 sm:pt-12 lg:pt-16" aria-labelledby="calendar-heading">
+    <section id="calendar" className="clipupp-container pt-10 md:pt-14 lg:pt-[72px]" aria-labelledby="calendar-heading">
       <SectionHeader
         id="calendar-heading"
         eyebrow={t("eyebrow")}

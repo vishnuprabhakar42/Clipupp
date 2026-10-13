@@ -20,7 +20,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
     <article
       data-deal-card
       data-store={deal.store}
-      className={`flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${CARD_HOVER}`}
+      className={`clipupp-card flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${CARD_HOVER}`}
     >
       <div
         className="clipupp-ph relative aspect-square w-full"
@@ -69,7 +69,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
             href={deal.url}
             target="_blank"
             rel="noopener sponsored nofollow"
-            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-2.5 text-[13.5px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-2.5 text-[13.5px] font-semibold text-clipupp-primary-fg clipupp-press hover:bg-clipupp-primary-strong"
           >
             <span className="truncate">{t("buy", { store: displayShortName(store.name) })}</span>
           </a>

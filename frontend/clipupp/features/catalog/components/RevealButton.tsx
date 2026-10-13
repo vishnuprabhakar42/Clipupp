@@ -87,7 +87,7 @@ export function RevealButton({
         target="_blank"
         rel={REL}
         onClick={onClick}
-        className={`inline-flex ${h} w-full items-center justify-center rounded-xl bg-clipupp-primary px-4 ${fs} font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong`}
+        className={`clipupp-press inline-flex ${h} w-full items-center justify-center rounded-xl bg-clipupp-primary px-4 ${fs} font-semibold text-clipupp-primary-fg hover:bg-clipupp-primary-strong`}
       >
         {t("getDeal")}
       </a>
@@ -102,7 +102,7 @@ export function RevealButton({
         rel={REL}
         onClick={onClick}
         aria-label={t("codeLabelFull", { code })}
-        className={`flex ${h} w-full items-center justify-center rounded-xl border-[1.5px] border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 ${fs} font-bold tracking-[0.08em] text-clipupp-ok-fg`}
+        className={`clipupp-press flex ${h} w-full items-center justify-center rounded-xl border-[1.5px] border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 ${fs} font-bold tracking-[0.08em] text-clipupp-ok-fg`}
       >
         {code}
       </a>
@@ -117,7 +117,7 @@ export function RevealButton({
       onClick={onClick}
       aria-label={t("showCodeFor", { store: store.name })}
       style={{ "--d": `${(index % 6) * 0.55}s` } as React.CSSProperties}
-      className={`group relative flex ${h} w-full items-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-clipupp-primary bg-clipupp-tint-50`}
+      className={`clipupp-press group relative flex ${h} w-full items-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-clipupp-primary bg-clipupp-tint-50`}
     >
       <span
         aria-hidden

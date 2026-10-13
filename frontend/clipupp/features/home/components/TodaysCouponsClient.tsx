@@ -8,6 +8,7 @@ import { emit, on, peek } from "@/lib/home/homeBus";
 import type { RowItem } from "../lib/todayRows";
 import { sortItems, type Sort } from "../lib/todaySort";
 import { applyPage, safeLoad } from "../lib/todayState";
+import { TabInk } from "./TabInk";
 
 type Req = { mode: "reset" | "append"; tab: string; store: string; cursor: string | null; startIndex: number };
 
@@ -203,7 +204,7 @@ export function TodaysCouponsClient({
         <div
           role="tablist"
           aria-label={t("tabsAria")}
-          className="clipupp-no-scrollbar flex overflow-x-auto border-b border-clipupp-neutral-200"
+          className="clipupp-no-scrollbar relative flex overflow-x-auto shadow-[inset_0_-1px_0_rgb(var(--clipupp-neutral-200-rgb))]"
         >
           {visibleTabs.map((x, i) => {
             const on = x.id === tab && !store;
@@ -223,10 +224,8 @@ export function TodaysCouponsClient({
                 onClick={() => select(x.id)}
                 onKeyDown={(e) => onTabKey(e, i)}
                 className={
-                  "relative shrink-0 whitespace-nowrap px-3 py-3 text-[15px] font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-px after:h-[3px] after:rounded-t after:transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-clipupp-primary " +
-                  (on
-                    ? "text-clipupp-primary after:bg-clipupp-primary after:opacity-100"
-                    : "text-clipupp-neutral-700 after:opacity-0 hover:text-clipupp-neutral-900")
+                  "clipupp-press relative shrink-0 whitespace-nowrap px-3 py-3 text-[15px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-clipupp-primary " +
+                  (on ? "text-clipupp-primary" : "text-clipupp-neutral-700 hover:text-clipupp-neutral-900")
                 }
               >
                 {x.label}
@@ -234,6 +233,7 @@ export function TodaysCouponsClient({
               </button>
             );
           })}
+          <TabInk selected={store ? null : tab} />
         </div>
       </div>
 
@@ -247,7 +247,7 @@ export function TodaysCouponsClient({
               type="button"
               aria-label={t("clearStore", { store: storeName })}
               onClick={() => setStore("")}
-              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-clipupp-tint-200 bg-clipupp-tint-100 pl-3.5 pr-2.5 text-[13px] font-semibold text-clipupp-primary"
+              className="clipupp-press inline-flex h-9 items-center gap-1.5 rounded-full border border-clipupp-tint-200 bg-clipupp-tint-100 pl-3.5 pr-2.5 text-[13px] font-semibold text-clipupp-primary"
             >
               {storeName}
               <X size={14} aria-hidden />
@@ -307,7 +307,7 @@ export function TodaysCouponsClient({
           <button
             type="button"
             onClick={() => void run(lastReq.current?.mode ?? "reset", lastReq.current ?? undefined)}
-            className="font-semibold underline underline-offset-2"
+            className="clipupp-press font-semibold underline underline-offset-2"
           >
             {t("retry")}
           </button>
@@ -320,7 +320,7 @@ export function TodaysCouponsClient({
             type="button"
             onClick={() => void run("append")}
             disabled={fetching}
-            className="inline-flex h-[46px] items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-5 text-[15px] font-semibold text-clipupp-neutral-900 transition-colors hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2 motion-safe:active:scale-[0.97] disabled:opacity-60"
+            className="clipupp-press inline-flex h-[46px] items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-5 text-[15px] font-semibold text-clipupp-neutral-900 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2 disabled:opacity-60"
           >
             {t("showMore")}
           </button>

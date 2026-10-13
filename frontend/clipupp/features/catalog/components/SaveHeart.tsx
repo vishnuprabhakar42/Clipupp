@@ -26,7 +26,7 @@ export function SaveHeart({ couponId, storeName, className = "" }: { couponId: s
       }}
       onAnimationEnd={() => setPop(false)}
       className={
-        "grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors hover:bg-clipupp-neutral-100 " +
+        "grid h-11 w-11 shrink-0 place-items-center rounded-full clipupp-press hover:bg-clipupp-neutral-100 " +
         (saved ? "text-clipupp-danger " : "text-clipupp-neutral-500 ") +
         className
       }

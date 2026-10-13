@@ -122,7 +122,7 @@ export async function HeroSection({
                 <Link
                   key={s.id}
                   href={`/stores/${s.id}`}
-                  className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-3.5 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
+                  className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-3.5 text-[15px] font-medium text-clipupp-neutral-900 clipupp-press hover:border-clipupp-primary hover:text-clipupp-primary"
                 >
                   {displayShortName(s.name)}
                 </Link>

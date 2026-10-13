@@ -23,8 +23,8 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
     { value: t("statPullValue"), label: t("statPullLabel") },
   ];
   return (
-    <section id="verify" aria-labelledby="verify-heading" className="mt-9 border-y border-clipupp-neutral-200 bg-clipupp-surface sm:mt-12 lg:mt-14">
-      <div className="clipupp-container grid gap-10 py-12 md:grid-cols-[4fr_7fr] md:gap-12 lg:gap-16 lg:py-[72px]">
+    <section id="verify" aria-labelledby="verify-heading" className="mt-10 border-y border-clipupp-neutral-200 bg-clipupp-surface md:mt-14 lg:mt-[72px]">
+      <div className="clipupp-container grid gap-10 py-10 md:grid-cols-[4fr_7fr] md:gap-12 md:py-14 lg:gap-16 lg:py-[72px]">
         <div className="clipupp-reveal">
           <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>
           <h2 id="verify-heading" className="max-w-[16ch] text-balance font-display text-[length:var(--fs-h2)] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900">
