@@ -5,6 +5,10 @@ import type { ReactNode } from "react";
 export const CARD_HOVER =
   "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
+/** Coupon title link to the detail page: inherits the heading style, brand colour on hover, visible focus ring. */
+export const TITLE_LINK =
+  "rounded-sm transition-colors hover:text-clipupp-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-primary";
+
 const TAG_TONE = {
   ok: "bg-clipupp-ok-bg text-clipupp-ok-fg",
   gold: "bg-clipupp-deep text-clipupp-gold",
