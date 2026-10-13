@@ -32,9 +32,10 @@ export function StoreFilterButton({
         type="button"
         onClick={onClick}
         aria-label={ariaLabel}
-        className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-3 text-[15px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+        className="clipupp-press inline-flex min-h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-4 py-2 text-center text-[15px] font-semibold leading-tight text-clipupp-primary-fg hover:bg-clipupp-primary-strong"
       >
-        <span className="truncate">{children}</span>
+        {/* Wraps to a second line rather than clipping a long store name. */}
+        <span className="text-balance">{children}</span>
       </button>
     );
   }
@@ -43,7 +44,7 @@ export function StoreFilterButton({
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
-      className="group flex w-full items-center gap-2 rounded-lg py-1 text-left text-[14px] font-medium text-clipupp-neutral-700 transition-colors hover:text-clipupp-primary"
+      className="group flex w-full items-center gap-2 rounded-lg py-1 text-left text-[14px] font-medium text-clipupp-neutral-700 clipupp-press hover:text-clipupp-primary"
     >
       {children}
       <ChevronRight size={16} aria-hidden className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />

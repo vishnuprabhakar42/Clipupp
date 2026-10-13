@@ -7,7 +7,7 @@ import { NewsletterForm } from "./NewsletterForm";
 export async function AlertsSection({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.alerts");
   return (
-    <section id="alerts" aria-labelledby="alerts-heading" className="clipupp-container pt-8 sm:pt-12 lg:pt-14">
+    <section id="alerts" aria-labelledby="alerts-heading" className="clipupp-container pt-10 md:pt-14 lg:pt-[72px]">
       <h2 id="alerts-heading" className="sr-only">{t("h2")}</h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:gap-3">
         <div className="clipupp-reveal flex flex-col rounded-[20px] border border-clipupp-neutral-200 bg-gradient-to-br from-clipupp-ok-bg to-clipupp-surface p-5 lg:p-[20px]">

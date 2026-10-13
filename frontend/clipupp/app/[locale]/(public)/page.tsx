@@ -151,7 +151,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
             }}
           />
         )}
-        <div className="bg-clipupp-page pb-9 sm:pb-12 lg:pb-14">
+        <div className="bg-clipupp-page pb-10 md:pb-14 lg:pb-[72px]">
           {sections.map((s) => {
             const render = SECTION_RENDERERS[s.code];
             // Same test the anchors use, so a link never targets a block that is not here.

@@ -20,7 +20,7 @@ export async function BankOffersRail({ feed }: { feed: HomeFeed }) {
   }));
   const chips = [...new Set(offers.map((o) => o.bank))].map((b) => ({ id: b, label: b }));
   return (
-    <section id="bank" className="clipupp-container pt-8 sm:pt-12 lg:pt-16" aria-labelledby="bank-heading">
+    <section id="bank" className="clipupp-container pt-10 md:pt-14 lg:pt-[72px]" aria-labelledby="bank-heading">
       <SectionHeader
         id="bank-heading"
         eyebrow={t("eyebrow")}

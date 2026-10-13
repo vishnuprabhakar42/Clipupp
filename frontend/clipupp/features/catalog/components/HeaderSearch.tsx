@@ -344,7 +344,7 @@ export function HeaderSearch({
                 setDebounced("");
                 inputRef.current?.focus();
               }}
-              className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-clipupp-neutral-500 hover:bg-clipupp-neutral-100"
+              className="clipupp-press grid h-7 w-7 shrink-0 place-items-center rounded-full text-clipupp-neutral-500 hover:bg-clipupp-neutral-100"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -363,7 +363,7 @@ export function HeaderSearch({
           {hero && ctaLabel ? (
             <button
               type="submit"
-              className="h-11 shrink-0 rounded-full bg-clipupp-primary px-6 text-[15px] font-semibold text-clipupp-primary-fg transition hover:bg-clipupp-primary-strong active:scale-[0.97]"
+              className="h-11 shrink-0 rounded-full bg-clipupp-primary px-6 text-[15px] font-semibold text-clipupp-primary-fg clipupp-press hover:bg-clipupp-primary-strong"
             >
               {ctaLabel}
             </button>

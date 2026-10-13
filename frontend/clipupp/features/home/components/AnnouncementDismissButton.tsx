@@ -16,7 +16,7 @@ export function AnnouncementDismissButton({ id, label }: { id: string; label: st
       <button
         type="submit"
         aria-label={label}
-        className="grid h-8 w-8 place-items-center rounded-full text-white/80 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-gold"
+        className="grid h-8 w-8 place-items-center rounded-full text-white/80 clipupp-press hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-gold"
       >
         <X className="h-[18px] w-[18px]" aria-hidden="true" />
       </button>

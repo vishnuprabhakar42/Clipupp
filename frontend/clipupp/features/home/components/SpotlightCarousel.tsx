@@ -27,7 +27,7 @@ function ctaHref(href: string | null): { href: string; external: boolean } {
 }
 
 const CTA_CLASS =
-  "inline-flex h-[46px] items-center rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep transition active:scale-[0.97] hover:bg-white/90";
+  "inline-flex h-[46px] items-center rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep clipupp-press hover:bg-white/90";
 
 /**
  * Spotlight carousel: native scroll-snap rail (88% / 70% slides below lg, one
@@ -230,7 +230,7 @@ export function SpotlightCarousel({
                   mark();
                   goTo(i);
                 }}
-                className="group grid h-6 w-6 place-items-center"
+                className="clipupp-press group grid h-6 w-6 place-items-center"
               >
                 <span
                   className={cn(
@@ -248,7 +248,7 @@ export function SpotlightCarousel({
               type="button"
               aria-label={t("prev")}
               onClick={() => step(-1)}
-              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
+              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 clipupp-press hover:border-clipupp-primary"
             >
               <ChevronLeft className="h-5 w-5" aria-hidden />
             </button>
@@ -256,7 +256,7 @@ export function SpotlightCarousel({
               type="button"
               aria-label={t("next")}
               onClick={() => step(1)}
-              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
+              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 clipupp-press hover:border-clipupp-primary"
             >
               <ChevronRight className="h-5 w-5" aria-hidden />
             </button>

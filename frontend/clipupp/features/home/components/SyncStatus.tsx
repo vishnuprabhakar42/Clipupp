@@ -26,7 +26,7 @@ export function SyncStatus({ label }: { label: string }) {
         aria-label={t("refresh")}
         disabled={pending}
         onClick={() => start(() => router.refresh())}
-        className="grid h-9 w-9 place-items-center rounded-full text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100"
+        className="grid h-9 w-9 place-items-center rounded-full text-clipupp-neutral-700 clipupp-press hover:bg-clipupp-neutral-100"
       >
         <RefreshCw size={16} aria-hidden className={pending ? "clipupp-rot" : ""} />
       </button>

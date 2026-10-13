@@ -54,7 +54,7 @@ export function RemindMeButton({ saleId, saleName }: { saleId: string; saleName:
       aria-pressed={on}
       aria-label={t("remindAria", { name: saleName })}
       onClick={toggle}
-      className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border text-[14px] font-semibold transition-colors ${
+      className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border text-[14px] font-semibold clipupp-press ${
         on
           ? "border-clipupp-success bg-clipupp-ok-bg text-clipupp-ok-fg"
           : "border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 hover:bg-clipupp-neutral-50"

@@ -104,7 +104,7 @@ export function SavedSheet() {
           <Link
             href="/account/saved-coupons"
             onClick={close}
-            className="inline-flex h-11 items-center rounded-full border border-clipupp-primary px-5 text-[14px] font-semibold text-clipupp-primary transition-colors hover:bg-clipupp-primary-100"
+            className="inline-flex h-11 items-center rounded-full border border-clipupp-primary px-5 text-[14px] font-semibold text-clipupp-primary clipupp-press hover:bg-clipupp-primary-100"
           >
             {t("savedSeeAll", { count: ids.length })}
           </Link>
@@ -116,7 +116,7 @@ export function SavedSheet() {
           <button
             type="button"
             onClick={() => setTick((n) => n + 1)}
-            className="mt-3 inline-flex h-11 items-center rounded-full bg-clipupp-primary px-5 text-[14px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+            className="mt-3 inline-flex h-11 items-center rounded-full bg-clipupp-primary px-5 text-[14px] font-semibold text-clipupp-primary-fg clipupp-press hover:bg-clipupp-primary-strong"
           >
             {t("retry")}
           </button>
