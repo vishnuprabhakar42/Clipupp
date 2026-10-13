@@ -27,22 +27,22 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
         style={{ "--t-bg": tint.bg, "--t-fg": tint.fg } as React.CSSProperties}
       >
         <span className="absolute inset-0 grid place-items-center" aria-hidden>
-          <CategoryGlyph name={resolveCategoryIcon(null, deal.cat)} className="h-[44%] w-[44%]" />
+          <CategoryGlyph name={resolveCategoryIcon(null, deal.cat)} strokeWidth={1.1} className="h-[44%] w-[44%] opacity-85" />
         </span>
         {deal.image && <DealImage src={deal.image} sizes="(min-width: 1024px) 16vw, (min-width: 640px) 30vw, 46vw" />}
         {showOff && (
-          <span className="absolute left-2.5 top-2.5 rounded-md bg-clipupp-danger px-2 py-1 text-[12px] font-bold leading-none text-clipupp-danger-fg">
+          <span className="absolute left-2 top-2 rounded-md px-[7px] py-1.5 text-[12px] font-bold leading-none text-clipupp-danger-fg bg-clipupp-danger">
             {t("off", { pct: deal.off })}
           </span>
         )}
-        <StoreTile store={store} size={30} className="absolute right-2.5 top-2.5 !rounded-lg !p-1 shadow-card" />
+        <StoreTile store={store} size={30} className="absolute right-2 top-2 !rounded-lg !p-[3px] shadow-card" />
       </div>
-      <div className="flex flex-1 flex-col p-3.5">
-        <h3 className="line-clamp-2 text-[13.5px] font-medium leading-snug text-clipupp-neutral-900">{deal.title}</h3>
+      <div className="flex flex-1 flex-col px-3 pb-3 pt-2.5">
+        <h3 className="line-clamp-2 min-h-[2.7em] text-[13.5px] leading-[1.35] text-clipupp-neutral-900">{deal.title}</h3>
         {deal.rating != null && (
-          <p className="mt-2 flex items-center gap-1.5 text-[12px] text-clipupp-neutral-500">
+          <p className="mt-1.5 flex items-center gap-[5px] text-[12px] text-clipupp-neutral-500">
             <span
-              className="rounded bg-clipupp-success px-1.5 py-0.5 text-[11.5px] font-bold leading-none text-clipupp-success-fg"
+              className="rounded px-[5px] py-0.5 text-[11px] font-bold leading-snug text-clipupp-success-fg bg-clipupp-success"
               aria-label={t("rating", { rating: deal.rating.toFixed(1) })}
             >
               {deal.rating.toFixed(1)} ★
@@ -52,8 +52,8 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
         )}
         {/* Price and MRP share a line (the MRP drops whole below a long price, never
             truncated); "% off" always sits on its own line so cards align. */}
-        <p className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 whitespace-nowrap">
-          <span className="clipupp-amt text-[22px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
+        <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 whitespace-nowrap">
+          <span className="clipupp-amt text-[19px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
             {nf.format(deal.price)}
           </span>
           {deal.mrp != null && deal.mrp > deal.price && (
@@ -61,15 +61,15 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
           )}
         </p>
         {showOff && deal.mrp != null && deal.mrp > deal.price && (
-          <p className="mt-1 text-[13px] font-semibold text-clipupp-success">{t("off", { pct: deal.off })}</p>
+          <p className="mt-1 text-[12.5px] font-bold text-clipupp-success">{t("off", { pct: deal.off })}</p>
         )}
-        {deal.lowest30d && <p className="mt-2 text-[11.5px] font-semibold text-clipupp-success">{t("lowest")}</p>}
-        <div className="mt-auto pt-3">
+        {deal.lowest30d && <p className="mt-1.5 text-[11.5px] font-semibold text-clipupp-success">{t("lowest")}</p>}
+        <div className="mt-auto pt-3.5">
           <a
             href={deal.url}
             target="_blank"
             rel="noopener sponsored nofollow"
-            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-3 text-[13.5px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+            className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-2.5 text-[13.5px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
           >
             <span className="truncate">{t("buy", { store: displayShortName(store.name) })}</span>
           </a>

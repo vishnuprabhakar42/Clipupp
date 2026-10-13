@@ -35,7 +35,9 @@ export function RevealButton({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const code = coupon.code?.trim() || null;
-  const h = size === "sm" ? "h-10" : "h-[46px]";
+  const h = size === "sm" ? "h-11" : "h-12";
+  // Design `.reveal-btn`: 15px label and code, 14px inside list rows.
+  const fs = size === "sm" ? "text-[14px]" : "text-[15px]";
   const href = `/r/${coupon.id}`;
   const revealed = !!code && (isRevealed(coupon.id) || peeling);
 
@@ -85,7 +87,7 @@ export function RevealButton({
         target="_blank"
         rel={REL}
         onClick={onClick}
-        className={`inline-flex ${h} w-full items-center justify-center rounded-xl bg-clipupp-primary px-4 text-[14px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong`}
+        className={`inline-flex ${h} w-full items-center justify-center rounded-xl bg-clipupp-primary px-4 ${fs} font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong`}
       >
         {t("getDeal")}
       </a>
@@ -100,7 +102,7 @@ export function RevealButton({
         rel={REL}
         onClick={onClick}
         aria-label={t("codeLabelFull", { code })}
-        className={`flex ${h} w-full items-center justify-center rounded-xl border-2 border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 font-mono text-[15px] font-bold tracking-[0.1em] text-clipupp-success`}
+        className={`flex ${h} w-full items-center justify-center rounded-xl border-[1.5px] border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 ${fs} font-bold tracking-[0.08em] text-clipupp-success`}
       >
         {code}
       </a>
@@ -115,13 +117,12 @@ export function RevealButton({
       onClick={onClick}
       aria-label={t("showCodeFor", { store: store.name })}
       style={{ "--d": `${(index % 6) * 0.55}s` } as React.CSSProperties}
-      className={`group relative flex ${h} w-full items-center overflow-hidden rounded-xl border-2 border-dashed border-clipupp-tint-200 bg-clipupp-tint-50`}
+      className={`group relative flex ${h} w-full items-center overflow-hidden rounded-xl border-[1.5px] border-dashed border-clipupp-primary bg-clipupp-tint-50`}
     >
       <span
         aria-hidden
         className={
-          "clipupp-sheen absolute inset-y-0 left-0 z-10 flex items-center justify-center gap-1.5 bg-clipupp-primary text-[13px] font-semibold text-clipupp-primary-fg transition-[width] duration-200 [clip-path:polygon(0_0,100%_0,calc(100%-14px)_100%,0_100%)] " +
-          (size === "sm" ? "w-[67%] lg:group-hover:w-[70%] " : "w-[62%] lg:group-hover:w-[66%] ") +
+          `clipupp-sheen absolute inset-y-0 left-0 z-10 flex w-[calc(100%-54px)] items-center justify-center gap-1.5 bg-clipupp-primary ${fs} font-semibold text-clipupp-primary-fg transition-transform duration-200 [clip-path:polygon(0_0,100%_0,calc(100%-18px)_100%,0_100%)] motion-reduce:transition-none lg:group-hover:-translate-x-3 ` +
           (peeling ? "clipupp-peel" : "")
         }
       >
@@ -130,7 +131,7 @@ export function RevealButton({
       </span>
       <span
         className={
-          "ml-auto pr-3.5 font-mono text-[15px] font-bold tracking-[0.1em] text-clipupp-primary " +
+          `ml-auto pr-3.5 ${fs} font-bold tracking-[0.08em] text-clipupp-primary tabular-nums ` +
           (peeling ? "clipupp-code-in mx-auto pr-0" : "")
         }
       >

@@ -57,7 +57,7 @@ export function NewsletterForm() {
           {t("mailCta")}
         </button>
       </div>
-      <p aria-live="polite" className={"mt-2 min-h-[20px] text-[14px] " + (state === "ok" ? "text-clipupp-success" : "text-clipupp-danger")}>
+      <p aria-live="polite" className={"mt-2 text-[14px] empty:mt-0 " + (state === "ok" ? "text-clipupp-success" : "text-clipupp-danger")}>
         {state === "ok" ? t("mailOk") : state === "bad" ? t("mailBad") : state === "fail" ? t("mailFail") : ""}
       </p>
     </form>

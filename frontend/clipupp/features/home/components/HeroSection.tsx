@@ -51,7 +51,7 @@ export async function HeroSection({
     >
       <div className="clipupp-container grid items-center gap-7 py-6 sm:py-[52px] lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
         <div className="min-w-0">
-          <p className="clipupp-fx text-[12px] font-semibold uppercase tracking-[0.07em] text-clipupp-primary" style={fx(0)}>
+          <p className="clipupp-fx text-[11.5px] font-semibold uppercase tracking-[0.07em] text-clipupp-primary" style={fx(0)}>
             {t("eyebrow")}
           </p>
           <h1
@@ -109,7 +109,7 @@ export async function HeroSection({
             <div
               role="group"
               aria-label={t("popularAria")}
-              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2.5 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0"
+              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0"
               style={fx(5)}
             >
               <span className="shrink-0 text-[14px] text-clipupp-neutral-600">{t("popular")}</span>
@@ -117,7 +117,7 @@ export async function HeroSection({
                 <Link
                   key={s.id}
                   href={`/stores/${s.id}`}
-                  className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-4 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
+                  className="inline-flex h-9 shrink-0 items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-3.5 text-[15px] font-medium text-clipupp-neutral-900 transition-colors hover:border-clipupp-primary hover:text-clipupp-primary"
                 >
                   {displayShortName(s.name)}
                 </Link>

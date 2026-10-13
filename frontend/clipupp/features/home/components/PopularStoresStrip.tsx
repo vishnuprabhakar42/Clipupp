@@ -20,7 +20,7 @@ export async function PopularStoresStrip({ stores }: { stores: FeedStore[] }) {
   const items = stores.filter((s) => s.popular != null).sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0));
   if (items.length < 4) return null;
   return (
-    <section aria-label={t("aria")} className="clipupp-container pt-6 lg:pt-8">
+    <section aria-label={t("aria")} className="clipupp-container pt-7 sm:pt-10 lg:pt-14">
       <ul className="clipupp-no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-3 pt-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:gap-3 lg:px-0">
         {items.map((s) => (
           <li key={s.id} className="w-[68px] shrink-0 lg:w-[84px]">

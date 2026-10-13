@@ -17,14 +17,14 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
     { value: t("statPullValue"), label: t("statPullLabel") },
   ];
   return (
-    <section id="verify" aria-labelledby="verify-heading" className="border-y border-clipupp-neutral-200 bg-clipupp-surface">
+    <section id="verify" aria-labelledby="verify-heading" className="mt-9 border-y border-clipupp-neutral-200 bg-clipupp-surface sm:mt-12 lg:mt-14">
       <div className="clipupp-container grid gap-10 py-12 lg:grid-cols-[4fr_7fr] lg:gap-16 lg:py-[72px]">
         <div className="clipupp-reveal">
-          <span className="text-[12px] font-medium uppercase tracking-[0.04em] text-clipupp-primary">{t("eyebrow")}</span>
-          <h2 id="verify-heading" className="max-w-[16ch] font-display text-[clamp(28px,3vw,32px)] font-semibold leading-[1.15] tracking-[-0.02em] text-clipupp-neutral-900">
+          <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>
+          <h2 id="verify-heading" className="max-w-[16ch] text-balance font-display text-[23px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[28px] lg:text-[32px] text-clipupp-neutral-900">
             {t("title")}
           </h2>
-          <p className="mt-3 max-w-[44ch] text-[16px] leading-relaxed text-clipupp-neutral-700">{t("lead")}</p>
+          <p className="mt-3 max-w-[44ch] text-[16px] leading-normal text-clipupp-neutral-700">{t("lead")}</p>
           <dl className="mt-6 grid grid-cols-3 gap-3">
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col border-l-[3px] border-clipupp-primary pl-3">

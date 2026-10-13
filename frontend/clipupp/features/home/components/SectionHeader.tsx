@@ -25,8 +25,14 @@ export function SectionHeader({
   return (
     <div className="clipupp-reveal mb-7 flex flex-col items-start justify-between gap-3 md:flex-row md:items-end md:gap-6">
       <div>
-        {eyebrow && <span className={`text-[12px] font-medium uppercase tracking-[0.04em] ${eyebrowTone === "danger" ? "text-clipupp-danger" : "text-clipupp-primary"}`}>{eyebrow}</span>}
-        <h2 id={id} className="font-display text-[clamp(28px,3vw,32px)] font-semibold leading-[1.15] tracking-[-0.02em] text-clipupp-neutral-900">{title}</h2>
+        {eyebrow && (
+          <span
+            className={`mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] ${eyebrowTone === "danger" ? "text-clipupp-danger" : "text-clipupp-primary"}`}
+          >
+            {eyebrow}
+          </span>
+        )}
+        <h2 id={id} className="text-balance font-display text-[23px] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900 sm:text-[28px] lg:text-[32px]">{title}</h2>
         {sub && <p className="mt-1.5 text-[15px] text-clipupp-neutral-500">{sub}</p>}
       </div>
       {(link || actions) && (

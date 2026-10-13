@@ -223,7 +223,7 @@ export function SpotlightCarousel({
               >
                 <span
                   className={cn(
-                    "block h-1.5 rounded-full transition-all duration-300",
+                    "block h-1.5 rounded-full transition-colors duration-300",
                     i === active ? "w-[22px] bg-clipupp-primary" : "w-1.5 bg-clipupp-primary/25",
                   )}
                 />

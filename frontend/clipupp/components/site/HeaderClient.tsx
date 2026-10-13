@@ -125,7 +125,7 @@ function Account() {
     <Link
       href="/sign-in"
       aria-label={t("signIn")}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full text-clipupp-neutral-700 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary lg:ml-1 lg:h-10 lg:w-auto lg:border lg:border-clipupp-primary lg:px-5 lg:text-[15px] lg:font-medium lg:text-clipupp-primary lg:hover:bg-clipupp-primary-100"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full text-clipupp-neutral-700 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary shrink-0 whitespace-nowrap lg:ml-1 lg:h-10 lg:w-auto lg:border lg:border-clipupp-primary lg:px-5 lg:text-[15px] lg:font-medium lg:text-clipupp-primary lg:hover:bg-clipupp-primary-100"
     >
       <User className="h-5 w-5 lg:hidden" strokeWidth={1.8} aria-hidden="true" />
       <span className="hidden lg:inline">{t("signIn")}</span>

@@ -78,12 +78,14 @@ export function CategoryGlyph({
   name,
   hot,
   className,
+  strokeWidth = 1.8,
 }: {
   name: string | null | undefined;
   hot?: boolean;
   className?: string;
+  strokeWidth?: number;
 }) {
-  if (hot) return <DiyaIcon className={className} />;
+  if (hot) return <DiyaIcon className={className} strokeWidth={strokeWidth} />;
   const Icon = MAP[categoryIcon(name)];
-  return <Icon className={className} strokeWidth={1.8} aria-hidden="true" />;
+  return <Icon className={className} strokeWidth={strokeWidth} aria-hidden="true" />;
 }

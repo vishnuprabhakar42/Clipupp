@@ -29,7 +29,7 @@ export async function DealsRail({ feed }: { feed: HomeFeed }) {
     .filter((d) => (seen.has(d.store) ? false : (seen.add(d.store), true)))
     .map((d) => ({ id: d.store, label: displayShortName(stores.get(d.store)!.name) }));
   return (
-    <section id="deals" className="clipupp-container py-12 lg:py-20" aria-labelledby="deals-heading">
+    <section id="deals" className="clipupp-container pt-9 sm:pt-12 lg:pt-16" aria-labelledby="deals-heading">
       <SectionHeader
         id="deals-heading"
         eyebrow={t("eyebrow")}
