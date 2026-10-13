@@ -684,10 +684,9 @@
         Section: rhythm spacing.
         Prose: max line-length for editorial text. */
   .clipupp-container {
-    /* Small 10px gutter on every breakpoint — content sits flush within
-       the 1280px safe area but never quite touches the edge. Mobile keeps
-       a slightly wider 16/24px gutter where screen real estate is tightest. */
-    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-[10px];
+    /* Design v3 container: 1240px max with a 16/24/32px gutter, so content
+       spans 1176px on desktop (header, homepage sections and footer align). */
+    @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8;
   }
   .clipupp-section {
     @apply py-12 lg:py-20;
@@ -1365,26 +1364,29 @@
   }
   .clipupp-edge-bar:hover::before { width: 5px; }
 
-  /* Pulse dot — live indicator. 8px dot with two expanding ring layers. */
+  /* Live dot (design `.pulse-dot`): 7px dot with a static 4px halo. The
+     breathing ring is a pseudo-element that scales out and fades, so the
+     motion is transform and opacity only; reduced motion keeps the halo. */
   .clipupp-pulse-dot {
     position: relative;
     display: inline-block;
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 9999px;
     background: var(--clipupp-success);
+    box-shadow: 0 0 0 4px rgb(var(--clipupp-success-rgb) / 0.18);
   }
   .clipupp-pulse-dot::after {
     content: "";
     position: absolute;
     inset: -4px;
     border-radius: 9999px;
-    border: 2px solid var(--clipupp-success);
+    background: rgb(var(--clipupp-success-rgb) / 0.18);
     opacity: 0;
   }
   @media (prefers-reduced-motion: no-preference) {
     .clipupp-pulse-dot::after {
-      animation: clipupp-pulse-dot 1.4s ease-out infinite;
+      animation: clipupp-pulse-dot 2s infinite;
     }
   }
 
@@ -1471,8 +1473,8 @@
 }
 
 @keyframes clipupp-pulse-dot {
-  0%, 100% { transform: scale(1);   opacity: 1;   }
-  50%      { transform: scale(1.4); opacity: 0.6; }
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
 .clipupp-fade-in-up {
@@ -1602,8 +1604,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .clipupp-pulse { animation: clipupp-pulse 2s infinite; }
-    .clipupp-skel { animation: clipupp-shim 1.3s linear infinite; }
+    .clipupp-skel { animation: clipupp-shim 0.65s ease-in-out infinite alternate; }
     .clipupp-mega-in { animation: clipupp-mega-in 0.2s ease-out; }
     .clipupp-sheet-up { animation: clipupp-sheet-up 0.3s cubic-bezier(0.2, 0, 0, 1); }
     .clipupp-sheen {
@@ -1635,14 +1636,9 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @keyframes clipupp-pulse {
-    0%   { box-shadow: 0 0 0 4px rgb(var(--clipupp-primary-rgb) / 0.35); }
-    70%  { box-shadow: 0 0 0 7px rgb(var(--clipupp-primary-rgb) / 0); }
-    100% { box-shadow: 0 0 0 4px rgb(var(--clipupp-primary-rgb) / 0); }
-  }
   @keyframes clipupp-shim {
-    from { background-position: 200% 0; }
-    to   { background-position: -200% 0; }
+    from { opacity: 1; }
+    to   { opacity: 0.55; }
   }
   @keyframes clipupp-mega-in {
     from { opacity: 0; translate: 0 -6px; }
@@ -1660,8 +1656,8 @@
     to { translate: -102% 0; transform: skewX(-8deg); opacity: 0.3; }
   }
   @keyframes clipupp-code-in {
-    from { letter-spacing: 0.4em; opacity: 0.3; }
-    to   { letter-spacing: 0.1em; opacity: 1; }
+    from { scale: 1.3 1; opacity: 0.3; }
+    to   { scale: 1 1; opacity: 1; }
   }
   @keyframes clipupp-stamp {
     from { scale: 0.96; }
@@ -1721,11 +1717,13 @@
   :root:not([data-theme="light"]) .clipupp-ph { --ph-mix: 16%; --ph-fg-mix: 60%; }
 }
 
-/* Top stores grid: tier 1 (index 7 to 11) hides below lg until expanded, tier 2 (12+) never shows at lg. */
+/* Top stores grid (design `renderStores`): 7 tiles below lg and 12 at lg, each
+   followed by an "All stores" tile that reveals the rest. Tier m is index 7 to
+   11, tier x is 12+. */
 @media (max-width: 1023.98px) {
   .clipupp-stores:not([data-open]) > li[data-tier] { display: none; }
 }
 @media (min-width: 1024px) {
-  .clipupp-stores > li[data-tier] { display: none; }
-  .clipupp-stores > li[data-tier="m"] { display: block; }
+  .clipupp-stores:not([data-open]) > li[data-tier="x"] { display: none; }
+  .clipupp-stores > li[data-all="base"] { display: none; }
 }

@@ -32,9 +32,9 @@ export function StoreFilterButton({
         type="button"
         onClick={onClick}
         aria-label={ariaLabel}
-        className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-3 text-[14px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
+        className="inline-flex h-10 w-full items-center justify-center rounded-full bg-clipupp-primary px-3 text-[15px] font-semibold text-clipupp-primary-fg transition-colors hover:bg-clipupp-primary-strong"
       >
-        {children}
+        <span className="truncate">{children}</span>
       </button>
     );
   }

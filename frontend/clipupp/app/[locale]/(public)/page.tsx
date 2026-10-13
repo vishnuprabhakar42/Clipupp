@@ -146,7 +146,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
           }}
         />
       )}
-      <div className="bg-clipupp-page">
+      <div className="bg-clipupp-page pb-9 sm:pb-12 lg:pb-14">
         {sections.map((s) => {
           const render = SECTION_RENDERERS[s.code];
           if (!render) return null;

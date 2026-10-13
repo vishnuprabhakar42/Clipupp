@@ -37,7 +37,7 @@ export function CouponRow({
       data-coupon-card
       data-coupon-id={coupon.id}
       style={k}
-      className={`clipupp-rise grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] ${CARD_HOVER}`}
+      className={`clipupp-rise grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] lg:p-[18px] ${CARD_HOVER}`}
     >
       <div className="grid h-14 w-14 shrink-0 place-content-center rounded-xl bg-clipupp-tint-100 text-center lg:h-16 lg:w-16">
         <span className="text-[19px] font-bold leading-none text-clipupp-primary lg:text-[21px]">{coupon.badge}</span>
@@ -48,7 +48,7 @@ export function CouponRow({
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <StoreTile store={store} size={20} className="!rounded-md !p-0.5" />
-          <span className="text-[13px] font-medium text-clipupp-neutral-700">{store.name}</span>
+          <span className="text-[13px] text-clipupp-neutral-600">{store.name}</span>
           {coupon.exclusive && <Tag tone="gold">{t("exclusive")}</Tag>}
           {endsToday && <Tag tone="bad">{t("endsToday")}</Tag>}
         </div>

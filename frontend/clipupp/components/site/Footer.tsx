@@ -11,7 +11,7 @@ import { rootCategories, shortCategoryLabel } from "@/lib/home/categoryLabel";
 import type { HomeFeed } from "@/lib/home/feed";
 
 const LINK =
-  "block rounded py-1.5 text-[14px] text-clipupp-ft-ink-2 transition-colors hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent";
+  "block rounded py-1.5 text-[14px] text-clipupp-ft-ink-2 lg:py-[5px] transition-colors hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent";
 
 function XIcon() {
   return (

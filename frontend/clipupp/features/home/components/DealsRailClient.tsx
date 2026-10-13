@@ -23,7 +23,7 @@ export function DealsRailClient({
     <div>
       {chips.length > 1 && (
         <FilterChips
-          className="mb-6"
+          className="mb-5"
           ariaLabel={t("filterAria")}
           allLabel={t("all")}
           options={chips}
@@ -36,7 +36,7 @@ export function DealsRailClient({
         ariaLabel={t("railAria")}
         cols={{ base: "46%", sm: "30%", lg: "calc((100% - 100px) / 6)" }}
         gap={20}
-        className="-my-3 py-3"
+        className="-mt-3 py-3"
       >
         {shown.map((e) => e.node)}
       </Rail>

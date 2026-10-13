@@ -19,7 +19,7 @@ export async function SaleCalendarRail({ feed }: { feed: HomeFeed }) {
     .sort((a, b) => ORDER[a.state] - ORDER[b.state] || Date.parse(a.s.startAt) - Date.parse(b.s.startAt));
   if (sales.length === 0) return null;
   return (
-    <section id="calendar" className="clipupp-container py-12 lg:py-20" aria-labelledby="calendar-heading">
+    <section id="calendar" className="clipupp-container pt-9 sm:pt-12 lg:pt-16" aria-labelledby="calendar-heading">
       <SectionHeader
         id="calendar-heading"
         eyebrow={t("eyebrow")}
@@ -32,7 +32,7 @@ export async function SaleCalendarRail({ feed }: { feed: HomeFeed }) {
         ariaLabel={t("railAria")}
         cols={{ base: "72%", sm: "40%", lg: "calc((100% - 96px) / 5)" }}
         gap={{ base: 16, lg: 24 }}
-        className="-my-3 py-3"
+        className="-mt-3 py-3"
       >
         {sales.map(({ s, state }) => (
           <SaleCard key={s.id} sale={s} store={stores.get(s.store)!} state={state} />

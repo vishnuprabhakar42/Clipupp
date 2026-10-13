@@ -29,7 +29,7 @@ export function FilterChips({ options, value, onChange, ariaLabel, allLabel, cla
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(o.id)}
-            className={`h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[13px] font-semibold transition-colors ${
+            className={`h-9 shrink-0 whitespace-nowrap rounded-full border px-4 text-[14px] font-medium transition-colors ${
               selected
                 ? "border-clipupp-neutral-900 bg-clipupp-neutral-900 text-clipupp-surface"
                 : "border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 hover:bg-clipupp-neutral-50"

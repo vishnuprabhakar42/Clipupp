@@ -220,23 +220,23 @@ export function TodaysCouponsClient({
                 onClick={() => select(x.id)}
                 onKeyDown={(e) => onTabKey(e, i)}
                 className={
-                  "relative shrink-0 whitespace-nowrap px-4 py-3.5 text-[16px] font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-px after:h-[3px] after:rounded-t after:transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-clipupp-primary " +
+                  "relative shrink-0 whitespace-nowrap px-3 py-3 text-[15px] font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-px after:h-[3px] after:rounded-t after:transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-clipupp-primary " +
                   (on
                     ? "text-clipupp-primary after:bg-clipupp-primary after:opacity-100"
                     : "text-clipupp-neutral-700 after:opacity-0 hover:text-clipupp-neutral-900")
                 }
               >
                 {x.label}
-                <span className="ml-1.5 text-[13px] font-normal text-clipupp-neutral-500">{x.count}</span>
+                <span className="ml-1.5 text-[11.5px] font-normal text-clipupp-neutral-500">{x.count}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="mb-4 mt-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-2.5 mt-3.5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <p className="text-[15px] text-clipupp-neutral-700" aria-live="polite">
+          <p className="text-[14px] text-clipupp-neutral-700" aria-live="polite">
             {resetting ? t("loading") : t("count", { count: visible.length })}
           </p>
           {store && (
@@ -259,7 +259,7 @@ export function TodaysCouponsClient({
             id="today-sort"
             value={effectiveSort}
             onChange={(e) => setSort(e.target.value as Sort)}
-            className="h-11 appearance-none rounded-full border border-clipupp-neutral-200 bg-clipupp-surface pl-4 pr-10 text-[15px] text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+            className="h-10 appearance-none rounded-full border border-clipupp-neutral-200 bg-clipupp-surface pl-4 pr-10 text-[15px] text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
           >
             <option value="pop">{t("sortPop")}</option>
             <option value="new">{t("sortNew")}</option>
@@ -275,7 +275,7 @@ export function TodaysCouponsClient({
         id={PANEL_ID}
         aria-labelledby={tabId(store ? "all" : tab)}
         aria-busy={fetching}
-        className={`grid gap-4 transition-opacity sm:grid-cols-2 ${resetting ? "opacity-50" : ""}`}
+        className={`grid gap-2.5 transition-opacity sm:grid-cols-2 ${resetting ? "opacity-50" : ""}`}
       >
         {visible.map((i) => i.node)}
         {fetching &&
@@ -310,8 +310,13 @@ export function TodaysCouponsClient({
       )}
 
       {hasMore && !error && visible.length > 0 && (
-        <div className="mt-6 flex justify-center">
-          <button type="button" onClick={() => void run("append")} disabled={fetching} className="clipupp-btn-ghost disabled:opacity-60">
+        <div className="mt-[18px] flex justify-center">
+          <button
+            type="button"
+            onClick={() => void run("append")}
+            disabled={fetching}
+            className="inline-flex h-[46px] items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface px-5 text-[15px] font-semibold text-clipupp-neutral-900 transition-colors hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2 motion-safe:active:scale-[0.97] disabled:opacity-60"
+          >
             {t("showMore")}
           </button>
         </div>

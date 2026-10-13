@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { displayShortName } from "@/lib/home/storeName";
 import { StoreTile } from "@/features/catalog/components/StoreTile";
 import { wrapNumbers } from "@/lib/format/wrapNumbers";
 import type { FeedBankOffer, FeedStore } from "@/lib/home/feed";
@@ -28,11 +29,11 @@ export async function BankOfferCard({ offer, store }: { offer: FeedBankOffer; st
       <h3 className="mt-3.5 font-display text-[20px] font-semibold leading-tight text-clipupp-neutral-900">
         {wrapNumbers(offer.title)}
       </h3>
-      <p className="mt-1.5 text-[13.5px] leading-snug text-clipupp-neutral-500">{offer.terms}</p>
+      <p className="mt-1.5 text-[13.5px] leading-[1.6] text-clipupp-neutral-600">{offer.terms}</p>
       <div className="mt-auto pt-4">
         <StoreFilterButton storeSlug={store.id} variant="bank" ariaLabel={t("onAria", { store: store.name })}>
           <StoreTile store={store} size={24} className="!rounded-md !p-0.5" />
-          <span>{t("on", { store: store.name })}</span>
+          <span>{t("on", { store: displayShortName(store.name) })}</span>
         </StoreFilterButton>
       </div>
     </article>

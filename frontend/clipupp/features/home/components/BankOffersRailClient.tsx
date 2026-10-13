@@ -23,7 +23,7 @@ export function BankOffersRailClient({
     <div>
       {chips.length > 1 && (
         <FilterChips
-          className="mb-6"
+          className="mb-5"
           ariaLabel={t("filterAria")}
           allLabel={t("all")}
           options={chips}
@@ -36,7 +36,7 @@ export function BankOffersRailClient({
         ariaLabel={t("railAria")}
         cols={{ base: "76%", sm: "44%", lg: "calc((100% - 72px) / 4)" }}
         gap={{ base: 16, lg: 24 }}
-        className="-my-3 py-3"
+        className="-mt-3 py-3"
       >
         {shown.map((e) => e.node)}
       </Rail>
