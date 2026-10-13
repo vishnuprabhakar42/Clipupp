@@ -373,7 +373,8 @@
       "seeCodes": "{store} के कोड देखें",
       "remind": "याद दिलाएँ",
       "reminderSet": "रिमाइंडर सेट",
-      "remindAria": "{name} खुलने पर याद दिलाएँ"
+      "remindAria": "{name} खुलने पर याद दिलाएँ",
+      "range": "{start} से {end} तक"
     },
     "stores": {
       "eyebrow": "{count} स्टोर",
@@ -555,7 +556,8 @@
   "strip": {
     "seeOffers": "ऑफर देखें",
     "dismiss": "घोषणा बंद करें",
-    "aria": "घोषणा"
+    "aria": "घोषणा",
+    "festival": "{days, plural, =0 {{name} की शुभकामनाएँ!} =1 {{name} कल है} other {{name} में # दिन बाकी}}"
   },
   "chrome": {
     "language": "भाषा",

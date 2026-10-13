@@ -1,15 +1,17 @@
 import { CalendarDays } from "lucide-react";
 import { CARD_HOVER } from "@/features/catalog/components/cardBits";
 import { displayShortName } from "@/lib/home/storeName";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { localeToBcp47, type Locale } from "@/lib/i18n/config";
 import { StoreTile } from "@/features/catalog/components/StoreTile";
 import type { FeedSale, FeedStore } from "@/lib/home/feed";
-import { saleDateRange, type SaleState } from "@/lib/home/saleState";
+import { saleDay, type SaleState } from "@/lib/home/saleState";
 import { RemindMeButton } from "./RemindMeButton";
 import { StoreFilterButton } from "./StoreFilterButton";
 
 export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: FeedStore; state: SaleState }) {
-  const t = await getTranslations("home.calendar");
+  const [t, locale] = await Promise.all([getTranslations("home.calendar"), getLocale()]);
+  const bcp47 = localeToBcp47[locale as Locale] ?? "en";
   const live = state === "live";
   return (
     <article
@@ -37,7 +39,7 @@ export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: 
       </p>
       <p className="mt-2.5 flex items-center gap-1.5 text-[13px] text-clipupp-neutral-500">
         <CalendarDays size={14} aria-hidden />
-        {saleDateRange(sale.startAt, sale.endAt)}
+        {t("range", { start: saleDay(sale.startAt, bcp47), end: saleDay(sale.endAt, bcp47) })}
       </p>
       {state !== "ended" && (
         <div className="mt-auto pt-2">

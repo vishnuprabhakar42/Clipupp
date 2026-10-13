@@ -416,7 +416,8 @@
       "seeCodes": "See {store} codes",
       "remind": "Remind me",
       "reminderSet": "Reminder set",
-      "remindAria": "Remind me when {name} opens"
+      "remindAria": "Remind me when {name} opens",
+      "range": "{start} to {end}"
     },
     "stores": {
       "eyebrow": "{count} stores",
@@ -598,7 +599,8 @@
   "strip": {
     "seeOffers": "See offers",
     "dismiss": "Dismiss announcement",
-    "aria": "Announcement"
+    "aria": "Announcement",
+    "festival": "{days, plural, =0 {Happy {name}!} =1 {{name} is tomorrow} other {{name} in # days}}"
   },
   "chrome": {
     "language": "Language",
