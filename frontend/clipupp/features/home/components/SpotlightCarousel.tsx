@@ -201,7 +201,7 @@ export function SpotlightCarousel({
                     {t("cta")}
                   </button>
                 ) : cta.external ? (
-                  <a href={cta.href} target="_blank" rel="noopener" className={CTA_CLASS}>
+                  <a href={cta.href} target="_blank" rel="noopener nofollow sponsored" className={CTA_CLASS}>
                     {t("cta")}
                   </a>
                 ) : (
