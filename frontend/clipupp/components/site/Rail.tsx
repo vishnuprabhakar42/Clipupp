@@ -91,6 +91,8 @@ export type RailProps = {
   arrows?: boolean;
   /** "header": caller renders <RailArrows railId={id} />. "overlay": arrows sit on the rail edges. */
   arrowsPlacement?: "header" | "overlay";
+  /** When this changes (e.g. a filter chip), the track scrolls back to the start. */
+  resetKey?: string;
 };
 
 export function Rail({
@@ -102,6 +104,7 @@ export function Rail({
   gap,
   arrows = true,
   arrowsPlacement = "header",
+  resetKey,
 }: RailProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const setEdges = useRailEdges((s) => s.set);
@@ -132,6 +135,11 @@ export function Rail({
       window.removeEventListener("resize", measure);
     };
   }, [measure, children]);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (el && el.scrollLeft !== 0) el.scrollLeft = 0;
+  }, [resetKey]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;

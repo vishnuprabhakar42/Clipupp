@@ -33,6 +33,7 @@ export function BankOffersRailClient({
       )}
       <Rail
         id={railId}
+        resetKey={bank}
         ariaLabel={t("railAria")}
         cols={{ base: "76%", sm: "44%", lg: "calc((100% - 72px) / 4)" }}
         gap={{ base: 16, lg: 24 }}
