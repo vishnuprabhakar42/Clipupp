@@ -8,7 +8,7 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
 
 // Design pill: ink-filled, centred, above the mobile bottom nav (offset props here, 28px at lg+ in
 // globals.css). Single Toaster for the whole app, mounted
-// in app/[locale]/layout.tsx. Use notify()/notifyError() from
+// lazily by components/site/ToasterHost (root layout). Use notify()/notifyError() from
 // components/site/Toast for the app-level helpers.
 const Toaster = ({ ...props }: ToasterProps) => {
   const layer = useRef<HTMLDivElement>(null)

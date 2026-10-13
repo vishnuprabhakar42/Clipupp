@@ -1,33 +1,41 @@
 "use client";
 
 import { Check, CircleAlert } from "lucide-react";
-import { toast } from "sonner";
+import { withToast } from "@/lib/toast/bus";
 
 const DURATION = 2300;
 
-/** Neutral confirmation pill (check icon, 2300ms, role="status"). */
-export function notify(message: string) {
-  return toast.custom(
-    () => (
-      <div role="status" className={PILL}>
-        <Check size={16} aria-hidden className="shrink-0" />
-        <span>{message}</span>
-      </div>
+/**
+ * Neutral confirmation pill (check icon, 2300ms, role="status"). The toaster
+ * loads on the first call (`ToasterHost`); calls made before it mounts are
+ * queued and shown once it has.
+ */
+export function notify(message: string): void {
+  withToast((toast) =>
+    toast.custom(
+      () => (
+        <div role="status" className={PILL}>
+          <Check size={16} aria-hidden className="shrink-0" />
+          <span>{message}</span>
+        </div>
+      ),
+      { duration: DURATION },
     ),
-    { duration: DURATION }
   );
 }
 
 /** Failure pill; same shape, error icon. */
-export function notifyError(message: string) {
-  return toast.custom(
-    () => (
-      <div role="status" className={PILL}>
-        <CircleAlert size={16} aria-hidden className="shrink-0" />
-        <span>{message}</span>
-      </div>
+export function notifyError(message: string): void {
+  withToast((toast) =>
+    toast.custom(
+      () => (
+        <div role="status" className={PILL}>
+          <CircleAlert size={16} aria-hidden className="shrink-0" />
+          <span>{message}</span>
+        </div>
+      ),
+      { duration: DURATION },
     ),
-    { duration: DURATION }
   );
 }
 
