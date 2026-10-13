@@ -338,7 +338,7 @@
       "sub": "Applied when you pay, on top of the code you copy here.",
       "all": "All",
       "filterAria": "Filter by bank",
-      "railAria": "Bank and card offers",
+      "railAria": "Bank offer cards",
       "on": "On {store}",
       "onAria": "Show {store} coupons"
     },
@@ -365,7 +365,7 @@
       "title": "Trending coupons",
       "filterAria": "Filter trending coupons",
       "all": "All",
-      "railAria": "Trending coupons"
+      "railAria": "Trending coupon cards"
     },
     "today": {
       "eyebrow": "All coupons",
@@ -593,7 +593,8 @@
   },
   "strip": {
     "seeOffers": "See offers",
-    "dismiss": "Dismiss announcement"
+    "dismiss": "Dismiss announcement",
+    "aria": "Announcement"
   },
   "chrome": {
     "language": "Language",

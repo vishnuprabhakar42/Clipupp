@@ -33,7 +33,7 @@ export function SectionHeader({
           </span>
         )}
         <h2 id={id} className="text-balance font-display text-[23px] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900 sm:text-[28px] lg:text-[32px]">{title}</h2>
-        {sub && <p className="mt-1.5 text-[15px] text-clipupp-neutral-500">{sub}</p>}
+        {sub && <p className="mt-1.5 text-[15px] text-clipupp-neutral-600">{sub}</p>}
       </div>
       {(link || actions) && (
         <div className="flex shrink-0 items-center gap-4">

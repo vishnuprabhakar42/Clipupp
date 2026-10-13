@@ -33,7 +33,7 @@ export async function AnnouncementStrip() {
   const linkClass =
     "shrink-0 whitespace-nowrap font-semibold text-clipupp-gold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-gold rounded-sm";
   return (
-    <div className="bg-clipupp-deep text-white">
+    <section aria-label={t("aria")} className="bg-clipupp-deep text-white">
       <div className="clipupp-container flex min-h-10 items-center gap-2.5 py-1 text-[13px] sm:gap-3 lg:text-sm">
         <DiyaIcon className="h-5 w-5 shrink-0 text-clipupp-gold" />
         <p className="min-w-0 flex-1 truncate">
@@ -52,7 +52,7 @@ export async function AnnouncementStrip() {
         )}
         <AnnouncementDismissButton id={id} label={t("dismiss")} />
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -227,7 +227,7 @@ export function TodaysCouponsClient({
                 }
               >
                 {x.label}
-                <span className="ml-1.5 text-[11.5px] font-normal text-clipupp-neutral-500">{x.count}</span>
+                <span className="ml-1.5 text-[11.5px] font-normal text-clipupp-neutral-600">{x.count}</span>
               </button>
             );
           })}

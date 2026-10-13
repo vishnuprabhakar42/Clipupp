@@ -191,7 +191,7 @@ function CouponSheetBody({
               className={
                 "inline-flex h-10 items-center gap-1.5 rounded-lg border px-3.5 text-[13px] font-semibold " +
                 (copied
-                  ? "clipupp-okpop border-clipupp-success bg-clipupp-ok-bg text-clipupp-success"
+                  ? "clipupp-okpop border-clipupp-success bg-clipupp-ok-bg text-clipupp-ok-fg"
                   : "border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 hover:bg-clipupp-neutral-100")
               }
             >

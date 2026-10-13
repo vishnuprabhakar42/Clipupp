@@ -117,12 +117,15 @@ export function SpotlightCarousel({
   return (
     <section
       aria-roledescription="carousel"
-      aria-label={t("label")}
+      aria-labelledby="spotlight-heading"
       className="min-w-0"
       onTouchStart={mark}
       onPointerDown={mark}
       onFocus={mark}
     >
+      <h2 id="spotlight-heading" className="sr-only">
+        {t("label")}
+      </h2>
       <div
         ref={railRef}
         onMouseEnter={() => (hovered.current = true)}
