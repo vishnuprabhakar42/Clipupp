@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
+import { pickClientMessages } from "@/lib/i18n/clientNamespaces";
 import { setRequestLocale, getMessages, getTranslations } from "next-intl/server";
 import { Inter, Zilla_Slab } from "next/font/google";
 import { isLocale } from "@/lib/i18n/config";
@@ -145,7 +146,7 @@ export default async function LocaleLayout({
         <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
       </head>
       <body className="font-sans">
-        <NextIntlClientProvider messages={messages} locale={locale}>
+        <NextIntlClientProvider messages={pickClientMessages(messages)} locale={locale}>
           <ThemeProvider>
             <LanguageProvider>
               <GoogleOAuthProvider>
