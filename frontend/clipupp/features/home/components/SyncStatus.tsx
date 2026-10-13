@@ -19,7 +19,7 @@ export function SyncStatus({ label }: { label: string }) {
     was.current = pending;
   }, [pending]);
   return (
-    <div className="flex items-center gap-1 text-[13.5px] text-clipupp-neutral-500">
+    <div className="flex items-center gap-1 text-[12.5px] text-clipupp-neutral-500">
       <span aria-live="polite">{pending ? t("updating") : label}</span>
       <button
         type="button"

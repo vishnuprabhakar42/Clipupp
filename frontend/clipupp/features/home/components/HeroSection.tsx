@@ -49,7 +49,7 @@ export async function HeroSection({
       className="border-b border-clipupp-neutral-100"
       style={{ background: "radial-gradient(900px 300px at 90% -20%, var(--clipupp-tint-200), transparent), var(--clipupp-tint-50)" }}
     >
-      <div className="clipupp-container grid items-center gap-7 py-6 sm:py-[52px] lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
+      <div className="clipupp-container grid items-center gap-7 pb-3 pt-6 sm:py-[52px] lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
         <div className="min-w-0">
           <p className="clipupp-fx text-[11.5px] font-semibold uppercase tracking-[0.07em] text-clipupp-primary" style={fx(0)}>
             {t("eyebrow")}

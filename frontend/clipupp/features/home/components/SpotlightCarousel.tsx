@@ -127,7 +127,7 @@ export function SpotlightCarousel({
         ref={railRef}
         onMouseEnter={() => (hovered.current = true)}
         onMouseLeave={() => (hovered.current = false)}
-        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-5 pt-1 lg:pb-4 sm:-mx-6 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
+        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 pt-1 sm:-mx-6 sm:pb-5 lg:pb-4 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
       >
         {slides.map((s, i) => {
           const store = stores.find((x) => x.id === s.store) ?? fallbackStore(s.store);

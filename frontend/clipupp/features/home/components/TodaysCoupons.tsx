@@ -40,7 +40,7 @@ export async function TodaysCoupons({
   const subtitle = section.subtitle?.trim();
 
   return (
-    <section className="clipupp-container pt-9 sm:pt-12 lg:pt-16" id="today" aria-labelledby="today-heading">
+    <section className="clipupp-container pt-8 sm:pt-12 lg:pt-16" id="today" aria-labelledby="today-heading">
       <SectionHeader
         id="today-heading"
         eyebrow={subtitle || t("eyebrow")}

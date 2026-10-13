@@ -70,8 +70,8 @@ export async function Footer() {
             <li key={x.title} className="flex items-center gap-3">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-clipupp-ft-card text-clipupp-gold">{x.icon}</span>
               <span className="min-w-0">
-                <b className="block text-[14px] font-semibold text-clipupp-ft-ink">{x.title}</b>
-                <span className="block text-[14px] text-clipupp-ft-ink-2">{x.body}</span>
+                <b className="block text-[14.5px] font-semibold text-clipupp-ft-ink">{x.title}</b>
+                <span className="mt-1 block text-[13px] text-clipupp-ft-ink-2">{x.body}</span>
               </span>
             </li>
           ))}
