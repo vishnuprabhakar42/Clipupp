@@ -52,8 +52,8 @@ export function CouponRow({
           {coupon.exclusive && <Tag tone="gold">{t("exclusive")}</Tag>}
           {endsToday && <Tag tone="bad">{t("endsToday")}</Tag>}
         </div>
-        <h3 className="mt-1 text-[15px] font-semibold leading-snug text-clipupp-neutral-900">{coupon.title}</h3>
-        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[12.5px] text-clipupp-neutral-500">
+        <h3 className="mt-0.5 text-[15px] font-semibold leading-snug text-clipupp-neutral-900">{coupon.title}</h3>
+        <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[12.5px] leading-[1.4] text-clipupp-neutral-500">
           {verified && <span className="font-medium text-clipupp-success">✓ {verified}</span>}
           {success && <span>{success}</span>}
           <span>{used}</span>

@@ -23,7 +23,7 @@ export function DealsRailClient({
     <div>
       {chips.length > 1 && (
         <FilterChips
-          className="mb-5"
+          className="mb-4"
           ariaLabel={t("filterAria")}
           allLabel={t("all")}
           options={chips}

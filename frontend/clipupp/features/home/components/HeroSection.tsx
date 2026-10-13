@@ -67,7 +67,7 @@ export async function HeroSection({
           <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[15px] leading-[1.55] text-clipupp-neutral-700 lg:text-[18px]" style={fx(2)}>
             {subtitle}
           </p>
-          <div className="clipupp-fx mt-7 hidden max-w-[560px] lg:block" style={fx(3)}>
+          <div className="clipupp-fx mt-6 hidden max-w-[560px] lg:block" style={fx(3)}>
             <HeaderSearch
               variant="hero"
               feed={toSearchFeed(feed)}
@@ -79,7 +79,7 @@ export async function HeroSection({
           <div
             role="group"
             aria-label={t("trustAria")}
-            className="clipupp-fx mt-5 grid grid-cols-3 gap-2.5 lg:mt-6 lg:flex lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2"
+            className="clipupp-fx mt-5 grid grid-cols-3 gap-2.5 lg:flex lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2"
             style={fx(4)}
           >
             <div className={cell}>
@@ -109,7 +109,7 @@ export async function HeroSection({
             <div
               role="group"
               aria-label={t("popularAria")}
-              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-6 lg:flex-wrap lg:overflow-visible lg:px-0"
+              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-4 lg:flex-wrap lg:overflow-visible lg:px-0"
               style={fx(5)}
             >
               <span className="shrink-0 text-[14px] text-clipupp-neutral-600">{t("popular")}</span>
