@@ -18,6 +18,7 @@ import { VerifyBand } from "@/features/home/components/VerifyBand";
 import { AlertsSection } from "@/features/home/components/AlertsSection";
 import { FaqSection } from "@/features/home/components/FaqSection";
 import { RevealRoot } from "@/features/home/components/Reveal";
+import { CategoryRail } from "@/features/home/components/CategoryRail";
 import { SavedSheetSeed } from "@/features/home/components/SavedSheetSeed";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { canonicalFor } from "@/lib/seo/urls";
@@ -130,45 +131,49 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
     .slice(0, 10);
 
   return (
-    <RevealRoot>
-      <SavedSheetSeed seed={{ coupons: feed.coupons, stores: feed.stores, categories: feed.categories }} />
-      {trending.length > 0 && (
-        <JsonLd
-          id="ld-trending"
-          data={{
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            itemListElement: trending.map((c, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              name: c.title,
-              url: canonicalFor(`/coupons/${c.slug}`, locale),
-            })),
-          }}
-        />
-      )}
-      <div className="bg-clipupp-page pb-9 sm:pb-12 lg:pb-14">
-        {sections.map((s) => {
-          const render = SECTION_RENDERERS[s.code];
-          // Same test the anchors use, so a link never targets a block that is not here.
-          if (!render || !sectionRenders(s.code, feed)) return null;
-          const node = render(s, ctx);
-          if (!node) return null;
-          const block = (
-            <div id={OWNS_ID.has(s.code) ? undefined : s.code} className="scroll-mt-[var(--clipupp-hv)]">
-              {node}
-            </div>
-          );
-          // The hero is also the "top" anchor.
-          return s.code === "hero_search" ? (
-            <div key={s.code} id="top" className="scroll-mt-[var(--clipupp-hv)]">
-              {block}
-            </div>
-          ) : (
-            <Fragment key={s.code}>{block}</Fragment>
-          );
-        })}
-      </div>
-    </RevealRoot>
+    <>
+      {/* Homepage only: the rail sits right under the sticky header, above the sections. */}
+      <CategoryRail />
+      <RevealRoot>
+        <SavedSheetSeed seed={{ coupons: feed.coupons, stores: feed.stores, categories: feed.categories }} />
+        {trending.length > 0 && (
+          <JsonLd
+            id="ld-trending"
+            data={{
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              itemListElement: trending.map((c, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: c.title,
+                url: canonicalFor(`/coupons/${c.slug}`, locale),
+              })),
+            }}
+          />
+        )}
+        <div className="bg-clipupp-page pb-9 sm:pb-12 lg:pb-14">
+          {sections.map((s) => {
+            const render = SECTION_RENDERERS[s.code];
+            // Same test the anchors use, so a link never targets a block that is not here.
+            if (!render || !sectionRenders(s.code, feed)) return null;
+            const node = render(s, ctx);
+            if (!node) return null;
+            const block = (
+              <div id={OWNS_ID.has(s.code) ? undefined : s.code} className="scroll-mt-[var(--clipupp-hv)]">
+                {node}
+              </div>
+            );
+            // The hero is also the "top" anchor.
+            return s.code === "hero_search" ? (
+              <div key={s.code} id="top" className="scroll-mt-[var(--clipupp-hv)]">
+                {block}
+              </div>
+            ) : (
+              <Fragment key={s.code}>{block}</Fragment>
+            );
+          })}
+        </div>
+      </RevealRoot>
+    </>
   );
 }
