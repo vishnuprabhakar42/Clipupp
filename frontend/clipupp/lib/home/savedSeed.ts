@@ -13,7 +13,7 @@ export type SeedStore = Pick<FeedStore, "id" | "name" | "logo" | "mono" | "bg" |
  * / `feed.stores` objects (structurally wider than these picks): React Flight
  * serialises an object reference once, so reusing the objects the page already
  * sends costs almost nothing, while a projected copy adds every coupon a
- * second time (measured +37 KB of HTML in dev). Other routes send no seed.
+ * second time (measured +31 KB of homepage HTML). Other routes send no seed.
  */
 export type SavedSeed = { coupons: SeedCoupon[]; stores: SeedStore[]; categories: { id: string; name: string }[] };
 

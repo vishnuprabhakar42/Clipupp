@@ -1,5 +1,5 @@
 -- R__seed_dev_data.sql
--- Repeatable migration — re-runs whenever the file checksum changes.
+-- Repeatable migration - re-runs whenever the file checksum changes.
 -- All statements are idempotent via ON CONFLICT DO NOTHING / WHERE NOT EXISTS.
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -241,7 +241,7 @@ VALUES
 ON CONFLICT (slug) DO NOTHING;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 3. STATS  (one per store — covers all stores including pre-seeded ones)
+-- 3. STATS  (one per store - covers all stores including pre-seeded ones)
 -- ─────────────────────────────────────────────────────────────────────────────
 
 INSERT INTO stats (store_id, total_offers, coupon_codes, in_store_coupons, free_shipping_deals)
@@ -516,17 +516,17 @@ ON CONFLICT (store_id, network_id) DO UPDATE
 WITH templates(n, type, title_tpl, desc_tpl, code_suffix, savings, score_base) AS (
   VALUES
     (1,  'CODE',         '% Off Sitewide',                      'Apply code at checkout to save % on your entire order. Valid on all products.',              'SAVE',    '% off',        85),
-    (2,  'DEAL',         'Flash Sale — Up to % Off',             'Limited time flash sale. Shop now for the best prices on top products.',                     NULL,      '% off',        78),
+    (2,  'DEAL',         'Flash Sale - Up to % Off',             'Limited time flash sale. Shop now for the best prices on top products.',                     NULL,      '% off',        78),
     (3,  'FREE_SHIPPING','Free Delivery on All Orders',          'Get free standard delivery on all orders with no minimum spend required.',                    NULL,      'Free shipping',70),
     (4,  'CODE',         'Extra % Off on App',                   'Download the app and use this code to get extra % off on your first app order.',             'APP',     '% off',        72),
     (5,  'DEAL',         'Buy 2 Get 1 Free',                     'Add 3 items to your cart and the cheapest one is on us. No code needed.',                    NULL,      'Buy 2 get 1',  65),
     (6,  'CODE',         'Flat ₹200 Off on ₹999+',               'Save flat ₹200 on orders above ₹999. Applies on full-price items.',                         'FLAT200', 'Flat ₹200 off',80),
-    (7,  'CODE',         'New User Special — % Off',             'New customers get an exclusive % discount on their first order. One-time use only.',         'NEW',     '% off',        90),
-    (8,  'DEAL',         'Weekend Special — % Off',              'Exclusive weekend sale. Valid Saturday and Sunday only. No coupon needed.',                   NULL,      '% off',        73),
+    (7,  'CODE',         'New User Special - % Off',             'New customers get an exclusive % discount on their first order. One-time use only.',         'NEW',     '% off',        90),
+    (8,  'DEAL',         'Weekend Special - % Off',              'Exclusive weekend sale. Valid Saturday and Sunday only. No coupon needed.',                   NULL,      '% off',        73),
     (9,  'CODE',         'Flat ₹500 Off on ₹2499+',             'Get ₹500 off on orders of ₹2499 or more. Stack with bank offers for extra savings.',         'FLAT500', 'Flat ₹500 off',75),
     (10, 'FREE_SHIPPING','Free Express Delivery',                'Upgrade to express delivery for free on orders above ₹799.',                                  NULL,      'Free express', 68),
-    (11, 'CODE',         'Student Discount — % Off',             'Verified students get % off sitewide. Use your college email to verify instantly.',          'STUDENT', '% off',        71),
-    (12, 'DEAL',         'Clearance Sale — Up to % Off',         'Shop the clearance section for up to % off on hundreds of products. While stocks last.',    NULL,      '% off',        66)
+    (11, 'CODE',         'Student Discount - % Off',             'Verified students get % off sitewide. Use your college email to verify instantly.',          'STUDENT', '% off',        71),
+    (12, 'DEAL',         'Clearance Sale - Up to % Off',         'Shop the clearance section for up to % off on hundreds of products. While stocks last.',    NULL,      '% off',        66)
 ),
 store_coupon_data AS (
   SELECT
@@ -613,7 +613,7 @@ VALUES
   ('best-amazon-india-coupons-2025',
    'Best Amazon India Coupons & Deals This Month',
    'Discover the top Amazon India coupon codes, deals, and cashback offers available right now. Updated daily by our deals team.',
-   '## Amazon India Deals This Month\n\nAmazon India is one of the most popular shopping destinations in India, and with the right coupon codes, you can save significantly on every purchase.\n\n## Top Categories for Deals\n\n### Electronics\nAmazon regularly offers 10-30% off on smartphones, laptops, and accessories during sale events.\n\n### Fashion\nFashion discounts of up to 50% are common, especially during end-of-season sales.\n\n### Groceries\nAmazon Fresh offers weekly deals on fruits, vegetables, and pantry staples.\n\n## How to Find the Best Amazon Deals\n\n1. Bookmark Clipupp''s Amazon page\n2. Enable deal alerts\n3. Check back daily — new coupons added every day\n4. Stack with HDFC/SBI credit card offers\n\n## Amazon Great Indian Sale\n\nThe annual Great Indian Sale is Amazon''s biggest event, with deals across all categories starting from ₹1.',
+   '## Amazon India Deals This Month\n\nAmazon India is one of the most popular shopping destinations in India, and with the right coupon codes, you can save significantly on every purchase.\n\n## Top Categories for Deals\n\n### Electronics\nAmazon regularly offers 10-30% off on smartphones, laptops, and accessories during sale events.\n\n### Fashion\nFashion discounts of up to 50% are common, especially during end-of-season sales.\n\n### Groceries\nAmazon Fresh offers weekly deals on fruits, vegetables, and pantry staples.\n\n## How to Find the Best Amazon Deals\n\n1. Bookmark Clipupp''s Amazon page\n2. Enable deal alerts\n3. Check back daily - new coupons added every day\n4. Stack with HDFC/SBI credit card offers\n\n## Amazon Great Indian Sale\n\nThe annual Great Indian Sale is Amazon''s biggest event, with deals across all categories starting from ₹1.',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '3 days',
    'Best Amazon India Coupon Codes & Deals 2025',
@@ -621,7 +621,7 @@ VALUES
 
   ('top-10-grocery-delivery-apps-india',
    'Top 10 Grocery Delivery Apps in India 2025 (With Coupons)',
-   'A complete comparison of India''s best online grocery delivery apps — Blinkit, Zepto, BigBasket, JioMart, and more — with the latest coupon codes.',
+   'A complete comparison of India''s best online grocery delivery apps - Blinkit, Zepto, BigBasket, JioMart, and more - with the latest coupon codes.',
    '## The Best Grocery Delivery Apps in India\n\nOnline grocery shopping has exploded in India, with multiple apps competing to deliver your essentials in under 30 minutes.\n\n## 1. Blinkit (15-minute delivery)\n\nFormerly Grofers, Blinkit is now India''s fastest grocery delivery service operating in 30+ cities.\n\n**Best for:** Last-minute grocery needs\n**Average delivery time:** 10-15 minutes\n\n## 2. Zepto (10-minute delivery)\n\nZepto pioneered the 10-minute delivery model in India and operates dark stores across major metros.\n\n**Best for:** Speed-first shoppers\n\n## 3. BigBasket\n\nIndia''s largest online supermarket with the widest SKU range and reliable scheduled delivery slots.\n\n**Best for:** Weekly grocery shopping\n\n## 4. JioMart\n\nReliance''s grocery platform with competitive prices and integration with WhatsApp ordering.\n\n## How to Save on Grocery Apps\n\n- Use first-order coupons for maximum savings\n- Subscribe to membership plans for consistent discounts\n- Check Clipupp before every order',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '7 days',
@@ -634,34 +634,34 @@ VALUES
    '## How to Book Cheap Flights in India\n\nFlight prices fluctuate constantly. With the right strategy and coupon codes, you can save thousands on every booking.\n\n## Best Time to Book Domestic Flights\n\nBook 6-8 weeks in advance for domestic routes. Last-minute bookings are almost always more expensive.\n\n## Top Flight Booking Platforms\n\n### MakeMyTrip\nIndia''s most popular travel platform with the widest selection of flights and hotel combos.\n\n### Cleartrip\nKnown for transparent pricing with no hidden fees. Best for straightforward flight searches.\n\n### IRCTC Air\nBook flights through IRCTC for exclusive railway-integration deals.\n\n## Money-Saving Tips\n\n1. Use incognito mode while searching (prices may vary with cookies)\n2. Set price alerts 60 days before your travel date\n3. Compare prices across all platforms\n4. Use Clipupp codes at checkout for extra discounts\n5. Stack credit card travel benefits with coupon codes',
    '30000000-0000-0000-0000-000000000004',
    'PUBLISHED', now() - INTERVAL '10 days',
-   'Cheap Flight Booking Tips India 2025 — Coupon Codes Included',
+   'Cheap Flight Booking Tips India 2025 - Coupon Codes Included',
    'Save on domestic and international flights from India with these booking tips and verified coupon codes.'),
 
   ('skincare-deals-india-2025',
-   'Best Skincare Deals in India 2025 — Minimalist, Mamaearth & More',
-   'Shop the best skincare deals from India''s top D2C brands — Minimalist, Mamaearth, Plum, WOW, and Nykaa. With verified coupon codes.',
+   'Best Skincare Deals in India 2025 - Minimalist, Mamaearth & More',
+   'Shop the best skincare deals from India''s top D2C brands - Minimalist, Mamaearth, Plum, WOW, and Nykaa. With verified coupon codes.',
    '## India''s Skincare Revolution\n\nIndian skincare has transformed dramatically. D2C brands now offer dermatologist-formulated products at a fraction of international brand prices.\n\n## Top Skincare Brands & Deals\n\n### Minimalist\nScience-backed serums with high-concentration actives. Known for transparent ingredient labelling.\n**Best sellers:** Vitamin C 10%, Niacinamide 10%, Retinol 0.3%\n\n### Mamaearth\nToxin-free natural beauty brand. Great for sensitive skin and beginners.\n**Best sellers:** Vitamin C Face Wash, Onion Hair Oil\n\n### Plum\n100% vegan formulations with botanical ingredients.\n\n### WOW Skin Science\nApple Cider Vinegar range is their hero product line.\n\n## When to Buy\n\n- Nykaa sale events: Biggest discounts 4x per year\n- Brand anniversary sales: 30-50% off site-wide\n- Daily Clipupp exclusive codes: 5-15% additional',
    '30000000-0000-0000-0000-000000000003',
    'PUBLISHED', now() - INTERVAL '2 days',
-   'Best Skincare Deals India 2025 — Minimalist, Mamaearth, Plum',
+   'Best Skincare Deals India 2025 - Minimalist, Mamaearth, Plum',
    'Find the best skincare deals from India''s top D2C brands with verified coupon codes updated daily.'),
 
   ('electronics-buying-guide-india',
    'Electronics Buying Guide India 2025: When to Buy & Best Deals',
-   'The complete guide to buying electronics in India — the best time to shop, which platforms to use, and how to find the biggest discounts on phones, laptops, and TVs.',
-   '## When Is the Best Time to Buy Electronics in India?\n\n### Diwali Sale Season (Oct–Nov)\nThe biggest discounts of the year. Amazon Great Indian Festival and Flipkart Big Billion Days run simultaneously.\n\n### Republic Day Sales (January)\nGreat for laptops and TVs. Discounts of 20-40% are common.\n\n### Independence Day Sales (August)\nMid-year refresh with solid deals on smartphones.\n\n## Best Platforms by Category\n\n| Category | Best Platform |\n|---|---|\n| Smartphones | Amazon, Flipkart |\n| Laptops | Croma, Reliance Digital |\n| TVs | Vijay Sales, Croma |\n| Audio | boAt website, Amazon |\n\n## Pro Tips\n\n1. Never buy at full price — electronics go on sale every 2-3 weeks\n2. Check Clipupp for launch-day exclusive codes\n3. Compare across 3+ platforms before buying\n4. EMI with zero cost via bank credit cards saves additional interest',
+   'The complete guide to buying electronics in India - the best time to shop, which platforms to use, and how to find the biggest discounts on phones, laptops, and TVs.',
+   '## When Is the Best Time to Buy Electronics in India?\n\n### Diwali Sale Season (Oct–Nov)\nThe biggest discounts of the year. Amazon Great Indian Festival and Flipkart Big Billion Days run simultaneously.\n\n### Republic Day Sales (January)\nGreat for laptops and TVs. Discounts of 20-40% are common.\n\n### Independence Day Sales (August)\nMid-year refresh with solid deals on smartphones.\n\n## Best Platforms by Category\n\n| Category | Best Platform |\n|---|---|\n| Smartphones | Amazon, Flipkart |\n| Laptops | Croma, Reliance Digital |\n| TVs | Vijay Sales, Croma |\n| Audio | boAt website, Amazon |\n\n## Pro Tips\n\n1. Never buy at full price - electronics go on sale every 2-3 weeks\n2. Check Clipupp for launch-day exclusive codes\n3. Compare across 3+ platforms before buying\n4. EMI with zero cost via bank credit cards saves additional interest',
    '30000000-0000-0000-0000-000000000002',
    'PUBLISHED', now() - INTERVAL '14 days',
-   'Electronics Buying Guide India 2025 — Best Time to Buy',
+   'Electronics Buying Guide India 2025 - Best Time to Buy',
    'When to buy electronics in India and how to get the best deals on phones, laptops, and TVs with coupon codes.'),
 
   ('how-cashback-works-clipupp',
-   'How Cashback Works on Clipupp — Complete Guide',
+   'How Cashback Works on Clipupp - Complete Guide',
    'Everything you need to know about earning cashback on Clipupp. How it''s tracked, when it''s credited, and how to maximize your earnings.',
-   '## What Is Cashback?\n\nCashback is real money returned to you after a qualifying purchase. When you click through Clipupp to a partner store and complete a purchase, we earn a commission — and share a portion of it with you as cashback.\n\n## How It Works\n\n1. **Find a store** on Clipupp with a cashback rate\n2. **Click through** — our tracking link records your session\n3. **Shop and pay** on the partner store as normal\n4. **Cashback is tracked** — usually confirmed within 24–48 hours\n5. **Cash is credited** — to your Clipupp wallet after validation\n\n## How to Maximize Cashback\n\n- Always click through Clipupp just before checkout\n- Disable VPN and ad-blockers (they interfere with tracking)\n- Don''t open the store in a new tab manually — use our link\n- Stack cashback with coupon codes for double savings\n\n## When Is Cashback Credited?\n\nMost stores validate cashback within 30–90 days after the order is confirmed and the return window closes.',
+   '## What Is Cashback?\n\nCashback is real money returned to you after a qualifying purchase. When you click through Clipupp to a partner store and complete a purchase, we earn a commission - and share a portion of it with you as cashback.\n\n## How It Works\n\n1. **Find a store** on Clipupp with a cashback rate\n2. **Click through** - our tracking link records your session\n3. **Shop and pay** on the partner store as normal\n4. **Cashback is tracked** - usually confirmed within 24–48 hours\n5. **Cash is credited** - to your Clipupp wallet after validation\n\n## How to Maximize Cashback\n\n- Always click through Clipupp just before checkout\n- Disable VPN and ad-blockers (they interfere with tracking)\n- Don''t open the store in a new tab manually - use our link\n- Stack cashback with coupon codes for double savings\n\n## When Is Cashback Credited?\n\nMost stores validate cashback within 30–90 days after the order is confirmed and the return window closes.',
    '30000000-0000-0000-0000-000000000001',
    'PUBLISHED', now() - INTERVAL '20 days',
-   'How Cashback Works on Clipupp — Full Guide 2025',
+   'How Cashback Works on Clipupp - Full Guide 2025',
    'Learn how cashback is tracked, when it''s credited, and how to maximize your earnings on Clipupp.')
 ON CONFLICT (slug) DO NOTHING;
 
@@ -674,10 +674,10 @@ SELECT v.position::SMALLINT, v.title, v.subtitle, v.image_url, v.link_url,
        TRUE, 'IN', 'HERO_CAROUSEL', now() - INTERVAL '1 day', now() + INTERVAL '60 days'
 FROM (VALUES
   (1, 'Big Billion Days Are Back',          'Up to 80% off across all categories',                 '/banners/flash-sale.jpg',  '/stores/flipkart'),
-  (2, 'Great Indian Festival',              'Millions of deals — Amazon''s biggest sale',          '/banners/flash-sale.jpg',  '/stores/amazon-india'),
+  (2, 'Great Indian Festival',              'Millions of deals - Amazon''s biggest sale',          '/banners/flash-sale.jpg',  '/stores/amazon-india'),
   (3, 'Nykaa Pink Sale',                    'Up to 50% off on beauty & skincare',                  '/banners/fashion.jpg',     '/stores/nykaa'),
   (4, 'Myntra End of Reason Sale',          'Fashion at lowest prices of the season',              '/banners/fashion.jpg',     '/stores/myntra'),
-  (5, 'Decathlon Sport Fiesta',             'Sports gear for every athlete — big discounts',       '/banners/flash-sale.jpg',  '/stores/decathlon'),
+  (5, 'Decathlon Sport Fiesta',             'Sports gear for every athlete - big discounts',       '/banners/flash-sale.jpg',  '/stores/decathlon'),
   (6, 'MakeMyTrip Holiday Bonanza',         'Flights + Hotels at unbeatable prices',               '/banners/travel.jpg',      '/stores/makemytrip'),
   (7, 'PhonePe Diwali Cashback',            'Earn up to ₹500 cashback on every payment',          '/banners/flash-sale.jpg',  '/stores/phonepe'),
   (8, 'Samsung Galaxy Days',                'Up to ₹15,000 off on Galaxy phones',                 '/banners/electronics.jpg', '/stores/samsung-india')

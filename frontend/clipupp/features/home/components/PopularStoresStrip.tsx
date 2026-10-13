@@ -17,7 +17,10 @@ const mono = (s: FeedStore) => (
 /** Round logos of the popular stores, ranked by `popular`. */
 export async function PopularStoresStrip({ stores }: { stores: FeedStore[] }) {
   const t = await getTranslations("home.popularStores");
-  const items = stores.filter((s) => s.popular != null).sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0));
+  const items = stores
+    .filter((s) => s.popular != null)
+    .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
+    .slice(0, 12);
   if (items.length < 4) return null;
   return (
     <section aria-label={t("aria")} className="clipupp-container pt-7 sm:pt-10 lg:pt-14">

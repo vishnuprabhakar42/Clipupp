@@ -1638,7 +1638,9 @@
     }
     .clipupp-rot { animation: clipupp-rot 0.8s linear infinite; }
     .clipupp-marquee { animation: clipupp-marq var(--dur, 60s) linear infinite; }
-    .clipupp-marquee:hover { animation-play-state: paused; }
+    .clipupp-marquee:hover,
+    .clipupp-marquee:focus-within,
+    section:focus-visible .clipupp-marquee { animation-play-state: paused; }
   }
 }
 
