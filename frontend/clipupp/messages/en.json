@@ -581,7 +581,8 @@
     "seeAll": "See all {count} {store} coupons",
     "rate": "{rate}% of shoppers say it worked",
     "savedError": "We could not load your saved coupons.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "savedSeeAll": "See all {count, plural, one {# saved coupon} other {# saved coupons}}"
   },
   "toast": {
     "saved": "Saved",

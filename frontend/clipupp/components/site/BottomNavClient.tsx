@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Heart, Home, Store, Tag, Zap, type LucideIcon } from "lucide-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
-import { useSavedCoupons } from "@/lib/home/useSavedCoupons";
+import { useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
 import { SavedSheet } from "@/features/home/components/SavedSheet";
 
@@ -26,7 +26,7 @@ export function BottomNavClient({ labels, ariaLabel }: { labels: Labels; ariaLab
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrollKey, setScrollKey] = useState<Key>("home");
-  const { count, hydrated } = useSavedCoupons();
+  const { count, hydrated } = useSavedCount();
   const openSaved = useSavedSheet((s) => s.open);
   const savedOpen = useSavedSheet((s) => s.isOpen);
 
