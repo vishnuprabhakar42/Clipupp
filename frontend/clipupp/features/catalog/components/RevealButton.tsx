@@ -102,7 +102,7 @@ export function RevealButton({
         rel={REL}
         onClick={onClick}
         aria-label={t("codeLabelFull", { code })}
-        className={`flex ${h} w-full items-center justify-center rounded-xl border-[1.5px] border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 ${fs} font-bold tracking-[0.08em] text-clipupp-success`}
+        className={`flex ${h} w-full items-center justify-center rounded-xl border-[1.5px] border-dashed border-clipupp-success bg-clipupp-ok-bg px-3 ${fs} font-bold tracking-[0.08em] text-clipupp-ok-fg`}
       >
         {code}
       </a>

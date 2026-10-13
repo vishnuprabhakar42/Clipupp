@@ -49,7 +49,7 @@ export function AllStoresExpander({
               <LayoutGrid size={22} aria-hidden />
             </span>
             <b className="mt-1 w-full truncate text-[12.5px] font-semibold text-clipupp-primary lg:mt-0 lg:text-[16px]">{t("all")}</b>
-            <span className="text-[11.5px] text-clipupp-neutral-500 lg:text-[14px]">{t("listed", { count: total })}</span>
+            <span className="text-[11.5px] text-clipupp-neutral-600 lg:text-[14px]">{t("listed", { count: total })}</span>
           </button>
         </li>
       )}

@@ -56,7 +56,7 @@ export function RemindMeButton({ saleId, saleName }: { saleId: string; saleName:
       onClick={toggle}
       className={`inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border text-[14px] font-semibold transition-colors ${
         on
-          ? "border-clipupp-success bg-clipupp-ok-bg text-clipupp-success"
+          ? "border-clipupp-success bg-clipupp-ok-bg text-clipupp-ok-fg"
           : "border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 hover:bg-clipupp-neutral-50"
       }`}
     >

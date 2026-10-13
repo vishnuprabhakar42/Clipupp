@@ -6,7 +6,7 @@ export const CARD_HOVER =
   "transition-[transform,box-shadow] duration-200 motion-reduce:transition-none lg:hover:-translate-y-[3px] lg:hover:shadow-clipupp-hover motion-reduce:lg:hover:translate-y-0";
 
 const TAG_TONE = {
-  ok: "bg-clipupp-ok-bg text-clipupp-success",
+  ok: "bg-clipupp-ok-bg text-clipupp-ok-fg",
   gold: "bg-clipupp-deep text-clipupp-gold",
   bad: "bg-clipupp-bad-bg text-clipupp-danger",
 } as const;

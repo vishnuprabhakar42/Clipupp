@@ -268,6 +268,9 @@
     --clipupp-gold: #FFD77A;
     --clipupp-gold-rgb: 255 215 122;
     --clipupp-ok-bg: #E6F4EB;
+    /* Status text on the ok tint (tags): #33823F is 4.2:1 on #E6F4EB, this is 4.79:1. */
+    --clipupp-ok-fg: #2E7838;
+    --clipupp-ok-fg-rgb: 46 120 56;
     --clipupp-bad-bg: #FDECEF;
     --clipupp-warn-bg: #FEF3E2;
     --clipupp-ok-bg-rgb: 230 244 235;
@@ -408,6 +411,8 @@
     --clipupp-tint-200: #352852;
     --clipupp-tint-200-rgb: 53 40 82;
     --clipupp-ok-bg: #15291C;
+    --clipupp-ok-fg: #5FCF80;
+    --clipupp-ok-fg-rgb: 95 207 128;
     --clipupp-ok-bg-rgb: 21 41 28;
     --clipupp-bad-bg: #33161E;
     --clipupp-bad-bg-rgb: 51 22 30;
@@ -566,6 +571,8 @@
       --clipupp-tint-200: #352852;
       --clipupp-tint-200-rgb: 53 40 82;
       --clipupp-ok-bg: #15291C;
+      --clipupp-ok-fg: #5FCF80;
+      --clipupp-ok-fg-rgb: 95 207 128;
       --clipupp-ok-bg-rgb: 21 41 28;
       --clipupp-bad-bg: #33161E;
       --clipupp-bad-bg-rgb: 51 22 30;

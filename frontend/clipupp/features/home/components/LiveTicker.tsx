@@ -42,7 +42,10 @@ export async function LiveTicker({ coupons, stores }: { coupons: FeedCoupon[]; s
   return (
     <section
       aria-label={t("aria")}
-      className="relative h-11 overflow-hidden border-y border-clipupp-neutral-200 bg-clipupp-surface motion-reduce:overflow-x-auto motion-reduce:clipupp-no-scrollbar"
+      // Reduced motion turns the marquee into a scroll strip; a tab stop lets
+      // keyboard users scroll it with the arrow keys.
+      tabIndex={0}
+      className="relative h-11 overflow-hidden border-y focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-clipupp-primary border-clipupp-neutral-200 bg-clipupp-surface motion-reduce:overflow-x-auto motion-reduce:clipupp-no-scrollbar"
     >
       <div className="h-full w-max pl-24">
         <div className="clipupp-marquee h-full items-center" style={{ "--dur": `${items.length * 5}s` } as React.CSSProperties}>

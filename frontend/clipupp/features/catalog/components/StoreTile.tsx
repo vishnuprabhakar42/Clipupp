@@ -1,3 +1,4 @@
+import { readableInk } from "@/lib/format/contrast";
 import type { FeedStore } from "@/lib/home/feed";
 import { LogoImage } from "./LogoImage";
 
@@ -8,7 +9,7 @@ export function StoreTile({ store, size = 44, className = "" }: { store: FeedSto
     <span
       aria-hidden
       className={"grid shrink-0 place-items-center rounded-xl font-bold tracking-tight " + className}
-      style={{ ...style, background: store.bg, color: store.fg, fontSize: Math.round(size * 0.34) }}
+      style={{ ...style, background: store.bg, color: readableInk(store.bg, store.fg), fontSize: Math.round(size * 0.34) }}
     >
       {store.mono}
     </span>

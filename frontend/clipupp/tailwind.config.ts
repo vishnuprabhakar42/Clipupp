@@ -121,6 +121,7 @@ const config = {
         },
         "clipupp-gold":    "rgb(var(--clipupp-gold-rgb) / <alpha-value>)",
         "clipupp-ok-bg":   "rgb(var(--clipupp-ok-bg-rgb) / <alpha-value>)",
+        "clipupp-ok-fg":   "rgb(var(--clipupp-ok-fg-rgb) / <alpha-value>)",
         "clipupp-bad-bg":  "rgb(var(--clipupp-bad-bg-rgb) / <alpha-value>)",
         "clipupp-warn-bg": "rgb(var(--clipupp-warn-bg-rgb) / <alpha-value>)",
         "clipupp-skel":    "rgb(var(--clipupp-skel-rgb) / <alpha-value>)",
