@@ -29,7 +29,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
         <span className="absolute inset-0 grid place-items-center" aria-hidden>
           <CategoryGlyph name={resolveCategoryIcon(null, deal.cat)} strokeWidth={1.1} className="h-[44%] w-[44%] opacity-85" />
         </span>
-        {deal.image && <DealImage src={deal.image} sizes="(min-width: 1024px) 16vw, (min-width: 640px) 30vw, 46vw" />}
+        {deal.image && <DealImage src={deal.image} tintBg={tint.bg} sizes="(min-width: 1024px) 16vw, (min-width: 640px) 30vw, 46vw" />}
         {showOff && (
           <span className="absolute left-2 top-2 rounded-md px-[7px] py-1.5 text-[12px] font-bold leading-none text-clipupp-danger-fg bg-clipupp-danger">
             {t("off", { pct: deal.off })}
@@ -53,7 +53,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
         {/* Price and MRP always share one line (the MRP truncates on a narrow card,
             the price steps down below sm); "% off" sits on its own line so cards align. */}
         <p className="mt-1.5 flex items-baseline gap-x-1.5 overflow-hidden whitespace-nowrap">
-          <span className="clipupp-amt shrink-0 text-[17px] font-extrabold sm:text-[19px] leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
+          <span className="clipupp-amt shrink-0 text-[17px] font-bold sm:text-[19px] leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
             {nf.format(deal.price)}
           </span>
           {deal.mrp != null && deal.mrp > deal.price && (

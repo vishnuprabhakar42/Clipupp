@@ -4,7 +4,7 @@ import { useEffect, useId, useMemo, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Heart } from "lucide-react";
 import { Sheet, SheetHeader } from "@/components/site/Sheet";
-import { Link, usePathname } from "@/lib/i18n/navigation";
+import { Link } from "@/lib/i18n/navigation";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { CouponRow } from "@/features/catalog/components/CouponRow";
 import { useSavedCoupons } from "@/lib/home/useSavedCoupons";
@@ -18,7 +18,8 @@ import { loadSavedRows } from "../actions/savedRows";
  * `loadSavedRows` action once per open (and again on Retry). For guests that
  * lookup also runs while closed, so the badge (`useSavedCount`) only counts
  * rows the sheet can show. Signed in, ids that still cannot render are
- * covered by a link to the account page.
+ * covered by a link to the account page. Loaded lazily by `BottomNavClient`,
+ * which also closes it on route changes.
  */
 export function SavedSheet() {
   const t = useTranslations("sheet");
@@ -26,16 +27,11 @@ export function SavedSheet() {
   const { ids, hydrated } = useSavedCoupons();
   const { user } = useAuth();
   const signedIn = !!user;
-  const pathname = usePathname();
   const titleId = useId();
   const [extra, setExtra] = useState<Map<string, ReactNode>>(new Map());
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
   const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    useSavedSheet.getState().close();
-  }, [pathname]);
 
   const seeded = useMemo(() => {
     const st = new Map(stores.map((s) => [s.id, s]));

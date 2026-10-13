@@ -1585,7 +1585,7 @@
   }
   h1 .clipupp-num, h2 .clipupp-num, h3 .clipupp-num {
     font-size: 0.9em;
-    font-weight: 800;
+    font-weight: 700;
   }
   .clipupp-amt::before {
     content: "\20B9";

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { blurDataUrl } from "@/lib/img/blur";
 
 const OPTIMIZED = [/\.r2\.dev$/, /\.r2\.cloudflarestorage\.com$/, /\.cloudfront\.net$/, /^logo\.clearbit\.com$/, /^images\.unsplash\.com$/, /^api\.dicebear\.com$/, /^upload\.wikimedia\.org$/, /^placehold\.co$/, /^m\.media-amazon\.com$/, /^rukminim2\.flixcart\.com$/];
 
@@ -16,7 +17,7 @@ function optimizable(src: string): boolean {
 }
 
 /** Product image that removes itself when it fails to load, leaving the tinted placeholder. */
-export function DealImage({ src, sizes }: { src: string; sizes: string }) {
+export function DealImage({ src, sizes, tintBg }: { src: string; sizes: string; /** Category tint hex painted while the image loads. */ tintBg: string }) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
   return (
@@ -25,6 +26,8 @@ export function DealImage({ src, sizes }: { src: string; sizes: string }) {
       alt=""
       fill
       sizes={sizes}
+      placeholder="blur"
+      blurDataURL={blurDataUrl(tintBg)}
       unoptimized={!optimizable(src)}
       onError={() => setFailed(true)}
       className="object-contain p-3"
