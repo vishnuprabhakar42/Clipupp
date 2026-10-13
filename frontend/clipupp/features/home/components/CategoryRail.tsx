@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { rootCategories } from "@/lib/home/categoryLabel";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
+import { renderedAnchors } from "@/lib/home/anchors";
 import { CategoryRailClient } from "./CategoryRailClient";
 
 /** The design shows 11 chips; the backend can have far more. */
@@ -10,5 +11,11 @@ const RAIL_MAX = 11;
 export async function CategoryRail() {
   const [feed, t] = await Promise.all([getHomeFeed(), getTranslations("header")]);
   if (feed.categories.length === 0) return null;
-  return <CategoryRailClient categories={rootCategories(feed.categories).slice(0, RAIL_MAX)} ariaLabel={t("categories")} />;
+  return (
+    <CategoryRailClient
+      categories={rootCategories(feed.categories).slice(0, RAIL_MAX)}
+      ariaLabel={t("categories")}
+      calendarOnPage={renderedAnchors(feed).includes("calendar")}
+    />
+  );
 }

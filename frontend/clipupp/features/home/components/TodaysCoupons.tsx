@@ -7,6 +7,7 @@ import { fetchTodayPage } from "../lib/todayPage";
 import { buildItems, isLive, mostUsed } from "../lib/todayRows";
 import { SectionHeader } from "./SectionHeader";
 import { SyncStatus } from "./SyncStatus";
+import { renderedAnchors } from "@/lib/home/anchors";
 import { TodaysCouponsClient } from "./TodaysCouponsClient";
 
 const PAGE = 10;
@@ -54,6 +55,7 @@ export async function TodaysCoupons({
         initialCursor={page.nextCursor}
         storeNames={Object.fromEntries(feed.stores.map((s) => [s.id, s.name]))}
         pageSize={PAGE}
+        alertsOnPage={renderedAnchors(feed).includes("alerts")}
       />
     </section>
   );

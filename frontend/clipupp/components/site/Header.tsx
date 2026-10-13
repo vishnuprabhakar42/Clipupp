@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { rootCategories } from "@/lib/home/categoryLabel";
 import { toSearchFeed } from "@/lib/home/searchFeed";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
+import { renderedAnchors } from "@/lib/home/anchors";
 import { AnnouncementStrip } from "@/features/home/components/AnnouncementStrip";
 import { HeaderClient, type HeaderFeed } from "./HeaderClient";
 
@@ -17,6 +18,7 @@ export async function Header() {
     categories: rootCategories(feed.categories).slice(0, 16),
     totalCoupons: feed.stats.activeCoupons,
     search: toSearchFeed(feed),
+    anchors: renderedAnchors(feed),
   };
   return (
     <>

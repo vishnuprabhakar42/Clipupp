@@ -37,6 +37,7 @@ export function TodaysCouponsClient({
   initialCursor,
   storeNames,
   pageSize,
+  alertsOnPage,
 }: {
   tabs: Tab[];
   total: number;
@@ -45,6 +46,8 @@ export function TodaysCouponsClient({
   initialCursor: string | null;
   storeNames: Record<string, string>;
   pageSize: number;
+  /** True when the alerts block renders on the page, so the empty state can point at it. */
+  alertsOnPage: boolean;
 }) {
   const t = useTranslations("home.today");
   const [tab, setTab] = useState("all");
@@ -289,9 +292,11 @@ export function TodaysCouponsClient({
           <Tag size={28} aria-hidden className="text-clipupp-neutral-500" />
           <p className="mt-3 text-[16px] font-semibold text-clipupp-neutral-900">{t("emptyTitle")}</p>
           <p className="mt-1 max-w-md text-[14px] text-clipupp-neutral-500">{t("emptyBody")}</p>
-          <a href="#alerts" className="clipupp-btn-ghost mt-4 !min-h-10 !px-4">
-            {t("emptyCta")}
-          </a>
+          {alertsOnPage && (
+            <a href="#alerts" className="clipupp-btn-ghost mt-4 !min-h-10 !px-4">
+              {t("emptyCta")}
+            </a>
+          )}
         </div>
       )}
 

@@ -15,6 +15,10 @@ export type HeaderSearchFeed = {
   coupons: SearchCoupon[];
   deals: SearchDeal[];
   bankOfferCount: number;
+  /** In-page bank offers anchor, null when that block does not render (the jump is hidden). */
+  bankHref: string | null;
+  /** Where deal suggestions go: the deals block when it renders, else the offers route. */
+  dealsHref: string;
 };
 
 interface HeaderSearchProps {
@@ -40,7 +44,7 @@ type Opt = {
 
 const RECENT_KEY = "clipupp:recent";
 const BANK_RE = /bank|card|hdfc|sbi|icici|axis|kotak|rbl/i;
-const EMPTY_FEED: HeaderSearchFeed = { stores: [], coupons: [], deals: [], bankOfferCount: 0 };
+const EMPTY_FEED: HeaderSearchFeed = { stores: [], coupons: [], deals: [], bankOfferCount: 0, bankHref: null, dealsHref: "/offers" };
 
 function readRecent(): string[] {
   try {
@@ -165,14 +169,14 @@ export function HeaderSearch({
       );
     } else {
       const lq = q.toLowerCase();
-      if (BANK_RE.test(q)) {
+      if (BANK_RE.test(q) && feed.bankHref) {
         add("jump", t("jumpTo"), [
           {
             key: "jump-bank",
             group: "jump",
             label: t("jumpBank"),
             meta: t("jumpBankMeta", { count: feed.bankOfferCount }),
-            href: "/#bank",
+            href: feed.bankHref,
           },
         ]);
       }
@@ -213,7 +217,7 @@ export function HeaderSearch({
             group: "deals" as const,
             label: d.title,
             meta: `₹${d.price.toLocaleString("en-IN")}`,
-            href: "/#deals",
+            href: feed.dealsHref,
           })),
       );
     }

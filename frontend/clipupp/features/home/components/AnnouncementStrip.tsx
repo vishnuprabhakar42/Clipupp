@@ -5,6 +5,7 @@ import { campaignsApi } from "@/lib/api/campaigns";
 import { bannersApi } from "@/lib/api/banners";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import { festivalLabel } from "@/lib/format/festival";
+import { anchorFor, renderedAnchors } from "@/lib/home/anchors";
 import { DiyaIcon } from "@/components/site/CategoryGlyph";
 import { AnnouncementDismissButton } from "./AnnouncementDismissButton";
 import { ANNOUNCEMENT_COOKIE } from "./announcementConstants";
@@ -46,7 +47,7 @@ export async function AnnouncementStrip() {
             {t("seeOffers")}
           </Link>
         ) : (
-          <Link href="/#bank" className={linkClass}>
+          <Link href={anchorFor("bank", renderedAnchors(feed)) ?? "/offers"} className={linkClass}>
             {t("seeOffers")}
           </Link>
         )}

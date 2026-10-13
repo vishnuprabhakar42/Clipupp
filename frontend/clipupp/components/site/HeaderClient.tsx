@@ -19,11 +19,14 @@ import { HeaderSearch, type HeaderSearchFeed } from "@/features/catalog/componen
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { useMergeSavedOnLogin, useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
+import { anchorFor, type HomeAnchor } from "@/lib/home/anchors";
 
 export type HeaderFeed = {
   categories: MenuCategory[];
   totalCoupons: number;
   search: HeaderSearchFeed;
+  /** Homepage anchors that render, so header links never point at a missing block. */
+  anchors: HomeAnchor[];
 };
 
 const ICON_BTN =
@@ -38,6 +41,7 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
   const t = useTranslations("header");
   useMergeSavedOnLogin();
   useCollapseOnScroll();
+  const alertsHref = anchorFor("alerts", feed.anchors);
 
   return (
     <header
@@ -57,7 +61,11 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
         </div>
 
         <nav aria-label={t("primaryNav")} className="flex items-center justify-end gap-0.5 [grid-area:actions] lg:gap-1">
-          <CategoriesMenu categories={feed.categories} totalCoupons={feed.totalCoupons} />
+          <CategoriesMenu
+            categories={feed.categories}
+            totalCoupons={feed.totalCoupons}
+            calendarHref={anchorFor("calendar", feed.anchors) ?? "/offers"}
+          />
           <Link
             href="/stores"
             className="hidden h-11 items-center rounded-full px-3 text-[15px] font-medium text-clipupp-neutral-800 hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary lg:inline-flex"
@@ -66,9 +74,11 @@ export function HeaderClient({ feed }: { feed: HeaderFeed }) {
           </Link>
           <ThemeToggle />
           <SavedButton />
-          <Link href="/#alerts" aria-label={t("alerts")} className={ICON_BTN}>
-            <Bell className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
-          </Link>
+          {alertsHref && (
+            <Link href={alertsHref} aria-label={t("alerts")} className={ICON_BTN}>
+              <Bell className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+            </Link>
+          )}
           <Account />
         </nav>
       </div>
