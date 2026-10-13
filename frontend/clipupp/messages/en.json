@@ -312,7 +312,8 @@
       "popular": "Popular",
       "trustAria": "Clipupp in numbers",
       "popularAria": "Popular stores",
-      "searchAria": "Search coupons and stores"
+      "searchAria": "Search coupons and stores",
+      "verifiedWeek": "codes verified this week"
     },
     "verify": {
       "eyebrow": "How we verify",
@@ -330,7 +331,9 @@
       "step2Title": "You see when it was last checked",
       "step2Body": "Each card shows when a code was last verified and how many shoppers used it.",
       "step3Title": "Failed codes come down fast",
-      "step3Body": "Tell us a code did not work with one tap and we re-check it and hide it until it passes."
+      "step3Body": "Tell us a code did not work with one tap and we re-check it and hide it until it passes.",
+      "statWeekLabel": "codes checked this week",
+      "statActiveLabel": "active coupons"
     },
     "bank": {
       "eyebrow": "Stack with any coupon",

@@ -5,6 +5,7 @@ import type { HomepageSectionPayload } from "@/lib/api/homepage";
 import type { HomeFeed } from "@/lib/home/feed";
 import { displayShortName } from "@/lib/home/storeName";
 import { toSearchFeed } from "@/lib/home/searchFeed";
+import { proofStat } from "@/lib/home/proofStat";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
 import { SpotlightCarousel } from "./SpotlightCarousel";
 
@@ -38,6 +39,16 @@ export async function HeroSection({
     .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
     .slice(0, 6);
   const { stats } = feed;
+  // Proof first: a verified count (today, else this week) with the live dot,
+  // else active coupons; never a zero. The success rate or the active count
+  // fills the middle cell unless the proof already used it.
+  const proof = proofStat(stats);
+  const cells: { key: string; value: string; label: string; dot?: boolean }[] = [];
+  if (proof && proof.kind !== "active")
+    cells.push({ key: "proof", value: fmt(proof.value), label: t(proof.kind === "today" ? "verifiedToday" : "verifiedWeek"), dot: true });
+  if (stats.successRate7d != null) cells.push({ key: "rate", value: `${stats.successRate7d}%`, label: t("worked7d") });
+  else if (stats.activeCoupons > 0) cells.push({ key: "active", value: fmt(stats.activeCoupons), label: t("activeCoupons") });
+  if (stats.storeCount > 0) cells.push({ key: "stores", value: `${fmt(stats.storeCount)}+`, label: t("stores") });
   const cell =
     "rounded-[14px] border border-clipupp-neutral-200 bg-clipupp-surface p-3 lg:flex lg:items-baseline lg:gap-1.5 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0";
   const num = "clipupp-num block text-[20px] font-bold leading-tight text-clipupp-neutral-900 lg:inline lg:text-[16px]";
@@ -76,35 +87,28 @@ export async function HeroSection({
               aria-label={t("searchAria")}
             />
           </div>
-          <div
-            role="group"
-            aria-label={t("trustAria")}
-            className="clipupp-fx mt-5 grid grid-cols-3 gap-2.5 lg:flex lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2"
-            style={fx(4)}
-          >
-            <div className={cell}>
-              <span className="flex items-center gap-2 lg:contents">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgb(var(--clipupp-success-rgb)/0.18)]" aria-hidden />
-                <b className={num + " !inline lg:!inline lg:ml-1"}>{fmt(stats.verifiedToday)}</b>
-              </span>
-              <span className={lab}>{t("verifiedToday")}</span>
+          {cells.length > 0 && (
+            <div
+              role="group"
+              aria-label={t("trustAria")}
+              className={`clipupp-fx mt-5 grid ${cells.length === 3 ? "grid-cols-3" : "grid-cols-2"} gap-2.5 lg:flex lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-2`}
+              style={fx(4)}
+            >
+              {cells.map((c) => (
+                <div key={c.key} className={cell}>
+                  {c.dot ? (
+                    <span className="flex items-center gap-2 lg:contents">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgb(var(--clipupp-success-rgb)/0.18)]" aria-hidden />
+                      <b className={num + " !inline lg:!inline lg:ml-1"}>{c.value}</b>
+                    </span>
+                  ) : (
+                    <b className={num}>{c.value}</b>
+                  )}
+                  <span className={lab}>{c.label}</span>
+                </div>
+              ))}
             </div>
-            {stats.successRate7d != null ? (
-              <div className={cell}>
-                <b className={num}>{stats.successRate7d}%</b>
-                <span className={lab}>{t("worked7d")}</span>
-              </div>
-            ) : (
-              <div className={cell}>
-                <b className={num}>{fmt(stats.activeCoupons)}</b>
-                <span className={lab}>{t("activeCoupons")}</span>
-              </div>
-            )}
-            <div className={cell}>
-              <b className={num}>{fmt(stats.storeCount)}+</b>
-              <span className={lab}>{t("stores")}</span>
-            </div>
-          </div>
+          )}
           {popular.length > 0 && (
             <div
               role="group"

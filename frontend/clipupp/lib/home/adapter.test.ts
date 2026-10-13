@@ -117,7 +117,8 @@ describe("toHomeFeed", () => {
     expect(feed.deals).toEqual([]);
     expect(feed.bankOffers).toEqual([]);
     expect(feed.sales).toEqual([]);
-    expect(feed.stats).toEqual({ verifiedToday: 40, successRate7d: null, storeCount: 44, activeCoupons: 132 });
+    // No today count in the payload: today stays null and the 7-day count is carried as such.
+    expect(feed.stats).toEqual({ verifiedToday: null, verifiedLast7d: 40, successRate7d: null, storeCount: 44, activeCoupons: 132 });
     expect(feed.stores.slice(0, 2).map((s) => [s.id, s.coupons, s.best, s.popular, s.mono, s.bg, s.fg, s.url])).toEqual([
       ["flipkart", 12, "Up to 6% extra", 1, "FL", "#2874F0", "#fff", null],
       ["myntra", 0, null, 2, "MY", "#8529CD", "#fff", null],
@@ -140,7 +141,8 @@ describe("toHomeFeed", () => {
     expect(feed.categories[0].topStores).toEqual([{ slug: "flipkart", name: "Flipkart" }]);
     expect(feed.spotlight).toEqual([
       {
-        store: "big-sale",
+        store: null,
+        href: null,
         kicker: "Big Sale",
         flag: "Live now",
         title: "Big Sale",
@@ -265,7 +267,17 @@ describe("toHomeFeed", () => {
     const feed = toHomeFeed(l, {}, { demo: false, now: NOW });
     expect(feed.spotlight[0].store).toBe("myntra");
     l.sections[4].campaigns![0].pinnedStoreIds = [];
-    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).spotlight[0].store).toBe("big-sale");
+    // Never the campaign slug: no resolved store means no store.
+    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).spotlight[0].store).toBeNull();
+  });
+
+  it("carries the campaign link and names the store it points at when that store is known", () => {
+    const l = layout();
+    l.sections[4].campaigns![0].ctaUrl = "/stores/myntra";
+    const slide = toHomeFeed(l, {}, { demo: false, now: NOW }).spotlight[0];
+    expect(slide).toMatchObject({ store: "myntra", href: "/stores/myntra" });
+    l.sections[4].campaigns![0].ctaUrl = "/stores/unknown-shop";
+    expect(toHomeFeed(l, {}, { demo: false, now: NOW }).spotlight[0]).toMatchObject({ store: null, href: "/stores/unknown-shop" });
   });
 
   it("tops the spotlight up from the fixture only when no backend slide has perks", () => {
@@ -284,7 +296,7 @@ describe("toHomeFeed", () => {
     expect(feed.coupons).toEqual([]);
     expect(feed.stores).toEqual([]);
     expect(feed.sectionOrder).toEqual([]);
-    expect(feed.stats).toEqual({ verifiedToday: 0, successRate7d: null, storeCount: 0, activeCoupons: 0 });
+    expect(feed.stats).toEqual({ verifiedToday: null, verifiedLast7d: null, successRate7d: null, storeCount: 0, activeCoupons: 0 });
   });
 
   it("infers a leaf category's root parent from the coupons that carry it", () => {
