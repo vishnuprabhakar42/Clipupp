@@ -420,9 +420,14 @@ function SortableSectionRow({
   const styles = ACCENT_STYLES[theme.accent];
 
   const [draft, setDraft] = useState(() => snapshotOf(section));
-  useEffect(() => {
+  // Re-seed the draft when the saved fields change (adjusting state during
+  // render, not in an effect), so unrelated prop churn keeps local edits.
+  const syncKey = JSON.stringify([section.id, section.title, section.subtitle, section.itemLimit, section.enabled]);
+  const [syncedKey, setSyncedKey] = useState(syncKey);
+  if (syncKey !== syncedKey) {
+    setSyncedKey(syncKey);
     setDraft(snapshotOf(section));
-  }, [section.id, section.title, section.subtitle, section.itemLimit, section.enabled]);
+  }
 
   const dirty =
     draft.title !== (section.title ?? "") ||
