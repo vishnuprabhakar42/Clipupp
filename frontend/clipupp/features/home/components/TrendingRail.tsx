@@ -43,7 +43,7 @@ export async function TrendingRail({
   const subtitle = section.subtitle?.trim();
 
   return (
-    <section className="clipupp-container pt-9 sm:pt-12 lg:pt-16" aria-labelledby="trending-heading">
+    <section className="clipupp-container pt-8 sm:pt-12 lg:pt-16" aria-labelledby="trending-heading">
       <SectionHeader
         id="trending-heading"
         eyebrow={subtitle || t("eyebrow")}

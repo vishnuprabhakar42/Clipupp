@@ -16,7 +16,7 @@ export async function FaqSection({ feed }: { feed: HomeFeed }) {
     })),
   };
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-9 sm:pt-12 lg:grid-cols-[4fr_7fr] lg:gap-16 lg:pt-16">
+    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-8 sm:pt-12 lg:grid-cols-[4fr_7fr] lg:gap-16 lg:pt-16">
       <JsonLd data={ld} />
       <div className="clipupp-reveal">
         <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>
@@ -26,13 +26,13 @@ export async function FaqSection({ feed }: { feed: HomeFeed }) {
       <div className="clipupp-reveal border-b border-clipupp-neutral-200" style={{ "--i": 1 } as React.CSSProperties}>
         {feed.faq.map((f, i) => (
           <details key={f.q} open={i === 0} className="group border-t border-clipupp-neutral-200 first:border-t-0">
-            <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-4 py-3 text-[16px] font-semibold text-clipupp-neutral-900 marker:hidden [&::-webkit-details-marker]:hidden">
+            <summary className="flex min-h-[52px] cursor-pointer list-none items-center justify-between gap-4 py-3 text-[15.5px] font-semibold text-clipupp-neutral-900 marker:hidden [&::-webkit-details-marker]:hidden">
               <span>{f.q}</span>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="shrink-0 text-clipupp-neutral-500 transition-transform duration-200 group-open:rotate-45 group-open:text-clipupp-primary motion-reduce:transition-none">
                 <path d="M12 5v14M5 12h14" />
               </svg>
             </summary>
-            <p className="max-w-[62ch] pb-4 pr-8 text-[15px] leading-normal text-clipupp-neutral-600">{f.a}</p>
+            <p className="max-w-[62ch] pb-4 pr-8 text-[14.5px] leading-normal text-clipupp-neutral-600">{f.a}</p>
           </details>
         ))}
       </div>

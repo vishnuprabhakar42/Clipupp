@@ -15,7 +15,7 @@ export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: 
     <article
       data-sale-card
       data-state={state}
-      className={`is-${state} flex min-w-0 flex-col rounded-2xl border p-[18px] ${CARD_HOVER} ${
+      className={`is-${state} flex min-w-0 flex-col rounded-2xl border p-4 ${CARD_HOVER} ${
         live ? "border-clipupp-primary" : "border-clipupp-neutral-200 bg-clipupp-surface"
       } ${state === "ended" ? "opacity-60" : ""}`}
       style={live ? { background: "linear-gradient(180deg, var(--clipupp-tint-100), var(--clipupp-surface))" } : undefined}
@@ -31,7 +31,7 @@ export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: 
           {t(state)}
         </span>
       </div>
-      <h3 className="mt-3.5 font-display text-[18px] font-semibold leading-tight text-clipupp-neutral-900">{sale.name}</h3>
+      <h3 className="mt-2 font-display text-[18px] font-semibold leading-tight text-clipupp-neutral-900">{sale.name}</h3>
       <p className="mt-2 text-[14px] leading-[1.45] text-clipupp-neutral-700">
         <b className="font-semibold text-clipupp-neutral-900">{displayShortName(store.name)}.</b> {sale.text}
       </p>
@@ -40,7 +40,7 @@ export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: 
         {saleDateRange(sale.startAt, sale.endAt)}
       </p>
       {state !== "ended" && (
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-2">
           {live ? (
             <StoreFilterButton storeSlug={store.id} variant="primary">
               {t("seeCodes", { store: displayShortName(store.name) })}

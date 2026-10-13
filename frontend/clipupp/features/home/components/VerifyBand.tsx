@@ -34,7 +34,7 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
             ))}
           </dl>
         </div>
-        <ol aria-label={t("stepsAria")} className="clipupp-reveal grid content-start gap-3 [counter-reset:step]" style={{ "--i": 1 } as React.CSSProperties}>
+        <ol aria-label={t("stepsAria")} className="clipupp-reveal grid content-start gap-2.5 [counter-reset:step]" style={{ "--i": 1 } as React.CSSProperties}>
           {steps.map((n) => (
             <li key={n} className="flex gap-4 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-page p-4 [counter-increment:step]">
               <span
