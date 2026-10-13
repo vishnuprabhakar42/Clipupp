@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { organizationSchema, webSiteSchema } from "@/lib/seo/schemas";
 import { DeferredClientWidgets } from "@/components/site/DeferredClientWidgets";
+import { CouponSheetProvider } from "@/features/catalog/components/CouponSheet";
 import { HindiBetaMarker } from "@/components/site/HindiBetaMarker";
 import { dirFor, localeToBcp47, locales, type Locale } from "@/lib/i18n/config";
 
@@ -169,6 +170,8 @@ export default async function LocaleLayout({
                   </a>
                   {locale === "hi" && <HindiBetaMarker />}
                   {children}
+                  {/* The one coupon sheet: every route that can open it (public, account) shares it. */}
+                  <CouponSheetProvider />
                   <DeferredClientWidgets />
                 </AuthProvider>
               </GoogleOAuthProvider>
