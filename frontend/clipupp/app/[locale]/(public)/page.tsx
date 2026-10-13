@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { homepageApi, type HomepageLayout, type HomepageSectionPayload } from "@/lib/api/homepage";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import type { HomeFeed } from "@/lib/home/feed";
+import { sectionRenders } from "@/lib/home/anchors";
 import { LiveTicker } from "@/features/home/components/LiveTicker";
 import { PopularStoresStrip } from "@/features/home/components/PopularStoresStrip";
 import { HeroSection } from "@/features/home/components/HeroSection";
@@ -149,7 +150,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       <div className="bg-clipupp-page pb-9 sm:pb-12 lg:pb-14">
         {sections.map((s) => {
           const render = SECTION_RENDERERS[s.code];
-          if (!render) return null;
+          // Same test the anchors use, so a link never targets a block that is not here.
+          if (!render || !sectionRenders(s.code, feed)) return null;
           const node = render(s, ctx);
           if (!node) return null;
           const block = (

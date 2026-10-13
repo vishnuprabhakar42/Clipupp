@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/lib/i18n/navigation";
 import { useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
 import { SavedSheet } from "@/features/home/components/SavedSheet";
+import { anchorFor, type HomeAnchor } from "@/lib/home/anchors";
 
 type Key = "home" | "deals" | "coupons" | "stores";
 type Labels = Record<Key | "saved", string>;
@@ -22,7 +23,16 @@ const ROUTE_KEY: Record<string, Key> = { "/offers": "deals", "/coupons": "coupon
 const ITEM =
   "relative flex min-h-[52px] w-full flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-clipupp-primary";
 
-export function BottomNavClient({ labels, ariaLabel }: { labels: Labels; ariaLabel: string }) {
+export function BottomNavClient({
+  labels,
+  ariaLabel,
+  anchors,
+}: {
+  labels: Labels;
+  ariaLabel: string;
+  /** Homepage anchors that render; a missing block falls back to its route. */
+  anchors: HomeAnchor[];
+}) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrollKey, setScrollKey] = useState<Key>("home");
@@ -52,8 +62,8 @@ export function BottomNavClient({ labels, ariaLabel }: { labels: Labels; ariaLab
 
   const items: { key: Key; href: string; icon: LucideIcon }[] = [
     { key: "home", href: "/", icon: Home },
-    { key: "deals", href: isHome ? "/#deals" : "/offers", icon: Zap },
-    { key: "coupons", href: isHome ? "/#today" : "/coupons", icon: Tag },
+    { key: "deals", href: isHome ? (anchorFor("deals", anchors) ?? "/offers") : "/offers", icon: Zap },
+    { key: "coupons", href: isHome ? (anchorFor("today", anchors) ?? "/coupons") : "/coupons", icon: Tag },
     { key: "stores", href: "/stores", icon: Store },
   ];
   const cls = (on: boolean) =>

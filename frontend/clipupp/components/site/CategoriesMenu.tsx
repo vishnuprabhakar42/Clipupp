@@ -25,7 +25,16 @@ const LG = "(min-width: 1024px)";
  * Below lg: the same grid inside a bottom Sheet. Single trigger element, so
  * it works in both header layouts.
  */
-export function CategoriesMenu({ categories, totalCoupons }: { categories: MenuCategory[]; totalCoupons: number }) {
+export function CategoriesMenu({
+  categories,
+  totalCoupons,
+  calendarHref,
+}: {
+  categories: MenuCategory[];
+  totalCoupons: number;
+  /** Where the festive (hot) category goes: the calendar block when it renders, else its route. */
+  calendarHref: string;
+}) {
   const t = useTranslations("header");
   const tc = useTranslations("categories");
   const [open, setOpen] = useState(false);
@@ -71,7 +80,7 @@ export function CategoriesMenu({ categories, totalCoupons }: { categories: MenuC
     };
   }, [open, desktop]);
 
-  const grid = <CategoryGrid categories={categories} onSelect={close} />;
+  const grid = <CategoryGrid categories={categories} calendarHref={calendarHref} onSelect={close} />;
 
   return (
     <>
@@ -154,7 +163,15 @@ export function CategoriesMenu({ categories, totalCoupons }: { categories: MenuC
   );
 }
 
-function CategoryGrid({ categories, onSelect }: { categories: MenuCategory[]; onSelect: () => void }) {
+function CategoryGrid({
+  categories,
+  calendarHref,
+  onSelect,
+}: {
+  categories: MenuCategory[];
+  calendarHref: string;
+  onSelect: () => void;
+}) {
   const t = useTranslations("header");
   const tc = useTranslations("categories");
   return (
@@ -168,7 +185,7 @@ function CategoryGrid({ categories, onSelect }: { categories: MenuCategory[]; on
         return (
           <li key={c.id}>
             <Link
-              href={c.hot ? "/#calendar" : `/categories/${c.id}`}
+              href={c.hot ? calendarHref : `/categories/${c.id}`}
               onClick={onSelect}
               className="flex h-full items-center gap-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-2.5 text-left transition-colors hover:border-clipupp-primary-300 hover:bg-clipupp-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
             >

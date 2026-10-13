@@ -9,6 +9,7 @@ import { BackToTop } from "@/components/site/BackToTop";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
 import { rootCategories, shortCategoryLabel } from "@/lib/home/categoryLabel";
 import type { HomeFeed } from "@/lib/home/feed";
+import { anchorFor, renderedAnchors } from "@/lib/home/anchors";
 
 const LINK =
   "block rounded py-1.5 text-[14px] text-clipupp-ft-ink-2 lg:py-[5px] transition-colors hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent";
@@ -29,6 +30,11 @@ const SOCIAL_ICON: Record<HomeFeed["social"][number]["network"], { label: string
   linkedin: { label: "LinkedIn", icon: <Linkedin className="h-4 w-4" aria-hidden /> },
 };
 
+/** Drops links whose target is null (a homepage block that is not rendered and has no route). */
+function withHref(links: [string | null, string][]): [string, string][] {
+  return links.filter((l): l is [string, string] => l[0] != null);
+}
+
 /** Footer v3: fixed deep-purple look in both themes. Server component; interactivity lives in small client leaves. */
 export async function Footer() {
   const [t, feed] = await Promise.all([getTranslations("footer"), getHomeFeed()]);
@@ -45,22 +51,25 @@ export async function Footer() {
     { icon: <Tag className="h-[18px] w-[18px]" aria-hidden />, title: t("trustFreeTitle"), body: t("trustFreeBody") },
     { icon: <StoreIcon className="h-[18px] w-[18px]" aria-hidden />, title: t("trustStoresTitle", { count: storeCount }), body: t("trustStoresBody") },
   ];
-  const company = [
-    ["/#verify", t("howWeVerify")],
-    ["/#calendar", t("saleCalendar")],
-    ["/#bank", t("bankOffers")],
-    ["/#alerts", t("dealAlerts")],
+  // Homepage blocks link in-page only when they render; otherwise their route, or nothing.
+  const rendered = renderedAnchors(feed);
+  const alertsHref = anchorFor("alerts", rendered);
+  const company = withHref([
+    [anchorFor("verify", rendered), t("howWeVerify")],
+    [anchorFor("calendar", rendered), t("saleCalendar")],
+    [anchorFor("bank", rendered), t("bankOffers")],
+    [alertsHref, t("dealAlerts")],
     ["/about", t("aboutUs")],
     ["/blog", t("blog")],
-  ] as const;
-  const help = [
-    ["/#faq", t("helpFaq")],
+  ]);
+  const help = withHref([
+    [anchorFor("faq", rendered), t("helpFaq")],
     ["/contact", t("contact")],
     ["/privacy", t("privacy")],
     ["/terms", t("terms")],
     ["/affiliate-disclosure", t("affiliate")],
     ["/cookie-policy", t("cookies")],
-  ] as const;
+  ]);
 
   return (
     <footer role="contentinfo" className="bg-clipupp-ft-bg text-clipupp-ft-ink">
@@ -101,15 +110,17 @@ export async function Footer() {
                 })}
               </ul>
             )}
-            <Link
-              href="/#alerts"
-              className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-clipupp-success px-4 text-[14px] font-semibold text-clipupp-success-fg transition-colors hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent"
-            >
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-                <path d="M21.9 4.4 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.6-2.3 2.3c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13 1.8 11.5c-1-.3-1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.5 1.4Z" />
-              </svg>
-              {t("telegramPill")}
-            </Link>
+            {alertsHref && (
+              <Link
+                href={alertsHref}
+                className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-clipupp-success px-4 text-[14px] font-semibold text-clipupp-success-fg transition-colors hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                  <path d="M21.9 4.4 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.6-2.3 2.3c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13 1.8 11.5c-1-.3-1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.5 1.4Z" />
+                </svg>
+                {t("telegramPill")}
+              </Link>
+            )}
           </div>
 
           <FooterColumn title={t("topStores")}>
@@ -124,12 +135,12 @@ export async function Footer() {
           </FooterColumn>
           <FooterColumn title={t("company")}>
             {company.map(([href, label]) => (
-              <li key={href}><Link href={href} className={LINK}>{label}</Link></li>
+              <li key={label}><Link href={href} className={LINK}>{label}</Link></li>
             ))}
           </FooterColumn>
           <FooterColumn title={t("helpLegal")}>
             {help.map(([href, label]) => (
-              <li key={href}><Link href={href} className={LINK}>{label}</Link></li>
+              <li key={label}><Link href={href} className={LINK}>{label}</Link></li>
             ))}
           </FooterColumn>
         </div>

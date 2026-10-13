@@ -10,7 +10,16 @@ import { cn } from "@/lib/utils";
 type Cat = { id: string; name: string; icon: string; hot?: boolean };
 
 /** Chips are buttons on the homepage (emit "today:tab" and scroll) and plain links elsewhere. */
-export function CategoryRailClient({ categories, ariaLabel }: { categories: Cat[]; ariaLabel: string }) {
+export function CategoryRailClient({
+  categories,
+  ariaLabel,
+  calendarOnPage,
+}: {
+  categories: Cat[];
+  ariaLabel: string;
+  /** False when the sale calendar block does not render: the festive chip then links to /offers. */
+  calendarOnPage: boolean;
+}) {
   const isHome = usePathname() === "/";
   const firstCat = categories.find((c) => !c.hot)?.id ?? "";
   // Phone shows no pressed chip until a tab is chosen; lg+ defaults to the first category.
@@ -69,12 +78,12 @@ export function CategoryRailClient({ categories, ariaLabel }: { categories: Cat[
               "flex w-[72px] flex-col items-center gap-1.5 rounded-xl py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary lg:w-[78px]";
             return (
               <li key={c.id} className="shrink-0">
-                {isHome ? (
+                {isHome && (calendarOnPage || !c.hot) ? (
                   <button type="button" title={c.name} aria-label={c.name} aria-pressed={c.hot ? undefined : on} onClick={() => choose(c)} className={cls}>
                     {inner}
                   </button>
                 ) : (
-                  <Link href={c.hot ? "/#calendar" : `/categories/${c.id}`} title={c.name} aria-label={c.name} className={cls}>
+                  <Link href={c.hot ? (calendarOnPage ? "/#calendar" : "/offers") : `/categories/${c.id}`} title={c.name} aria-label={c.name} className={cls}>
                     {inner}
                   </Link>
                 )}
