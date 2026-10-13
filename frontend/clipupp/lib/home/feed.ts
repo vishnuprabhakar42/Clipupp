@@ -82,8 +82,10 @@ export type FeedCoupon = {
 };
 
 export type FeedSpotlight = {
-  /** Store slug the offer belongs to. */
-  store: string;
+  /** Store slug the offer belongs to; null when no store resolves (the slide then shows no store tile). */
+  store: string | null;
+  /** Where the call to action goes when there is no coupon: the campaign link, else null (the page picks a route). */
+  href: string | null;
   /** Small label above the title. */
   kicker: string;
   /** Status flag such as "Live now", null for none. */
@@ -160,8 +162,10 @@ export type FeedSale = {
 };
 
 export type FeedStats = {
-  /** Codes verified recently (backend only reports the last 7 days, used as a proxy for today). */
-  verifiedToday: number;
+  /** Codes verified today; null until the backend reports a real today count. */
+  verifiedToday: number | null;
+  /** Codes verified in the last 7 days, null when not reported. */
+  verifiedLast7d: number | null;
   /** Percent of codes that worked in the last 7 days, null when not tracked. */
   successRate7d: number | null;
   /** Active store count. */

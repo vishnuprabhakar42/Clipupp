@@ -22,7 +22,13 @@ export type ToHomeFeedOptions = { demo: boolean; now?: Date };
 const DEFAULT_BG = "#8529CD";
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?Z$/;
 
-const EMPTY_STATS: FeedStats = { verifiedToday: 0, successRate7d: null, storeCount: 0, activeCoupons: 0 };
+const EMPTY_STATS: FeedStats = {
+  verifiedToday: null,
+  verifiedLast7d: null,
+  successRate7d: null,
+  storeCount: 0,
+  activeCoupons: 0,
+};
 
 const sectionOf = (layout: HomepageLayout | null, code: string): HomepageSectionPayload | undefined =>
   layout?.sections.find((s) => s.code === code);
@@ -157,17 +163,27 @@ function buildCategories(
   });
 }
 
+/** The store slug a campaign link like "/stores/flipkart" points at, when that store is known. */
+function storeOfLink(url: string | null, known: Set<string>): string | null {
+  const m = url?.match(/^\/stores\/([a-z0-9-]+)\/?$/i);
+  return m && known.has(m[1]) ? m[1] : null;
+}
+
 function buildSpotlight(
   layout: HomepageLayout | null,
   now: Date,
   storeSlugById: Map<string, string>,
 ): FeedSpotlight[] {
+  const known = new Set(storeSlugById.values());
   return (sectionOf(layout, "bank_offers")?.campaigns ?? []).map((c: HomepageCampaign) => {
     const live = Date.parse(c.startsAt) <= now.getTime() && now.getTime() <= Date.parse(c.endsAt);
-    // The first pinned store that resolves names the store; otherwise the campaign slug stands in.
+    // The first pinned store that resolves names the store, then the store the
+    // campaign link points at; otherwise the slide has no store (never the campaign slug).
     const pinned = (c.pinnedStoreIds ?? []).map((id) => storeSlugById.get(id)).find((slug): slug is string => !!slug);
+    const href = nonEmptyString(c.ctaUrl);
     return {
-      store: pinned ?? c.slug,
+      store: pinned ?? storeOfLink(href, known),
+      href,
       kicker: c.name,
       flag: live ? "Live now" : null,
       title: c.heroTitle ?? c.name,
@@ -301,8 +317,9 @@ export function toHomeFeed(
     demo: false,
     stats: layout
       ? {
-          // The payload has no "today" count yet; the 7 day count is the proxy.
-          verifiedToday: layout.stats.verifiedLast7d,
+          // The payload has no "today" count yet, so today stays null; the 7 day count is kept apart.
+          verifiedToday: null,
+          verifiedLast7d: layout.stats.verifiedLast7d,
           successRate7d: null,
           storeCount: layout.stats.activeStores,
           activeCoupons: layout.stats.activeCoupons,
@@ -376,10 +393,10 @@ export function toHomeFeed(
   const kickers = backendSlides.map((x) => normName(x.kicker));
   const extra = fixture.spotlight
     .filter((x) => !kickers.some((k) => k.includes(normName(x.kicker))))
-    .map((x) => ({ ...x, store: mapStore(x.store), couponId: x.couponId && couponIds.has(x.couponId) ? x.couponId : null }));
+    .map((x) => ({ ...x, store: x.store && mapStore(x.store), couponId: x.couponId && couponIds.has(x.couponId) ? x.couponId : null }));
   merged.spotlight =
     backendSlides.length === 0
-      ? fixture.spotlight.map((x) => ({ ...x, store: mapStore(x.store) }))
+      ? fixture.spotlight.map((x) => ({ ...x, store: x.store && mapStore(x.store) }))
       : backendSlides.every((x) => x.perks.length === 0)
         ? [...backendSlides, ...extra].slice(0, 3)
         : backendSlides;

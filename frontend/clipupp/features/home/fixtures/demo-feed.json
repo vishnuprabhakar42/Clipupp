@@ -3,6 +3,7 @@
   "demo": true,
   "stats": {
     "verifiedToday": 2418,
+    "verifiedLast7d": null,
     "successRate7d": 97,
     "storeCount": 512,
     "activeCoupons": 593
@@ -524,7 +525,8 @@
         "Stacks with FKFEST500"
       ],
       "endsAt": "2026-10-15T18:29:00Z",
-      "couponId": "c8"
+      "couponId": "c8",
+      "href": null
     },
     {
       "store": "amazon-india",
@@ -538,7 +540,8 @@
         "Exchange offers"
       ],
       "endsAt": "2026-10-17T18:29:00Z",
-      "couponId": "c2"
+      "couponId": "c2",
+      "href": null
     },
     {
       "store": "myntra",
@@ -552,7 +555,8 @@
         "12K shoppers used it"
       ],
       "endsAt": "2026-10-31T18:29:00Z",
-      "couponId": "c1"
+      "couponId": "c1",
+      "href": null
     }
   ],
   "coupons": [

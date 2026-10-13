@@ -19,12 +19,15 @@ function endLabel(iso: string | null): string | null {
   return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
 }
 
-function fallbackStore(slug: string): FeedStore {
-  return {
-    id: slug, name: slug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "), logo: null, mono: slug.slice(0, 2).toUpperCase(), bg: "var(--clipupp-logo-bg)", fg: "var(--clipupp-deep)",
-    cat: null, url: null, coupons: 0, best: null, popular: null,
-  };
+/** Campaign links are internal paths or absolute URLs; anything else falls back to the offers page. */
+function ctaHref(href: string | null): { href: string; external: boolean } {
+  if (href && /^https?:\/\//i.test(href)) return { href, external: true };
+  if (href && href.startsWith("/") && !href.startsWith("//")) return { href, external: false };
+  return { href: "/offers", external: false };
 }
+
+const CTA_CLASS =
+  "inline-flex h-[46px] items-center rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep transition active:scale-[0.97] hover:bg-white/90";
 
 /**
  * Spotlight carousel: native scroll-snap rail (88% / 70% slides below lg, one
@@ -133,12 +136,16 @@ export function SpotlightCarousel({
         className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 pt-1 sm:-mx-6 sm:pb-5 lg:pb-4 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
       >
         {slides.map((s, i) => {
-          const store = stores.find((x) => x.id === s.store) ?? fallbackStore(s.store);
-          const coupon = s.couponId ? coupons.find((c) => c.id === s.couponId) : undefined;
+          // No store tile or name is invented: without a resolved store the
+          // campaign name leads and the CTA follows the campaign link.
+          const store = s.store ? stores.find((x) => x.id === s.store) : undefined;
+          const found = store && s.couponId ? coupons.find((c) => c.id === s.couponId) : undefined;
+          const offer = store && found ? { coupon: found, store } : null;
+          const cta = store && !s.href ? { href: `/stores/${store.id}`, external: false } : ctaHref(s.href);
           const till = endLabel(s.endsAt);
           return (
             <div
-              key={`${s.store}-${i}`}
+              key={`${s.store ?? s.kicker}-${i}`}
               role="group"
               aria-roledescription="slide"
               aria-label={t("slide", { i: i + 1, n })}
@@ -149,11 +156,11 @@ export function SpotlightCarousel({
                 boxShadow: "0 8px 20px rgba(42,15,82,.2)",
               }}
             >
-              <div className="flex items-center gap-3">
-                <StoreTile store={store} size={44} className="!rounded-xl" />
+              <div className="flex min-h-[44px] items-center gap-3">
+                {store && <StoreTile store={store} size={44} className="!rounded-xl" />}
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[15px] font-semibold leading-tight">{store.name}</div>
-                  <div className="truncate text-[12.5px] text-white/70">{s.kicker}</div>
+                  <div className="truncate text-[15px] font-semibold leading-tight">{store ? store.name : s.kicker}</div>
+                  {store && <div className="truncate text-[12.5px] text-white/70">{s.kicker}</div>}
                 </div>
                 {s.flag && (
                   <span className="shrink-0 rounded-full bg-clipupp-gold px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] text-clipupp-deep">
@@ -175,29 +182,30 @@ export function SpotlightCarousel({
                 </ul>
               )}
               <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 pt-6">
-                {coupon ? (
+                {offer ? (
                   <button
                     type="button"
                     onClick={() => {
                       // Copy inside the click gesture; the sheet reports the outcome.
                       let copy: Promise<void> | null = null;
                       try {
-                        if (coupon.code) {
-                          copy = navigator.clipboard?.writeText(coupon.code.trim()) ?? null;
+                        if (offer.coupon.code) {
+                          copy = navigator.clipboard?.writeText(offer.coupon.code.trim()) ?? null;
                           copy?.catch(() => {});
                         }
                       } catch {}
-                      openSheet(coupon, store, null, { copy });
+                      openSheet(offer.coupon, offer.store, null, { copy });
                     }}
-                    className="h-[46px] rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep transition active:scale-[0.97] hover:bg-white/90"
+                    className={CTA_CLASS}
                   >
                     {t("cta")}
                   </button>
+                ) : cta.external ? (
+                  <a href={cta.href} target="_blank" rel="noopener" className={CTA_CLASS}>
+                    {t("cta")}
+                  </a>
                 ) : (
-                  <Link
-                    href={`/stores/${s.store}`}
-                    className="inline-flex h-[46px] items-center rounded-full bg-white px-6 text-[15px] font-semibold text-clipupp-deep transition active:scale-[0.97] hover:bg-white/90"
-                  >
+                  <Link href={cta.href} className={CTA_CLASS}>
                     {t("cta")}
                   </Link>
                 )}
@@ -210,10 +218,10 @@ export function SpotlightCarousel({
       <div className="-mt-1 flex items-center justify-between">
         <div role="tablist" className="flex items-center gap-1.5">
           {slides.map((s, i) => {
-            const name = (stores.find((x) => x.id === s.store) ?? fallbackStore(s.store)).name;
+            const name = (s.store && stores.find((x) => x.id === s.store)?.name) || s.kicker;
             return (
               <button
-                key={`${s.store}-${i}`}
+                key={`${s.store ?? s.kicker}-${i}`}
                 type="button"
                 role="tab"
                 aria-selected={i === active}

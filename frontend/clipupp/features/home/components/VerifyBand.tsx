@@ -1,5 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import type { HomeFeed } from "@/lib/home/feed";
+import { proofStat } from "@/lib/home/proofStat";
+
+const PROOF_LABEL = { today: "statTodayLabel", week: "statWeekLabel", active: "statActiveLabel" } as const;
 
 /**
  * How we verify: white band, left copy with three stat tiles, right numbered
@@ -7,10 +10,13 @@ import type { HomeFeed } from "@/lib/home/feed";
  */
 export async function VerifyBand({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.verify");
-  const { verifiedToday, successRate7d } = feed.stats;
+  const { successRate7d } = feed.stats;
+  const proof = proofStat(feed.stats);
   const steps = [1, 2, 3] as const;
+  // The first tile is the verified count (today, else this week) or the
+  // active-coupon count; it is left out rather than showing a zero.
   const stats = [
-    { value: new Intl.NumberFormat("en-IN").format(verifiedToday), label: t("statTodayLabel") },
+    ...(proof ? [{ value: new Intl.NumberFormat("en-IN").format(proof.value), label: t(PROOF_LABEL[proof.kind]) }] : []),
     successRate7d == null
       ? { value: t("statDaily"), label: t("statDailyLabel") }
       : { value: `${successRate7d}%`, label: t("statRateLabel") },
@@ -25,7 +31,7 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
             {t("title")}
           </h2>
           <p className="mt-3 max-w-[44ch] text-[16px] leading-normal text-clipupp-neutral-700">{t("lead")}</p>
-          <dl className="mt-6 grid grid-cols-3 gap-3">
+          <dl className={`mt-6 grid gap-3 ${stats.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col border-l-[3px] border-clipupp-primary pl-3">
                 <dt className="order-2 mt-1 text-[12px] leading-tight text-clipupp-neutral-500">{s.label}</dt>
