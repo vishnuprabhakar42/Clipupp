@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 /**
- * Grid shell: shows the first tiles (7 below lg, 12 at lg) plus an "All stores"
+ * Grid shell: shows the first tiles (7 below md, 12 from md) plus an "All stores"
  * tile that reveals the rest. `data-all` says at which widths the tile can show.
  */
 export function AllStoresExpander({
@@ -25,7 +25,7 @@ export function AllStoresExpander({
   // The tile unmounts on expand; hand focus to the first store it revealed.
   useEffect(() => {
     if (!open) return;
-    const sel = window.matchMedia("(min-width: 1024px)").matches ? 'li[data-tier="x"] a' : "li[data-tier] a";
+    const sel = window.matchMedia("(min-width: 768px)").matches ? 'li[data-tier="x"] a' : "li[data-tier] a";
     list.current?.querySelector<HTMLAnchorElement>(sel)?.focus({ preventScroll: true });
   }, [open]);
   return (

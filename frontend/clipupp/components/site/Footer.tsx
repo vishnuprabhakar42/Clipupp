@@ -86,8 +86,8 @@ export async function Footer() {
           ))}
         </ul>
 
-        <div className="grid gap-x-6 gap-y-6 pt-7 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
-          <div>
+        <div className="grid gap-x-6 gap-y-6 pt-7 md:grid-cols-4 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+          <div className="md:col-span-4 lg:col-span-1">
             <Logo variant="on-dark" height={72} priority={false} className="-mb-7 -mt-5" />
             <p className="mt-3 max-w-[34ch] text-[14px] leading-relaxed text-clipupp-ft-ink-2">{t("about")}</p>
             {feed.social.length > 0 && (

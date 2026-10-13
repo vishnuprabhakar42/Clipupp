@@ -30,7 +30,7 @@ export async function SaleCalendarRail({ feed }: { feed: HomeFeed }) {
       <Rail
         id={RAIL_ID}
         ariaLabel={t("railAria")}
-        cols={{ base: "72%", sm: "40%", lg: "calc((100% - 96px) / 5)" }}
+        cols={{ base: "72%", sm: "40%", md: "30%", lg: "calc((100% - 96px) / 5)" }}
         gap={{ base: 16, lg: 24 }}
         className="-mt-3 py-3"
       >

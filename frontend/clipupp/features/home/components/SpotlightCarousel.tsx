@@ -133,7 +133,7 @@ export function SpotlightCarousel({
         ref={railRef}
         onMouseEnter={() => (hovered.current = true)}
         onMouseLeave={() => (hovered.current = false)}
-        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 pt-1 sm:-mx-6 sm:pb-5 lg:pb-4 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
+        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 pt-1 sm:-mx-6 sm:pb-5 sm:scroll-pl-6 sm:px-6 md:mx-0 md:scroll-pl-0 md:gap-0 md:px-0 lg:pb-4"
       >
         {slides.map((s, i) => {
           // No store tile or name is invented: without a resolved store the
@@ -149,7 +149,7 @@ export function SpotlightCarousel({
               role="group"
               aria-roledescription="slide"
               aria-label={t("slide", { i: i + 1, n })}
-              className="flex min-h-[360px] shrink-0 basis-[88%] snap-start flex-col rounded-[22px] p-6 text-white [scroll-snap-stop:always] sm:basis-[70%] lg:basis-full lg:p-7"
+              className="flex min-h-[360px] shrink-0 basis-[88%] snap-start flex-col rounded-[22px] p-6 text-white [scroll-snap-stop:always] sm:basis-[70%] md:basis-full lg:p-7"
               style={{
                 background:
                   "radial-gradient(420px 240px at 100% 0%, rgb(255 255 255 / 0.16), transparent 70%), radial-gradient(380px 260px at 0% 110%, rgb(var(--clipupp-primary-rgb) / 0.35), transparent 70%), linear-gradient(160deg, var(--clipupp-deep), var(--clipupp-deep-2))",
