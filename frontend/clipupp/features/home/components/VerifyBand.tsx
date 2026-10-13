@@ -35,7 +35,7 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col border-l-[3px] border-clipupp-primary pl-3">
                 <dt className="order-2 mt-1 text-[12px] leading-tight text-clipupp-neutral-500">{s.label}</dt>
-                <dd className="clipupp-num order-1 text-[24px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900">{s.value}</dd>
+                <dd className="clipupp-num order-1 text-[24px] font-bold leading-none tracking-[-0.02em] text-clipupp-neutral-900">{s.value}</dd>
               </div>
             ))}
           </dl>

@@ -5,7 +5,8 @@ import { Heart, Home, Store, Tag, Zap, type LucideIcon } from "lucide-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
 import { useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
-import { SavedSheet } from "@/features/home/components/SavedSheet";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { LazySavedSheet } from "@/components/site/lazy";
 import { anchorFor, type HomeAnchor } from "@/lib/home/anchors";
 
 type Key = "home" | "deals" | "coupons" | "stores";
@@ -39,6 +40,18 @@ export function BottomNavClient({
   const { count, hydrated } = useSavedCount();
   const openSaved = useSavedSheet((s) => s.open);
   const savedOpen = useSavedSheet((s) => s.isOpen);
+  const { user } = useAuth();
+  // The saved sheet loads on its first open (header heart or this nav). A
+  // guest with saves mounts it early too: its closed-state lookup keeps the
+  // badge counting only rows the sheet can show.
+  const [savedMounted, setSavedMounted] = useState(false);
+  if (!savedMounted && (savedOpen || (hydrated && !user && count > 0))) setSavedMounted(true);
+
+  // Close the saved sheet on route changes. Lives here, not in the lazily
+  // mounted sheet, whose mount would otherwise close it as it first opens.
+  useEffect(() => {
+    useSavedSheet.getState().close();
+  }, [pathname]);
 
   useEffect(() => {
     if (!isHome) return;
@@ -100,7 +113,7 @@ export function BottomNavClient({
           </li>
         </ul>
       </nav>
-      <SavedSheet />
+      {savedMounted ? <LazySavedSheet /> : null}
     </>
   );
 }

@@ -2,11 +2,8 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, ChevronRight, LayoutGrid } from "lucide-react";
-import { Link } from "@/lib/i18n/navigation";
-import { Sheet, SheetHeader } from "@/components/site/Sheet";
-import { CategoryGlyph } from "@/components/site/CategoryGlyph";
-import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
+import { ChevronDown, LayoutGrid } from "lucide-react";
+import { LazyCategoriesMenuPanel } from "@/components/site/lazy";
 import { cn } from "@/lib/utils";
 
 export type MenuCategory = {
@@ -21,9 +18,10 @@ export type MenuCategory = {
 const LG = "(min-width: 1024px)";
 
 /**
- * Categories trigger plus its panel. lg+: full-width panel under the header.
- * Below lg: the same grid inside a bottom Sheet. Single trigger element, so
- * it works in both header layouts.
+ * Categories trigger. Its panel (`CategoriesMenuPanel`, loaded on the first
+ * open) is a full-width region under the header at lg+ and the same grid in
+ * a bottom Sheet below lg. Single trigger element, so it works in both header
+ * layouts.
  */
 export function CategoriesMenu({
   categories,
@@ -36,8 +34,10 @@ export function CategoriesMenu({
   calendarHref: string;
 }) {
   const t = useTranslations("header");
-  const tc = useTranslations("categories");
   const [open, setOpen] = useState(false);
+  // The panel (mega grid and sheet) loads on the first open and stays mounted.
+  const [mounted, setMounted] = useState(false);
+  if (open && !mounted) setMounted(true);
   const [desktop, setDesktop] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -80,8 +80,6 @@ export function CategoriesMenu({
     };
   }, [open, desktop]);
 
-  const grid = <CategoryGrid categories={categories} calendarHref={calendarHref} onSelect={close} />;
-
   return (
     <>
       <button
@@ -105,106 +103,19 @@ export function CategoriesMenu({
         />
       </button>
 
-      {desktop && open ? (
-        <div
-          ref={panelRef}
-          id={panelId}
-          role="region"
-          aria-label={t("categories")}
-          className="clipupp-mega-in absolute inset-x-0 top-full border-b border-clipupp-neutral-200 bg-clipupp-surface shadow-clipupp-pop"
-        >
-          <div className="clipupp-container py-5">
-            <div className="mb-3 flex items-center justify-between gap-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-clipupp-neutral-500">
-                {t("shopByCategory")}
-              </p>
-              <div className="flex items-center gap-3">
-                <LocaleSwitcher variant="pill" align="end" />
-                <Link
-                  href="/coupons"
-                  onClick={close}
-                  className="inline-flex items-center gap-1 text-sm font-semibold text-clipupp-primary hover:underline"
-                >
-                  {t("allCoupons")}
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-              </div>
-            </div>
-            {grid}
-          </div>
-        </div>
-      ) : null}
-
-      {!desktop ? (
-        <Sheet open={open} onClose={close} labelledBy={titleId} size="sheet">
-          <div id={panelId}>
-            <SheetHeader
-              titleId={titleId}
-              title={tc("sheetTitle")}
-              subtitle={tc("verifiedCount", { count: totalCoupons })}
-              onClose={close}
-            />
-            <div className="p-4 pb-2">{grid}</div>
-            <div className="flex items-center justify-between gap-3 border-t border-clipupp-neutral-200 p-4">
-              <Link
-                href="/coupons"
-                onClick={close}
-                className="inline-flex items-center gap-1 text-sm font-semibold text-clipupp-primary"
-              >
-                {t("allCoupons")}
-                <ChevronRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <LocaleSwitcher variant="pill" align="end" />
-            </div>
-          </div>
-        </Sheet>
+      {mounted ? (
+        <LazyCategoriesMenuPanel
+          open={open}
+          desktop={desktop}
+          onClose={close}
+          panelRef={panelRef}
+          panelId={panelId}
+          titleId={titleId}
+          categories={categories}
+          totalCoupons={totalCoupons}
+          calendarHref={calendarHref}
+        />
       ) : null}
     </>
-  );
-}
-
-function CategoryGrid({
-  categories,
-  calendarHref,
-  onSelect,
-}: {
-  categories: MenuCategory[];
-  calendarHref: string;
-  onSelect: () => void;
-}) {
-  const t = useTranslations("header");
-  const tc = useTranslations("categories");
-  return (
-    <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
-      {categories.map((c) => {
-        const sub = c.hot
-          ? tc("festiveSub")
-          : c.topStores.length
-            ? c.topStores.map((s) => s.name).join(", ")
-            : t("couponCount", { count: c.couponCount });
-        return (
-          <li key={c.id}>
-            <Link
-              href={c.hot ? calendarHref : `/categories/${c.id}`}
-              onClick={onSelect}
-              className="flex h-full items-center gap-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-2.5 text-left transition-colors hover:border-clipupp-primary-300 hover:bg-clipupp-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
-            >
-              <span
-                className={cn(
-                  "grid h-11 w-11 shrink-0 place-items-center rounded-xl",
-                  c.hot ? "bg-clipupp-deep text-clipupp-gold" : "bg-clipupp-primary-100 text-clipupp-primary",
-                )}
-              >
-                <CategoryGlyph name={c.icon} hot={c.hot} className="h-[22px] w-[22px]" />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-clipupp-neutral-900">{c.name}</span>
-                <span className="block truncate text-xs text-clipupp-neutral-500">{sub}</span>
-              </span>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
   );
 }

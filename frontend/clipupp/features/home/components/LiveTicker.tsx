@@ -60,7 +60,7 @@ export async function LiveTicker({ coupons, stores }: { coupons: FeedCoupon[]; s
       </div>
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center bg-gradient-to-r from-clipupp-surface from-75% to-transparent pl-4 pr-8">
         <span className="mr-2.5 h-2 w-2 rounded-full bg-clipupp-success shadow-[0_0_0_4px_rgb(var(--clipupp-success-rgb)/0.18)]" aria-hidden />
-        <span className="text-[12px] font-extrabold uppercase tracking-[0.06em] text-clipupp-success-strong">{t("label")}</span>
+        <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-clipupp-success-strong">{t("label")}</span>
       </div>
     </section>
   );

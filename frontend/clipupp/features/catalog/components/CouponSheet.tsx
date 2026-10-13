@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/lib/i18n/navigation";
+import { Link } from "@/lib/i18n/navigation";
 import { Sheet, SheetHeader } from "@/components/site/Sheet";
 import { notify } from "@/components/site/Toast";
 import { apiClient } from "@/lib/api/client";
@@ -33,16 +33,13 @@ async function copyText(text: string): Promise<boolean> {
 }
 
 /**
- * Mounted once in the locale root layout, so every opener (cards, the saved
- * sheet, the spotlight) has a sheet on every route. Opens through
- * `useCouponSheet().open` and closes when the route changes.
+ * The coupon sheet itself. Loaded lazily by `CouponSheetProvider` (mounted
+ * once in the locale root layout) on the first open, so cards, the saved
+ * sheet and the spotlight share one sheet on every route without shipping it
+ * in the first-load bundle. Opens through `useCouponSheet().open`.
  */
-export function CouponSheetProvider() {
+export function CouponSheet() {
   const { coupon, store, category, isOpen, seq, copy, close } = useCouponSheet();
-  const pathname = usePathname();
-  useEffect(() => {
-    useCouponSheet.getState().close();
-  }, [pathname]);
   return (
     <Sheet open={isOpen} onClose={close} labelledBy={TITLE_ID}>
       {coupon && store ? (
