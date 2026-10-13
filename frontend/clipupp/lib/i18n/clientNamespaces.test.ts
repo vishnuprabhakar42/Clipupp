@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { CLIENT_NAMESPACES, pickClientMessages } from "./clientNamespaces";
 
@@ -20,6 +20,7 @@ function clientFiles(): { file: string; src: string }[] {
     ...walk(join(root, "components")),
     ...walk(join(root, "features")),
     ...walk(join(root, "lib")),
+    ...(existsSync(join(root, "hooks")) ? walk(join(root, "hooks")) : []),
   ];
   return files
     .map((file) => ({ file, src: readFileSync(file, "utf8") }))
