@@ -3,18 +3,23 @@ import type { FeedCoupon, FeedStore } from "@/lib/home/feed";
 import { timeAgo } from "@/lib/format/timeAgo";
 import { StoreTile } from "@/features/catalog/components/StoreTile";
 
+const FRESH_MS = 7 * 24 * 60 * 60 * 1000;
+
 /**
  * Live verification ticker: the 10 most recently verified coupons in an
- * endless marquee. The list is rendered twice (second copy aria-hidden) and
- * the track translates by -50%. Reduced motion falls back to a manual scroll
- * of a single copy.
+ * endless marquee, only those verified within 7 days (nothing renders below
+ * three). The list is rendered twice (second copy aria-hidden) and the track
+ * translates by -50%. Reduced motion falls back to a manual scroll of a
+ * single copy.
  */
 export async function LiveTicker({ coupons, stores }: { coupons: FeedCoupon[]; stores: FeedStore[] }) {
   const t = await getTranslations("home.ticker");
   const tc = await getTranslations("catalog.card");
   const byId = new Map(stores.map((s) => [s.id, s]));
+  // Only codes verified in the last 7 days run under the LIVE label.
+  const cutoff = Date.now() - FRESH_MS;
   const items = coupons
-    .filter((c) => c.verifiedAt && byId.has(c.store))
+    .filter((c) => c.verifiedAt && Date.parse(c.verifiedAt) >= cutoff && byId.has(c.store))
     .sort((a, b) => Date.parse(b.verifiedAt!) - Date.parse(a.verifiedAt!))
     .slice(0, 10);
   if (items.length < 3) return null;
