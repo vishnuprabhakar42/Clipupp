@@ -9,18 +9,16 @@ export function saleState(startAt: DateInput, endAt: DateInput, now: Date = new 
   return "live";
 }
 
-const dayMonth = new Intl.DateTimeFormat("en-IN", {
-  day: "numeric",
-  month: "short",
-  timeZone: "Asia/Kolkata",
-});
+const formatters = new Map<string, Intl.DateTimeFormat>();
 
-function fmt(d: DateInput): string {
-  // en-IN yields "2 Oct"; normalise any locale punctuation/spacing.
-  return dayMonth.format(new Date(d)).replace(/\s+/g, " ").replace("Sept", "Sep");
-}
-
-/** "2 Oct to 16 Oct" in IST. */
-export function saleDateRange(startAt: DateInput, endAt: DateInput): string {
-  return `${fmt(startAt)} to ${fmt(endAt)}`;
+/** "2 Oct" (en) or "2 अक्टू॰" (hi), always in IST. */
+export function saleDay(d: DateInput, bcp47: string): string {
+  let f = formatters.get(bcp47);
+  if (!f) {
+    // en has no day-month order of its own; en-IN gives "2 Oct".
+    f = new Intl.DateTimeFormat(bcp47 === "en" ? "en-IN" : bcp47, { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+    formatters.set(bcp47, f);
+  }
+  // Normalise locale punctuation/spacing and the en-IN "Sept".
+  return f.format(new Date(d)).replace(/\s+/g, " ").replace("Sept", "Sep");
 }

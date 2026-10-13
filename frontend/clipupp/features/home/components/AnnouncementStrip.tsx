@@ -4,7 +4,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { campaignsApi } from "@/lib/api/campaigns";
 import { bannersApi } from "@/lib/api/banners";
 import { getHomeFeed } from "@/lib/home/getHomeFeed";
-import { festivalLabel } from "@/lib/format/festival";
+import { festivalDaysAway } from "@/lib/format/festival";
 import { anchorFor, renderedAnchors } from "@/lib/home/anchors";
 import { DiyaIcon } from "@/components/site/CategoryGlyph";
 import { AnnouncementDismissButton } from "./AnnouncementDismissButton";
@@ -24,7 +24,8 @@ export async function AnnouncementStrip() {
     resolveAnnouncement(),
     getTranslations("strip"),
   ]);
-  const label = feed.festival ? festivalLabel(feed.festival.name, feed.festival.date) : null;
+  const days = feed.festival ? festivalDaysAway(feed.festival.date) : null;
+  const label = feed.festival && days != null ? t("festival", { name: feed.festival.name, days }) : null;
   if (!label && !announcement) return null;
 
   const id = announcement?.id ?? `festival:${feed.festival?.name ?? ""}`;

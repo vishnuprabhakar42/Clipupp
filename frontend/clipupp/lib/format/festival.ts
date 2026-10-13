@@ -16,17 +16,16 @@ function dayNumberOf(dateISO: string): number {
     const [y, m, d] = dateISO.split("-").map(Number);
     return Math.round(Date.UTC(y, m - 1, d) / 86_400_000);
   }
-  return istDayNumber(new Date(dateISO));
+  const d = new Date(dateISO);
+  return Number.isNaN(d.getTime()) ? NaN : istDayNumber(d);
 }
 
 /**
- * "Diwali in 27 days", "Diwali is tomorrow", "Happy Diwali!" on the day,
- * null after it. Days are IST calendar days.
+ * IST calendar days from now until the festival: 0 on the day, 1 the day
+ * before, null once it has passed (or for an unreadable date). The strip
+ * turns this into copy through the `strip.festival` message.
  */
-export function festivalLabel(name: string, dateISO: string, now: Date = new Date()): string | null {
+export function festivalDaysAway(dateISO: string, now: Date = new Date()): number | null {
   const diff = dayNumberOf(dateISO) - istDayNumber(now);
-  if (Number.isNaN(diff) || diff < 0) return null;
-  if (diff === 0) return `Happy ${name}!`;
-  if (diff === 1) return `${name} is tomorrow`;
-  return `${name} in ${diff} days`;
+  return Number.isNaN(diff) || diff < 0 ? null : diff;
 }

@@ -1,22 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { festivalLabel } from "./festival";
+import { festivalDaysAway } from "./festival";
 
-describe("festivalLabel", () => {
+describe("festivalDaysAway", () => {
   const date = "2026-11-08";
   it("counts days ahead", () => {
-    expect(festivalLabel("Diwali", date, new Date("2026-10-12T06:00:00Z"))).toBe("Diwali in 27 days");
+    expect(festivalDaysAway(date, new Date("2026-10-12T06:00:00Z"))).toBe(27);
   });
-  it("says tomorrow", () => {
-    expect(festivalLabel("Diwali", date, new Date("2026-11-07T06:00:00Z"))).toBe("Diwali is tomorrow");
+  it("is 1 the day before", () => {
+    expect(festivalDaysAway(date, new Date("2026-11-07T06:00:00Z"))).toBe(1);
   });
-  it("greets on the day", () => {
-    expect(festivalLabel("Diwali", date, new Date("2026-11-08T20:00:00+05:30"))).toBe("Happy Diwali!");
+  it("is 0 on the day", () => {
+    expect(festivalDaysAway(date, new Date("2026-11-08T20:00:00+05:30"))).toBe(0);
   });
-  it("returns null after the day", () => {
-    expect(festivalLabel("Diwali", date, new Date("2026-11-09T00:30:00+05:30"))).toBeNull();
+  it("is null after the day", () => {
+    expect(festivalDaysAway(date, new Date("2026-11-09T00:30:00+05:30"))).toBeNull();
   });
   it("uses IST calendar days near midnight", () => {
     // 2026-11-07T19:00Z is already 8 Nov 00:30 IST
-    expect(festivalLabel("Diwali", date, new Date("2026-11-07T19:00:00Z"))).toBe("Happy Diwali!");
+    expect(festivalDaysAway(date, new Date("2026-11-07T19:00:00Z"))).toBe(0);
+  });
+  it("is null for an unreadable date", () => {
+    expect(festivalDaysAway("soon", new Date("2026-11-07T19:00:00Z"))).toBeNull();
   });
 });
