@@ -7,7 +7,7 @@ type SavedSheetState = Seed & {
   isOpen: boolean;
   open: () => void;
   close: () => void;
-  /** Homepage feed slices (see `toSavedSeed`) so saved rows render without a fetch. */
+  /** Homepage feed slices (`SavedSheetSeed`, typed as `SavedSeed`) so saved rows render without a fetch. */
   seed: (seed: SavedSeed) => void;
 };
 

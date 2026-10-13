@@ -50,14 +50,14 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
             {deal.reviews != null && <span>({shortCount(deal.reviews)})</span>}
           </p>
         )}
-        {/* Price and MRP share a line (the MRP drops whole below a long price, never
-            truncated); "% off" always sits on its own line so cards align. */}
-        <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-1 whitespace-nowrap">
-          <span className="clipupp-amt text-[19px] font-extrabold leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
+        {/* Price and MRP always share one line (the MRP truncates on a narrow card,
+            the price steps down below sm); "% off" sits on its own line so cards align. */}
+        <p className="mt-1.5 flex items-baseline gap-x-1.5 overflow-hidden whitespace-nowrap">
+          <span className="clipupp-amt shrink-0 text-[17px] font-extrabold sm:text-[19px] leading-none tracking-[-0.02em] text-clipupp-neutral-900 [font-family:var(--font-sans)]">
             {nf.format(deal.price)}
           </span>
           {deal.mrp != null && deal.mrp > deal.price && (
-            <span className="clipupp-amt text-[12.5px] text-clipupp-neutral-500 line-through">{nf.format(deal.mrp)}</span>
+            <span className="clipupp-amt min-w-0 truncate text-[12.5px] text-clipupp-neutral-500 line-through">{nf.format(deal.mrp)}</span>
           )}
         </p>
         {showOff && deal.mrp != null && deal.mrp > deal.price && (
