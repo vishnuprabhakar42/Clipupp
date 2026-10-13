@@ -8,6 +8,9 @@ import { ArrowUpRight, BookmarkX, Sparkles } from "lucide-react";
 import { savedCouponsApi, type SavedCouponItem } from "@/lib/api/savedCoupons";
 import { isApiError } from "@/lib/api/errors";
 
+/** Fixed locale and zone so the server and the browser render the same date (no hydration mismatch). */
+const SAVED_DATE = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+
 /**
  * Saved-coupon card with inline remove. Click the title → navigates to the
  * coupon. Click the X → optimistic remove + DELETE call. On failure, the
@@ -83,7 +86,7 @@ export function SavedCouponCard({ item }: { item: SavedCouponItem }) {
         </div>
 
         <div className="mt-auto flex items-center justify-between pt-2 text-[11px] text-clipupp-neutral-400">
-          <span>Saved {new Date(item.savedAt).toLocaleDateString()}</span>
+          <span>Saved {SAVED_DATE.format(new Date(item.savedAt))}</span>
           <span className="inline-flex items-center gap-0.5 font-semibold text-clipupp-accent opacity-0 transition group-hover:opacity-100">
             View
             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
