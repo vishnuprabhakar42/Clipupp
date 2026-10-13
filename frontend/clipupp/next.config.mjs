@@ -31,7 +31,8 @@ const CSP_REPORT_ONLY = [
   "form-action 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  // `upgrade-insecure-requests` is ignored in a report-only policy (browsers log
+  // a console error for it); add it back when this switches to enforcement.
 ].join("; ");
 
 /** @type {import('next').NextConfig} */
