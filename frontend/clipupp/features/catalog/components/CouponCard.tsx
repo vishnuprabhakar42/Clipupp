@@ -9,7 +9,8 @@ import { RevealButton } from "./RevealButton";
 import { SaveHeart } from "./SaveHeart";
 import { StoreTile } from "./StoreTile";
 import { CouponRow } from "./CouponRow";
-import { CARD_HOVER, Tag } from "./cardBits";
+import { CARD_HOVER, Tag, TITLE_LINK } from "./cardBits";
+import { Link } from "@/lib/i18n/navigation";
 
 export type CouponCardProps = {
   coupon: FeedCoupon;
@@ -56,7 +57,13 @@ export async function CouponCard({ coupon, store, category = null, variant = "ca
         <SaveHeart couponId={coupon.id} storeName={store.name} className="-mr-2 -mt-2 self-start" />
       </div>
       <h3 className="mt-3 font-display text-[20px] font-semibold leading-tight text-clipupp-neutral-900">
-        {wrapNumbers(coupon.title)}
+        {coupon.slug ? (
+          <Link href={`/coupons/${coupon.slug}`} className={TITLE_LINK}>
+            {wrapNumbers(coupon.title)}
+          </Link>
+        ) : (
+          wrapNumbers(coupon.title)
+        )}
       </h3>
       <p className="mt-1.5 line-clamp-2 text-[13.5px] leading-snug text-clipupp-neutral-500">{coupon.terms}</p>
       <div className="mt-3 flex flex-wrap gap-1.5">
