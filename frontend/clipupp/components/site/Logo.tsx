@@ -92,7 +92,9 @@ export function LogoWordmark({
       sizes={`${width}px`}
       priority={priority}
       className={className}
-      style={{ height, width: "auto" }}
+      // Both sides in px and equal to the attributes: an "auto" side renders a
+      // fractional width, which next/image reports as a one-sided resize.
+      style={{ height, width }}
     />
   );
 }
@@ -122,7 +124,7 @@ export function Logo({
   height?: number;
   priority?: boolean;
   className?: string;
-  /** Classes for the <img>; use `!h-[..]` to override the inline height responsively. */
+  /** Classes for the <img>; override the inline size responsively with both `!h-[..]` and `!w-[..]` (keep the aspect). */
   imgClassName?: string;
 }) {
   return (
