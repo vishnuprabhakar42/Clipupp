@@ -544,8 +544,6 @@
       "unsave": "Remove {store} coupon"
     },
     "ui": {
-      "shareDeal": "Share this deal",
-      "share": "Share",
       "copyCode": "Copy code",
       "visitMerchant": "Visit merchant",
       "jumpToLetter": "Jump to letter",

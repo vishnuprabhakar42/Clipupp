@@ -201,10 +201,6 @@
     --ring: 274 67% 48%;
     --radius: 0.5rem;
 
-    /* ── Sticky header offset — scroll-padding so anchored links don't hide. */
-    --header-h: 64px;
-    --header-h-lg: 72px;
-
     /* ── Typography — Inter (body) + Manrope (display) loaded via next/font
           in app/[locale]/layout.tsx; the `--font-sans` and `--font-display`
           vars are injected by Next so the values below are inherit fallbacks
