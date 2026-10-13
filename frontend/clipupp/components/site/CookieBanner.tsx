@@ -14,8 +14,10 @@ import { useTranslations } from "next-intl";
  * Necessary; "Accept all" and "Customize" are equally prominent so the choice
  * is genuinely free, required under GDPR.
  *
- * Lazy-rendered on the client only after the document is interactive so it
- * never blocks LCP.
+ * Shown on the visitor's first interaction (scroll, pointer, key). Browsers
+ * stop recording LCP at the first input or scroll, so the banner can never
+ * become the LCP element (a 1.2s timer made it the mobile LCP at ~5.7s).
+ * Until a choice is made only Necessary cookies apply.
  */
 export function CookieBanner() {
   const t = useTranslations("chrome.cookie");
@@ -25,12 +27,16 @@ export function CookieBanner() {
   const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
-    // Wait until after first paint so the banner doesn't compete for LCP.
-    const handle = window.setTimeout(() => {
-      const choice = readConsent();
-      if (!choice) setOpen(true);
-    }, 1200);
-    return () => window.clearTimeout(handle);
+    if (readConsent()) return;
+    const events = ["scroll", "pointerdown", "keydown", "touchstart"] as const;
+    const show = () => {
+      for (const e of events) window.removeEventListener(e, show);
+      if (!readConsent()) setOpen(true);
+    };
+    for (const e of events) window.addEventListener(e, show, { once: true, passive: true });
+    return () => {
+      for (const e of events) window.removeEventListener(e, show);
+    };
   }, []);
 
   function decide(choice: { analytics: boolean; marketing: boolean }) {
