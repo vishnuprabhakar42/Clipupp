@@ -13,7 +13,7 @@ export async function BankOfferCard({ offer, store }: { offer: FeedBankOffer; st
   return (
     <article
       data-bank-card
-      className={`flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-[18px] ${HOVER}`}
+      className={`flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-3.5 ${HOVER}`}
     >
       <div
         aria-hidden
@@ -26,11 +26,11 @@ export async function BankOfferCard({ offer, store }: { offer: FeedBankOffer; st
         <span className="absolute bottom-3 left-3.5 h-4 w-[22px] rounded-[4px] bg-gradient-to-br from-clipupp-gold to-[#c9a03c]" />
         <span className="absolute -right-8 -top-6 h-[120px] w-[120px] rounded-full bg-white/15" />
       </div>
-      <h3 className="mt-3.5 font-display text-[20px] font-semibold leading-tight text-clipupp-neutral-900">
+      <h3 className="mt-2 font-display text-[20px] font-semibold leading-tight text-clipupp-neutral-900">
         {wrapNumbers(offer.title)}
       </h3>
       <p className="mt-1.5 text-[13.5px] leading-[1.6] text-clipupp-neutral-600">{offer.terms}</p>
-      <div className="mt-auto pt-4">
+      <div className="mt-auto pt-3">
         <StoreFilterButton storeSlug={store.id} variant="bank" ariaLabel={t("onAria", { store: store.name })}>
           <StoreTile store={store} size={24} className="!rounded-md !p-0.5" />
           <span>{t("on", { store: displayShortName(store.name) })}</span>

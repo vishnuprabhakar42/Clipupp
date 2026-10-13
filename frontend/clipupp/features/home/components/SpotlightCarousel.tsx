@@ -127,7 +127,7 @@ export function SpotlightCarousel({
         ref={railRef}
         onMouseEnter={() => (hovered.current = true)}
         onMouseLeave={() => (hovered.current = false)}
-        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-5 pt-1 sm:-mx-6 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
+        className="clipupp-no-scrollbar relative -mx-4 flex scroll-pl-4 snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-5 pt-1 lg:pb-4 sm:-mx-6 sm:scroll-pl-6 sm:px-6 lg:mx-0 lg:scroll-pl-0 lg:gap-0 lg:px-0"
       >
         {slides.map((s, i) => {
           const store = stores.find((x) => x.id === s.store) ?? fallbackStore(s.store);
@@ -237,7 +237,7 @@ export function SpotlightCarousel({
               type="button"
               aria-label={t("prev")}
               onClick={() => step(-1)}
-              className="grid h-11 w-11 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
+              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
             >
               <ChevronLeft className="h-5 w-5" aria-hidden />
             </button>
@@ -245,7 +245,7 @@ export function SpotlightCarousel({
               type="button"
               aria-label={t("next")}
               onClick={() => step(1)}
-              className="grid h-11 w-11 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
+              className="grid h-10 w-10 place-items-center rounded-full border border-clipupp-neutral-200 bg-clipupp-surface text-clipupp-neutral-900 transition hover:border-clipupp-primary active:scale-[0.92]"
             >
               <ChevronRight className="h-5 w-5" aria-hidden />
             </button>

@@ -23,7 +23,7 @@ export function SectionHeader({
   eyebrowTone?: "brand" | "danger";
 }) {
   return (
-    <div className="clipupp-reveal mb-7 flex flex-col items-start justify-between gap-3 md:flex-row md:items-end md:gap-6">
+    <div className="clipupp-reveal mb-[22px] flex flex-col items-start justify-between gap-3 md:flex-row md:items-end md:gap-6">
       <div>
         {eyebrow && (
           <span

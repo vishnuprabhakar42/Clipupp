@@ -234,7 +234,7 @@ export function TodaysCouponsClient({
         </div>
       </div>
 
-      <div className="mb-2.5 mt-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-3 mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           <p className="text-[14px] text-clipupp-neutral-700" aria-live="polite">
             {resetting ? t("loading") : t("count", { count: visible.length })}
