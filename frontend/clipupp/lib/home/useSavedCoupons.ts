@@ -7,6 +7,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { savedCouponsApi } from "@/lib/api/savedCoupons";
 import { notify, notifyError } from "@/components/site/Toast";
+import { useSavedSheet } from "./useSavedSheet";
 
 type SavedState = {
   ids: string[];
@@ -75,7 +76,22 @@ export function useSavedCoupons() {
     [user, t]
   );
 
-  return { ids, hydrated, count: ids.length, has, toggle };
+  return { ids, hydrated, has, toggle };
+}
+
+/**
+ * Badge count for the header heart and the bottom nav: what the saved sheet
+ * can show. Signed in, every id counts (the sheet links to the account page
+ * for any it cannot render); a guest's ids that cannot render are left out.
+ */
+export function useSavedCount() {
+  const { user } = useAuth();
+  const ids = useSavedStore((s) => s.ids);
+  const hydrated = useSavedStore((s) => s.hydrated);
+  const unresolved = useSavedSheet((s) => s.unresolved);
+  useEffect(ensureHydrated, []);
+  const count = user ? ids.length : ids.filter((id) => !unresolved.includes(id)).length;
+  return { count, hydrated };
 }
 
 const MERGE_FLAG = "clipupp:saved-merged";

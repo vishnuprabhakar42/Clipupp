@@ -17,7 +17,7 @@ import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { CategoriesMenu, type MenuCategory } from "@/components/site/CategoriesMenu";
 import { HeaderSearch, type HeaderSearchFeed } from "@/features/catalog/components/HeaderSearch";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { useMergeSavedOnLogin, useSavedCoupons } from "@/lib/home/useSavedCoupons";
+import { useMergeSavedOnLogin, useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
 
 export type HeaderFeed = {
@@ -103,7 +103,7 @@ function useCollapseOnScroll() {
 
 function SavedButton() {
   const t = useTranslations("header");
-  const { count, hydrated } = useSavedCoupons();
+  const { count, hydrated } = useSavedCount();
   const open = useSavedSheet((s) => s.open);
   return (
     <button type="button" aria-label={t("saved")} onClick={open} className={ICON_BTN}>
