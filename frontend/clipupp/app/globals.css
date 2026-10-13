@@ -688,7 +688,8 @@
         Prose: max line-length for editorial text. */
   .clipupp-container {
     /* Design v3 container: 1240px max with a 16/24/32px gutter, so content
-       spans 1176px on desktop (header, homepage sections and footer align). */
+       spans 1176px on desktop (header, homepage sections and footer align).
+       1320px from 1536px (2xl), see "responsive scale" at the end of this file. */
     @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8;
   }
   .clipupp-section {
@@ -1539,9 +1540,12 @@
   @media (min-width: 640px) {
     .clipupp-rail { --rail-col: var(--rail-col-sm, var(--rail-col-base, 280px)); }
   }
+  @media (min-width: 768px) {
+    .clipupp-rail { --rail-col: var(--rail-col-md, var(--rail-col-sm, var(--rail-col-base, 280px))); }
+  }
   @media (min-width: 1024px) {
     .clipupp-rail {
-      --rail-col: var(--rail-col-lg, var(--rail-col-sm, var(--rail-col-base, 280px)));
+      --rail-col: var(--rail-col-lg, var(--rail-col-md, var(--rail-col-sm, var(--rail-col-base, 280px))));
       --rail-gap: var(--rail-gap-lg, 24px);
     }
   }
@@ -1722,13 +1726,27 @@
   :root:not([data-theme="light"]) .clipupp-ph { --ph-mix: 16%; --ph-fg-mix: 60%; }
 }
 
-/* Top stores grid (design `renderStores`): 7 tiles below lg and 12 at lg, each
+/* Top stores grid (design `renderStores`): 7 tiles below md and 12 from md, each
    followed by an "All stores" tile that reveals the rest. Tier m is index 7 to
    11, tier x is 12+. */
-@media (max-width: 1023.98px) {
+@media (max-width: 767.98px) {
   .clipupp-stores:not([data-open]) > li[data-tier] { display: none; }
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .clipupp-stores:not([data-open]) > li[data-tier="x"] { display: none; }
   .clipupp-stores > li[data-all="base"] { display: none; }
+}
+
+/* responsive scale */
+/* Fluid display type: phone floor, 1440 design ceiling. The H1 slope runs
+   28px at 320 to 56px at 1440 (20px + 2.5vw). */
+:root {
+  --fs-h1: clamp(28px, 1.25rem + 2.5vw, 56px);
+  --fs-h2: clamp(22px, 1.2rem + 1vw, 32px);
+  --fs-lead: clamp(15px, 0.9rem + 0.35vw, 18px);
+}
+/* Wide screens (Tailwind 2xl, 1536px): the page grows to 1320px. The 1440
+   design keeps its 1240px container. */
+@media (min-width: 1536px) {
+  .clipupp-container { max-width: 1320px; }
 }

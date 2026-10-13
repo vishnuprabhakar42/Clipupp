@@ -32,7 +32,7 @@ export function SectionHeader({
             {eyebrow}
           </span>
         )}
-        <h2 id={id} className="text-balance font-display text-[23px] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900 sm:text-[28px] lg:text-[32px]">{title}</h2>
+        <h2 id={id} className="text-balance font-display text-[length:var(--fs-h2)] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900">{title}</h2>
         {sub && <p className="mt-1.5 text-[15px] text-clipupp-neutral-600">{sub}</p>}
       </div>
       {(link || actions) && (

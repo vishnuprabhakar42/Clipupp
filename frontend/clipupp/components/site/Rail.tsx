@@ -83,8 +83,8 @@ export type RailProps = {
   ariaLabel: string;
   children: ReactNode;
   className?: string;
-  /** CSS width expressions per breakpoint: sm = 640px+, lg = 1024px+. */
-  cols: { base: string; sm?: string; lg?: string };
+  /** CSS width expressions per breakpoint: sm = 640px+, md = 768px+, lg = 1024px+. */
+  cols: { base: string; sm?: string; md?: string; lg?: string };
   /** Gap in px. A number applies to all sizes; default 16 base, 24 lg. */
   gap?: number | { base?: number; lg?: number };
   /** Show arrows (lg+). Default true. */
@@ -157,6 +157,7 @@ export function Rail({
   const style = {
     "--rail-col-base": cols.base,
     ...(cols.sm ? { "--rail-col-sm": cols.sm } : null),
+    ...(cols.md ? { "--rail-col-md": cols.md } : null),
     ...(cols.lg ? { "--rail-col-lg": cols.lg } : null),
     ...(gapBase != null ? { "--rail-gap-base": `${gapBase}px` } : null),
     ...(gapLg != null ? { "--rail-gap-lg": `${gapLg}px` } : null),

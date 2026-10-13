@@ -9,7 +9,7 @@ const DESKTOP = 12;
 const COMPACT = 7;
 
 /**
- * Top stores v3: 12 tiles at lg+ and 7 below, each followed by an "All stores"
+ * Top stores v3: 12 tiles at md+ and 7 below, each followed by an "All stores"
  * tile when more exist. All tiles render on the server; CSS (`.clipupp-stores`)
  * and the expander decide which show.
  */

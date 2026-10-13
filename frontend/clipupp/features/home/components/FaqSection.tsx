@@ -16,11 +16,11 @@ export async function FaqSection({ feed }: { feed: HomeFeed }) {
     })),
   };
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-8 sm:pt-12 lg:grid-cols-[4fr_7fr] lg:gap-16 lg:pt-16">
+    <section id="faq" aria-labelledby="faq-heading" className="clipupp-container grid gap-8 pt-8 sm:pt-12 md:grid-cols-[4fr_7fr] md:gap-12 lg:gap-16 lg:pt-16">
       <JsonLd data={ld} />
       <div className="clipupp-reveal">
         <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>
-        <h2 id="faq-heading" className="text-balance font-display text-[23px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[28px] lg:text-[32px] text-clipupp-neutral-900">{t("title")}</h2>
+        <h2 id="faq-heading" className="text-balance font-display text-[length:var(--fs-h2)] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900">{t("title")}</h2>
         {feed.supportEmail && <p className="mt-2 max-w-[40ch] text-[14.5px] leading-normal text-clipupp-neutral-600">{t("stuck", { email: feed.supportEmail })}</p>}
       </div>
       <div className="clipupp-reveal border-b border-clipupp-neutral-200" style={{ "--i": 1 } as React.CSSProperties}>

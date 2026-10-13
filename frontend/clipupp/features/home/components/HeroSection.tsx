@@ -17,8 +17,9 @@ const fmt = (n: number) => n.toLocaleString("en-IN");
 
 /**
  * Hero (v3). Tint band with a corner glow; copy on the left, spotlight
- * carousel on the right at lg+. The H1 is the LCP element: plain server text
- * whose entrance animates transform only (clipupp-fx-lcp). Admin copy from
+ * carousel on the right from md (44%), stacked below md. The H1 is the LCP
+ * element: plain server text whose entrance animates transform only
+ * (clipupp-fx-lcp), sized by the fluid --fs-h1 token. Admin copy from
  * the section row wins over the message defaults. Numbers are rendered final
  * (no count-up) so there is no hydration jump.
  */
@@ -60,14 +61,14 @@ export async function HeroSection({
       className="border-b border-clipupp-neutral-100"
       style={{ background: "radial-gradient(900px 300px at 90% -20%, var(--clipupp-tint-200), transparent), var(--clipupp-tint-50)" }}
     >
-      <div className="clipupp-container grid items-center gap-7 pb-3 pt-6 sm:py-[52px] lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
+      <div className="clipupp-container grid items-center gap-7 pb-3 pt-6 sm:py-[52px] md:grid-cols-[minmax(0,1fr)_44%] md:gap-10 lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
         <div className="min-w-0">
           <p className="clipupp-fx text-[11.5px] font-semibold uppercase tracking-[0.07em] text-clipupp-primary" style={fx(0)}>
             {t("eyebrow")}
           </p>
           <h1
             id="hero-heading"
-            className="clipupp-fx-lcp mt-2.5 max-w-[17ch] sm:max-w-none font-display text-[28px] font-bold leading-[1.08] tracking-[-0.01em] text-clipupp-neutral-900 [text-wrap:balance] sm:text-[40px] lg:mt-3.5 lg:text-[56px]"
+            className="clipupp-fx-lcp mt-2.5 max-w-[17ch] sm:max-w-none font-display text-[length:var(--fs-h1)] font-bold leading-[1.08] tracking-[-0.01em] text-clipupp-neutral-900 [text-wrap:balance] lg:mt-3.5"
             style={fx(1)}
           >
             {title ||
@@ -75,7 +76,7 @@ export async function HeroSection({
                 em: (chunks) => <em className="not-italic text-clipupp-primary">{chunks}</em>,
               })}
           </h1>
-          <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[15px] leading-[1.55] text-clipupp-neutral-700 lg:text-[18px]" style={fx(2)}>
+          <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[length:var(--fs-lead)] leading-[1.55] text-clipupp-neutral-700" style={fx(2)}>
             {subtitle}
           </p>
           <div className="clipupp-fx mt-6 hidden max-w-[560px] lg:block" style={fx(3)}>
