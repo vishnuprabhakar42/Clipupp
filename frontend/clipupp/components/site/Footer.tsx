@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Instagram, Youtube, Facebook, Linkedin, ShieldCheck, Tag, Store as StoreIcon } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { Logo } from "@/components/site/Logo";
-import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
+import { LocaleSegmented } from "@/components/site/LocaleSegmented";
 import { FooterColumn } from "@/components/site/FooterColumn";
 import { CopyEmailButton } from "@/components/site/CopyEmailButton";
 import { BackToTop } from "@/components/site/BackToTop";
@@ -175,7 +175,7 @@ export async function Footer() {
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--clipupp-ft-line)] pt-6">
           <span className="text-[13px] text-clipupp-ft-ink-3">{t("copyright", { year })}</span>
-          <LocaleSwitcher variant="segmented" />
+          <LocaleSegmented />
           <BackToTop label={t("backToTop")} />
         </div>
       </div>

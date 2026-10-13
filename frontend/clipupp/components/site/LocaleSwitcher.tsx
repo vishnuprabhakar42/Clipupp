@@ -1,7 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
 import {
   DropdownMenu,
@@ -9,15 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname, useRouter } from "@/lib/i18n/navigation";
-import { locales, type Locale } from "@/lib/i18n/config";
-
-// Display labels for each supported locale. Native script for each language
-// is the convention - Wikipedia, Google etc. all do this.
-const LABELS: Record<Locale, string> = {
-  en: "English",
-  hi: "हिन्दी",
-};
+import { locales } from "@/lib/i18n/config";
+import { LOCALE_LABELS as LABELS, useSwitchLocale } from "@/components/site/LocaleSegmented";
 
 /**
  * Locale switcher - uses next-intl's locale-aware router so the URL
@@ -25,52 +17,22 @@ const LABELS: Record<Locale, string> = {
  * English). This is the right pattern for SEO hreflang: each locale has a
  * distinct, canonical URL that crawlers can index independently.
  *
+ * The footer's two-button group is `LocaleSegmented`, kept in its own file so
+ * it does not pull Radix into the first-load bundle.
+ *
  * Variants:
  *   `pill` - labeled chip with globe icon; used inside the header desktop.
- *   `segmented` - two-button English | हिन्दी group for the dark footer.
  *   `icon` - globe-only square button; used in the mobile bottom nav.
  */
 export function LocaleSwitcher({
   variant = "pill",
   align = "end",
 }: {
-  variant?: "pill" | "icon" | "segmented";
+  variant?: "pill" | "icon";
   align?: "start" | "end";
 }) {
   const t = useTranslations("chrome");
-  const locale = useLocale() as Locale;
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
-
-  function switchTo(next: Locale) {
-    if (next === locale) return;
-    startTransition(() => {
-      router.replace(pathname, { locale: next });
-    });
-  }
-
-  if (variant === "segmented") {
-    return (
-      <div role="group" aria-label={t("language")} className="inline-flex items-center gap-1">
-        {locales.map((loc) => (
-          <button
-            key={loc}
-            type="button"
-            lang={loc}
-            aria-pressed={loc === locale}
-            disabled={isPending}
-            onClick={() => switchTo(loc)}
-            className={`h-8 rounded-full px-3 text-[13px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent disabled:opacity-60 ${
-              loc === locale ? "bg-white/10 text-clipupp-ft-ink" : "text-clipupp-ft-ink-2 hover:text-clipupp-ft-ink"
-            }`}
-          >
-            {LABELS[loc]}
-          </button>
-        ))}
-      </div>
-    );
-  }
+  const { locale, isPending, switchTo } = useSwitchLocale();
 
   return (
     <DropdownMenu>

@@ -1,17 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Bell, Heart, LogOut, User } from "lucide-react";
-import { Link, useRouter } from "@/lib/i18n/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Bell, Heart, User } from "lucide-react";
+import { Link } from "@/lib/i18n/navigation";
 import { Logo } from "@/components/site/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { CategoriesMenu, type MenuCategory } from "@/components/site/CategoriesMenu";
@@ -147,54 +139,62 @@ function Account() {
   );
 }
 
+const AVATAR_BTN =
+  "ml-1 grid h-9 w-9 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-clipupp-primary-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2";
+
+type MenuPanel = typeof import("@/components/site/UserMenuPanel").UserMenuPanel;
+
+/**
+ * Avatar trigger. Renders as a plain button so the signed-in state paints
+ * without Radix; the dropdown (`UserMenuPanel`) loads on the first pointer
+ * down or focus and replaces it, opening straight away if it was pressed
+ * and taking focus over if the button had it. A manual `import()` rather than
+ * next/dynamic, so this button itself stays on screen while the chunk loads.
+ */
 function UserMenu() {
   const auth = useAuth();
   const t = useTranslations("header");
-  const router = useRouter();
+  const [Panel, setPanel] = useState<MenuPanel | null>(null);
+  const [openOnLoad, setOpenOnLoad] = useState(false);
+  const [focusOnLoad, setFocusOnLoad] = useState(false);
+  const loading = useRef(false);
   if (!auth.user) return null;
-  const { name, email, roles } = auth.user;
+  const { name, email } = auth.user;
   const initial = (name || email)[0]?.toUpperCase() ?? "U";
-  const isAdmin = roles.includes("ADMIN") || roles.includes("SUPER_ADMIN");
 
-  async function handleLogout() {
-    await auth.logout();
-    router.push("/");
-    router.refresh();
+  function load() {
+    if (loading.current) return;
+    loading.current = true;
+    void import("@/components/site/UserMenuPanel").then((m) => setPanel(() => m.UserMenuPanel));
   }
 
+  if (Panel) {
+    return <Panel initial={initial} triggerClassName={AVATAR_BTN} defaultOpen={openOnLoad} autoFocus={focusOnLoad} />;
+  }
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          className="ml-1 grid h-9 w-9 place-items-center rounded-full bg-clipupp-primary text-sm font-semibold text-clipupp-primary-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary focus-visible:ring-offset-2"
-          aria-label={t("openAccountMenu")}
-        >
-          {initial}
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          {name && <span className="truncate text-sm font-medium">{name}</span>}
-          <span className="truncate text-xs font-normal text-muted-foreground">{email}</span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild><Link href="/account">{t("overview")}</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/saved-coupons">{t("savedCoupons")}</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/click-history">{t("clickHistory")}</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/profile">{t("profile")}</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link href="/account/preferences">{t("preferences")}</Link></DropdownMenuItem>
-        {isAdmin && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/admin">{t("adminDashboard")}</Link></DropdownMenuItem>
-          </>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive" onSelect={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" aria-hidden />
-          {t("signOut")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button
+      type="button"
+      className={AVATAR_BTN}
+      aria-label={t("openAccountMenu")}
+      aria-haspopup="menu"
+      aria-expanded={false}
+      onPointerDown={(e) => {
+        // Radix opens its trigger on pointer down; mirror that so a press that
+        // lands while the panel loads still opens it.
+        if (e.button === 0 && !e.ctrlKey) setOpenOnLoad(true);
+        load();
+      }}
+      onFocus={() => {
+        setFocusOnLoad(true);
+        load();
+      }}
+      onBlur={() => setFocusOnLoad(false)}
+      onClick={() => {
+        setOpenOnLoad(true);
+        load();
+      }}
+    >
+      {initial}
+    </button>
   );
 }
