@@ -33,6 +33,7 @@ export function DealsRailClient({
       )}
       <Rail
         id={railId}
+        resetKey={store}
         ariaLabel={t("railAria")}
         cols={{ base: "46%", sm: "30%", lg: "calc((100% - 100px) / 6)" }}
         gap={20}

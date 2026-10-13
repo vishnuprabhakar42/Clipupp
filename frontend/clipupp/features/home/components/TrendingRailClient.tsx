@@ -35,6 +35,7 @@ export function TrendingRailClient({
       )}
       <Rail
         id={railId}
+        resetKey={cat}
         ariaLabel={t("railAria")}
         cols={{ base: "80%", sm: "46%", lg: "calc((100% - 72px) / 4)" }}
         gap={{ base: 16, lg: 24 }}

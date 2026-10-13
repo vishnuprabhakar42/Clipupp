@@ -295,7 +295,7 @@ export function HeaderSearch({
             "flex items-center border border-clipupp-neutral-200 transition focus-within:border-clipupp-primary focus-within:bg-clipupp-surface focus-within:ring-2 focus-within:ring-clipupp-primary/20",
             hero
               ? "h-[58px] gap-2.5 bg-clipupp-surface pl-5 pr-[7px] shadow-card"
-              : "h-11 gap-2 bg-clipupp-neutral-50 px-3.5 lg:h-[46px]",
+              : "h-11 gap-2 bg-clipupp-page px-3.5 lg:h-[46px]",
             pill ? "rounded-full" : "rounded-lg",
           )}
         >
