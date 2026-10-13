@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { __resetToastBus, isToasterWanted, subscribeToasterWanted, toastReady, withToast } from "./bus";
+import { __resetToastBus, isToasterWanted, subscribeToasterWanted, toastGone, toastReady, withToast } from "./bus";
 
 type Api = Parameters<typeof toastReady>[0];
 const fakeApi = () => ({ custom: vi.fn() }) as unknown as Api;
@@ -32,5 +32,21 @@ describe("toast bus", () => {
     withToast(() => {});
     expect(isToasterWanted()).toBe(true);
     expect(listener).toHaveBeenCalledTimes(1);
+  });
+
+  it("queues again and asks for the toaster after it unmounts", () => {
+    const first = fakeApi();
+    toastReady(first);
+    toastGone();
+    const listener = vi.fn();
+    subscribeToasterWanted(listener);
+    const job = vi.fn();
+    withToast(job);
+    expect(job).not.toHaveBeenCalled();
+    expect(isToasterWanted()).toBe(true);
+    expect(listener).toHaveBeenCalledTimes(1);
+    const second = fakeApi();
+    toastReady(second);
+    expect(job).toHaveBeenCalledWith(second);
   });
 });

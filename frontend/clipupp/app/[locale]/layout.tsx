@@ -140,7 +140,6 @@ export default async function LocaleLayout({
             on the page doesn't pay the TCP+TLS handshake cost. */}
         <link rel="preconnect" href="https://logo.clearbit.com" />
         <link rel="preconnect" href="https://placehold.co" />
-        <link rel="preconnect" href={process.env.NEXT_PUBLIC_MEDIA_ORIGIN ?? "https://pub-e786049ca02d4c5fab01494fd6012521.r2.dev"} crossOrigin="" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://api.dicebear.com" />
         <link rel="dns-prefetch" href="https://upload.wikimedia.org" />

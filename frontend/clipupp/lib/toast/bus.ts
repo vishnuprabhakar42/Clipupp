@@ -38,6 +38,15 @@ export function toastReady(next: ToastApi): void {
   for (const job of pending) job(next);
 }
 
+/**
+ * Called when the mounted toaster unmounts (a layout remount): drops the api
+ * so later jobs queue again and re-flag the toaster as wanted.
+ */
+export function toastGone(): void {
+  api = null;
+  wanted = false;
+}
+
 export function isToasterWanted(): boolean {
   return wanted;
 }

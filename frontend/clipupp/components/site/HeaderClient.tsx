@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Bell, Heart, User } from "lucide-react";
-import { Link } from "@/lib/i18n/navigation";
+import { Link, useRouter } from "@/lib/i18n/navigation";
 import { Logo } from "@/components/site/Logo";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { CategoriesMenu, type MenuCategory } from "@/components/site/CategoriesMenu";
@@ -157,7 +157,10 @@ function UserMenu() {
   const [Panel, setPanel] = useState<MenuPanel | null>(null);
   const [openOnLoad, setOpenOnLoad] = useState(false);
   const [focusOnLoad, setFocusOnLoad] = useState(false);
+  const router = useRouter();
   const loading = useRef(false);
+  const pressed = useRef(false);
+  const fellBack = useRef(false);
   if (!auth.user) return null;
   const { name, email } = auth.user;
   const initial = (name || email)[0]?.toUpperCase() ?? "U";
@@ -165,7 +168,17 @@ function UserMenu() {
   function load() {
     if (loading.current) return;
     loading.current = true;
-    void import("@/components/site/UserMenuPanel").then((m) => setPanel(() => m.UserMenuPanel));
+    import("@/components/site/UserMenuPanel")
+      .then((m) => setPanel(() => m.UserMenuPanel))
+      .catch(() => {
+        // Let the next press retry. A press that cannot open the menu goes
+        // to the account page instead, once; a focus preload stays put.
+        loading.current = false;
+        if (pressed.current && !fellBack.current) {
+          fellBack.current = true;
+          router.push("/account");
+        }
+      });
   }
 
   if (Panel) {
@@ -181,7 +194,10 @@ function UserMenu() {
       onPointerDown={(e) => {
         // Radix opens its trigger on pointer down; mirror that so a press that
         // lands while the panel loads still opens it.
-        if (e.button === 0 && !e.ctrlKey) setOpenOnLoad(true);
+        if (e.button === 0 && !e.ctrlKey) {
+          pressed.current = true;
+          setOpenOnLoad(true);
+        }
         load();
       }}
       onFocus={() => {
@@ -190,6 +206,7 @@ function UserMenu() {
       }}
       onBlur={() => setFocusOnLoad(false)}
       onClick={() => {
+        pressed.current = true;
         setOpenOnLoad(true);
         load();
       }}
