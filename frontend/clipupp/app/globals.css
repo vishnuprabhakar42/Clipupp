@@ -1748,17 +1748,18 @@
 }
 
 /* interaction polish */
-/* Card top highlight: a 1px inner light line. Riding on Tailwind's
+/* Card top highlight: a 1px inner light line. Named .clipupp-hl so it never
+   collides with the base .clipupp-card primitive. Riding on Tailwind's
    ring-offset slot keeps it under a hover `shadow-*` utility instead of being
    replaced by it. */
-:root { --clipupp-card-hl: rgb(255 255 255 / 0.6); }
-:root[data-theme="dark"] { --clipupp-card-hl: rgb(255 255 255 / 0.06); }
+:root { --clipupp-hl-line: rgb(255 255 255 / 0.6); }
+:root[data-theme="dark"] { --clipupp-hl-line: rgb(255 255 255 / 0.06); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --clipupp-card-hl: rgb(255 255 255 / 0.06); }
+  :root:not([data-theme="light"]) { --clipupp-hl-line: rgb(255 255 255 / 0.06); }
 }
 @layer components {
-  .clipupp-card {
-    --tw-ring-offset-shadow: inset 0 1px 0 var(--clipupp-card-hl);
+  .clipupp-hl {
+    --tw-ring-offset-shadow: inset 0 1px 0 var(--clipupp-hl-line);
     box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow, 0 0 #0000);
   }
   /* Press feedback for buttons and chips. Uses the `scale` property so it
@@ -1816,4 +1817,17 @@
 .clipupp-tab-ink[data-ready] { transition: transform 200ms cubic-bezier(0.2, 0, 0, 1), width 200ms cubic-bezier(0.2, 0, 0, 1); }
 @media (prefers-reduced-motion: reduce) {
   .clipupp-tab-ink[data-ready] { transition: none; }
+}
+/* Before the ink is placed, the selected tab draws its own underline: always
+   without JavaScript (html:not(.js), the same gate as .clipupp-reveal), and
+   with JavaScript until TabInk hydrates and marks the ink data-ready. */
+html:not(.js) [role="tablist"]:has(> .clipupp-tab-ink) > [role="tab"][aria-selected="true"]::after,
+[role="tablist"]:has(> .clipupp-tab-ink:not([data-ready])) > [role="tab"][aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--clipupp-primary);
+  pointer-events: none;
 }

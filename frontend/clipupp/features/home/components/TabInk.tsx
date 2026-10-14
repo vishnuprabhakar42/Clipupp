@@ -30,11 +30,25 @@ export function TabInk({ selected }: { selected: string | null }) {
     // Animate only moves after the first placement, never the mount.
     const raf = requestAnimationFrame(() => el.setAttribute("data-ready", ""));
     const ro = new ResizeObserver(place);
-    list.querySelectorAll('[role="tab"]').forEach((t) => ro.observe(t));
-    const mo = new MutationObserver(place);
+    const observeTabs = () => {
+      ro.disconnect();
+      list.querySelectorAll('[role="tab"]').forEach((t) => ro.observe(t));
+    };
+    observeTabs();
+    // Tabs added or removed later: watch the new set and re-place now.
+    const mo = new MutationObserver(() => {
+      observeTabs();
+      place();
+    });
     mo.observe(list, { childList: true });
     window.addEventListener("resize", place);
+    // Web fonts change tab widths after first placement.
+    let live = true;
+    document.fonts?.ready.then(() => {
+      if (live) place();
+    });
     return () => {
+      live = false;
       cancelAnimationFrame(raf);
       ro.disconnect();
       mo.disconnect();

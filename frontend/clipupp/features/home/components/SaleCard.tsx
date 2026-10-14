@@ -17,7 +17,7 @@ export async function SaleCard({ sale, store, state }: { sale: FeedSale; store: 
     <article
       data-sale-card
       data-state={state}
-      className={`is-${state} clipupp-card flex min-w-0 flex-col rounded-2xl border p-4 ${CARD_HOVER} ${
+      className={`is-${state} clipupp-hl flex min-w-0 flex-col rounded-2xl border p-4 ${CARD_HOVER} ${
         live ? "border-clipupp-primary" : "border-clipupp-neutral-200 bg-clipupp-surface"
       } ${state === "ended" ? "opacity-60" : ""}`}
       style={live ? { background: "linear-gradient(180deg, var(--clipupp-tint-100), var(--clipupp-surface))" } : undefined}

@@ -13,7 +13,7 @@ export async function BankOfferCard({ offer, store }: { offer: FeedBankOffer; st
   return (
     <article
       data-bank-card
-      className={`clipupp-card flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-3.5 ${HOVER}`}
+      className={`clipupp-hl flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-3.5 ${HOVER}`}
     >
       <div
         aria-hidden

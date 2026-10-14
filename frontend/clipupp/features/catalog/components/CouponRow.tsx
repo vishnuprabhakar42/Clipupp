@@ -38,7 +38,7 @@ export function CouponRow({
       data-coupon-card
       data-coupon-id={coupon.id}
       style={k}
-      className={`clipupp-rise clipupp-card grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] lg:p-[18px] ${CARD_HOVER}`}
+      className={`clipupp-rise clipupp-hl grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-4 lg:grid-cols-[auto_minmax(0,1fr)_170px] lg:p-[18px] ${CARD_HOVER}`}
     >
       <div className="grid h-14 w-14 shrink-0 place-content-center rounded-xl bg-clipupp-tint-100 text-center lg:h-16 lg:w-16">
         <span className="text-[19px] font-bold leading-none text-clipupp-primary lg:text-[21px]">{coupon.badge}</span>

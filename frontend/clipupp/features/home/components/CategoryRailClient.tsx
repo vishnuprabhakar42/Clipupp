@@ -62,7 +62,7 @@ export function CategoryRailClient({
                 <>
                   <span
                     className={cn(
-                      "grid h-9 w-9 place-items-center rounded-full transition-colors",
+                      "grid h-[50px] w-[50px] place-items-center rounded-[14px] transition-colors",
                       c.hot
                         ? "bg-clipupp-bad-bg text-clipupp-danger"
                         : on
@@ -70,7 +70,7 @@ export function CategoryRailClient({
                           : "bg-clipupp-tint-100 text-clipupp-primary",
                     )}
                   >
-                    <CategoryGlyph name={c.icon} hot={c.hot} strokeWidth={2} className="h-[18px] w-[18px]" />
+                    <CategoryGlyph name={c.icon} hot={c.hot} className="h-[22px] w-[22px]" />
                   </span>
                   <span
                     className={cn(
