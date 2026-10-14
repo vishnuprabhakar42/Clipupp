@@ -53,10 +53,18 @@ describe("sectionRenders", () => {
   });
 
   it("renders deals, bank and calendar as a coming-soon tile when production has no rows", () => {
+    const unknown: Record<string, Partial<HomeFeed>> = {
+      deals: { deals: [{ store: "nowhere" }] as HomeFeed["deals"] },
+      bank_offers: { bankOffers: [{ store: "nowhere" }] as HomeFeed["bankOffers"] },
+      sale_calendar: { sales: [{ store: "nowhere" }] as HomeFeed["sales"] },
+    };
     for (const code of ["deals", "bank_offers", "sale_calendar"]) {
       expect(sectionRenders(code, feed({ demo: false }))).toBe(true);
-      // Items whose store is unknown do not count; the tile still renders.
-      expect(sectionRenders(code, feed({ demo: false, deals: [{ store: "nowhere" }] as HomeFeed["deals"] }))).toBe(true);
+      // Rows whose store is unknown do not count: no content, so the tile renders (and not in demo).
+      const f = feed({ demo: false, ...unknown[code] });
+      expect(comingSoon(code, f)).toBe(true);
+      expect(sectionRenders(code, f)).toBe(true);
+      expect(sectionRenders(code, { ...f, demo: true })).toBe(false);
     }
   });
 

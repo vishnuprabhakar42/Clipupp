@@ -29,6 +29,11 @@ const REASONS: { reason: ReportReason; key: "reasonExpired" | "reasonInvalid" | 
 const CHIP_CLASS =
   "clipupp-press h-9 rounded-full border border-clipupp-neutral-200 px-4 text-[13px] font-semibold hover:bg-clipupp-neutral-100";
 
+/** Below lg the sticky bar shows the copy outcome itself, so the success toast would only cover the sheet. */
+function barVisible() {
+  return !window.matchMedia("(min-width: 1024px)").matches;
+}
+
 function reducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -90,6 +95,8 @@ function CouponSheetBody({
   const [wrote, setWrote] = useState(false);
   const { current: reported, report } = useReports(coupon.id);
   const [reportOpen, setReportOpen] = useState(false);
+  // True once the visitor reports in this open; a report restored from storage is shown without a live announcement.
+  const [justReported, setJustReported] = useState(false);
   const thanksRef = useRef<HTMLParagraphElement>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const codeRef = useRef<HTMLSpanElement>(null);
@@ -119,7 +126,7 @@ function CouponSheetBody({
     setWrote(ok);
     if (ok) {
       flashCopied();
-      notify(tt("codeCopied", { code }));
+      if (!barVisible()) notify(tt("codeCopied", { code }));
     } else {
       const el = codeRef.current;
       if (el) {
@@ -183,6 +190,7 @@ function CouponSheetBody({
   function sendReport(reason: ReportReason) {
     // Kept on this device until the backend phase wires POST /api/v1/coupons/{id}/feedback (v3 spec).
     report(reason);
+    setJustReported(true);
     setReportOpen(false);
     requestAnimationFrame(() => thanksRef.current?.focus());
   }
@@ -278,7 +286,7 @@ function CouponSheetBody({
         </div>
 
         {reported ? (
-          <p ref={thanksRef} tabIndex={-1} role="status" className="mt-3 text-[13px] text-clipupp-neutral-700 outline-none">
+          <p ref={thanksRef} tabIndex={-1} role={justReported ? "status" : undefined} className="mt-3 text-[13px] text-clipupp-neutral-700 outline-none">
             {t("reportThanks")}
           </p>
         ) : (
@@ -288,7 +296,7 @@ function CouponSheetBody({
               aria-expanded={reportOpen}
               aria-controls={REASONS_ID}
               onClick={() => setReportOpen((o) => !o)}
-              className="group inline-flex min-h-9 items-center gap-1 text-[13px] font-semibold text-clipupp-neutral-600 underline-offset-2 hover:text-clipupp-neutral-900 hover:underline"
+              className="clipupp-press group inline-flex min-h-9 items-center gap-1 text-[13px] font-semibold text-clipupp-neutral-600 underline-offset-2 hover:text-clipupp-neutral-900 hover:underline"
             >
               {t("report")}
               <ChevronDown size={15} aria-hidden className="transition-transform group-aria-expanded:rotate-180 motion-reduce:transition-none" />
