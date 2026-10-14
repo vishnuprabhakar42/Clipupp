@@ -16,21 +16,26 @@ function optimizable(src: string): boolean {
   }
 }
 
-/** Product image that removes itself when it fails to load, leaving the tinted placeholder. */
+/**
+ * Product image that removes itself (and its .clipupp-deal-img tile) when it
+ * fails to load, leaving the tinted placeholder.
+ */
 export function DealImage({ src, sizes, tintBg }: { src: string; sizes: string; /** Category tint hex painted while the image loads. */ tintBg: string }) {
   const [failed, setFailed] = useState(false);
   if (failed) return null;
   return (
-    <Image
-      src={src}
-      alt=""
-      fill
-      sizes={sizes}
-      placeholder="blur"
-      blurDataURL={blurDataUrl(tintBg)}
-      unoptimized={!optimizable(src)}
-      onError={() => setFailed(true)}
-      className="object-contain p-3"
-    />
+    <span className="clipupp-deal-img">
+      <Image
+        src={src}
+        alt=""
+        fill
+        sizes={sizes}
+        placeholder="blur"
+        blurDataURL={blurDataUrl(tintBg)}
+        unoptimized={!optimizable(src)}
+        onError={() => setFailed(true)}
+        className="object-contain p-3"
+      />
+    </span>
   );
 }
