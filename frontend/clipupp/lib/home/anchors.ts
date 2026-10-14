@@ -1,4 +1,5 @@
 import type { HomeFeed } from "./feed";
+import { liveDeals } from "./liveDeals";
 
 /**
  * Homepage anchor ids, as the blocks render them (the hero wrapper is "top",
@@ -40,7 +41,7 @@ const FALLBACK: Record<HomeAnchor, string | null> = {
  * these render nothing, except the coming-soon blocks (see `comingSoon`).
  */
 const HAS_CONTENT: Record<string, (feed: HomeFeed) => boolean> = {
-  deals: (f) => f.deals.some((d) => knows(f, d.store)),
+  deals: (f) => liveDeals(f.deals, new Set(f.stores.map((s) => s.id))).length > 0,
   bank_offers: (f) => f.bankOffers.some((o) => knows(f, o.store)),
   sale_calendar: (f) => f.sales.some((s) => knows(f, s.store)),
   featured_stores: (f) => f.stores.length > 0,
