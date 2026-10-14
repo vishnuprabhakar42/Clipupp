@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { contrastRatio, readableInk } from "./contrast";
+import { contrastRatio, monogramInk, readableInk } from "./contrast";
 
 describe("contrastRatio", () => {
   it("matches the WCAG reference values", () => {
@@ -28,5 +28,17 @@ describe("readableInk", () => {
   });
   it("keeps the preferred colour for CSS-variable backgrounds", () => {
     expect(readableInk("var(--clipupp-logo-bg)", "var(--clipupp-deep)")).toBe("var(--clipupp-deep)");
+  });
+});
+
+describe("monogramInk", () => {
+  it("flags tiles where even the best ink stays under 4.5:1", () => {
+    expect(monogramInk("#e91e63")).toEqual({ ink: "#FFFFFF", lowContrast: true });
+  });
+  it("does not flag tiles that reach 4.5:1", () => {
+    expect(monogramInk("#fc8019", "#fff")).toEqual({ ink: "#170A2E", lowContrast: false });
+  });
+  it("does not flag CSS-variable backgrounds", () => {
+    expect(monogramInk("var(--x)", "var(--y)").lowContrast).toBe(false);
   });
 });

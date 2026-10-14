@@ -3,16 +3,21 @@ import { Link } from "@/lib/i18n/navigation";
 import type { FeedStore } from "@/lib/home/feed";
 import { LogoImage } from "@/features/catalog/components/LogoImage";
 import { displayShortName } from "@/lib/home/storeName";
+import { monogramInk } from "@/lib/format/contrast";
 
-const mono = (s: FeedStore) => (
-  <span
-    aria-hidden
-    className="grid h-[62px] w-[62px] place-items-center rounded-full text-[17px] font-bold shadow-card transition-transform group-hover:-translate-y-0.5 lg:h-[72px] lg:w-[72px] lg:text-[20px]"
-    style={{ background: s.bg, color: s.fg }}
-  >
-    {s.mono}
-  </span>
-);
+const mono = (s: FeedStore) => {
+  const { ink, lowContrast } = monogramInk(s.bg, s.fg);
+  return (
+    <span
+      aria-hidden
+      data-a11y-exception={lowContrast ? "" : undefined}
+      className="grid h-[62px] w-[62px] place-items-center rounded-full text-[17px] font-bold shadow-card transition-transform group-hover:-translate-y-0.5 lg:h-[72px] lg:w-[72px] lg:text-[20px]"
+      style={{ background: s.bg, color: ink }}
+    >
+      {s.mono}
+    </span>
+  );
+};
 
 /** Round logos of the popular stores, ranked by `popular`. */
 export async function PopularStoresStrip({ stores }: { stores: FeedStore[] }) {

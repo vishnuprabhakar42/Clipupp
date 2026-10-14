@@ -5,6 +5,7 @@ export default defineConfig({
   esbuild: { jsx: "automatic" },
   test: {
     include: ["lib/**/*.test.{ts,tsx}", "features/**/*.test.{ts,tsx}"],
+    exclude: ["node_modules/**", "tests/e2e/**"],
     environment: "node",
   },
   resolve: {

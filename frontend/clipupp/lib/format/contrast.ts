@@ -38,3 +38,14 @@ export function readableInk(bg: string, preferred: string = LIGHT_INK): string {
   const dark = contrastRatio(DARK_INK, bg) ?? 0;
   return light >= dark ? LIGHT_INK : DARK_INK;
 }
+
+/**
+ * Ink for a store monogram tile, plus whether even the best ink stays under
+ * 4.5:1 (the accepted logotype case above). Callers mark those tiles with
+ * `data-a11y-exception` so the automated axe run skips them.
+ */
+export function monogramInk(bg: string, preferred?: string): { ink: string; lowContrast: boolean } {
+  const ink = readableInk(bg, preferred);
+  const ratio = contrastRatio(ink, bg);
+  return { ink, lowContrast: ratio != null && ratio < 4.5 };
+}
