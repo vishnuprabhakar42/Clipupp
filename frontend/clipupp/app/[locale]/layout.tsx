@@ -140,6 +140,12 @@ export default async function LocaleLayout({
             on the page doesn't pay the TCP+TLS handshake cost. */}
         <link rel="preconnect" href="https://logo.clearbit.com" />
         <link rel="preconnect" href="https://placehold.co" />
+        {/* R2 media host. Raster uploads go through /_next/image, but next/image
+            serves .svg sources unoptimized (dangerouslyAllowSVG is off), and
+            admins may upload SVG store logos, so the browser fetches those from
+            this origin on first paint. No crossOrigin: a plain <img> uses the
+            credentialed pool, which an anonymous preconnect would not warm. */}
+        <link rel="preconnect" href={process.env.NEXT_PUBLIC_MEDIA_ORIGIN ?? "https://pub-e786049ca02d4c5fab01494fd6012521.r2.dev"} />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://api.dicebear.com" />
         <link rel="dns-prefetch" href="https://upload.wikimedia.org" />
