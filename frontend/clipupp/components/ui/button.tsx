@@ -14,7 +14,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-clipupp-primary text-white hover:bg-clipupp-primary-strong",
+          "bg-clipupp-primary text-clipupp-primary-fg hover:bg-clipupp-primary-strong",
         secondary:
           "border-[1.5px] border-clipupp-primary bg-transparent text-clipupp-primary hover:bg-clipupp-primary-soft",
         ghost:
@@ -23,7 +23,7 @@ const buttonVariants = cva(
           "bg-clipupp-danger text-white hover:bg-clipupp-danger-strong",
         // Legacy aliases — keep existing usages compiling.
         default:
-          "bg-clipupp-primary text-white hover:bg-clipupp-primary-strong",
+          "bg-clipupp-primary text-clipupp-primary-fg hover:bg-clipupp-primary-strong",
         destructive:
           "bg-clipupp-danger text-white hover:bg-clipupp-danger-strong",
         outline:
