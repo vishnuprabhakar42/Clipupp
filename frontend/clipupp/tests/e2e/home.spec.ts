@@ -62,17 +62,16 @@ test.describe("homepage interactions", () => {
 
   test("reveal opens the coupon sheet", async ({ page }) => {
     const today = page.locator("#top_deals");
-    const covers = today.getByRole("link", { name: /^Show code for / });
-    const before = await covers.count();
-    expect(before).toBeGreaterThan(0);
-    await covers.first().click();
+    // A revealed card swaps its cover for the code; the list can grow while it loads, so count those.
+    const revealed = today.getByRole("link", { name: /^Code .+, open details$/ });
+    await expect(revealed).toHaveCount(0);
+    await today.getByRole("link", { name: /^Show code for / }).first().click();
     const sheet = page.locator("dialog[open]");
     await expect(sheet).toBeVisible();
     await expect(sheet.getByRole("button", { name: /^(Copy|Copied)/ }).first()).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(sheet).toBeHidden();
-    // The revealed card keeps showing the code instead of the cover.
-    await expect(covers).toHaveCount(before - 1);
+    await expect(revealed.first()).toBeVisible();
   });
 
   test("heart toggles the saved badge", async ({ page }) => {
@@ -105,7 +104,7 @@ test.describe("homepage interactions", () => {
     test.skip(info.project.name !== "desktop", "desktop project only");
     await page.getByRole("button", { name: "Switch to dark theme" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    await page.reload();
+    await page.reload({ waitUntil: "domcontentloaded" });
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.getByRole("button", { name: "Switch to light theme" })).toBeVisible();
   });

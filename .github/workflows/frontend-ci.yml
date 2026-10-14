@@ -91,7 +91,8 @@ jobs:
         with:
           name: playwright-report
           path: |
-            frontend/clipupp/playwright-report
-            frontend/clipupp/test-results
+            frontend/clipupp/node_modules/.cache/playwright
             frontend/clipupp/next-start.log
           retention-days: 7
+          # The Playwright artifacts sit under node_modules/.cache, a hidden directory.
+          include-hidden-files: true

@@ -13,8 +13,13 @@ for (const theme of ["light", "dark"] as const) {
     await openHome(page);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
     await scrollThrough(page);
-    // The cookie banner stays up on purpose: it is part of the first-visit page.
-    await expect(page.getByRole("dialog", { name: "Cookie consent" })).toBeVisible();
+    // The cookie banner stays up on purpose: it is part of the first-visit page. It is a lazy
+    // chunk that opens on the first scroll after it mounts, so keep nudging until it shows.
+    const banner = page.getByRole("dialog", { name: "Cookie consent" });
+    await expect(async () => {
+      await page.mouse.wheel(0, 40);
+      await expect(banner).toBeVisible({ timeout: 1_000 });
+    }).toPass();
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
       .exclude("[data-a11y-exception]")
