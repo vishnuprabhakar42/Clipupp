@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { AlertTriangle, ChevronDown, Tag, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { loadTodayCoupons } from "../actions/todayCoupons";
@@ -8,6 +9,7 @@ import { emit, on, peek } from "@/lib/home/homeBus";
 import type { RowItem } from "../lib/todayRows";
 import { sortItems, type Sort } from "../lib/todaySort";
 import { applyPage, safeLoad } from "../lib/todayState";
+import { parseTodayParams, todayParamsToSearch } from "../lib/todayUrl";
 import { TabInk } from "./TabInk";
 
 type Req = { mode: "reset" | "append"; tab: string; store: string; cursor: string | null; startIndex: number };
@@ -15,6 +17,8 @@ type Req = { mode: "reset" | "append"; tab: string; store: string; cursor: strin
 type Tab = { id: string; label: string; title: string; count: number };
 
 const STORAGE_KEY = "clipupp:tab";
+const SCROLL_KEY = "clipupp:today:scroll";
+const SORTS: Sort[] = ["pop", "new", "end", "rate"];
 const PANEL_ID = "today-panel";
 const tabId = (id: string) => `today-tab-${id}`;
 
@@ -29,6 +33,52 @@ function write(v: string) {
   try {
     window.localStorage.setItem(STORAGE_KEY, v);
   } catch {}
+}
+
+/**
+ * Where the reader was in the list when they followed a coupon link. `id` is
+ * also stamped on that history entry, so only Back to that entry restores (a
+ * fresh visit to the homepage, say from the logo, does not jump down the page).
+ */
+type ScrollEntry = { id: string; y: number; loaded: number; href: string };
+const HISTORY_KEY = "clipuppToday";
+const here = () => window.location.pathname + window.location.search;
+const historyMark = (): unknown => (window.history.state as Record<string, unknown> | null)?.[HISTORY_KEY];
+/** Stamp or clear the mark on the current entry. Next's own `__NA` state rides along, so its router is not involved. */
+function setHistoryMark(id: string | undefined) {
+  const st = { ...((window.history.state as Record<string, unknown> | null) ?? {}) };
+  if (id) st[HISTORY_KEY] = id;
+  else delete st[HISTORY_KEY];
+  window.history.replaceState(st, "");
+}
+
+function readScroll(): ScrollEntry | null {
+  try {
+    const raw = window.sessionStorage.getItem(SCROLL_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw) as Partial<ScrollEntry>;
+    return typeof v.id === "string" && typeof v.y === "number" && typeof v.loaded === "number" && typeof v.href === "string"
+      ? (v as ScrollEntry)
+      : null;
+  } catch {
+    return null;
+  }
+}
+function writeScroll(v: ScrollEntry | null) {
+  try {
+    if (v) window.sessionStorage.setItem(SCROLL_KEY, JSON.stringify(v));
+    else window.sessionStorage.removeItem(SCROLL_KEY);
+  } catch {}
+}
+
+/**
+ * The only part that reads `useSearchParams()`, so the Suspense boundary
+ * around it keeps the rest of the list in the static HTML.
+ */
+function TodayUrlParams({ onParams }: { onParams: (sp: URLSearchParams) => void }) {
+  const key = useSearchParams().toString();
+  useEffect(() => onParams(new URLSearchParams(key)), [key, onParams]);
+  return null;
 }
 
 export function TodaysCouponsClient({
@@ -69,6 +119,15 @@ export function TodaysCouponsClient({
   const state = useRef({ tab, store, cursor, count: items.length, items });
   state.current = { tab, store, cursor, count: items.length, items };
   const sentinel = useRef<HTMLDivElement>(null);
+  /** The URL has been read once; until then the URL is not written. */
+  const [seeded, setSeeded] = useState(false);
+  const seededRef = useRef(false);
+  /** The reader changed the view (not a restore), so the URL also gets `#today`. */
+  const dirty = useRef(false);
+  /** Pending scroll restore after coming back from a coupon page. */
+  const restore = useRef<ScrollEntry | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  const jumped = useRef(false);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const visibleTabs = useMemo(
@@ -123,28 +182,101 @@ export function TodaysCouponsClient({
   useEffect(() => setNow(Date.now()), []);
 
   const select = useCallback((id: string, notify = true) => {
+    dirty.current = true;
     setStore("");
     setTab(id);
     write(id);
     if (notify) emit("today:tab", id, self.current);
   }, []);
 
-  // Header rail and store tiles drive the list; restore the saved tab.
+  const knownTabs = useMemo(() => ["all", ...tabs.map((x) => x.id)], [tabs]);
+
+  // The URL drives the view. On the first read a URL without `tab` falls back
+  // to the bus (a rail chip pressed before hydration), then the saved tab.
+  const applyUrl = useCallback(
+    (sp: URLSearchParams) => {
+      const p = parseTodayParams(sp, { tabs: knownTabs, sorts: SORTS });
+      const first = !seededRef.current;
+      seededRef.current = true;
+      let next = p.store ? "all" : p.tab;
+      if (first && !p.store && !sp.has("tab")) {
+        const saved = peek("today:tab") ?? read();
+        if (saved && knownTabs.includes(saved)) next = saved;
+      }
+      setStore(p.store ?? "");
+      setTab(next);
+      setSort(p.sort as Sort);
+      if (next !== "all" && peek("today:tab") !== next) emit("today:tab", next, self.current);
+      if (first) setSeeded(true);
+    },
+    [knownTabs],
+  );
+
+  // Mirror the view into the URL without a navigation (router.replace would refetch the RSC payload).
+  const showRate = items.some((i) => i.coupon.success != null);
+  // "rate" without any loaded success rate shows as "pop", in the select and in the URL.
+  const effectiveSort: Sort = sort === "rate" && !showRate ? "pop" : sort;
   useEffect(() => {
-    const known = (id: string) => id === "all" || tabs.some((x) => x.id === id);
-    const fromBus = peek("today:tab");
-    const saved = fromBus ?? read();
-    if (saved && saved !== "all" && known(saved)) {
-      setTab(saved);
-      if (!fromBus) emit("today:tab", saved, self.current);
+    if (!seeded) return;
+    const search = todayParamsToSearch(
+      { tab: store ? "all" : tab, sort: effectiveSort, store: store || null },
+      undefined,
+      new URLSearchParams(window.location.search),
+    );
+    const url = window.location.pathname + search + (dirty.current ? "#today" : window.location.hash);
+    if (url !== here() + window.location.hash) window.history.replaceState(null, "", url);
+  }, [seeded, tab, store, effectiveSort]);
+
+  // Coming back from a coupon page: pick up the saved position for this history entry and URL.
+  useEffect(() => {
+    const entry = readScroll();
+    if (!entry || historyMark() !== entry.id || entry.href !== here()) return;
+    restore.current = entry;
+    setRestoring(true);
+  }, []);
+
+  // Reload as many items as were loaded, then put the reader back where they were.
+  useEffect(() => {
+    const r = restore.current;
+    if (!r || !seeded) return;
+    // Jump right away so the reader does not watch the page sit elsewhere while pages reload.
+    if (!jumped.current) {
+      jumped.current = true;
+      window.scrollTo({ top: r.y, behavior: "instant" });
     }
+    if (busy.current || fetching || loadedKey.current !== `${tab}|${store}`) return;
+    if (items.length < r.loaded && hasMore && !error) {
+      void run("append");
+      return;
+    }
+    restore.current = null;
+    writeScroll(null);
+    if (historyMark() === r.id) setHistoryMark(undefined);
+    setRestoring(false);
+    requestAnimationFrame(() => window.scrollTo({ top: r.y, behavior: "instant" }));
+  }, [restoring, seeded, fetching, items.length, hasMore, error, tab, store, run]);
+
+  function onPanelClick(e: MouseEvent<HTMLDivElement>) {
+    const a = (e.target as Element).closest("a[href]");
+    if (!a || a.getAttribute("target") === "_blank") return;
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const id = Math.random().toString(36).slice(2);
+    writeScroll({ id, y: window.scrollY, loaded: state.current.count, href: here() });
+    setHistoryMark(id);
+  }
+
+  // Header rail and store tiles drive the list.
+  useEffect(() => {
+    const known = (id: string) => knownTabs.includes(id);
     const offTab = on("today:tab", (id, meta) => {
       if (meta.source === self.current || !known(id)) return;
+      dirty.current = true;
       setStore("");
       setTab(id);
       write(id);
     });
     const offStore = on("today:store", (slug) => {
+      dirty.current = true;
       setStore(slug);
       if (slug) {
         // Own echo is excluded, so the tab handler does not clear the store again.
@@ -159,12 +291,12 @@ export function TodaysCouponsClient({
       offStore();
       offRefresh();
     };
-  }, [tabs, run]);
+  }, [knownTabs, run]);
 
   // Auto-load the next page near the end of the list.
   useEffect(() => {
     const el = sentinel.current;
-    if (!el || !hasMore || fetching || error) return;
+    if (!el || !hasMore || fetching || error || restoring) return;
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) void run("append");
@@ -173,7 +305,7 @@ export function TodaysCouponsClient({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [hasMore, fetching, error, cursor, items.length, run]);
+  }, [hasMore, fetching, error, restoring, cursor, items.length, run]);
 
   function onTabKey(e: KeyboardEvent<HTMLButtonElement>, idx: number) {
     const last = visibleTabs.length - 1;
@@ -189,17 +321,18 @@ export function TodaysCouponsClient({
     tabRefs.current[id]?.focus();
   }
 
-  const showRate = items.some((i) => i.coupon.success != null);
   const visible = useMemo(() => {
     const live = now == null ? items : items.filter((i) => !i.coupon.expiresAt || Date.parse(i.coupon.expiresAt) > now);
     return sortItems(live, sort);
   }, [items, now, sort]);
-  const effectiveSort: Sort = sort === "rate" && !showRate ? "pop" : sort;
   const storeName = store ? (storeNames[store] ?? store) : "";
   const empty = !fetching && !error && visible.length === 0;
 
   return (
     <div>
+      <Suspense fallback={null}>
+        <TodayUrlParams onParams={applyUrl} />
+      </Suspense>
       <div className="sticky top-[calc(env(safe-area-inset-top)+var(--clipupp-hv))] z-10 -mx-4 bg-clipupp-page px-4 sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:px-0">
         <div
           role="tablist"
@@ -246,7 +379,10 @@ export function TodaysCouponsClient({
             <button
               type="button"
               aria-label={t("clearStore", { store: storeName })}
-              onClick={() => setStore("")}
+              onClick={() => {
+                dirty.current = true;
+                setStore("");
+              }}
               className="clipupp-press inline-flex h-9 items-center gap-1.5 rounded-full border border-clipupp-tint-200 bg-clipupp-tint-100 pl-3.5 pr-2.5 text-[13px] font-semibold text-clipupp-primary"
             >
               {storeName}
@@ -261,7 +397,10 @@ export function TodaysCouponsClient({
           <select
             id="today-sort"
             value={effectiveSort}
-            onChange={(e) => setSort(e.target.value as Sort)}
+            onChange={(e) => {
+              dirty.current = true;
+              setSort(e.target.value as Sort);
+            }}
             className="h-10 appearance-none rounded-full border border-clipupp-neutral-200 bg-clipupp-surface pl-4 pr-10 text-[15px] text-clipupp-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
           >
             <option value="pop">{t("sortPop")}</option>
@@ -278,6 +417,7 @@ export function TodaysCouponsClient({
         id={PANEL_ID}
         aria-labelledby={tabId(store ? "all" : tab)}
         aria-busy={fetching}
+        onClick={onPanelClick}
         className={`grid gap-2.5 transition-opacity sm:grid-cols-2 ${resetting ? "opacity-50" : ""}`}
       >
         {visible.map((i) => i.node)}
