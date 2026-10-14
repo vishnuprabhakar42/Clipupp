@@ -1831,3 +1831,40 @@ html:not(.js) [role="tablist"]:has(> .clipupp-tab-ink) > [role="tab"][aria-selec
   background: var(--clipupp-primary);
   pointer-events: none;
 }
+
+/* hero and media polish */
+/* Hero: a soft brand glow from the top left over the existing tint band, plus
+   a 4% grain. The grain is the top background layer (an inline SVG data URL,
+   ~300 bytes, no request), so it can never intercept clicks, is not in the
+   accessibility tree, and paints behind the hero copy. It multiplies in light
+   and screens in dark. */
+.clipupp-hero-bg {
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.04'/></svg>"),
+    radial-gradient(60% 50% at 20% 0%, color-mix(in srgb, var(--clipupp-primary) 10%, transparent), transparent 70%),
+    radial-gradient(900px 300px at 90% -20%, var(--clipupp-tint-200), transparent),
+    var(--clipupp-tint-50);
+  background-size: 256px 256px, auto, auto, auto;
+  background-blend-mode: multiply, normal, normal, normal;
+}
+:root[data-theme="dark"] .clipupp-hero-bg { background-blend-mode: screen, normal, normal, normal; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .clipupp-hero-bg { background-blend-mode: screen, normal, normal, normal; }
+}
+
+/* Deal image: in light the product multiplies into its category tint, so a
+   white JPEG background takes the tint. The wrap repaints the tint and
+   isolates the blend so the category glyph underneath never shows through. In
+   dark the wrap is a white 8px tile, so the white background reads as a
+   deliberate tile instead of a floating rectangle. */
+.clipupp-deal-img {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  background: color-mix(in srgb, var(--t-bg) var(--ph-mix, 100%), var(--clipupp-surface));
+}
+.clipupp-deal-img img { mix-blend-mode: multiply; }
+:root[data-theme="dark"] .clipupp-deal-img { inset: 8px; border-radius: 8px; background: var(--clipupp-logo-bg); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .clipupp-deal-img { inset: 8px; border-radius: 8px; background: var(--clipupp-logo-bg); }
+}

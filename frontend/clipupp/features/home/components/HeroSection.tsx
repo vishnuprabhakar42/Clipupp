@@ -17,7 +17,8 @@ const LEGACY_SUBTITLE = "No wallet, no tracking, no waiting. Just codes that wor
 const fmt = (n: number) => n.toLocaleString("en-IN");
 
 /**
- * Hero (v3). Tint band with a corner glow; copy on the left, spotlight
+ * Hero (v3). Tint band with a corner glow, a brand glow and grain
+ * (.clipupp-hero-bg); copy on the left, spotlight
  * carousel on the right from md (44%), stacked below md. The H1 is the LCP
  * element: plain server text whose entrance animates transform only
  * (clipupp-fx-lcp), sized by the fluid --fs-h1 token. Admin copy from
@@ -59,8 +60,7 @@ export async function HeroSection({
   return (
     <section
       aria-labelledby="hero-heading"
-      className="border-b border-clipupp-neutral-100"
-      style={{ background: "radial-gradient(900px 300px at 90% -20%, var(--clipupp-tint-200), transparent), var(--clipupp-tint-50)" }}
+      className="clipupp-hero-bg border-b border-clipupp-neutral-100"
     >
       <div className="clipupp-container grid items-center gap-7 pb-3 pt-6 sm:py-[52px] md:grid-cols-[minmax(0,1fr)_44%] md:gap-10 lg:grid-cols-[6fr_5fr] lg:gap-14 lg:py-14">
         <div className="min-w-0">
