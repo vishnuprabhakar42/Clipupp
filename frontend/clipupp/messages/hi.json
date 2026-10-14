@@ -475,7 +475,7 @@
     "groupCoupons": "कूपन",
     "groupDeals": "डील",
     "kbdHint": "खोजने के लिए / दबाएं",
-    "couponCount": "{count} कूपन",
+    "couponCount": "{count, plural, one {# कूपन} other {# कूपन}}",
     "jumpTo": "यहाँ जाएं",
     "themeForced": "थीम पेज के अनुसार है",
     "search": {
