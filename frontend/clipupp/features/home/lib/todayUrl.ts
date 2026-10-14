@@ -5,15 +5,22 @@ export const TODAY_KEYS = ["tab", "sort", "store"] as const;
 const DEFAULTS = { tab: "all", sort: "pop" };
 const SLUG = /^[a-z0-9][a-z0-9-]{0,99}$/;
 
-/** Read the view state, falling back to the defaults on unknown or malformed values. */
-export function parseTodayParams(sp: URLSearchParams, known: { tabs: string[]; sorts: string[] }): TodayParams {
+/**
+ * Read the view state, falling back to the defaults on unknown or malformed
+ * values. With `known.stores`, a store slug the feed does not know is
+ * dropped too, so a shared link never shows a bare slug chip over an empty list.
+ */
+export function parseTodayParams(
+  sp: URLSearchParams,
+  known: { tabs: string[]; sorts: string[]; stores?: readonly string[] },
+): TodayParams {
   const tab = sp.get("tab");
   const sort = sp.get("sort");
   const store = sp.get("store");
   return {
     tab: tab && known.tabs.includes(tab) ? tab : DEFAULTS.tab,
     sort: sort && known.sorts.includes(sort) ? sort : DEFAULTS.sort,
-    store: store && SLUG.test(store) ? store : null,
+    store: store && SLUG.test(store) && (!known.stores || known.stores.includes(store)) ? store : null,
   };
 }
 

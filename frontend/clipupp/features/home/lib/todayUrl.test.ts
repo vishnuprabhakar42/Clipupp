@@ -16,6 +16,21 @@ describe("parseTodayParams", () => {
   });
 });
 
+describe("parseTodayParams with known stores", () => {
+  const withStores = { ...known, stores: ["amazon", "myntra"] };
+  it("keeps a store the feed knows", () => {
+    expect(parseTodayParams(new URLSearchParams("store=myntra"), withStores).store).toBe("myntra");
+  });
+  it("ignores a store the feed does not know, keeping the rest", () => {
+    expect(parseTodayParams(new URLSearchParams("tab=food&sort=end&store=foo"), withStores)).toEqual({ tab: "food", sort: "end", store: null });
+  });
+  it("drops the unknown store param on the next write and keeps foreign params", () => {
+    const base = new URLSearchParams("utm_source=x&store=foo");
+    const parsed = parseTodayParams(base, withStores);
+    expect(todayParamsToSearch(parsed, undefined, base)).toBe("?utm_source=x");
+  });
+});
+
 describe("todayParamsToSearch", () => {
   it("is empty for defaults", () => {
     expect(todayParamsToSearch({ tab: "all", sort: "pop", store: null })).toBe("");
