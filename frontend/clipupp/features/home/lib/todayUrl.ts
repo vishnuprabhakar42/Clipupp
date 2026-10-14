@@ -19,7 +19,9 @@ export function parseTodayParams(sp: URLSearchParams, known: { tabs: string[]; s
 
 /**
  * Serialise the view state, leaving out default values; "" when everything is
- * default. Other params in `base` (utm tags and the like) are kept.
+ * default. Other params in `base` (utm tags and the like) are kept, and view
+ * params already in `base` keep their position, so a canonical URL comes back
+ * unchanged.
  */
 export function todayParamsToSearch(
   state: TodayParams,
@@ -27,10 +29,17 @@ export function todayParamsToSearch(
   base?: URLSearchParams,
 ): string {
   const sp = new URLSearchParams(base);
-  for (const k of TODAY_KEYS) sp.delete(k);
-  if (state.tab !== defaults.tab) sp.set("tab", state.tab);
-  if (state.sort !== defaults.sort) sp.set("sort", state.sort);
-  if (state.store) sp.set("store", state.store);
+  const values: Record<(typeof TODAY_KEYS)[number], string | null> = {
+    tab: state.tab !== defaults.tab ? state.tab : null,
+    sort: state.sort !== defaults.sort ? state.sort : null,
+    store: state.store || null,
+  };
+  // `set` replaces in place (or appends); only defaults are deleted.
+  for (const k of TODAY_KEYS) {
+    const v = values[k];
+    if (v == null) sp.delete(k);
+    else sp.set(k, v);
+  }
   const s = sp.toString();
   return s ? `?${s}` : "";
 }
