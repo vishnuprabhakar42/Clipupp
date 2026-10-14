@@ -20,7 +20,7 @@ export async function DealCard({ deal, store }: { deal: FeedDeal; store: FeedSto
     <article
       data-deal-card
       data-store={deal.store}
-      className={`clipupp-card flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${CARD_HOVER}`}
+      className={`clipupp-hl flex min-w-0 flex-col overflow-hidden rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface ${CARD_HOVER}`}
     >
       <div
         className="clipupp-ph relative aspect-square w-full"

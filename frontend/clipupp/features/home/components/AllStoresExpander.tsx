@@ -46,7 +46,7 @@ export function AllStoresExpander({
             aria-expanded={open}
             aria-controls="stores-grid"
             onClick={() => setOpen(true)}
-            className="clipupp-press clipupp-card flex w-full min-w-0 flex-col items-center gap-1 rounded-[14px] border border-clipupp-tint-200 bg-clipupp-tint-100 px-1.5 py-3 text-center lg:items-start lg:gap-1.5 lg:p-4 lg:text-left"
+            className="clipupp-press clipupp-hl flex w-full min-w-0 flex-col items-center gap-1 rounded-[14px] border border-clipupp-tint-200 bg-clipupp-tint-100 px-1.5 py-3 text-center lg:items-start lg:gap-1.5 lg:p-4 lg:text-left"
           >
             <span className="grid h-[46px] w-[46px] place-items-center rounded-xl bg-clipupp-surface text-clipupp-primary">
               <LayoutGrid size={22} aria-hidden />

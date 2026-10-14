@@ -46,7 +46,7 @@ export async function CouponCard({ coupon, store, category = null, variant = "ca
       data-coupon-card
       data-coupon-id={coupon.id}
       style={k}
-      className={`clipupp-rise clipupp-card flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-[18px] ${CARD_HOVER}`}
+      className={`clipupp-rise clipupp-hl flex min-w-0 flex-col rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-[18px] ${CARD_HOVER}`}
     >
       <div className="flex items-center gap-3">
         <StoreTile store={store} size={44} />
