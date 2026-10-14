@@ -46,6 +46,9 @@ type Opt = {
 const RECENT_KEY = "clipupp:recent";
 const BANK_RE = /bank|card|hdfc|sbi|icici|axis|kotak|rbl/i;
 const sectionTitle = "pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-clipupp-neutral-500";
+type Section = { id: string; title: string; from: number; to: number };
+type View = { options: Opt[]; sections: Section[]; noResults: boolean; typed: boolean };
+const EMPTY_VIEW: View = { options: [], sections: [], noResults: false, typed: false };
 const EMPTY_FEED: HeaderSearchFeed = { stores: [], coupons: [], deals: [], bankOfferCount: 0, bankHref: null, dealsHref: "/offers" };
 
 function readRecent(): string[] {
@@ -128,9 +131,12 @@ export function HeaderSearch({
   const q = debounced;
   const typed = q.length > 0;
 
-  const { options, sections, noResults } = useMemo(() => {
+  // Suggest is in flight for this query: an empty local result is not yet "no results".
+  const pending = q.length >= 2 && remote.q !== q;
+
+  const fresh = useMemo<View>(() => {
     const opts: Opt[] = [];
-    const secs: { id: string; title: string; from: number; to: number }[] = [];
+    const secs: Section[] = [];
     const add = (id: string, title: string, items: Opt[]) => {
       if (!items.length) return;
       secs.push({ id, title, from: opts.length, to: opts.length + items.length });
@@ -209,14 +215,24 @@ export function HeaderSearch({
             href: feed.dealsHref,
           })),
       );
-      // Nothing matched: say so, then offer the popular stores as a way out.
-      if (!opts.length) {
+      // Nothing matched once the suggest settled: say so, then offer the popular stores as a way out.
+      if (!opts.length && q.length >= 2 && !pending) {
         none = true;
-        if (q.length >= 2) add("popular", t("search.noResultsHint"), popular());
+        add("popular", t("search.noResultsHint"), popular());
       }
     }
-    return { options: opts, sections: secs, noResults: none };
-  }, [typed, q, recent, feed, remote, t]);
+    return { options: opts, sections: secs, noResults: none, typed };
+  }, [typed, q, recent, feed, remote, pending, t]);
+
+  // While the suggest is pending with no local hits, keep showing the last settled typed list with
+  // matches (or nothing) instead of flashing an empty or no-results panel.
+  const settled = useRef<View | null>(null);
+  useEffect(() => {
+    if (!pending) settled.current = fresh;
+  }, [fresh, pending]);
+  const last = settled.current;
+  const view = pending && !fresh.options.length ? (last?.typed && !last.noResults ? last : EMPTY_VIEW) : fresh;
+  const { options, sections, noResults } = view;
 
   useEffect(() => setActive(-1), [options]);
 
@@ -291,12 +307,14 @@ export function HeaderSearch({
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       setOpen(true);
-      if (!options.length) return;
-      setActive((a) => (e.key === "ArrowDown" ? Math.min(a + 1, options.length - 1) : Math.max(a - 1, 0)));
+      const n = options.length;
+      if (!n) return;
+      // Wraps at both ends.
+      setActive((a) => (e.key === "ArrowDown" ? (a < 0 ? 0 : (a + 1) % n) : a <= 0 ? n - 1 : a - 1));
     }
   }
 
-  const showPanel = open && (options.length > 0 || typed);
+  const showPanel = open && (options.length > 0 || noResults);
   const recentSection = sections.find((s) => s.id === "recent");
   const secId = (id: string) => `${uid}-sec-${id}`;
   const hero = variant === "hero";
@@ -314,8 +332,9 @@ export function HeaderSearch({
       }}
       onKeyDown={(e) => {
         if (e.key !== "Escape" || !showPanel) return;
-        close();
+        // Focus first: the input's onFocus reopens the panel, and close() must win the batch.
         inputRef.current?.focus();
+        close();
       }}
     >
       <form role="search" aria-label={ariaLabel ?? t("searchLabel")} onSubmit={submit}>
@@ -400,7 +419,8 @@ export function HeaderSearch({
         >
           {/* Rows that are not options sit outside the listbox so its children stay options and groups. */}
           {noResults ? (
-            <p role="status" className="px-3 pb-1 pt-3 text-sm font-medium text-clipupp-neutral-900">
+            // Announced through the always-mounted live region below.
+            <p aria-hidden="true" className="px-3 pb-1 pt-3 text-sm font-medium text-clipupp-neutral-900">
               {t("search.noResults", { q: debounced })}
             </p>
           ) : null}
@@ -423,7 +443,7 @@ export function HeaderSearch({
             {sections.map((s) => (
               <div key={s.id} role="group" aria-labelledby={secId(s.id)}>
                 {s.id === "recent" ? null : (
-                  <p id={secId(s.id)} role="presentation" className={cn(sectionTitle, "px-3")}>
+                  <p id={secId(s.id)} aria-hidden="true" className={cn(sectionTitle, "px-3")}>
                     {s.title}
                   </p>
                 )}
@@ -466,6 +486,10 @@ export function HeaderSearch({
           </div>
         </div>
       ) : null}
+      {/* Mounted up front so assistive tech announces the text when it changes. */}
+      <p role="status" className="sr-only">
+        {showPanel && noResults ? t("search.noResults", { q: debounced }) : ""}
+      </p>
     </div>
   );
 }
