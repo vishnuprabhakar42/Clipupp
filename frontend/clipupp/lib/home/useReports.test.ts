@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 // The suite runs in node; give the persist middleware a localStorage before the store loads.
 const mem = new Map<string, string>();
@@ -50,6 +50,20 @@ describe("useReports", () => {
     expect(useReportsStore.getState().reports).toEqual({
       c1: { reason: "other", at: 2 },
       c2: { reason: "invalid", at: 3 },
+    });
+  });
+
+  it("keeps stored reports when the first report comes before hydration", async () => {
+    // A fresh module: the store has not loaded storage yet.
+    vi.resetModules();
+    const { useReportsStore } = await load();
+    expect(useReportsStore.persist.hasHydrated()).toBe(false);
+    mem.set("clipupp:reports", JSON.stringify({ state: { reports: { c1: { reason: "expired", at: 1 }, c2: { reason: "invalid", at: 2 } } }, version: 0 }));
+    useReportsStore.getState().report("c1", "other", 5);
+    await useReportsStore.persist.rehydrate();
+    expect(useReportsStore.getState().reports).toEqual({
+      c1: { reason: "other", at: 5 },
+      c2: { reason: "invalid", at: 2 },
     });
   });
 

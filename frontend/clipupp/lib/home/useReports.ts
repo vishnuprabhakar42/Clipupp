@@ -21,8 +21,11 @@ export const useReportsStore = create<ReportsState>()(
   persist(
     (set, get) => ({
       reports: {},
-      report: (couponId, reason, at = Date.now()) =>
-        set({ reports: { ...get().reports, [couponId]: { reason, at } } }),
+      report: (couponId, reason, at = Date.now()) => {
+        // Load stored reports first (localStorage is sync) so this write cannot drop them.
+        if (!useReportsStore.persist.hasHydrated()) void useReportsStore.persist.rehydrate();
+        set({ reports: { ...get().reports, [couponId]: { reason, at } } });
+      },
       get: (couponId) => get().reports[couponId] ?? null,
     }),
     {
@@ -31,6 +34,11 @@ export const useReportsStore = create<ReportsState>()(
       partialize: (s) => ({ reports: s.reports }),
       // Hydrate in an effect so SSR markup and the first client render agree.
       skipHydration: true,
+      // Union with reports made before hydration finished; the in-memory one is newer.
+      merge: (persisted, current) => ({
+        ...current,
+        reports: { ...((persisted as Partial<ReportsState> | undefined)?.reports ?? {}), ...current.reports },
+      }),
     },
   ),
 );
