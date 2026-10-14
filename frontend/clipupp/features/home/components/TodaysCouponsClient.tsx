@@ -191,14 +191,27 @@ export function TodaysCouponsClient({
 
   const knownTabs = useMemo(() => ["all", ...tabs.map((x) => x.id)], [tabs]);
 
+  /** The view as the URL alone describes it (no saved tab); what the address bar shows until the visitor changes something. */
+  const urlView = useRef<{ tab: string; sort: Sort; store: string }>({ tab: "all", sort: "pop", store: "" });
+  /**
+   * The search string last applied or written. A repeat (our own `replaceState`
+   * echo, or a StrictMode effect re-run) is ignored, so it cannot undo a saved tab.
+   */
+  const lastSearch = useRef<string | null>(null);
+
   // The URL drives the view. On the first read a URL without `tab` falls back
   // to the bus (a rail chip pressed before hydration), then the saved tab.
   const applyUrl = useCallback(
     (sp: URLSearchParams) => {
-      const p = parseTodayParams(sp, { tabs: knownTabs, sorts: SORTS });
       const first = !seededRef.current;
+      if (!first && sp.toString() === lastSearch.current) return;
+      lastSearch.current = sp.toString();
       seededRef.current = true;
+      // A URL change this component did not make (say the logo back to "/") starts a fresh visit.
+      if (!first) dirty.current = false;
+      const p = parseTodayParams(sp, { tabs: knownTabs, sorts: SORTS });
       let next = p.store ? "all" : p.tab;
+      urlView.current = { tab: next, sort: p.sort as Sort, store: p.store ?? "" };
       if (first && !p.store && !sp.has("tab")) {
         const saved = peek("today:tab") ?? read();
         if (saved && knownTabs.includes(saved)) next = saved;
@@ -206,7 +219,9 @@ export function TodaysCouponsClient({
       setStore(p.store ?? "");
       setTab(next);
       setSort(p.sort as Sort);
-      if (next !== "all" && peek("today:tab") !== next) emit("today:tab", next, self.current);
+      // Keep the header rail in step, including back to "all" once the bus holds a category.
+      const last = peek("today:tab");
+      if (last !== next && (next !== "all" || last != null)) emit("today:tab", next, self.current);
       if (first) setSeeded(true);
     },
     [knownTabs],
@@ -216,16 +231,23 @@ export function TodaysCouponsClient({
   const showRate = items.some((i) => i.coupon.success != null);
   // "rate" without any loaded success rate shows as "pop", in the select and in the URL.
   const effectiveSort: Sort = sort === "rate" && !showRate ? "pop" : sort;
+  // Until the visitor changes something only the URL's own params are written
+  // back (normalised), so a saved tab never appears in the address bar by itself.
   useEffect(() => {
     if (!seeded) return;
-    const search = todayParamsToSearch(
-      { tab: store ? "all" : tab, sort: effectiveSort, store: store || null },
-      undefined,
-      new URLSearchParams(window.location.search),
-    );
+    const u = urlView.current;
+    const view = dirty.current
+      ? { tab: store ? "all" : tab, sort: effectiveSort, store: store || null }
+      : { tab: u.tab, sort: u.sort === "rate" && !showRate ? "pop" : u.sort, store: u.store || null };
+    const search = todayParamsToSearch(view, undefined, new URLSearchParams(window.location.search));
     const url = window.location.pathname + search + (dirty.current ? "#today" : window.location.hash);
-    if (url !== here() + window.location.hash) window.history.replaceState(null, "", url);
-  }, [seeded, tab, store, effectiveSort]);
+    if (url === here() + window.location.hash) return;
+    lastSearch.current = search.slice(1);
+    // Keep any custom keys on the entry; Next's patched replaceState re-adds its own state and syncs the router.
+    const { __NA: _na, __PRIVATE_NEXTJS_INTERNALS_TREE: _tree, ...custom } =
+      (window.history.state as Record<string, unknown> | null) ?? {};
+    window.history.replaceState(custom, "", url);
+  }, [seeded, tab, store, effectiveSort, showRate]);
 
   // Coming back from a coupon page: pick up the saved position for this history entry and URL.
   useEffect(() => {

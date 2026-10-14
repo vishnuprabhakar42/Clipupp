@@ -37,3 +37,18 @@ describe("todayParamsToSearch with a base", () => {
     expect(todayParamsToSearch({ tab: "food", sort: "pop", store: null }, undefined, base)).toBe("?utm_source=x&tab=food");
   });
 });
+
+describe("todayParamsToSearch keeps params in place", () => {
+  it("returns an already canonical search unchanged", () => {
+    const base = new URLSearchParams("tab=food&utm_source=x&sort=end");
+    expect(todayParamsToSearch({ tab: "food", sort: "end", store: null }, undefined, base)).toBe("?tab=food&utm_source=x&sort=end");
+  });
+  it("keeps a preceding utm param first and the view params where they were", () => {
+    const base = new URLSearchParams("utm_source=x&tab=food&utm_medium=y");
+    expect(todayParamsToSearch({ tab: "food", sort: "pop", store: null }, undefined, base)).toBe("?utm_source=x&tab=food&utm_medium=y");
+  });
+  it("updates a value in place and deletes only defaults", () => {
+    const base = new URLSearchParams("sort=new&utm_source=x&tab=food");
+    expect(todayParamsToSearch({ tab: "all", sort: "end", store: null }, undefined, base)).toBe("?sort=end&utm_source=x");
+  });
+});
