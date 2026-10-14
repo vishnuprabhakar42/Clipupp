@@ -35,7 +35,7 @@ export function DealsRailClient({
         id={railId}
         resetKey={store}
         ariaLabel={t("railAria")}
-        cols={{ base: "46%", sm: "30%", md: "23%", lg: "calc((100% - 100px) / 6)" }}
+        cols={{ base: "46%", sm: "30%", md: "calc((100% - 60px) / 4.25)", lg: "calc((100% - 100px) / 6)" }}
         gap={20}
         className="-mt-3 py-3"
       >

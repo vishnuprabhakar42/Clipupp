@@ -37,7 +37,7 @@ export function TrendingRailClient({
         id={railId}
         resetKey={cat}
         ariaLabel={t("railAria")}
-        cols={{ base: "80%", sm: "46%", md: "31%", lg: "calc((100% - 72px) / 4)" }}
+        cols={{ base: "80%", sm: "46%", md: "calc((100% - 32px) / 3.15)", lg: "calc((100% - 72px) / 4)" }}
         gap={{ base: 16, lg: 24 }}
         className="-mt-3 py-3"
       >
