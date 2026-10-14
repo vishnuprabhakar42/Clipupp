@@ -510,7 +510,6 @@
     "alerts": "Deal alerts",
     "searchPlaceholder": "Search Myntra, Swiggy, bank offers...",
     "searchLabel": "Search stores, coupons and deals",
-    "clear": "Clear search",
     "recent": "Recent",
     "popularStores": "Popular stores",
     "jumpBank": "Bank and card offers",
@@ -518,11 +517,16 @@
     "groupStores": "Stores",
     "groupCoupons": "Coupons",
     "groupDeals": "Deals",
-    "noMatch": "No match for “{q}”. Try a store name like Myntra or Swiggy.",
     "kbdHint": "Press / to search",
     "couponCount": "{count, plural, one {# coupon} other {# coupons}}",
     "jumpTo": "Jump to",
-    "themeForced": "Theme follows the page"
+    "themeForced": "Theme follows the page",
+    "search": {
+      "clear": "Clear search",
+      "clearRecent": "Clear",
+      "noResults": "No matches for “{q}”",
+      "noResultsHint": "Try a popular store"
+    }
   },
   "catalog": {
     "card": {

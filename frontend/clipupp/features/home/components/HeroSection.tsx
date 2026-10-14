@@ -80,7 +80,8 @@ export async function HeroSection({
           <p className="clipupp-fx mt-3.5 max-w-[46ch] text-[length:var(--fs-lead)] leading-[1.55] text-clipupp-neutral-700" style={fx(2)}>
             {subtitle}
           </p>
-          <div className="clipupp-fx mt-6 hidden max-w-[560px] lg:block" style={fx(3)}>
+          {/* Own layer above the later fx siblings (each is a stacking context) so the suggestion panel is not painted under them. */}
+          <div className="clipupp-fx relative z-dropdown mt-6 hidden max-w-[560px] lg:block" style={fx(3)}>
             <HeaderSearch
               variant="hero"
               feed={toSearchFeed(feed)}
