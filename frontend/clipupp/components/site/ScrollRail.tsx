@@ -95,7 +95,7 @@ export function ScrollRail({
     el.scrollTo({ left: p * el.clientWidth, behavior: "smooth" });
   }
 
-  // Buttons strip the white pill / border / shadow — they're just the
+  // Buttons strip the white pill / border / shadow - they're just the
   // chevron icon now. The edge fade behind them does the visual lifting,
   // and the chevron itself is bumped to a larger stroke so it reads clearly
   // without chrome.
