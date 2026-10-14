@@ -41,6 +41,12 @@ describe("renderedAnchors", () => {
     expect(renderedAnchors(full)).toEqual(["deals", "bank", "calendar", "faq"]);
   });
 
+  it("does not count deals that already ended", () => {
+    const ended = feed({ sectionOrder: ["deals"], deals: [{ store: "flipkart", endsAt: "2000-01-01T00:00:00Z" }] as HomeFeed["deals"] });
+    expect(renderedAnchors(ended)).toEqual([]);
+    expect(comingSoon("deals", ended)).toBe(true);
+  });
+
   it("is empty when the feed has no order", () => {
     expect(renderedAnchors(feed())).toEqual([]);
   });

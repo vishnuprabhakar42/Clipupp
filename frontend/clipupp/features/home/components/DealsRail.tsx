@@ -9,15 +9,14 @@ import { ComingSoonTile } from "./ComingSoonTile";
 import { JsonLd } from "@/lib/seo/jsonLd";
 import { dealOfferSchema } from "@/lib/seo/schemas";
 import { comingSoon } from "@/lib/home/anchors";
+import { liveDeals } from "@/lib/home/liveDeals";
 
 const RAIL_ID = "deals-rail";
 
-function endsKey(iso: string | null): number {
-  const n = iso ? Date.parse(iso) : NaN;
-  return Number.isNaN(n) ? Infinity : n;
-}
-
-/** Live product deals (server shell): cards render once here, the chip filter runs on the client. */
+/**
+ * Live product deals (server shell): cards render once here, the chip filter
+ * runs on the client. Ended deals are left out of both the cards and `ld-deals`.
+ */
 export async function DealsRail({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.deals");
   if (comingSoon("deals", feed)) {
@@ -25,7 +24,7 @@ export async function DealsRail({ feed }: { feed: HomeFeed }) {
     return <ComingSoonTile id="deals" feed={feed} eyebrow={t("eyebrow")} eyebrowTone="danger" title={t("title")} body={ts("deals")} />;
   }
   const stores = new Map(feed.stores.map((s) => [s.id, s]));
-  const deals = feed.deals.filter((d) => stores.has(d.store)).sort((a, b) => endsKey(a.endsAt) - endsKey(b.endsAt));
+  const deals = liveDeals(feed.deals, new Set(stores.keys()));
   if (deals.length === 0) return null;
   const entries: DealEntry[] = deals.map((d) => ({
     id: d.id,
