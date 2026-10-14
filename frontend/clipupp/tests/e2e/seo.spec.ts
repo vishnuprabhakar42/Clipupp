@@ -1,10 +1,23 @@
 import { expect, test } from "@playwright/test";
 
 for (const path of ["/", "/hi"]) {
-  test(`hreflang on ${path} has en, hi and x-default`, async ({ page }) => {
+  test(`hreflang on ${path} has en, hi and x-default with the right targets`, async ({ page }) => {
     await page.goto(path);
-    const langs = await page.locator("link[rel=alternate][hreflang]").evaluateAll((els) => els.map((e) => e.getAttribute("hreflang")));
-    expect(langs).toEqual(expect.arrayContaining(["en", "hi", "x-default"]));
+    const links = await page
+      .locator("link[rel=alternate][hreflang]")
+      .evaluateAll((els) => els.map((e) => [e.getAttribute("hreflang") ?? "", e.getAttribute("href") ?? ""] as const));
+    const href = Object.fromEntries(links);
+    expect(Object.keys(href)).toEqual(expect.arrayContaining(["en", "hi", "x-default"]));
+    // Contract (lib/seo/urls.ts): en has no locale prefix, hi is under /hi, x-default is the en URL,
+    // all on the canonical origin.
+    const canonical = new URL((await page.locator("link[rel=canonical]").getAttribute("href")) ?? "");
+    const en = new URL(href.en);
+    const hi = new URL(href.hi);
+    expect(en.origin).toBe(canonical.origin);
+    expect(hi.origin).toBe(canonical.origin);
+    expect(en.pathname).toBe("/");
+    expect(hi.pathname).toBe("/hi");
+    expect(href["x-default"]).toBe(href.en);
   });
 
   test(`json-ld on ${path} parses and has breadcrumb, faq and item list`, async ({ page }) => {
@@ -32,5 +45,8 @@ for (const path of ["/", "/hi"]) {
     const first = data.itemListElement[0].item;
     expect(first["@type"]).toBe("Offer");
     expect(first.priceCurrency).toBe("INR");
+    // Ended deals are left out, so no listed offer is already past its end.
+    const ends = (data.itemListElement as Array<{ item: { priceValidUntil?: string } }>).map((e) => e.item.priceValidUntil);
+    for (const end of ends) if (end) expect(Date.parse(end)).toBeGreaterThan(Date.now());
   });
 }
