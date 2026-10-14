@@ -2,14 +2,16 @@ import type { Page } from "@playwright/test";
 
 /**
  * Console noise accepted on the homepage, matched on the failing resource URL:
- * store logos that point at files missing from public/brands (the monogram
- * fallback renders), the signed-out session probe (401 with a backend, 500
- * from the proxy without one), and link prefetches of other pages that need
- * the backend (CI runs without one; a failed prefetch is retried on
- * navigation). A failed RSC fetch of the homepage itself still fails the test.
+ * - store logos that point at files missing from public/brands (the monogram
+ *   fallback renders). Which stores those are depends on the backend's data;
+ *   the demo fixture's own logos are checked in features/home/fixtures/demo-feed.test.ts.
+ * - the signed-out session probe (401 with a backend, 500 from the proxy without one).
+ * - link prefetches of other pages that need the backend (CI runs without one;
+ *   a failed prefetch is retried on navigation). A failed RSC fetch of the
+ *   homepage itself still fails the test.
  */
 const KNOWN_NOISE = [
-  /\/brands\/(apollo-pharmacy|mcdonalds-india|meesho)\.svg$/,
+  /\/brands\/[a-z0-9-]+\.(?:svg|png)$/,
   /\/api\/v1\/users\/me$/,
   /\/api\/v1\/auth\/refresh$/,
   /^https?:\/\/[^/]+\/(?!(?:en|hi)?\?)[^?]+\?(?:.*&)?_rsc=/,
