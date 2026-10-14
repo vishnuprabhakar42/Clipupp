@@ -190,6 +190,8 @@ export function TodaysCouponsClient({
   }, []);
 
   const knownTabs = useMemo(() => ["all", ...tabs.map((x) => x.id)], [tabs]);
+  // A shared `?store=` the feed does not know falls back to All (and leaves the URL on the next write).
+  const knownStores = useMemo(() => Object.keys(storeNames), [storeNames]);
 
   /** The view as the URL alone describes it (no saved tab); what the address bar shows until the visitor changes something. */
   const urlView = useRef<{ tab: string; sort: Sort; store: string }>({ tab: "all", sort: "pop", store: "" });
@@ -209,7 +211,7 @@ export function TodaysCouponsClient({
       seededRef.current = true;
       // A URL change this component did not make (say the logo back to "/") starts a fresh visit.
       if (!first) dirty.current = false;
-      const p = parseTodayParams(sp, { tabs: knownTabs, sorts: SORTS });
+      const p = parseTodayParams(sp, { tabs: knownTabs, sorts: SORTS, stores: knownStores });
       let next = p.store ? "all" : p.tab;
       urlView.current = { tab: next, sort: p.sort as Sort, store: p.store ?? "" };
       if (first && !p.store && !sp.has("tab")) {
@@ -224,7 +226,7 @@ export function TodaysCouponsClient({
       if (last !== next && (next !== "all" || last != null)) emit("today:tab", next, self.current);
       if (first) setSeeded(true);
     },
-    [knownTabs],
+    [knownTabs, knownStores],
   );
 
   // Mirror the view into the URL without a navigation (router.replace would refetch the RSC payload).
