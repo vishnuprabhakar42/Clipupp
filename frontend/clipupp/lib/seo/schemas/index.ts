@@ -9,3 +9,4 @@ export { howToSchema, type HowToStep } from "./howTo";
 export { collectionPageSchema } from "./collectionPage";
 export { organizationSchema } from "./organization";
 export { webSiteSchema } from "./webSite";
+export { dealOfferSchema } from "./dealOffer";

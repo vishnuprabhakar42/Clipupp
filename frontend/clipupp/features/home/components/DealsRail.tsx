@@ -6,6 +6,8 @@ import { DealCard } from "./DealCard";
 import { DealsRailClient, type DealEntry } from "./DealsRailClient";
 import { SectionHeader } from "./SectionHeader";
 import { ComingSoonTile } from "./ComingSoonTile";
+import { JsonLd } from "@/lib/seo/jsonLd";
+import { dealOfferSchema } from "@/lib/seo/schemas";
 import { comingSoon } from "@/lib/home/anchors";
 
 const RAIL_ID = "deals-rail";
@@ -42,6 +44,18 @@ export async function DealsRail({ feed }: { feed: HomeFeed }) {
         eyebrowTone="danger"
         title={t("title")}
         actions={<RailArrows railId={RAIL_ID} />}
+      />
+      <JsonLd
+        id="ld-deals"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: deals.map((d, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            item: dealOfferSchema(d, { name: stores.get(d.store)?.name ?? d.store }),
+          })),
+        }}
       />
       <DealsRailClient railId={RAIL_ID} entries={entries} chips={chips} />
     </section>

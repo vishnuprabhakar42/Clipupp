@@ -21,6 +21,7 @@ import { RevealRoot } from "@/features/home/components/Reveal";
 import { CategoryRail } from "@/features/home/components/CategoryRail";
 import { SavedSheetSeed } from "@/features/home/components/SavedSheetSeed";
 import { JsonLd } from "@/lib/seo/jsonLd";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 import { canonicalFor } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -125,6 +126,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
     stats: layout?.stats ?? EMPTY_STATS,
   };
 
+  const tNav = await getTranslations({ locale, namespace: "mobileNav" });
   const trending = feed.coupons
     .filter((c) => c.trending != null)
     .sort((a, b) => (a.trending ?? 0) - (b.trending ?? 0))
@@ -136,6 +138,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: L
       <CategoryRail />
       <RevealRoot>
         <SavedSheetSeed seed={{ coupons: feed.coupons, stores: feed.stores, categories: feed.categories }} />
+        <JsonLd id="ld-breadcrumb" data={breadcrumbSchema([{ name: tNav("home"), url: canonicalFor("/", locale) }])} />
         {trending.length > 0 && (
           <JsonLd
             id="ld-trending"
