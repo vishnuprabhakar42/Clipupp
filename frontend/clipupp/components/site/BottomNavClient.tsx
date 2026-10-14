@@ -12,7 +12,7 @@ import { anchorFor, type HomeAnchor } from "@/lib/home/anchors";
 type Key = "home" | "deals" | "coupons" | "stores";
 type Labels = Record<Key | "saved", string>;
 
-const SECTIONS: { id: string; key: Key }[] = [
+const SECTIONS: { id: HomeAnchor; key: Key }[] = [
   { id: "top", key: "home" },
   { id: "deals", key: "deals" },
   { id: "today", key: "coupons" },
@@ -53,8 +53,11 @@ export function BottomNavClient({
     useSavedSheet.getState().close();
   }, [pathname]);
 
+  // Only blocks with content are spied: a coming-soon tile is not where its nav item links.
+  const spied = anchors.join(",");
   useEffect(() => {
     if (!isHome) return;
+    const ids = new Set(spied.split(","));
     const seen = new Map<string, boolean>();
     const io = new IntersectionObserver(
       (entries) => {
@@ -65,11 +68,11 @@ export function BottomNavClient({
       { rootMargin: "-40% 0px -55% 0px" },
     );
     for (const s of SECTIONS) {
-      const el = document.getElementById(s.id);
+      const el = ids.has(s.id) ? document.getElementById(s.id) : null;
       if (el) io.observe(el);
     }
     return () => io.disconnect();
-  }, [isHome]);
+  }, [isHome, spied]);
 
   const active: Key | "saved" | null = savedOpen ? "saved" : isHome ? scrollKey : (ROUTE_KEY[pathname] ?? null);
 

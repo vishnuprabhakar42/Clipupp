@@ -4,12 +4,18 @@ import type { HomeFeed } from "@/lib/home/feed";
 import { BankOfferCard } from "./BankOfferCard";
 import { BankOffersRailClient, type BankEntry } from "./BankOffersRailClient";
 import { SectionHeader } from "./SectionHeader";
+import { ComingSoonTile } from "./ComingSoonTile";
+import { comingSoon } from "@/lib/home/anchors";
 
 const RAIL_ID = "bank-rail";
 
 /** Bank and card offers (server shell); the bank chip filter runs on the client. */
 export async function BankOffersRail({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.bank");
+  if (comingSoon("bank_offers", feed)) {
+    const ts = await getTranslations("home.soon");
+    return <ComingSoonTile id="bank" feed={feed} eyebrow={t("eyebrow")} title={t("title")} body={ts("bank")} />;
+  }
   const stores = new Map(feed.stores.map((s) => [s.id, s]));
   const offers = feed.bankOffers.filter((o) => stores.has(o.store));
   if (offers.length === 0) return null;

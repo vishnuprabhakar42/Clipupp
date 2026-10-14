@@ -35,8 +35,9 @@ const FALLBACK: Record<HomeAnchor, string | null> = {
 };
 
 /**
- * Blocks that render null without data, with the same test the block uses
- * (items whose store the feed knows). Codes not listed always render.
+ * Blocks that need data, with the same test the block uses (items whose
+ * store the feed knows). Codes not listed always have content. Without data
+ * these render nothing, except the coming-soon blocks (see `comingSoon`).
  */
 const HAS_CONTENT: Record<string, (feed: HomeFeed) => boolean> = {
   deals: (f) => f.deals.some((d) => knows(f, d.store)),
@@ -50,17 +51,37 @@ function knows(feed: HomeFeed, store: string): boolean {
   return feed.stores.some((s) => s.id === store);
 }
 
-/** True when the block for `code` has something to render. */
-export function sectionRenders(code: string, feed: HomeFeed): boolean {
+/** Blocks that show a "coming soon" tile instead of nothing when production has no rows. */
+const TILE_CODES = new Set(["deals", "bank_offers", "sale_calendar"]);
+
+function hasContent(code: string, feed: HomeFeed): boolean {
   return HAS_CONTENT[code]?.(feed) ?? true;
 }
 
-/** Anchor ids present on the rendered homepage, from the section codes that actually render. */
+/**
+ * True when the block for `code` renders its coming-soon tile: a deals, bank
+ * or calendar block with no rows outside demo mode (the demo feed fills
+ * them, so an empty one there is a fixture gap, not a launch state).
+ */
+export function comingSoon(code: string, feed: HomeFeed): boolean {
+  return TILE_CODES.has(code) && !feed.demo && !hasContent(code, feed);
+}
+
+/** True when the block for `code` renders anything: its content or its coming-soon tile. */
+export function sectionRenders(code: string, feed: HomeFeed): boolean {
+  return hasContent(code, feed) || comingSoon(code, feed);
+}
+
+/**
+ * Anchor ids present on the rendered homepage with real content. A
+ * coming-soon tile is on the page but is not a link target: links to deals,
+ * bank or calendar go to the route that holds that content instead.
+ */
 export function renderedAnchors(feed: HomeFeed): HomeAnchor[] {
   const out = new Set<HomeAnchor>();
   for (const code of feed.sectionOrder) {
     const id = ANCHOR_OF[code];
-    if (id && sectionRenders(code, feed)) out.add(id);
+    if (id && hasContent(code, feed)) out.add(id);
   }
   return [...out];
 }

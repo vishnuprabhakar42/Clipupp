@@ -4,6 +4,8 @@ import type { HomeFeed } from "@/lib/home/feed";
 import { saleState, type SaleState } from "@/lib/home/saleState";
 import { SaleCard } from "./SaleCard";
 import { SectionHeader } from "./SectionHeader";
+import { ComingSoonTile } from "./ComingSoonTile";
+import { comingSoon } from "@/lib/home/anchors";
 
 const RAIL_ID = "calendar-rail";
 const ORDER: Record<SaleState, number> = { live: 0, soon: 1, ended: 2 };
@@ -11,6 +13,10 @@ const ORDER: Record<SaleState, number> = { live: 0, soon: 1, ended: 2 };
 /** Festive sale calendar (server): live first, then upcoming, then ended. */
 export async function SaleCalendarRail({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.calendar");
+  if (comingSoon("sale_calendar", feed)) {
+    const ts = await getTranslations("home.soon");
+    return <ComingSoonTile id="calendar" feed={feed} eyebrow={t("eyebrow")} title={t("title")} body={ts("calendar")} />;
+  }
   const stores = new Map(feed.stores.map((s) => [s.id, s]));
   const now = new Date();
   const sales = feed.sales

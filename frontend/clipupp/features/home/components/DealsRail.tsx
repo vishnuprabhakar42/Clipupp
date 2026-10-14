@@ -5,6 +5,8 @@ import type { HomeFeed } from "@/lib/home/feed";
 import { DealCard } from "./DealCard";
 import { DealsRailClient, type DealEntry } from "./DealsRailClient";
 import { SectionHeader } from "./SectionHeader";
+import { ComingSoonTile } from "./ComingSoonTile";
+import { comingSoon } from "@/lib/home/anchors";
 
 const RAIL_ID = "deals-rail";
 
@@ -16,6 +18,10 @@ function endsKey(iso: string | null): number {
 /** Live product deals (server shell): cards render once here, the chip filter runs on the client. */
 export async function DealsRail({ feed }: { feed: HomeFeed }) {
   const t = await getTranslations("home.deals");
+  if (comingSoon("deals", feed)) {
+    const ts = await getTranslations("home.soon");
+    return <ComingSoonTile id="deals" feed={feed} eyebrow={t("eyebrow")} eyebrowTone="danger" title={t("title")} body={ts("deals")} />;
+  }
   const stores = new Map(feed.stores.map((s) => [s.id, s]));
   const deals = feed.deals.filter((d) => stores.has(d.store)).sort((a, b) => endsKey(a.endsAt) - endsKey(b.endsAt));
   if (deals.length === 0) return null;

@@ -11,6 +11,8 @@ import { StoreTile } from "@/features/catalog/components/StoreTile";
 import { cn } from "@/lib/utils";
 
 const AUTO_MS = 5000;
+/** Slides stay one height: title 2 lines, text 3 lines, at most 3 perks. */
+const MAX_PERKS = 3;
 
 function endLabel(iso: string | null): string | null {
   if (!iso) return null;
@@ -168,13 +170,13 @@ export function SpotlightCarousel({
                   </span>
                 )}
               </div>
-              <h3 className="mt-5 font-display text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-white [text-wrap:balance] lg:text-[36px]">
+              <h3 className="mt-5 font-display text-[26px] font-bold leading-[1.1] tracking-[-0.01em] text-white line-clamp-2 [text-wrap:balance] lg:text-[36px]">
                 {wrapNumbers(s.title)}
               </h3>
-              <p className="mt-3 max-w-[52ch] text-[15px] leading-[1.5] text-white/80">{s.text}</p>
+              <p className="mt-3 line-clamp-3 max-w-[52ch] text-[15px] leading-[1.5] text-white/80">{s.text}</p>
               {s.perks.length > 0 && (
                 <ul className="mt-4 flex flex-wrap gap-2">
-                  {s.perks.map((p) => (
+                  {s.perks.slice(0, MAX_PERKS).map((p) => (
                     <li key={p} className="rounded-full bg-white/10 px-3 py-1.5 text-[13px] text-white/90">
                       {p}
                     </li>
