@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ChevronDown, LayoutGrid } from "lucide-react";
 import { LazyCategoriesMenuPanel } from "@/components/site/lazy";
+import { LazyBoundary } from "@/components/site/LazyBoundary";
 import { cn } from "@/lib/utils";
 
 export type MenuCategory = {
@@ -104,17 +105,19 @@ export function CategoriesMenu({
       </button>
 
       {mounted ? (
-        <LazyCategoriesMenuPanel
-          open={open}
-          desktop={desktop}
-          onClose={close}
-          panelRef={panelRef}
-          panelId={panelId}
-          titleId={titleId}
-          categories={categories}
-          totalCoupons={totalCoupons}
-          calendarHref={calendarHref}
-        />
+        <LazyBoundary name="CategoriesMenuPanel">
+          <LazyCategoriesMenuPanel
+            open={open}
+            desktop={desktop}
+            onClose={close}
+            panelRef={panelRef}
+            panelId={panelId}
+            titleId={titleId}
+            categories={categories}
+            totalCoupons={totalCoupons}
+            calendarHref={calendarHref}
+          />
+        </LazyBoundary>
       ) : null}
     </>
   );

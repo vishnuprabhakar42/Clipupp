@@ -79,7 +79,7 @@ Playwright artifacts live under `node_modules/.cache/playwright`, never `test-re
 **Typography:** Zilla Slab (headings) + Inter (UI and body), both loaded via `next/font/google` in `app/[locale]/layout.tsx` as `--font-display` and `--font-sans`. Use `font-display` on headings; figures inside headings use `.clipupp-num` (Inter) so the slab never renders old-style digits.
 
 **Homepage infrastructure:**
-- `components/site/lazy.ts` - lazy island loaders with import retry.
+- `components/site/lazy.ts` - lazy island loaders with import retry (`lib/lazy/retryImport.ts`); each mount point wraps its island in `components/site/LazyBoundary.tsx`.
 - `lib/i18n/clientNamespaces.ts` - the client message catalogue is limited to the listed namespaces. A new client `useTranslations` namespace must be added there; a unit test scans for them.
 - `features/home/lib/todayUrl.ts` - Today tab, sort and store state in the URL. The URL only reflects changes the visitor made this visit.
 - `lib/format/contrast.ts` `monogramInk` + `data-a11y-exception` - the axe exclusion applies only when no ink reaches 4.5:1 on a brand colour.

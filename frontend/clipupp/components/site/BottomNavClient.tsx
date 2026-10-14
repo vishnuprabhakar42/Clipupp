@@ -7,6 +7,7 @@ import { useSavedCount } from "@/lib/home/useSavedCoupons";
 import { useSavedSheet } from "@/lib/home/useSavedSheet";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { LazySavedSheet } from "@/components/site/lazy";
+import { LazyBoundary } from "@/components/site/LazyBoundary";
 import { anchorFor, type HomeAnchor } from "@/lib/home/anchors";
 
 type Key = "home" | "deals" | "coupons" | "stores";
@@ -116,7 +117,11 @@ export function BottomNavClient({
           </li>
         </ul>
       </nav>
-      {savedMounted ? <LazySavedSheet /> : null}
+      {savedMounted ? (
+        <LazyBoundary name="SavedSheet">
+          <LazySavedSheet />
+        </LazyBoundary>
+      ) : null}
     </>
   );
 }
