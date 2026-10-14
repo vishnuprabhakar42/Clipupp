@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> Repo-wide notes - including the **5-color theme tokens**, backend modules, and Cloudflare R2 setup - live in `/Users/anshu/Desktop/Clipupp/CLAUDE.md`. Read both when working across stacks.
+> Repo-wide notes - including the **5-color theme tokens**, backend modules, and Cloudflare R2 setup - live in the repo-root [`CLAUDE.md`](../../CLAUDE.md). Read both when working across stacks.
 
 ## First principles
 
