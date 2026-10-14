@@ -7,6 +7,7 @@ import { displayShortName } from "@/lib/home/storeName";
 import { toSearchFeed } from "@/lib/home/searchFeed";
 import { proofStat } from "@/lib/home/proofStat";
 import { HeaderSearch } from "@/features/catalog/components/HeaderSearch";
+import { HeroChipStrip } from "./HeroChipStrip";
 import { SpotlightCarousel } from "./SpotlightCarousel";
 
 const fx = (i: number) => ({ "--i": i }) as CSSProperties;
@@ -111,10 +112,9 @@ export async function HeroSection({
             </div>
           )}
           {popular.length > 0 && (
-            <div
-              role="group"
-              aria-label={t("popularAria")}
-              className="clipupp-fx clipupp-no-scrollbar -mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:mt-4 lg:flex-wrap lg:overflow-visible lg:px-0"
+            <HeroChipStrip
+              ariaLabel={t("popularAria")}
+              className="clipupp-fx -mx-4 mt-5 sm:-mx-6 md:mx-0 lg:mt-4"
               style={fx(5)}
             >
               <span className="shrink-0 text-[14px] text-clipupp-neutral-600">{t("popular")}</span>
@@ -127,7 +127,7 @@ export async function HeroSection({
                   {displayShortName(s.name)}
                 </Link>
               ))}
-            </div>
+            </HeroChipStrip>
           )}
         </div>
         <SpotlightCarousel slides={feed.spotlight} stores={feed.stores} coupons={feed.coupons} />

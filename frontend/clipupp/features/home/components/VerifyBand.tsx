@@ -24,7 +24,7 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
   ];
   return (
     <section id="verify" aria-labelledby="verify-heading" className="mt-10 border-y border-clipupp-neutral-200 bg-clipupp-surface md:mt-14 lg:mt-[72px]">
-      <div className="clipupp-container grid gap-10 py-10 md:grid-cols-[4fr_7fr] md:gap-12 md:py-14 lg:gap-16 lg:py-[72px]">
+      <div className="clipupp-container grid gap-10 py-10 md:grid-cols-[5fr_7fr] md:gap-12 lg:grid-cols-[4fr_7fr] md:py-14 lg:gap-16 lg:py-[72px]">
         <div className="clipupp-reveal">
           <span className="mb-1.5 block text-[11.5px] font-semibold uppercase leading-[1.5] tracking-[0.07em] text-clipupp-primary">{t("eyebrow")}</span>
           <h2 id="verify-heading" className="max-w-[16ch] text-balance font-display text-[length:var(--fs-h2)] font-semibold leading-[1.15] tracking-[-0.01em] text-clipupp-neutral-900">
@@ -35,7 +35,7 @@ export async function VerifyBand({ feed }: { feed: HomeFeed }) {
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col border-l-[3px] border-clipupp-primary pl-3">
                 <dt className="order-2 mt-1 text-[12px] leading-tight text-clipupp-neutral-500">{s.label}</dt>
-                <dd className="clipupp-num order-1 text-[24px] font-bold leading-none tracking-[-0.02em] text-clipupp-neutral-900">{s.value}</dd>
+                <dd className="clipupp-num order-1 whitespace-nowrap text-[24px] font-bold leading-none tracking-[-0.02em] text-clipupp-neutral-900">{s.value}</dd>
               </div>
             ))}
           </dl>
