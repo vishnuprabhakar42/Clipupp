@@ -447,6 +447,12 @@
       "eyebrow": "Help",
       "title": "Questions shoppers ask",
       "stuck": "Still stuck? Write to {email} and a person replies within a day."
+    },
+    "soon": {
+      "deals": "Live price drops from top stores are coming soon.",
+      "bank": "Bank and card offers you can stack with any code are coming soon.",
+      "calendar": "Dates for the big festive sales are coming soon.",
+      "cta": "Get alerts"
     }
   },
   "footer": {
@@ -585,7 +591,16 @@
     "rate": "{rate}% of shoppers say it worked",
     "savedError": "We could not load your saved coupons.",
     "retry": "Retry",
-    "savedSeeAll": "See all {count, plural, one {# saved coupon} other {# saved coupons}}"
+    "savedSeeAll": "See all {count, plural, one {# saved coupon} other {# saved coupons}}",
+    "openStoreBar": "Open {store}",
+    "copiedBar": "Copied. Paste at checkout.",
+    "report": "Report not working",
+    "reportWhy": "What went wrong?",
+    "reasonExpired": "Expired",
+    "reasonInvalid": "Code invalid",
+    "reasonMinOrder": "Minimum order not met",
+    "reasonOther": "Something else",
+    "reportThanks": "Thanks, we will re-check this code."
   },
   "toast": {
     "saved": "Saved",
