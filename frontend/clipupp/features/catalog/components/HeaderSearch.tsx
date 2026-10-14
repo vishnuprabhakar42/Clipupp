@@ -1,10 +1,11 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Landmark, Search, X } from "lucide-react";
 import { useRouter } from "@/lib/i18n/navigation";
 import { searchApi } from "@/lib/api/search";
+import { highlight } from "@/lib/format/highlight";
 import { cn } from "@/lib/utils";
 
 export type SearchStore = { id: string; name: string; coupons: number; popular: number | null };
@@ -44,6 +45,7 @@ type Opt = {
 
 const RECENT_KEY = "clipupp:recent";
 const BANK_RE = /bank|card|hdfc|sbi|icici|axis|kotak|rbl/i;
+const sectionTitle = "pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-clipupp-neutral-500";
 const EMPTY_FEED: HeaderSearchFeed = { stores: [], coupons: [], deals: [], bankOfferCount: 0, bankHref: null, dealsHref: "/offers" };
 
 function readRecent(): string[] {
@@ -53,18 +55,6 @@ function readRecent(): string[] {
   } catch {
     return [];
   }
-}
-
-function Highlight({ text, q }: { text: string; q: string }) {
-  const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
-  if (i < 0) return <>{text}</>;
-  return (
-    <>
-      {text.slice(0, i)}
-      <mark className="bg-transparent font-bold text-clipupp-primary">{text.slice(i, i + q.length)}</mark>
-      {text.slice(i + q.length)}
-    </>
-  );
 }
 
 export function HeaderSearch({
@@ -138,7 +128,7 @@ export function HeaderSearch({
   const q = debounced;
   const typed = q.length > 0;
 
-  const { options, sections } = useMemo(() => {
+  const { options, sections, noResults } = useMemo(() => {
     const opts: Opt[] = [];
     const secs: { id: string; title: string; from: number; to: number }[] = [];
     const add = (id: string, title: string, items: Opt[]) => {
@@ -146,27 +136,26 @@ export function HeaderSearch({
       secs.push({ id, title, from: opts.length, to: opts.length + items.length });
       opts.push(...items);
     };
+    const popular = (): Opt[] =>
+      feed.stores
+        .filter((s) => s.popular != null)
+        .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
+        .slice(0, 4)
+        .map((s) => ({
+          key: `p-${s.id}`,
+          group: "popular" as const,
+          label: s.name,
+          meta: t("couponCount", { count: s.coupons }),
+          href: `/stores/${s.id}`,
+        }));
+    let none = false;
     if (!typed) {
       add(
         "recent",
         t("recent"),
         recent.map((r) => ({ key: `r-${r}`, group: "recent" as const, label: r, query: r })),
       );
-      add(
-        "popular",
-        t("popularStores"),
-        feed.stores
-          .filter((s) => s.popular != null)
-          .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
-          .slice(0, 4)
-          .map((s) => ({
-            key: `p-${s.id}`,
-            group: "popular" as const,
-            label: s.name,
-            meta: t("couponCount", { count: s.coupons }),
-            href: `/stores/${s.id}`,
-          })),
-      );
+      add("popular", t("popularStores"), popular());
     } else {
       const lq = q.toLowerCase();
       if (BANK_RE.test(q) && feed.bankHref) {
@@ -220,8 +209,13 @@ export function HeaderSearch({
             href: feed.dealsHref,
           })),
       );
+      // Nothing matched: say so, then offer the popular stores as a way out.
+      if (!opts.length) {
+        none = true;
+        if (q.length >= 2) add("popular", t("search.noResultsHint"), popular());
+      }
     }
-    return { options: opts, sections: secs };
+    return { options: opts, sections: secs, noResults: none };
   }, [typed, q, recent, feed, remote, t]);
 
   useEffect(() => setActive(-1), [options]);
@@ -246,6 +240,23 @@ export function HeaderSearch({
   const close = useCallback(() => {
     setOpen(false);
     setActive(-1);
+  }, []);
+
+  const clearRecent = useCallback(() => {
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* private mode */
+    }
+    setRecent([]);
+    inputRef.current?.focus();
+  }, []);
+
+  const clearQuery = useCallback(() => {
+    setQuery("");
+    setDebounced("");
+    setOpen(true);
+    inputRef.current?.focus();
   }, []);
 
   const pick = useCallback(
@@ -282,17 +293,31 @@ export function HeaderSearch({
       setOpen(true);
       if (!options.length) return;
       setActive((a) => (e.key === "ArrowDown" ? Math.min(a + 1, options.length - 1) : Math.max(a - 1, 0)));
-    } else if (e.key === "Escape") {
-      close();
     }
   }
 
   const showPanel = open && (options.length > 0 || typed);
+  const recentSection = sections.find((s) => s.id === "recent");
+  const secId = (id: string) => `${uid}-sec-${id}`;
   const hero = variant === "hero";
   const pill = variant === "pill" || hero;
 
   return (
-    <div ref={wrapRef} className={cn("relative w-full", className)}>
+    <div
+      ref={wrapRef}
+      className={cn("relative w-full", className)}
+      // Focus may move between the input, the clear buttons and the CTA without closing the panel.
+      onFocus={() => window.clearTimeout(blurTimer.current)}
+      onBlur={(e) => {
+        if (wrapRef.current?.contains(e.relatedTarget as Node | null)) return;
+        blurTimer.current = window.setTimeout(close, 150);
+      }}
+      onKeyDown={(e) => {
+        if (e.key !== "Escape" || !showPanel) return;
+        close();
+        inputRef.current?.focus();
+      }}
+    >
       <form role="search" aria-label={ariaLabel ?? t("searchLabel")} onSubmit={submit}>
         <div
           className={cn(
@@ -324,29 +349,25 @@ export function HeaderSearch({
               setOpen(true);
             }}
             onFocus={() => {
-              window.clearTimeout(blurTimer.current);
               setFocused(true);
               setOpen(true);
             }}
-            onBlur={() => {
-              setFocused(false);
-              blurTimer.current = window.setTimeout(close, 150);
-            }}
+            onBlur={() => setFocused(false)}
             onKeyDown={onKeyDown}
             className={cn("h-full min-w-0 flex-1 bg-transparent text-clipupp-neutral-900 outline-none placeholder:text-clipupp-neutral-500", hero ? "text-[17px]" : "text-base")}
           />
           {query ? (
             <button
               type="button"
-              aria-label={t("clear")}
-              onClick={() => {
-                setQuery("");
-                setDebounced("");
-                inputRef.current?.focus();
-              }}
-              className="clipupp-press grid h-7 w-7 shrink-0 place-items-center rounded-full text-clipupp-neutral-500 hover:bg-clipupp-neutral-100"
+              aria-label={t("search.clear")}
+              // Keep focus (and the phone keyboard) on the input when tapped.
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={clearQuery}
+              className="group/clear clipupp-press -mx-2 grid h-11 w-11 shrink-0 place-items-center rounded-full text-clipupp-neutral-500 outline-none"
             >
-              <X className="h-4 w-4" aria-hidden="true" />
+              <span className="grid h-7 w-7 place-items-center rounded-full transition-colors group-hover/clear:bg-clipupp-neutral-100 group-focus-visible/clear:ring-2 group-focus-visible/clear:ring-clipupp-primary">
+                <X className="h-4 w-4" aria-hidden="true" />
+              </span>
             </button>
           ) : null}
           {!query && !hero ? (
@@ -373,20 +394,39 @@ export function HeaderSearch({
 
       {showPanel ? (
         <div
-          id={listId}
-          role="listbox"
-          aria-label={t("searchLabel")}
+          // Mouse presses inside the panel never steal focus from the input.
           onMouseDown={(e) => e.preventDefault()}
           className="absolute inset-x-0 top-full z-dropdown mt-1.5 max-h-[min(66vh,460px)] overflow-y-auto overscroll-contain rounded-2xl border border-clipupp-neutral-200 bg-clipupp-surface p-2 shadow-clipupp-pop"
         >
-          {options.length === 0 ? (
-            <p className="px-3 py-4 text-sm text-clipupp-neutral-600">{t("noMatch", { q: debounced })}</p>
-          ) : (
-            sections.map((s) => (
-              <Fragment key={s.id}>
-                <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-clipupp-neutral-500">
-                  {s.title}
-                </p>
+          {/* Rows that are not options sit outside the listbox so its children stay options and groups. */}
+          {noResults ? (
+            <p role="status" className="px-3 pb-1 pt-3 text-sm font-medium text-clipupp-neutral-900">
+              {t("search.noResults", { q: debounced })}
+            </p>
+          ) : null}
+          {recentSection ? (
+            <div className="flex items-center justify-between gap-2 pl-3">
+              <p id={secId("recent")} className={cn(sectionTitle, "py-0")}>
+                {recentSection.title}
+              </p>
+              <button
+                type="button"
+                onClick={clearRecent}
+                aria-describedby={secId("recent")}
+                className="clipupp-press inline-flex min-h-11 items-center rounded-full px-3 text-[13px] font-semibold text-clipupp-primary hover:bg-clipupp-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-clipupp-primary"
+              >
+                {t("search.clearRecent")}
+              </button>
+            </div>
+          ) : null}
+          <div id={listId} role="listbox" aria-label={t("searchLabel")}>
+            {sections.map((s) => (
+              <div key={s.id} role="group" aria-labelledby={secId(s.id)}>
+                {s.id === "recent" ? null : (
+                  <p id={secId(s.id)} role="presentation" className={cn(sectionTitle, "px-3")}>
+                    {s.title}
+                  </p>
+                )}
                 <div className={s.id === "recent" ? "flex flex-wrap gap-2 px-2 pb-1" : undefined}>
                   {options.slice(s.from, s.to).map((o, j) => {
                     const idx = s.from + j;
@@ -411,8 +451,8 @@ export function HeaderSearch({
                         {o.group === "jump" ? (
                           <Landmark className="h-[18px] w-[18px] shrink-0 text-clipupp-primary" aria-hidden="true" />
                         ) : null}
-                        <span className={cn("min-w-0 flex-1 truncate", !isChip && "font-medium text-clipupp-neutral-900")}>
-                          <Highlight text={o.label} q={typed ? q : ""} />
+                        <span className={cn("min-w-0 flex-1 truncate", !isChip && (typed ? "text-clipupp-neutral-700" : "font-medium text-clipupp-neutral-900"))}>
+                          {typed ? highlight(o.label, q) : o.label}
                         </span>
                         {o.meta ? (
                           <span className="shrink-0 text-xs text-clipupp-neutral-500">{o.meta}</span>
@@ -421,9 +461,9 @@ export function HeaderSearch({
                     );
                   })}
                 </div>
-              </Fragment>
-            ))
-          )}
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>

@@ -467,7 +467,6 @@
     "alerts": "डील अलर्ट",
     "searchPlaceholder": "Myntra, Swiggy, बैंक ऑफर खोजें...",
     "searchLabel": "स्टोर, कूपन और डील खोजें",
-    "clear": "खोज साफ़ करें",
     "recent": "हाल की",
     "popularStores": "लोकप्रिय स्टोर",
     "jumpBank": "बैंक और कार्ड ऑफर",
@@ -475,11 +474,16 @@
     "groupStores": "स्टोर",
     "groupCoupons": "कूपन",
     "groupDeals": "डील",
-    "noMatch": "“{q}” के लिए कोई नतीजा नहीं। Myntra या Swiggy जैसा स्टोर नाम आज़माएं।",
     "kbdHint": "खोजने के लिए / दबाएं",
     "couponCount": "{count} कूपन",
     "jumpTo": "यहाँ जाएं",
-    "themeForced": "थीम पेज के अनुसार है"
+    "themeForced": "थीम पेज के अनुसार है",
+    "search": {
+      "clear": "खोज साफ़ करें",
+      "clearRecent": "साफ़ करें",
+      "noResults": "“{q}” के लिए कोई नतीजा नहीं",
+      "noResultsHint": "कोई लोकप्रिय स्टोर आज़माएं"
+    }
   },
   "catalog": {
     "card": {

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 export default defineConfig({
   esbuild: { jsx: "automatic" },
   test: {
-    include: ["lib/**/*.test.ts", "features/**/*.test.ts"],
+    include: ["lib/**/*.test.{ts,tsx}", "features/**/*.test.{ts,tsx}"],
     environment: "node",
   },
   resolve: {
