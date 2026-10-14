@@ -43,6 +43,12 @@ test.describe("homepage interactions", () => {
   });
 
   test("header search keyboard flow", async ({ page }) => {
+    // Backend-independent: without a backend the proxy answers the suggest call with a 500.
+    await page.route("**/api/v1/search/suggest**", (route) =>
+      route.fulfill({
+        json: [{ id: "s-myntra", slug: "myntra", title: "Myntra", snippet: null, imageUrl: null, kind: "STORE", rank: 1 }],
+      }),
+    );
     const box = page.getByRole("banner").getByRole("combobox");
     await page.locator("body").press("/");
     await expect(box).toBeFocused();

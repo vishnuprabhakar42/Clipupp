@@ -22,4 +22,15 @@ for (const path of ["/", "/hi"]) {
     for (const r of raw) collect(JSON.parse(r));
     for (const t of ["BreadcrumbList", "FAQPage", "ItemList"]) expect(types).toContain(t);
   });
+
+  test(`deals offer schema on ${path} is an ItemList of Offers in INR`, async ({ page }) => {
+    await page.goto(path);
+    const raw = await page.locator('script#ld-deals[type="application/ld+json"]').textContent();
+    expect(raw).toBeTruthy();
+    const data = JSON.parse(raw ?? "");
+    expect(data["@type"]).toBe("ItemList");
+    const first = data.itemListElement[0].item;
+    expect(first["@type"]).toBe("Offer");
+    expect(first.priceCurrency).toBe("INR");
+  });
 }

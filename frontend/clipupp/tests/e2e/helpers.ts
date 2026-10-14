@@ -12,6 +12,8 @@ import type { Page } from "@playwright/test";
  */
 const KNOWN_NOISE = [
   /\/brands\/[a-z0-9-]+\.(?:svg|png)$/,
+  // PNG logos load through the image optimizer, which URL-encodes the source path.
+  /\/_next\/image\?(?:.*&)?url=%2Fbrands%2F[a-z0-9-]+\.png(?:&|$)/,
   /\/api\/v1\/users\/me$/,
   /\/api\/v1\/auth\/refresh$/,
   /^https?:\/\/[^/]+\/(?!(?:en|hi)?\?)[^?]+\?(?:.*&)?_rsc=/,
