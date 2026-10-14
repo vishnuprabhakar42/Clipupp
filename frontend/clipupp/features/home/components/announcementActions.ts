@@ -14,7 +14,7 @@ export async function dismissAnnouncement(formData: FormData) {
     httpOnly: false,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 60, // 60 days — long enough that a "dismissed" bar
+    maxAge: 60 * 60 * 24 * 60, // 60 days - long enough that a "dismissed" bar
                                 // stays dismissed across visits, short enough
                                 // that admins re-announcing the same id
                                 // eventually re-appears for returning users.
