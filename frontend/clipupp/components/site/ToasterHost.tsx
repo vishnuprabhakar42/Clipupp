@@ -1,10 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { LazyBoundary } from "@/components/site/LazyBoundary";
+import { retryImport } from "@/lib/lazy/retryImport";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { isToasterWanted, subscribeToasterWanted } from "@/lib/toast/bus";
 
-const LazyToasterMount = dynamic(() => import("@/components/site/ToasterMount").then((m) => m.ToasterMount), {
+const LazyToasterMount = dynamic(() => retryImport(() => import("@/components/site/ToasterMount")).then((m) => m.ToasterMount), {
   ssr: false,
   loading: () => null,
 });
@@ -38,5 +40,9 @@ export function ToasterHost() {
     };
   }, []);
 
-  return wanted || idle ? <LazyToasterMount /> : null;
+  return wanted || idle ? (
+    <LazyBoundary name="toaster">
+      <LazyToasterMount />
+    </LazyBoundary>
+  ) : null;
 }

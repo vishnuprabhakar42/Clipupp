@@ -251,7 +251,7 @@ function CouponSheetBody({
           target="_blank"
           rel="nofollow sponsored noopener noreferrer"
           onClick={() => void copy()}
-          className={`${code ? "max-lg:hidden " : ""}mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-clipupp-primary px-4 text-[15px] font-semibold text-clipupp-primary-fg hover:bg-clipupp-primary-strong`}
+          className={`${code ? "max-lg:hidden " : ""}clipupp-press mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-clipupp-primary px-4 text-[15px] font-semibold text-clipupp-primary-fg hover:bg-clipupp-primary-strong`}
         >
           {code ? t("openStore", { store: store.name }) : t("shopNow", { store: store.name })}
           <ExternalLink size={16} aria-hidden />
