@@ -115,3 +115,164 @@ test.describe("homepage interactions", () => {
     await expect(page.getByRole("button", { name: "Switch to light theme" })).toBeVisible();
   });
 });
+
+test.describe("homepage at tablet width", () => {
+  test.use({ viewport: { width: 820, height: 1180 } });
+
+  // Rail columns come from per-breakpoint CSS vars (Rail.tsx cols): at md the trending rail
+  // sizes cards at (100% - 32px) / 3.15 and deals at (100% - 60px) / 4.25, so 3 and 4 cards
+  // sit fully inside the rail with the next one peeking.
+  for (const [rail, full] of [
+    ["trending-rail", 3],
+    ["deals-rail", 4],
+  ] as const) {
+    test(`${rail} shows ${full} full cards and a peek at md`, async ({ page }) => {
+      await openHome(page);
+      const track = page.locator(`[id="${rail}"]`);
+      await expect(track).toBeAttached();
+      const fit = await track.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const kids = [...el.children].map((c) => c.getBoundingClientRect()).filter((c) => c.width > 0);
+        return {
+          full: kids.filter((c) => c.left >= r.left - 1 && c.right <= r.right + 1).length,
+          partial: kids.filter((c) => c.left < r.right - 1 && c.right > r.right + 1).length,
+          total: kids.length,
+        };
+      });
+      expect(fit.total).toBeGreaterThan(full);
+      expect(fit.full).toBe(full);
+      expect(fit.partial).toBe(1);
+    });
+  }
+});
+
+test.describe("homepage state and fallbacks", () => {
+  test.beforeEach(async ({ page }) => {
+    await acceptCookies(page);
+  });
+
+  test("blocked clipboard shows the code, never Copied", async ({ page }, info) => {
+    // No clipboard permission, and writeText rejects the way a blocked or insecure context does.
+    await page.addInitScript(() => {
+      const reject = () => Promise.reject(new DOMException("Write permission denied.", "NotAllowedError"));
+      if (navigator.clipboard) Object.defineProperty(navigator.clipboard, "writeText", { value: reject, configurable: true });
+    });
+    const errors = collectConsoleErrors(page);
+    await openHome(page);
+    const today = page.locator("#top_deals");
+    await today.getByRole("link", { name: /^Show code for / }).first().click();
+    const sheet = page.locator("dialog[open]");
+    await expect(sheet).toBeVisible();
+    const revealed = today.getByRole("link", { name: /^Code .+, open details$/ }).first();
+    const code = ((await revealed.getAttribute("aria-label")) ?? "").replace(/^Code (.+), open details$/, "$1");
+    expect(code).not.toBe("");
+    // The code box keeps the code and the button stays "Copy", even after pressing it again.
+    await expect(sheet.getByText(code, { exact: true }).first()).toBeVisible();
+    const copy = sheet.getByRole("button", { name: "Copy", exact: true });
+    await expect(copy).toBeVisible();
+    await copy.click();
+    await expect(copy).toHaveText("Copy");
+    await expect(sheet.getByRole("button", { name: "Copied" })).toHaveCount(0);
+    await expect(sheet.getByText("Copied. Paste at checkout.")).toHaveCount(0);
+    await expect(page.getByText("Code selected, press copy to use it").first()).toBeVisible();
+    if (info.project.name === "phone") {
+      // Sticky bar (below lg): the code in place of "Copied", and the store link opens /r/{id} in a new tab.
+      const bar = sheet.locator("div.sticky");
+      await expect(bar.getByText(code, { exact: true })).toBeVisible();
+      const open = bar.getByRole("link", { name: /^Open / });
+      await expect(open).toHaveAttribute("href", /^\/r\/[^/]+$/);
+      await expect(open).toHaveAttribute("target", "_blank");
+    }
+    expect(errors).toEqual([]);
+  });
+
+  test("Today tab and sort live in the URL", async ({ page }) => {
+    await openHome(page);
+    const tabs = page.getByRole("tablist", { name: "Coupon categories" }).getByRole("tab");
+    const second = tabs.nth(1);
+    await second.click();
+    await expect(second).toHaveAttribute("aria-selected", "true");
+    await expect(page).toHaveURL(/[?&]tab=[a-z0-9-]+/);
+    const tab = new URL(page.url()).searchParams.get("tab");
+
+    await page.reload();
+    await expect(page).toHaveURL(new RegExp(`[?&]tab=${tab}(?:&|#|$)`));
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+
+    const sort = page.getByLabel("Sort coupons");
+    await sort.selectOption("end");
+    await expect(page).toHaveURL(/[?&]sort=end(?:&|#|$)/);
+    expect(new URL(page.url()).searchParams.get("tab")).toBe(tab);
+
+    // The logo starts a fresh visit at "/"; Back restores the view from the URL.
+    await page.getByRole("banner").getByRole("link", { name: "Clipupp home" }).first().click();
+    await expect(page).toHaveURL((u) => !u.searchParams.has("tab") && !u.searchParams.has("sort"));
+    await page.goBack();
+    await expect(page).toHaveURL(/[?&]sort=end(?:&|#|$)/);
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(sort).toHaveValue("end");
+  });
+
+  test("Today ignores a store the feed does not know", async ({ page }) => {
+    await page.goto("/?store=not-a-known-store&utm_source=e2e");
+    await page.getByRole("button", { name: /^Switch to (dark|light) theme$/ }).waitFor();
+    const tabs = page.getByRole("tablist", { name: "Coupon categories" }).getByRole("tab");
+    await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("button", { name: /^Clear store filter/ })).toHaveCount(0);
+    await expect(page).toHaveURL((u) => !u.searchParams.has("store") && u.searchParams.get("utm_source") === "e2e");
+  });
+
+  test("header search highlights, says no results, clears and remembers", async ({ page }) => {
+    // Backend-independent: no remote coupon hits, so results come from the feed alone.
+    await page.route("**/api/v1/search/suggest**", (route) => route.fulfill({ json: [] }));
+    await openHome(page);
+    const banner = page.getByRole("banner");
+    const box = banner.getByRole("combobox");
+    await box.click();
+    await box.fill("ama");
+    const listbox = banner.getByRole("listbox");
+    await expect(listbox.locator("mark").first()).toHaveText(/^ama$/i);
+
+    await box.fill("zzqxzzqx");
+    // The visible row, and the same text in the live region for assistive tech.
+    await expect(banner.getByText("No matches for “zzqxzzqx”").first()).toBeVisible();
+    await expect(banner.getByRole("status")).toHaveText("No matches for “zzqxzzqx”");
+
+    await banner.getByRole("button", { name: "Clear search" }).click();
+    await expect(box).toHaveValue("");
+    await expect(box).toBeFocused();
+
+    // Choosing a result records the query as a recent search.
+    await box.fill("ama");
+    await expect(listbox.locator("mark").first()).toBeVisible();
+    await box.press("Enter");
+    await page.waitForURL((u) => u.pathname !== "/");
+    await openHome(page);
+    await page.getByRole("banner").getByRole("combobox").click();
+    await expect(page.getByRole("banner").getByRole("group", { name: "Recent" }).getByRole("option", { name: "Amazon" })).toBeVisible();
+  });
+
+  test("reporting a coupon persists across reload", async ({ page }) => {
+    await openHome(page);
+    const today = page.locator("#top_deals");
+    await today.getByRole("link", { name: /^Show code for / }).first().click();
+    const sheet = page.locator("dialog[open]");
+    await expect(sheet).toBeVisible();
+    const href = (await sheet.locator('a[href^="/r/"]').first().getAttribute("href")) ?? "";
+    const id = href.replace(/^\/r\//, "");
+    expect(id).not.toBe("");
+
+    await sheet.getByRole("button", { name: "Report not working" }).click();
+    await sheet.getByRole("group", { name: "What went wrong?" }).getByRole("button", { name: "Expired" }).click();
+    await expect(sheet.getByRole("status").filter({ hasText: "Thanks, we will re-check this code." })).toBeVisible();
+    const stored = await page.evaluate(() => localStorage.getItem("clipupp:reports") ?? "");
+    expect(Object.keys((JSON.parse(stored) as { state: { reports: Record<string, unknown> } }).state.reports)).toContain(id);
+
+    await page.reload();
+    await page.getByRole("button", { name: /^Switch to (dark|light) theme$/ }).waitFor();
+    await today.locator(`a[href="${href}"]`).first().click();
+    await expect(sheet).toBeVisible();
+    await expect(sheet.getByText("Thanks, we will re-check this code.")).toBeVisible();
+    await expect(sheet.getByRole("button", { name: "Report not working" })).toHaveCount(0);
+  });
+});
