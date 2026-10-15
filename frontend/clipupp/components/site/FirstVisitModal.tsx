@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,8 @@ const APPEAR_DELAY_MS = 6_000;
  * CLS. Closing or submitting the form persists "done" in localStorage.
  */
 export function FirstVisitModal() {
+  const t = useTranslations("chrome.firstVisit");
+  const tc = useTranslations("common");
   const auth = useAuth();
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -51,10 +53,10 @@ export function FirstVisitModal() {
     setSubmitting(true);
     try {
       await newsletterApi.subscribe(email.trim(), locale);
-      toast.success("Almost there — check your inbox to confirm.");
+      toast.success(t("success"));
       dismiss();
     } catch (err) {
-      toast.error(isApiError(err) ? err.message : "Could not subscribe right now.");
+      toast.error(isApiError(err) ? err.message : t("fail"));
     } finally {
       setSubmitting(false);
     }
@@ -67,7 +69,7 @@ export function FirstVisitModal() {
       <div className="relative w-full max-w-md overflow-hidden rounded-xl border border-clipupp-neutral-200 bg-card shadow-card">
         <button
           onClick={dismiss}
-          aria-label="Close"
+          aria-label={tc("close")}
           className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition hover:bg-accent"
         >
           <X className="h-4 w-4" aria-hidden />
@@ -76,14 +78,13 @@ export function FirstVisitModal() {
         <div className="bg-clipupp-primary p-6 text-white">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
-            Welcome to Clipupp
+            {t("welcome")}
           </span>
           <h2 className="mt-3 text-2xl font-bold leading-tight">
-            Save smarter — get the best deals first.
+            {t("title")}
           </h2>
           <p className="mt-1.5 text-sm text-white/80">
-            Drop your email for a weekly digest of the highest-value coupons
-            across 1,000+ stores. One email, hand-curated.
+            {t("body")}
           </p>
         </div>
 
@@ -91,26 +92,25 @@ export function FirstVisitModal() {
           <Input
             type="email"
             required
-            placeholder="you@example.com"
+            placeholder={t("placeholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={submitting}
-            aria-label="Email address"
+            aria-label={t("emailLabel")}
             autoComplete="email"
           />
           <Button type="submit" className="clipupp-btn-primary w-full" disabled={submitting}>
-            {submitting ? "Sending…" : "Get the weekly digest"}
+            {submitting ? t("sending") : t("submit")}
           </Button>
           <button
             type="button"
             onClick={dismiss}
             className="block w-full text-xs text-muted-foreground hover:text-foreground"
           >
-            No thanks, I&apos;ll browse first
+            {t("skip")}
           </button>
           <p className="text-[11px] text-muted-foreground">
-            We&apos;ll send a confirmation link first — double opt-in. Unsubscribe
-            anytime in one click. We never sell your email.
+            {t("fine")}
           </p>
         </form>
       </div>

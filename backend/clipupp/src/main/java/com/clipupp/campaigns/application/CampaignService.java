@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,16 @@ public class CampaignService {
     @Cacheable(cacheNames = "campaigns.active", key = "'now'", unless = "#result == null")
     @Transactional(readOnly = true)
     public Campaign findActive() {
-        return repo.findActiveAt(OffsetDateTime.now()).orElse(null);
+        // Several campaigns can overlap (the homepage shows two); the newest start wins.
+        return repo.findActiveAt(OffsetDateTime.now(), PageRequest.of(0, 1)).stream().findFirst().orElse(null);
+    }
+
+    /** Up to {@code limit} active campaigns, newest start first. Feeds the homepage bank/festive tiles. */
+    @Cacheable(cacheNames = "campaigns.active", key = "'list:' + #limit", unless = "#result == null")
+    @Transactional(readOnly = true)
+    public List<Campaign> findActive(int limit) {
+        int capped = Math.max(1, Math.min(limit, 10));
+        return repo.findActiveAt(OffsetDateTime.now(), PageRequest.of(0, capped));
     }
 
     @Transactional(readOnly = true)
@@ -42,7 +52,7 @@ public class CampaignService {
         return repo.findById(id).orElseThrow(() -> ApiException.notFound("Campaign not found"));
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign create(CampaignDtos.Create input) {
         if (input.endsAt().isBefore(input.startsAt())) {
@@ -69,7 +79,7 @@ public class CampaignService {
         return saved;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign update(UUID id, CampaignDtos.Update input) {
         Campaign c = findById(id);
@@ -95,7 +105,7 @@ public class CampaignService {
         return c;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public Campaign activate(UUID id) {
         Campaign c = findById(id);
@@ -104,7 +114,7 @@ public class CampaignService {
         return c;
     }
 
-    @CacheEvict(cacheNames = "campaigns.active", allEntries = true)
+    @CacheEvict(cacheNames = {"campaigns.active", "homepage.layout"}, allEntries = true)
     @Transactional
     public void delete(UUID id) {
         Campaign c = findById(id);

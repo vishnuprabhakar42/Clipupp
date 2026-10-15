@@ -1,0 +1,52 @@
+/** Today's coupons view state as it appears in the homepage URL (`?tab=&sort=&store=`). */
+export type TodayParams = { tab: string; sort: string; store: string | null };
+
+export const TODAY_KEYS = ["tab", "sort", "store"] as const;
+const DEFAULTS = { tab: "all", sort: "pop" };
+const SLUG = /^[a-z0-9][a-z0-9-]{0,99}$/;
+
+/**
+ * Read the view state, falling back to the defaults on unknown or malformed
+ * values. With `known.stores`, a store slug the feed does not know is
+ * dropped too, so a shared link never shows a bare slug chip over an empty list.
+ */
+export function parseTodayParams(
+  sp: URLSearchParams,
+  known: { tabs: string[]; sorts: string[]; stores?: readonly string[] },
+): TodayParams {
+  const tab = sp.get("tab");
+  const sort = sp.get("sort");
+  const store = sp.get("store");
+  return {
+    tab: tab && known.tabs.includes(tab) ? tab : DEFAULTS.tab,
+    sort: sort && known.sorts.includes(sort) ? sort : DEFAULTS.sort,
+    store: store && SLUG.test(store) && (!known.stores || known.stores.includes(store)) ? store : null,
+  };
+}
+
+/**
+ * Serialise the view state, leaving out default values; "" when everything is
+ * default. Other params in `base` (utm tags and the like) are kept, and view
+ * params already in `base` keep their position, so a canonical URL comes back
+ * unchanged.
+ */
+export function todayParamsToSearch(
+  state: TodayParams,
+  defaults: { tab: string; sort: string } = DEFAULTS,
+  base?: URLSearchParams,
+): string {
+  const sp = new URLSearchParams(base);
+  const values: Record<(typeof TODAY_KEYS)[number], string | null> = {
+    tab: state.tab !== defaults.tab ? state.tab : null,
+    sort: state.sort !== defaults.sort ? state.sort : null,
+    store: state.store || null,
+  };
+  // `set` replaces in place (or appends); only defaults are deleted.
+  for (const k of TODAY_KEYS) {
+    const v = values[k];
+    if (v == null) sp.delete(k);
+    else sp.set(k, v);
+  }
+  const s = sp.toString();
+  return s ? `?${s}` : "";
+}

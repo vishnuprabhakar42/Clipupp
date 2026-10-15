@@ -14,19 +14,17 @@ permissions:
 
 jobs:
   lighthouse:
-    name: Audit Lighthouse score budgets
+    name: Audit homepage performance budgets
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
         working-directory: frontend/clipupp
     env:
-      # Lighthouse needs a backend so detail pages render — without it the
-      # SSR fetch fails and the page falls through to the error boundary,
-      # which would tank the run. Until the backend is reachable from CI
-      # (Docker compose stack, deploy-preview, etc.), the workflow audits
-      # only static-shell routes (/, /stores, /coupons, /categories, /blog).
-      BACKEND_URL: http://localhost:8080
+      # No backend in CI: BACKEND_URL stays unset, every backend fetch fails
+      # soft, and the demo feed renders the homepage (/ and /hi) from the
+      # fixture. Budgets live in lighthouserc.cjs.
+      NEXT_PUBLIC_HOME_DEMO_FEED: "true"
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
 
     steps:
@@ -44,6 +42,17 @@ jobs:
 
       - name: Build (production)
         run: npm run build
+
+      - name: Start server
+        run: |
+          npx next start -p 3000 > next-start.log 2>&1 &
+          for i in $(seq 1 60); do
+            # Warm both locales so the first measured page load is not a cold render.
+            curl -sf -o /dev/null http://localhost:3000/ && curl -sf -o /dev/null http://localhost:3000/hi && exit 0
+            sleep 1
+          done
+          cat next-start.log
+          exit 1
 
       - name: Run Lighthouse CI
         run: npm run lhci

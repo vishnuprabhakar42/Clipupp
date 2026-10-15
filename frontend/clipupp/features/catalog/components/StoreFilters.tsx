@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Filter, Globe, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const COUNTRY_OPTIONS = [
   { value: "", label: "All regions" },
@@ -28,6 +29,7 @@ export type CategoryOption = { id: string; slug: string; title: string };
  * move out of the root layout.
  */
 export function StoreFilters({ categories }: { categories: CategoryOption[] }) {
+  const t = useTranslations("catalog.ui");
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -79,7 +81,7 @@ export function StoreFilters({ categories }: { categories: CategoryOption[] }) {
           <select
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            aria-label="Filter stores by region"
+            aria-label={t("filterRegion")}
             className="rounded-full border bg-background px-3 py-1 text-xs"
           >
             {COUNTRY_OPTIONS.map((c) => (
@@ -92,10 +94,10 @@ export function StoreFilters({ categories }: { categories: CategoryOption[] }) {
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          aria-label="Filter stores by category"
+          aria-label={t("filterStoreCategory")}
           className="rounded-full border bg-background px-3 py-1 text-xs"
         >
-          <option value="">All categories</option>
+          <option value="">{t("allCategories")}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.slug}>
               {c.title}

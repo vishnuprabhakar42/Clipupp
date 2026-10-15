@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Filter, Tag, Truck, Store, X } from "lucide-react";
 import type { CouponType } from "@/lib/api/types";
 import type { CategoryOption } from "./StoreFilters";
+import { useTranslations } from "next-intl";
 
 const TYPE_OPTIONS: Array<{
   value: CouponType;
@@ -35,6 +36,7 @@ export function CouponFilters({
   categories?: CategoryOption[];
   showCategory?: boolean;
 }) {
+  const t = useTranslations("catalog.ui");
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
@@ -109,10 +111,10 @@ export function CouponFilters({
           <select
             value={activeCategory}
             onChange={(e) => setCategory(e.target.value)}
-            aria-label="Filter by category"
+            aria-label={t("filterCategory")}
             className="ml-1 rounded-full border bg-background px-3 py-1 text-xs"
           >
-            <option value="">All categories</option>
+            <option value="">{t("allCategories")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.slug}>
                 {c.title}

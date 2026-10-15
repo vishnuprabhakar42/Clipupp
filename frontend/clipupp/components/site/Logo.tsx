@@ -5,7 +5,7 @@ import { Link } from "@/lib/i18n/navigation";
 /**
  * Clipupp brand assets.
  *
- * Source-of-truth artwork lives in /public — all variants are crops of the
+ * Source-of-truth artwork lives in /public - all variants are crops of the
  * same canonical design and stay pixel-aligned across variants:
  *
  *   logo.png               1151×334  icon + wordmark, transparent bg
@@ -23,9 +23,9 @@ import { Link } from "@/lib/i18n/navigation";
  *                                    (drawer header on a dark gradient, etc.)
  *
  * Components:
- *   <LogoMark variant>      — icon only
- *   <LogoWordmark variant>  — icon + Clipupp wordmark (and optionally tagline)
- *   <Logo variant>          — clickable wordmark linking to "/"
+ *   <LogoMark variant>      - icon only
+ *   <LogoWordmark variant>  - icon + Clipupp wordmark (and optionally tagline)
+ *   <Logo variant>          - clickable wordmark linking to "/"
  *
  * All variants render through next/image so they ship as AVIF/WebP with the
  * right srcset on retina screens.
@@ -62,6 +62,7 @@ export function LogoMark({
       alt="Clipupp"
       width={size}
       height={size}
+      sizes={`${size}px`}
       priority={priority}
       className={className}
     />
@@ -88,9 +89,12 @@ export function LogoWordmark({
       alt="Clipupp"
       width={width}
       height={height}
+      sizes={`${width}px`}
       priority={priority}
       className={className}
-      style={{ height, width: "auto" }}
+      // Both sides in px and equal to the attributes: an "auto" side renders a
+      // fractional width, which next/image reports as a one-sided resize.
+      style={{ height, width }}
     />
   );
 }
@@ -100,12 +104,12 @@ export function LogoWordmark({
  * `height` sets the rendered pixel height; aspect-ratio is preserved.
  *
  * Pick `variant` to match the surrounding surface:
- *   "default"      — purple icon, dark "Clip", purple "upp" (light bg, default)
- *   "on-dark"      — purple icon, white "Clip", purple "upp" (dark bg accent)
- *   "white"        — entire wordmark recoloured pure white (high-contrast
+ *   "default"      - purple icon, dark "Clip", purple "upp" (light bg, default)
+ *   "on-dark"      - purple icon, white "Clip", purple "upp" (dark bg accent)
+ *   "white"        - entire wordmark recoloured pure white (high-contrast
  *                    footers / pure-monochrome use)
- *   "full"         — adds the tagline below the wordmark
- *   "full-on-dark" — tagline variant for dark backgrounds
+ *   "full"         - adds the tagline below the wordmark
+ *   "full-on-dark" - tagline variant for dark backgrounds
  */
 export function Logo({
   href = "/",
@@ -113,12 +117,15 @@ export function Logo({
   height = 40,
   priority = true,
   className,
+  imgClassName,
 }: {
   href?: string;
   variant?: WordmarkVariant;
   height?: number;
   priority?: boolean;
   className?: string;
+  /** Classes for the <img>; override the inline size responsively with both `!h-[..]` and `!w-[..]` (keep the aspect). */
+  imgClassName?: string;
 }) {
   return (
     <Link
@@ -126,7 +133,7 @@ export function Logo({
       aria-label="Clipupp home"
       className={`inline-flex shrink-0 items-center ${className ?? ""}`}
     >
-      <LogoWordmark variant={variant} height={height} priority={priority} />
+      <LogoWordmark variant={variant} height={height} priority={priority} className={imgClassName} />
     </Link>
   );
 }

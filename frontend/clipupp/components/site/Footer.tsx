@@ -1,342 +1,184 @@
+import { getTranslations } from "next-intl/server";
+import { Instagram, Youtube, Facebook, Linkedin, ShieldCheck, Tag, Store as StoreIcon } from "lucide-react";
 import { Link } from "@/lib/i18n/navigation";
 import { Logo } from "@/components/site/Logo";
-import {
-  Facebook,
-  Headphones,
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
-  MessageCircle,
-  Phone,
-  ShoppingBag,
-  Twitter,
-  Youtube,
-} from "lucide-react";
-import { storesApi } from "@/lib/api/stores";
-import { categoriesApi } from "@/lib/api/categories";
-import { getPublicSettings, asString } from "@/lib/api/settings";
+import { LocaleSegmented } from "@/components/site/LocaleSegmented";
+import { FooterColumn } from "@/components/site/FooterColumn";
+import { CopyEmailButton } from "@/components/site/CopyEmailButton";
+import { BackToTop } from "@/components/site/BackToTop";
+import { getHomeFeed } from "@/lib/home/getHomeFeed";
+import { rootCategories, shortCategoryLabel } from "@/lib/home/categoryLabel";
+import type { HomeFeed } from "@/lib/home/feed";
+import { anchorFor, renderedAnchors } from "@/lib/home/anchors";
 
-/**
- * Server-rendered footer. Pulls the dark-themed multi-column layout from a
- * mix of:
- *
- *   • /api/v1/settings/public  → tagline, social URLs, contact info, copy
- *   • /api/v1/stores           → top 6 store links
- *   • /api/v1/categories       → top 6 category links
- *
- * All three fetches run in parallel; failures degrade gracefully (skeleton
- * lists / muted defaults) so the footer never blocks the page render.
- */
+const LINK =
+  "block rounded py-1.5 text-[14px] text-clipupp-ft-ink-2 lg:py-[5px] transition-colors hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent";
+
+function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+const SOCIAL_ICON: Record<HomeFeed["social"][number]["network"], { label: string; icon: React.ReactNode }> = {
+  instagram: { label: "Instagram", icon: <Instagram className="h-4 w-4" aria-hidden /> },
+  youtube: { label: "YouTube", icon: <Youtube className="h-4 w-4" aria-hidden /> },
+  x: { label: "X", icon: <XIcon /> },
+  facebook: { label: "Facebook", icon: <Facebook className="h-4 w-4" aria-hidden /> },
+  linkedin: { label: "LinkedIn", icon: <Linkedin className="h-4 w-4" aria-hidden /> },
+};
+
+/** Drops links whose target is null (a homepage block that is not rendered and has no route). */
+function withHref(links: [string | null, string][]): [string, string][] {
+  return links.filter((l): l is [string, string] => l[0] != null);
+}
+
+/** Footer v3: fixed deep-purple look in both themes. Server component; interactivity lives in small client leaves. */
 export async function Footer() {
-  const [settings, storesPage, categoryTree] = await Promise.all([
-    getPublicSettings(),
-    storesApi.list({ limit: 10 }).catch(() => null),
-    categoriesApi.tree().catch(() => null),
+  const [t, feed] = await Promise.all([getTranslations("footer"), getHomeFeed()]);
+  const year = new Date().getFullYear();
+  const topStores = feed.stores
+    .filter((s) => s.popular != null && s.popular <= 8)
+    .sort((a, b) => (a.popular ?? 0) - (b.popular ?? 0))
+    .slice(0, 8);
+  const cats = rootCategories(feed.categories).filter((c) => !c.hot).slice(0, 8);
+  const storeCount = Math.max(feed.stats.storeCount, feed.stores.length) || 500;
+
+  const trust = [
+    { icon: <ShieldCheck className="h-[18px] w-[18px]" aria-hidden />, title: t("trustVerifyTitle"), body: t("trustVerifyBody") },
+    { icon: <Tag className="h-[18px] w-[18px]" aria-hidden />, title: t("trustFreeTitle"), body: t("trustFreeBody") },
+    { icon: <StoreIcon className="h-[18px] w-[18px]" aria-hidden />, title: t("trustStoresTitle", { count: storeCount }), body: t("trustStoresBody") },
+  ];
+  // Homepage blocks link in-page only when they render; otherwise their route, or nothing.
+  const rendered = renderedAnchors(feed);
+  const alertsHref = anchorFor("alerts", rendered);
+  const company = withHref([
+    [anchorFor("verify", rendered), t("howWeVerify")],
+    [anchorFor("calendar", rendered), t("saleCalendar")],
+    [anchorFor("bank", rendered), t("bankOffers")],
+    [alertsHref, t("dealAlerts")],
+    ["/about", t("aboutUs")],
+    ["/blog", t("blog")],
+  ]);
+  const help = withHref([
+    [anchorFor("faq", rendered), t("helpFaq")],
+    ["/contact", t("contact")],
+    ["/privacy", t("privacy")],
+    ["/terms", t("terms")],
+    ["/affiliate-disclosure", t("affiliate")],
+    ["/cookie-policy", t("cookies")],
   ]);
 
-  const tagline = asString(
-    settings["brand.tagline"],
-    "Striving towards making the world a better place to shop with great savings!"
-  );
-  const brandName = asString(settings["brand.name"], "Clipupp");
-  const accent = asString(settings["brand.accent_color"], "#8529CD");
-  const commissionNote = asString(
-    settings["footer.commission_note"],
-    "We may earn a commission if you buy through links on Clipupp."
-  );
-  const disclosure = asString(
-    settings["footer.disclosure"],
-    "Clipupp earns a commission when you click out to a merchant and complete a purchase. This costs you nothing extra."
-  );
-  const hashtag = asString(settings["footer.hashtag"], "#SaveWithClipupp");
-
-  const social = {
-    whatsapp: asString(settings["social.whatsapp"]),
-    facebook: asString(settings["social.facebook"]),
-    x: asString(settings["social.x"]),
-    linkedin: asString(settings["social.linkedin"]),
-    instagram: asString(settings["social.instagram"]),
-    youtube: asString(settings["social.youtube"]),
-  };
-
-  const contactEmail = asString(settings["contact.email"]);
-  const contactPhone = asString(settings["contact.phone"]);
-  const addressLines = [
-    asString(settings["contact.address_line1"]),
-    asString(settings["contact.address_line2"]),
-    asString(settings["contact.address_line3"]),
-  ].filter(Boolean);
-
-  // Bumped 6 → 10 in Phase 4 — more internal links for crawler weight,
-  // higher chance a visitor finds the brand they were looking for from
-  // any page on the site.
-  const stores = storesPage?.data?.slice(0, 10) ?? [];
-  const categories = categoryTree?.slice(0, 10) ?? [];
-
   return (
-    <footer className="bg-clipupp-neutral-900 text-gray-300" role="contentinfo">
-      {/* ── Main grid: brand + columns ── */}
-      <div className="clipupp-container grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1.2fr]">
-        {/* ── Brand block ── */}
-        <div>
-          <Logo variant="white" height={56} priority={false} />
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-clipupp-neutral-400">{tagline}</p>
+    <footer role="contentinfo" className="bg-clipupp-ft-bg text-clipupp-ft-ink">
+      <div className="clipupp-container py-7 lg:py-10">
+        <ul className="grid gap-4 border-b border-[color:var(--clipupp-ft-line)] pb-6 sm:grid-cols-3 sm:gap-6">
+          {trust.map((x) => (
+            <li key={x.title} className="flex items-center gap-3">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-clipupp-ft-card text-clipupp-gold">{x.icon}</span>
+              <span className="min-w-0">
+                <b className="block text-[14.5px] font-semibold text-clipupp-ft-ink">{x.title}</b>
+                <span className="mt-1 block text-[13px] text-clipupp-ft-ink-2">{x.body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
 
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            {social.whatsapp && (
-              <SocialLink href={social.whatsapp} label="WhatsApp" color="#25D366">
-                <MessageCircle className="h-4 w-4" />
-              </SocialLink>
+        <div className="grid gap-x-6 gap-y-6 pt-7 md:grid-cols-4 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+          <div className="md:col-span-4 lg:col-span-1">
+            <Logo variant="on-dark" height={72} priority={false} className="-mb-7 -mt-5" />
+            <p className="mt-3 max-w-[34ch] text-[14px] leading-relaxed text-clipupp-ft-ink-2">{t("about")}</p>
+            {feed.social.length > 0 && (
+              <ul className="mt-4 flex gap-2.5">
+                {feed.social.map((s) => {
+                  const m = SOCIAL_ICON[s.network];
+                  return (
+                    <li key={s.network}>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener"
+                        aria-label={t("socialAria", { network: m.label })}
+                        className="grid h-[42px] w-[42px] place-items-center rounded-full bg-clipupp-ft-card text-clipupp-ft-ink-2 transition-colors hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent"
+                      >
+                        {m.icon}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
             )}
-            {social.facebook && (
-              <SocialLink href={social.facebook} label="Facebook" color="#1877F2">
-                <Facebook className="h-4 w-4" />
-              </SocialLink>
-            )}
-            {social.x && (
-              <SocialLink href={social.x} label="X" color="#000">
-                <Twitter className="h-4 w-4" />
-              </SocialLink>
-            )}
-            {social.linkedin && (
-              <SocialLink href={social.linkedin} label="LinkedIn" color="#0A66C2">
-                <Linkedin className="h-4 w-4" />
-              </SocialLink>
-            )}
-            {social.instagram && (
-              <SocialLink href={social.instagram} label="Instagram" color="#E4405F">
-                <Instagram className="h-4 w-4" />
-              </SocialLink>
-            )}
-            {social.youtube && (
-              <SocialLink href={social.youtube} label="YouTube" color="#FF0000">
-                <Youtube className="h-4 w-4" />
-              </SocialLink>
+            {alertsHref && (
+              <Link
+                href={alertsHref}
+                className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-clipupp-success px-4 text-[14px] font-semibold text-clipupp-success-fg transition-colors hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                  <path d="M21.9 4.4 18.7 19.5c-.2 1-.9 1.3-1.7.8l-4.8-3.6-2.3 2.3c-.3.3-.5.5-1 .5l.3-4.9 8.9-8c.4-.3-.1-.5-.6-.2L6.5 13 1.8 11.5c-1-.3-1-1 .2-1.5L20.4 3c.9-.3 1.7.2 1.5 1.4Z" />
+                </svg>
+                {t("telegramPill")}
+              </Link>
             )}
           </div>
 
-          <p className="mt-6 max-w-xs text-xs leading-relaxed text-clipupp-neutral-500">
-            {commissionNote}{" "}
-            <Link href="/terms" className="hover:underline" style={{ color: accent }}>
-              terms of use
-            </Link>
-            .
-          </p>
+          <FooterColumn title={t("topStores")}>
+            {topStores.map((s) => (
+              <li key={s.id}><Link href={`/stores/${s.id}`} className={LINK}>{s.name}</Link></li>
+            ))}
+          </FooterColumn>
+          <FooterColumn title={t("categories")}>
+            {cats.map((c) => (
+              <li key={c.id}><Link href={`/categories/${c.id}`} className={LINK}>{shortCategoryLabel(c.name)}</Link></li>
+            ))}
+          </FooterColumn>
+          <FooterColumn title={t("company")}>
+            {company.map(([href, label]) => (
+              <li key={label}><Link href={href} className={LINK}>{label}</Link></li>
+            ))}
+          </FooterColumn>
+          <FooterColumn title={t("helpLegal")}>
+            {help.map(([href, label]) => (
+              <li key={label}><Link href={href} className={LINK}>{label}</Link></li>
+            ))}
+          </FooterColumn>
         </div>
 
-        {/* ── Top stores ── */}
-        <FooterColumn title="Top Stores" accent={accent}>
-          {stores.length === 0 ? (
-            <SkeletonLinks count={6} />
-          ) : (
-            stores.map((s) => (
-              <FooterLink key={s.id} href={`/stores/${s.slug}`}>
-                {s.name}
-              </FooterLink>
-            ))
-          )}
-          <li className="pt-1">
-            <Link href="/stores" className="text-xs font-semibold hover:underline" style={{ color: accent }}>
-              See all stores →
-            </Link>
-          </li>
-        </FooterColumn>
+        {feed.partnerEmail && (
+          <div className="mt-7 flex flex-col gap-4 rounded-2xl bg-clipupp-ft-card p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <b className="font-display text-[17px] font-semibold text-clipupp-ft-ink">{t("partnerTitle")}</b>
+              <p className="mt-1 text-[14px] text-clipupp-ft-ink-2">{t("partnerBody")}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <code id="partner-email" className="select-all font-sans text-[15px] font-semibold text-clipupp-ft-accent">{feed.partnerEmail}</code>
+              <CopyEmailButton email={feed.partnerEmail} targetId="partner-email" />
+            </div>
+          </div>
+        )}
 
-        {/* ── Top categories ── */}
-        <FooterColumn title="Top Offers" accent={accent}>
-          {categories.length === 0 ? (
-            <SkeletonLinks count={6} />
-          ) : (
-            categories.map((c) => (
-              <FooterLink key={c.id} href={`/categories/${c.slug}`}>
-                {c.title}
-              </FooterLink>
-            ))
-          )}
-          <li className="pt-1">
-            <Link
-              href="/categories"
-              className="text-xs font-semibold hover:underline"
-              style={{ color: accent }}
-            >
-              See all categories →
-            </Link>
-          </li>
-        </FooterColumn>
+        {feed.popularSearches.length > 0 && (
+          <nav aria-labelledby="ft-searches" className="mt-7">
+            <h2 id="ft-searches" className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-clipupp-ft-ink">{t("popularSearches")}</h2>
+            <ul className="flex flex-wrap">
+              {feed.popularSearches.map((s) => (
+                <li key={s.label} className="after:mx-3 after:inline-block after:h-3 after:w-px after:bg-[color:var(--clipupp-ft-line)] after:align-middle after:content-[''] last:after:hidden">
+                  <Link href={s.href} className="inline-block rounded py-1.5 text-[13px] text-clipupp-ft-ink-2 hover:text-clipupp-ft-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-clipupp-ft-accent">{s.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-        {/* ── Company column ── */}
-        <FooterColumn title="Company" accent={accent}>
-          <FooterLink href="/about">About Us</FooterLink>
-          <FooterLink href="/how-it-works">How it works</FooterLink>
-          <FooterLink href="/blog">Blog</FooterLink>
-          <FooterLink href="/contact">Contact</FooterLink>
-          <FooterLink href="/affiliate-disclosure">Affiliate Disclosure</FooterLink>
-          <FooterLink href="/privacy">Privacy Policy</FooterLink>
-          <FooterLink href="/terms">Terms of Service</FooterLink>
-        </FooterColumn>
+        <p className="mt-6 max-w-[88ch] text-[13px] leading-relaxed text-clipupp-ft-ink-3">{t("disclosure")}</p>
 
-        {/* ── Contact column ── */}
-        <div>
-          <h3 className="mb-4 text-base font-semibold" style={{ color: accent }}>
-            Contact Us
-            <span
-              className="ml-1 inline-block h-0.5 w-8 align-middle"
-              style={{ backgroundColor: `${accent}99` }}
-              aria-hidden
-            />
-          </h3>
-          <ul className="space-y-3 text-sm">
-            {contactEmail && (
-              <li className="flex items-start gap-2 text-gray-300">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-clipupp-neutral-500" aria-hidden />
-                <a href={`mailto:${contactEmail}`} className="hover:opacity-80">
-                  {contactEmail}
-                </a>
-              </li>
-            )}
-            {contactPhone && (
-              <li className="flex items-start gap-2 text-gray-300">
-                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-clipupp-neutral-500" aria-hidden />
-                <a href={`tel:${contactPhone.replace(/\s/g, "")}`} className="hover:opacity-80">
-                  {contactPhone}
-                </a>
-              </li>
-            )}
-            {addressLines.length > 0 && (
-              <li className="flex items-start gap-2 text-gray-300">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-clipupp-neutral-500" aria-hidden />
-                <span>
-                  {addressLines.map((line, i) => (
-                    <span key={i}>
-                      {line}
-                      {i < addressLines.length - 1 && <br />}
-                    </span>
-                  ))}
-                </span>
-              </li>
-            )}
-          </ul>
-          <Link
-            href="/contact"
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-clipupp-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-clipupp-primary-strong"
-          >
-            <Headphones className="h-4 w-4" aria-hidden />
-            Contact Us
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Affiliate disclosure ── */}
-      <div className="border-t border-white/10 bg-clipupp-neutral-900">
-        <div className="clipupp-container py-5 text-xs leading-relaxed text-clipupp-neutral-500">
-          <p>
-            <strong className="text-gray-300">Affiliate disclosure:</strong> {disclosure}{" "}
-            <Link href="/affiliate-disclosure" className="hover:underline" style={{ color: accent }}>
-              Read the full disclosure
-            </Link>
-            .
-          </p>
-        </div>
-      </div>
-
-      {/* ── Bottom hashtag bar ── */}
-      <div className="border-t border-white/10">
-        <div className="clipupp-container py-7 text-center">
-          <p
-            className="font-display text-3xl font-bold tracking-tight sm:text-4xl"
-            style={{ color: accent }}
-          >
-            {hashtag}
-          </p>
-        </div>
-      </div>
-
-      {/* ── Copyright strip ── */}
-      <div className="border-t border-white/10">
-        <div className="clipupp-container flex flex-col items-center justify-between gap-3 py-4 text-xs text-clipupp-neutral-500 sm:flex-row">
-          <span>
-            © {new Date().getFullYear()} {brandName}. All rights reserved.
-          </span>
-          <span className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:opacity-80">Privacy</Link>
-            <Link href="/terms" className="hover:opacity-80">Terms</Link>
-            <Link href="/cookie-policy" className="hover:opacity-80">Cookies</Link>
-            <Link href="/sitemap.xml" className="hover:opacity-80">Sitemap</Link>
-          </span>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[color:var(--clipupp-ft-line)] pt-6">
+          <span className="text-[13px] text-clipupp-ft-ink-3">{t("copyright", { year })}</span>
+          <LocaleSegmented />
+          <BackToTop label={t("backToTop")} />
         </div>
       </div>
     </footer>
-  );
-}
-
-function FooterColumn({
-  title,
-  children,
-  accent,
-}: {
-  title: string;
-  children: React.ReactNode;
-  accent: string;
-}) {
-  return (
-    <div>
-      <h3 className="mb-4 text-base font-semibold" style={{ color: accent }}>
-        {title}
-        <span
-          className="ml-1 inline-block h-0.5 w-8 align-middle"
-          style={{ backgroundColor: `${accent}99` }}
-          aria-hidden
-        />
-      </h3>
-      <ul className="space-y-2.5 text-sm">{children}</ul>
-    </div>
-  );
-}
-
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <li>
-      <Link href={href} className="text-gray-300 transition hover:opacity-80">
-        {children}
-      </Link>
-    </li>
-  );
-}
-
-function SkeletonLinks({ count }: { count: number }) {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, i) => (
-        <li key={i}>
-          <span className="block h-4 w-3/4 animate-pulse rounded bg-white/10" />
-        </li>
-      ))}
-    </>
-  );
-}
-
-function SocialLink({
-  href,
-  label,
-  color,
-  children,
-}: {
-  href: string;
-  label: string;
-  color: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="grid h-8 w-8 place-items-center rounded-md border border-white/10 text-clipupp-neutral-300 transition-colors hover:text-white"
-      style={{ ["--social-hover-bg" as never]: color }}
-    >
-      {children}
-    </a>
   );
 }

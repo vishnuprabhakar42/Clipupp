@@ -25,6 +25,7 @@ public record CouponDetailResponse(
         OffsetDateTime startsAt,
         OffsetDateTime expiresAt,
         boolean verified,
+        OffsetDateTime verifiedAt,
         boolean exclusive,
         int usedCount,
         int popularityScore,
@@ -40,7 +41,7 @@ public record CouponDetailResponse(
                 c.getTitle(), c.getDescription(), c.getTerms(), c.getSavingsLabel(),
                 c.getMinPurchase(), c.getMinPurchaseCurrency(),
                 c.getStartsAt(), c.getExpiresAt(),
-                c.isVerified(), c.isExclusive(), c.getUsedCount(), c.getPopularityScore(),
+                c.isVerified(), c.getVerifiedAt(), c.isExclusive(), c.getUsedCount(), c.getPopularityScore(),
                 c.getMetaTitle(), c.getMetaDescription(),
                 c.getCategories().stream().map(cat -> cat.getSlug()).toList(),
                 d.store() == null ? null : StoreRef.from(d.store()));

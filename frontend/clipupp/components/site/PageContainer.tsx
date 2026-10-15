@@ -1,7 +1,7 @@
 import type { ElementType, ReactNode } from "react";
 
 /**
- * Standard page container — caps width at 1280px, applies responsive padding
+ * Standard page container - caps width at 1280px, applies responsive padding
  * (24/40/80) and section rhythm (48/80px). Composes `.clipupp-container` and
  * `.clipupp-section` so we have a single source of truth.
  *

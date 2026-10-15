@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 /**
  * A-Z anchor strip for the stores list. Server-rendered: each letter is a
  * plain `<a href="#letter-X">` so it works without JS (browser native
@@ -19,12 +21,13 @@ export function AlphabetJumpBar({
   /** Uppercase A-Z letters that have at least one store. */
   availableLetters: string[];
 }) {
+  const t = useTranslations("catalog.ui");
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
   const present = new Set(availableLetters.map((l) => l.toUpperCase()));
   const hasNumeric = availableLetters.includes("#");
   return (
     <nav
-      aria-label="Jump to letter"
+      aria-label={t("jumpToLetter")}
       className="clipupp-card mb-6 flex flex-wrap items-center gap-1.5 p-2.5"
     >
       <span className="font-display px-2 text-[11px] font-extrabold uppercase tracking-[0.16em] text-clipupp-primary-700">

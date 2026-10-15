@@ -1,7 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Globe } from "lucide-react";
 import {
   DropdownMenu,
@@ -9,25 +8,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname, useRouter } from "@/lib/i18n/navigation";
-import { locales, type Locale } from "@/lib/i18n/config";
-
-// Display labels for each supported locale. Native script for each language
-// is the convention — Wikipedia, Google etc. all do this.
-const LABELS: Record<Locale, string> = {
-  en: "English",
-  hi: "हिन्दी",
-};
+import { locales } from "@/lib/i18n/config";
+import { LOCALE_LABELS as LABELS, useSwitchLocale } from "@/components/site/LocaleSegmented";
 
 /**
- * Locale switcher — uses next-intl's locale-aware router so the URL
+ * Locale switcher - uses next-intl's locale-aware router so the URL
  * actually changes to /hi/<path> (or strips /hi when switching back to
  * English). This is the right pattern for SEO hreflang: each locale has a
  * distinct, canonical URL that crawlers can index independently.
  *
+ * The footer's two-button group is `LocaleSegmented`, kept in its own file so
+ * it does not pull Radix into the first-load bundle.
+ *
  * Variants:
- *   `pill` — labeled chip with globe icon; used inside the header desktop.
- *   `icon` — globe-only square button; used in the mobile bottom nav.
+ *   `pill` - labeled chip with globe icon; used inside the header desktop.
+ *   `icon` - globe-only square button; used in the mobile bottom nav.
  */
 export function LocaleSwitcher({
   variant = "pill",
@@ -36,17 +31,8 @@ export function LocaleSwitcher({
   variant?: "pill" | "icon";
   align?: "start" | "end";
 }) {
-  const locale = useLocale() as Locale;
-  const router = useRouter();
-  const pathname = usePathname();
-  const [isPending, startTransition] = useTransition();
-
-  function switchTo(next: Locale) {
-    if (next === locale) return;
-    startTransition(() => {
-      router.replace(pathname, { locale: next });
-    });
-  }
+  const t = useTranslations("chrome");
+  const { locale, isPending, switchTo } = useSwitchLocale();
 
   return (
     <DropdownMenu>
@@ -54,7 +40,7 @@ export function LocaleSwitcher({
         {variant === "icon" ? (
           <button
             type="button"
-            aria-label="Change language"
+            aria-label={t("changeLanguage")}
             disabled={isPending}
             className="inline-flex h-9 w-9 items-center justify-center rounded-md text-clipupp-neutral-600 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 disabled:opacity-40"
           >
@@ -63,7 +49,7 @@ export function LocaleSwitcher({
         ) : (
           <button
             type="button"
-            aria-label="Change language"
+            aria-label={t("changeLanguage")}
             disabled={isPending}
             className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-semibold text-clipupp-neutral-700 transition-colors hover:bg-clipupp-neutral-100 hover:text-clipupp-neutral-900 disabled:opacity-40"
           >
@@ -83,7 +69,7 @@ export function LocaleSwitcher({
             {LABELS[loc]}
             {loc === "hi" && (
               <span className="ml-auto rounded-sm bg-clipupp-accent-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-clipupp-accent-strong">
-                Beta
+                {t("beta")}
               </span>
             )}
           </DropdownMenuItem>
