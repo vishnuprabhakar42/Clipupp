@@ -9,7 +9,7 @@ import hi from "@/messages/hi.json";
  * "WhatsApp" (the channel is Telegram). Hindi transliterations count too.
  */
 const BANNED: Array<[string, RegExp]> = [
-  ["em dash", /—/],
+  ["em dash", /\u2014/],
   ["cashback", /cash\s*-?\s*back|कैशबैक/i],
   ["WhatsApp", /whats\s*app|व्हाट्सएप|व्हाट्सऐप/i],
 ];
