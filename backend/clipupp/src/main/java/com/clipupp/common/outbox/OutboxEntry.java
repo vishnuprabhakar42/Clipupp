@@ -48,6 +48,11 @@ public class OutboxEntry {
         this.payload = payload;
     }
 
+    OutboxEntry(String topic, String payload, OffsetDateTime nextAttemptAt) {
+        this(topic, payload);
+        this.nextAttemptAt = nextAttemptAt;
+    }
+
     public void markProcessed() {
         this.processedAt = OffsetDateTime.now();
         this.lastError = null;

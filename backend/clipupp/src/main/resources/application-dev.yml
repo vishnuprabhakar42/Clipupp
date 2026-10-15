@@ -33,25 +33,16 @@ clipupp:
   google:
     client-id: ${GOOGLE_CLIENT_ID:1072385341259-92bm5h34k6si1jd4gerro4g22cv0ml98.apps.googleusercontent.com}
 
-  # ─────────────────────────────────────────────────────────────────────────
-  # DEV-ONLY R2 config — values are hard-coded here so dev doesn't depend on
-  # the env-var pipeline (Gradle daemon + macOS shell state combine in
-  # surprising ways and silently drop env vars on subsequent runs).
-  #
-  # ⚠️  These are LIVE Cloudflare R2 credentials. They MUST be rotated:
-  #   1) Open Cloudflare → R2 → Manage R2 API tokens
-  #   2) Revoke this access key
-  #   3) Create a new one with "Object Read & Write" on `couponvalley-media`
-  #   4) Paste the new ones below
-  # Production deployments still read from env vars via application.yml.
-  # ─────────────────────────────────────────────────────────────────────────
   media:
-    bucket:          couponvalley-media
-    public-base-url: https://pub-e786049ca02d4c5fab01494fd6012521.r2.dev
-    s3-endpoint:     https://fb204214928c936a4e3cc8c1f0098815.r2.cloudflarestorage.com
-    s3-region:       auto
-    access-key:      7c87645059545eb8edf557c5069e3d78
-    secret-key:      32844806777367c31c4e5514b8497e17210a183cfc9ad168195b7615ce444c9a
+    # Dev reads R2 from the environment like prod does; leave unset to run
+    # without media uploads. The keys that used to be checked in here were
+    # rotated on 2026-10-15.
+    bucket:          ${R2_BUCKET:}
+    public-base-url: ${R2_PUBLIC_BASE_URL:}
+    s3-endpoint:     ${R2_ENDPOINT:}
+    s3-region:       ${R2_REGION:auto}
+    access-key:      ${R2_ACCESS_KEY:dev}
+    secret-key:      ${R2_SECRET_KEY:dev}
 
 server:
   error:
