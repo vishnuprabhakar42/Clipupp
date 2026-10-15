@@ -1,0 +1,1367 @@
+{
+  "generatedAt": "2026-10-11T18:00:00Z",
+  "demo": true,
+  "stats": {
+    "verifiedToday": 2418,
+    "verifiedLast7d": null,
+    "successRate7d": 97,
+    "storeCount": 512,
+    "activeCoupons": 593
+  },
+  "categories": [
+    {
+      "id": "festive",
+      "name": "Festive",
+      "icon": "flame",
+      "hot": true,
+      "couponCount": 239,
+      "topStores": []
+    },
+    {
+      "id": "fashion",
+      "name": "Fashion",
+      "icon": "shirt",
+      "couponCount": 105,
+      "topStores": [
+        {
+          "slug": "myntra",
+          "name": "Myntra"
+        },
+        {
+          "slug": "ajio",
+          "name": "Ajio"
+        },
+        {
+          "slug": "nike-india",
+          "name": "Nike"
+        }
+      ]
+    },
+    {
+      "id": "electronics",
+      "name": "Electronics",
+      "icon": "smartphone",
+      "couponCount": 47,
+      "topStores": [
+        {
+          "slug": "croma",
+          "name": "Croma"
+        },
+        {
+          "slug": "samsung-india",
+          "name": "Samsung"
+        },
+        {
+          "slug": "apple-india",
+          "name": "Apple"
+        }
+      ]
+    },
+    {
+      "id": "food",
+      "name": "Food",
+      "icon": "utensils",
+      "couponCount": 86,
+      "topStores": [
+        {
+          "slug": "swiggy",
+          "name": "Swiggy"
+        },
+        {
+          "slug": "zomato",
+          "name": "Zomato"
+        },
+        {
+          "slug": "dominos-india",
+          "name": "Domino's"
+        }
+      ]
+    },
+    {
+      "id": "travel",
+      "name": "Travel",
+      "icon": "plane",
+      "couponCount": 39,
+      "topStores": [
+        {
+          "slug": "makemytrip",
+          "name": "MakeMyTrip"
+        },
+        {
+          "slug": "ola",
+          "name": "Ola"
+        }
+      ]
+    },
+    {
+      "id": "grocery",
+      "name": "Grocery",
+      "icon": "shopping-cart",
+      "couponCount": 38,
+      "topStores": [
+        {
+          "slug": "blinkit",
+          "name": "Blinkit"
+        },
+        {
+          "slug": "bigbasket",
+          "name": "BigBasket"
+        }
+      ]
+    },
+    {
+      "id": "beauty",
+      "name": "Beauty",
+      "icon": "sparkles",
+      "couponCount": 38,
+      "topStores": [
+        {
+          "slug": "nykaa",
+          "name": "Nykaa"
+        }
+      ]
+    },
+    {
+      "id": "recharge",
+      "name": "Recharge",
+      "icon": "zap",
+      "couponCount": 62,
+      "topStores": [
+        {
+          "slug": "paytm",
+          "name": "Paytm"
+        },
+        {
+          "slug": "phonepe",
+          "name": "PhonePe"
+        },
+        {
+          "slug": "google-pay",
+          "name": "Google Pay"
+        }
+      ]
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "icon": "pill",
+      "couponCount": 37,
+      "topStores": [
+        {
+          "slug": "lenskart",
+          "name": "Lenskart"
+        },
+        {
+          "slug": "apollo-pharmacy",
+          "name": "Apollo Pharmacy"
+        }
+      ]
+    },
+    {
+      "id": "ott",
+      "name": "OTT",
+      "icon": "play",
+      "couponCount": 7,
+      "topStores": [
+        {
+          "slug": "jiohotstar",
+          "name": "JioHotstar"
+        }
+      ]
+    },
+    {
+      "id": "home",
+      "name": "Home",
+      "icon": "sofa",
+      "couponCount": 13,
+      "topStores": [
+        {
+          "slug": "pepperfry",
+          "name": "Pepperfry"
+        }
+      ]
+    },
+    {
+      "id": "marketplace",
+      "name": "Marketplace",
+      "icon": "store",
+      "couponCount": 121,
+      "topStores": [
+        {
+          "slug": "amazon-india",
+          "name": "Amazon"
+        },
+        {
+          "slug": "flipkart",
+          "name": "Flipkart"
+        }
+      ]
+    }
+  ],
+  "stores": [
+    {
+      "id": "amazon-india",
+      "name": "Amazon",
+      "logo": "/brands/amazon.png",
+      "mono": "AM",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "marketplace",
+      "url": "https://www.amazon.in",
+      "coupons": 67,
+      "best": "Up to 7% extra",
+      "popular": 1
+    },
+    {
+      "id": "flipkart",
+      "name": "Flipkart",
+      "logo": "/brands/flipkart.png",
+      "mono": "FL",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "marketplace",
+      "url": "https://www.flipkart.com",
+      "coupons": 54,
+      "best": "Up to 6% extra",
+      "popular": 2
+    },
+    {
+      "id": "myntra",
+      "name": "Myntra",
+      "logo": "/brands/myntra.png",
+      "mono": "MY",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "fashion",
+      "url": "https://www.myntra.com",
+      "coupons": 41,
+      "best": "Up to 12% extra",
+      "popular": 3
+    },
+    {
+      "id": "swiggy",
+      "name": "Swiggy",
+      "logo": null,
+      "mono": "SW",
+      "bg": "#fc8019",
+      "fg": "#fff",
+      "cat": "food",
+      "url": "https://www.swiggy.com",
+      "coupons": 33,
+      "best": "Up to ₹125 off",
+      "popular": 4
+    },
+    {
+      "id": "zomato",
+      "name": "Zomato",
+      "logo": null,
+      "mono": "ZO",
+      "bg": "#e23744",
+      "fg": "#fff",
+      "cat": "food",
+      "url": "https://www.zomato.com",
+      "coupons": 29,
+      "best": "Up to ₹120 off",
+      "popular": 5
+    },
+    {
+      "id": "nykaa",
+      "name": "Nykaa",
+      "logo": "/brands/nykaa.png",
+      "mono": "NY",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "beauty",
+      "url": "https://www.nykaa.com",
+      "coupons": 38,
+      "best": "Up to 10% extra",
+      "popular": 6
+    },
+    {
+      "id": "ajio",
+      "name": "Ajio",
+      "logo": null,
+      "mono": "AJ",
+      "bg": "#2c4152",
+      "fg": "#fff",
+      "cat": "fashion",
+      "url": "https://www.ajio.com",
+      "coupons": 39,
+      "best": "Flat 12% off",
+      "popular": 7
+    },
+    {
+      "id": "makemytrip",
+      "name": "MakeMyTrip",
+      "logo": null,
+      "mono": "MMT",
+      "bg": "#d63b2f",
+      "fg": "#fff",
+      "cat": "travel",
+      "url": "https://www.makemytrip.com",
+      "coupons": 27,
+      "best": "Up to ₹2,500 off",
+      "popular": 8
+    },
+    {
+      "id": "blinkit",
+      "name": "Blinkit",
+      "logo": null,
+      "mono": "BL",
+      "bg": "#f2c230",
+      "fg": "#1c1a00",
+      "cat": "grocery",
+      "url": "https://blinkit.com",
+      "coupons": 16,
+      "best": "Up to ₹100 off",
+      "popular": 9
+    },
+    {
+      "id": "croma",
+      "name": "Croma",
+      "logo": null,
+      "mono": "CR",
+      "bg": "#0b8f77",
+      "fg": "#fff",
+      "cat": "electronics",
+      "url": "https://www.croma.com",
+      "coupons": 21,
+      "best": "Up to ₹3,000 off",
+      "popular": 10
+    },
+    {
+      "id": "samsung-india",
+      "name": "Samsung",
+      "logo": "/brands/samsung.png",
+      "mono": "SA",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "electronics",
+      "url": "https://www.samsung.com/in/",
+      "coupons": 17,
+      "best": "Up to 5% off",
+      "popular": 11
+    },
+    {
+      "id": "lenskart",
+      "name": "Lenskart",
+      "logo": "/brands/lenskart.png",
+      "mono": "LE",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "health",
+      "url": "https://www.lenskart.com",
+      "coupons": 19,
+      "best": "Buy 1 get 1",
+      "popular": 12
+    },
+    {
+      "id": "dominos-india",
+      "name": "Domino's",
+      "logo": "/brands/dominos.png",
+      "mono": "DO",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "food",
+      "url": "https://www.dominos.co.in",
+      "coupons": 24,
+      "best": "Buy 1 get 1",
+      "popular": 13
+    },
+    {
+      "id": "paytm",
+      "name": "Paytm",
+      "logo": "/brands/paytm.png",
+      "mono": "PA",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "recharge",
+      "url": "https://paytm.com",
+      "coupons": 31,
+      "best": "Up to ₹200 off",
+      "popular": 14
+    },
+    {
+      "id": "phonepe",
+      "name": "PhonePe",
+      "logo": "/brands/phonepe.png",
+      "mono": "PH",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "recharge",
+      "url": "https://www.phonepe.com",
+      "coupons": 23,
+      "best": "Up to ₹150 off",
+      "popular": null
+    },
+    {
+      "id": "ola",
+      "name": "Ola",
+      "logo": "/brands/ola.svg",
+      "mono": "OL",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "travel",
+      "url": "https://www.olacabs.com",
+      "coupons": 12,
+      "best": "Up to ₹100 off",
+      "popular": null
+    },
+    {
+      "id": "apple-india",
+      "name": "Apple",
+      "logo": "/brands/apple.png",
+      "mono": "AP",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "electronics",
+      "url": "https://www.apple.com/in/",
+      "coupons": 9,
+      "best": "Up to 3% off",
+      "popular": null
+    },
+    {
+      "id": "nike-india",
+      "name": "Nike",
+      "logo": "/brands/nike.png",
+      "mono": "NI",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "fashion",
+      "url": "https://www.nike.com/in/",
+      "coupons": 14,
+      "best": "Up to 8% off",
+      "popular": null
+    },
+    {
+      "id": "decathlon",
+      "name": "Decathlon",
+      "logo": "/brands/decathlon.png",
+      "mono": "DE",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "fashion",
+      "url": "https://www.decathlon.in",
+      "coupons": 11,
+      "best": "Up to 10% off",
+      "popular": null
+    },
+    {
+      "id": "bigbasket",
+      "name": "BigBasket",
+      "logo": null,
+      "mono": "BB",
+      "bg": "#689f38",
+      "fg": "#fff",
+      "cat": "grocery",
+      "url": "https://www.bigbasket.com",
+      "coupons": 22,
+      "best": "Up to 20% off",
+      "popular": null
+    },
+    {
+      "id": "apollo-pharmacy",
+      "name": "Apollo Pharmacy",
+      "logo": null,
+      "mono": "AP",
+      "bg": "#0e7c86",
+      "fg": "#fff",
+      "cat": "health",
+      "url": "https://www.apollopharmacy.in",
+      "coupons": 18,
+      "best": "Flat 15% off",
+      "popular": null
+    },
+    {
+      "id": "google-pay",
+      "name": "Google Pay",
+      "logo": "/brands/google-pay.svg",
+      "mono": "GO",
+      "bg": "#8529CD",
+      "fg": "#fff",
+      "cat": "recharge",
+      "url": "https://pay.google.com",
+      "coupons": 8,
+      "best": "Up to ₹100 off",
+      "popular": null
+    },
+    {
+      "id": "jiohotstar",
+      "name": "JioHotstar",
+      "logo": null,
+      "mono": "JH",
+      "bg": "#0f1b4d",
+      "fg": "#fff",
+      "cat": "ott",
+      "url": "https://www.hotstar.com",
+      "coupons": 7,
+      "best": "Up to 30% off",
+      "popular": null
+    },
+    {
+      "id": "pepperfry",
+      "name": "Pepperfry",
+      "logo": null,
+      "mono": "PF",
+      "bg": "#f16521",
+      "fg": "#fff",
+      "cat": "home",
+      "url": "https://www.pepperfry.com",
+      "coupons": 13,
+      "best": "Up to 15% off",
+      "popular": null
+    }
+  ],
+  "spotlight": [
+    {
+      "store": "flipkart",
+      "kicker": "Big Billion Days",
+      "flag": "Live now",
+      "title": "Extra 10% off with Axis and ICICI cards",
+      "text": "Stacks with our Flipkart codes. Biggest savings on phones, TVs and laptops.",
+      "perks": [
+        "Up to ₹1,500 per card",
+        "No-cost EMI",
+        "Stacks with FKFEST500"
+      ],
+      "endsAt": "2026-10-15T18:29:00Z",
+      "couponId": "c8",
+      "href": null
+    },
+    {
+      "store": "amazon-india",
+      "kicker": "Great Indian Festival",
+      "flag": "Live now",
+      "title": "10% instant off on HDFC and SBI cards",
+      "text": "Add AMAZON7 for Prime members to save a little more on fashion and home.",
+      "perks": [
+        "Up to ₹1,750",
+        "Prime early deals",
+        "Exchange offers"
+      ],
+      "endsAt": "2026-10-17T18:29:00Z",
+      "couponId": "c2",
+      "href": null
+    },
+    {
+      "store": "myntra",
+      "kicker": "Clipupp exclusive",
+      "flag": "Exclusive",
+      "title": "Extra 12% off on orders above ₹1,999",
+      "text": "Only on Clipupp. Works on top of sale prices for new and existing users.",
+      "perks": [
+        "Tested 2 hrs ago",
+        "92% success",
+        "12K shoppers used it"
+      ],
+      "endsAt": "2026-10-31T18:29:00Z",
+      "couponId": "c1",
+      "href": null
+    }
+  ],
+  "coupons": [
+    {
+      "id": "c1",
+      "store": "myntra",
+      "title": "Extra 12% off",
+      "terms": "On orders above ₹1,999. New and existing users.",
+      "code": "MYNTRA12",
+      "badge": "12%",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 92,
+      "uses": 12040,
+      "exclusive": true,
+      "trending": 1,
+      "expiresAt": null,
+      "cat": "fashion",
+      "slug": "myntra-c1"
+    },
+    {
+      "id": "c2",
+      "store": "amazon-india",
+      "title": "Extra 7% off for Prime members",
+      "terms": "Select fashion and home categories.",
+      "code": "AMAZON7",
+      "badge": "7%",
+      "verifiedAt": "2026-10-11T17:00:00Z",
+      "success": 96,
+      "uses": 89300,
+      "exclusive": false,
+      "trending": 2,
+      "expiresAt": null,
+      "cat": "marketplace",
+      "slug": "amazon-india-c2"
+    },
+    {
+      "id": "c3",
+      "store": "swiggy",
+      "title": "Flat ₹125 off your first 3 orders",
+      "terms": "Min order ₹299. New users only.",
+      "code": "SWIGGYIT",
+      "badge": "₹125",
+      "verifiedAt": "2026-10-11T17:10:00Z",
+      "success": 94,
+      "uses": 41200,
+      "exclusive": false,
+      "trending": 3,
+      "expiresAt": null,
+      "cat": "food",
+      "slug": "swiggy-c3"
+    },
+    {
+      "id": "c4",
+      "store": "nykaa",
+      "title": "Extra 10% off on beauty",
+      "terms": "Min order ₹999. Excludes luxe brands.",
+      "code": "NYKAA10",
+      "badge": "10%",
+      "verifiedAt": "2026-10-11T15:00:00Z",
+      "success": 91,
+      "uses": 6400,
+      "exclusive": false,
+      "trending": 4,
+      "expiresAt": "2026-10-11T18:29:00Z",
+      "cat": "beauty",
+      "slug": "nykaa-c4"
+    },
+    {
+      "id": "c5",
+      "store": "makemytrip",
+      "title": "Up to ₹2,500 off domestic flights",
+      "terms": "Valid on UPI and cards. Min booking ₹5,000.",
+      "code": "MMTFEST",
+      "badge": "₹2.5K",
+      "verifiedAt": "2026-10-11T14:00:00Z",
+      "success": 89,
+      "uses": 15800,
+      "exclusive": true,
+      "trending": 5,
+      "expiresAt": null,
+      "cat": "travel",
+      "slug": "makemytrip-c5"
+    },
+    {
+      "id": "c6",
+      "store": "samsung-india",
+      "title": "₹20,000 off Galaxy S series",
+      "terms": "Bank card offer, while stock lasts.",
+      "code": "GALAXY20K",
+      "badge": "₹20K",
+      "verifiedAt": "2026-10-11T17:00:00Z",
+      "success": 95,
+      "uses": 3812,
+      "exclusive": false,
+      "trending": 6,
+      "expiresAt": null,
+      "cat": "electronics",
+      "slug": "samsung-india-c6"
+    },
+    {
+      "id": "c7",
+      "store": "dominos-india",
+      "title": "Buy 1 get 1 free",
+      "terms": "Medium pizzas, Wednesday to Friday.",
+      "code": "BOGOWED",
+      "badge": "BOGO",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 93,
+      "uses": 51020,
+      "exclusive": false,
+      "trending": 7,
+      "expiresAt": null,
+      "cat": "food",
+      "slug": "dominos-india-c7"
+    },
+    {
+      "id": "c8",
+      "store": "flipkart",
+      "title": "Extra ₹500 off on fashion",
+      "terms": "Min cart ₹2,499 during Big Billion Days.",
+      "code": "FKFEST500",
+      "badge": "₹500",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 90,
+      "uses": 22800,
+      "exclusive": false,
+      "trending": 8,
+      "expiresAt": "2026-10-11T18:29:00Z",
+      "cat": "marketplace",
+      "slug": "flipkart-c8"
+    },
+    {
+      "id": "c9",
+      "store": "myntra",
+      "title": "Flat ₹500 off on ₹2,999",
+      "terms": "Applies to the whole cart.",
+      "code": "MYNTRA500",
+      "badge": "₹500",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 92,
+      "uses": 9100,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "fashion",
+      "slug": "myntra-c9"
+    },
+    {
+      "id": "c10",
+      "store": "ajio",
+      "title": "Flat 12% off, min order ₹499",
+      "terms": "Not valid on Ajio Luxe.",
+      "code": "AJIO12",
+      "badge": "12%",
+      "verifiedAt": "2026-10-11T17:00:00Z",
+      "success": 90,
+      "uses": 7300,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "fashion",
+      "slug": "ajio-c10"
+    },
+    {
+      "id": "c11",
+      "store": "nike-india",
+      "title": "Up to 8% off running shoes",
+      "terms": "Members only. Free sign-up on Nike.",
+      "code": "NIKERUN8",
+      "badge": "8%",
+      "verifiedAt": "2026-10-11T13:00:00Z",
+      "success": 87,
+      "uses": 1900,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "fashion",
+      "slug": "nike-india-c11"
+    },
+    {
+      "id": "c12",
+      "store": "lenskart",
+      "title": "Buy 1 get 1 free on eyeglasses",
+      "terms": "Gold membership required.",
+      "code": "LKBOGO",
+      "badge": "BOGO",
+      "verifiedAt": "2026-10-11T15:00:00Z",
+      "success": 94,
+      "uses": 11200,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "health",
+      "slug": "lenskart-c12"
+    },
+    {
+      "id": "c13",
+      "store": "zomato",
+      "title": "60% off up to ₹120",
+      "terms": "On selected restaurants, min order ₹159.",
+      "code": "ZOMFEST",
+      "badge": "60%",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 88,
+      "uses": 30500,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "food",
+      "slug": "zomato-c13"
+    },
+    {
+      "id": "c14",
+      "store": "paytm",
+      "title": "₹50 off on mobile recharge",
+      "terms": "Recharge of ₹299 or more, once per user.",
+      "code": "PAYTM50",
+      "badge": "₹50",
+      "verifiedAt": "2026-10-11T12:00:00Z",
+      "success": 91,
+      "uses": 18800,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "recharge",
+      "slug": "paytm-c14"
+    },
+    {
+      "id": "c15",
+      "store": "phonepe",
+      "title": "Up to ₹150 off your first recharge",
+      "terms": "New PhonePe users only.",
+      "code": "PHONE150",
+      "badge": "₹150",
+      "verifiedAt": "2026-10-11T14:00:00Z",
+      "success": 89,
+      "uses": 23770,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "recharge",
+      "slug": "phonepe-c15"
+    },
+    {
+      "id": "c16",
+      "store": "ola",
+      "title": "₹100 off your first 3 rides",
+      "terms": "New users, Ola Mini and Prime.",
+      "code": "OLARIDE",
+      "badge": "₹100",
+      "verifiedAt": "2026-10-11T12:00:00Z",
+      "success": 88,
+      "uses": 4100,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "travel",
+      "slug": "ola-c16"
+    },
+    {
+      "id": "c17",
+      "store": "croma",
+      "title": "₹3,000 off on laptops above ₹50,000",
+      "terms": "Online orders only.",
+      "code": "CROMALAP",
+      "badge": "₹3K",
+      "verifiedAt": "2026-10-11T15:00:00Z",
+      "success": 86,
+      "uses": 2200,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "electronics",
+      "slug": "croma-c17"
+    },
+    {
+      "id": "c18",
+      "store": "apple-india",
+      "title": "3% off on iPad and Mac",
+      "terms": "Education pricing stacks with this.",
+      "code": null,
+      "badge": "3%",
+      "verifiedAt": "2026-10-11T10:00:00Z",
+      "success": 98,
+      "uses": 1300,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "electronics",
+      "slug": "apple-india-c18"
+    },
+    {
+      "id": "c19",
+      "store": "blinkit",
+      "title": "₹100 off your first order",
+      "terms": "Min order ₹499, new users.",
+      "code": "BLINK100",
+      "badge": "₹100",
+      "verifiedAt": "2026-10-11T16:00:00Z",
+      "success": 93,
+      "uses": 14400,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "grocery",
+      "slug": "blinkit-c19"
+    },
+    {
+      "id": "c20",
+      "store": "bigbasket",
+      "title": "20% off on fruits and vegetables",
+      "terms": "Up to ₹150 off, min order ₹800.",
+      "code": "BBFRESH20",
+      "badge": "20%",
+      "verifiedAt": "2026-10-11T13:00:00Z",
+      "success": 90,
+      "uses": 8600,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "grocery",
+      "slug": "bigbasket-c20"
+    },
+    {
+      "id": "c21",
+      "store": "apollo-pharmacy",
+      "title": "Flat 15% off on medicines",
+      "terms": "Prescription orders above ₹999.",
+      "code": "APOLLO15",
+      "badge": "15%",
+      "verifiedAt": "2026-10-11T14:00:00Z",
+      "success": 92,
+      "uses": 5200,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "health",
+      "slug": "apollo-pharmacy-c21"
+    },
+    {
+      "id": "c22",
+      "store": "jiohotstar",
+      "title": "30% off the annual Super plan",
+      "terms": "Pay with UPI, first-time subscribers.",
+      "code": "JHSUPER30",
+      "badge": "30%",
+      "verifiedAt": "2026-10-11T11:00:00Z",
+      "success": 85,
+      "uses": 3400,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "ott",
+      "slug": "jiohotstar-c22"
+    },
+    {
+      "id": "c23",
+      "store": "pepperfry",
+      "title": "Extra 15% off on sofas",
+      "terms": "Max discount ₹4,000.",
+      "code": "PFSOFA15",
+      "badge": "15%",
+      "verifiedAt": "2026-10-11T13:00:00Z",
+      "success": 87,
+      "uses": 900,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "home",
+      "slug": "pepperfry-c23"
+    },
+    {
+      "id": "c24",
+      "store": "decathlon",
+      "title": "10% off on cycling gear",
+      "terms": "In-app orders only.",
+      "code": null,
+      "badge": "10%",
+      "verifiedAt": "2026-10-11T12:00:00Z",
+      "success": 97,
+      "uses": 2600,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "fashion",
+      "slug": "decathlon-c24"
+    },
+    {
+      "id": "c25",
+      "store": "amazon-india",
+      "title": "₹100 off on first bill payment",
+      "terms": "Electricity, gas and broadband bills via Amazon Pay.",
+      "code": "AMZBILL",
+      "badge": "₹100",
+      "verifiedAt": "2026-10-11T15:00:00Z",
+      "success": 93,
+      "uses": 17300,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "marketplace",
+      "slug": "amazon-india-c25"
+    },
+    {
+      "id": "c26",
+      "store": "swiggy",
+      "title": "Free delivery on Instamart",
+      "terms": "Orders above ₹199 this week.",
+      "code": null,
+      "badge": "Free",
+      "verifiedAt": "2026-10-11T17:30:00Z",
+      "success": 99,
+      "uses": 26100,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "food",
+      "slug": "swiggy-c26"
+    },
+    {
+      "id": "c27",
+      "store": "flipkart",
+      "title": "Extra 5% off with Flipkart UPI",
+      "terms": "Up to ₹100 off on orders above ₹999.",
+      "code": null,
+      "badge": "5%",
+      "verifiedAt": "2026-10-11T16:30:00Z",
+      "success": 98,
+      "uses": 33100,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "marketplace",
+      "slug": "flipkart-c27"
+    },
+    {
+      "id": "c28",
+      "store": "makemytrip",
+      "title": "Up to 25% off on hotels",
+      "terms": "Min stay 2 nights, select properties.",
+      "code": "MMTSTAY",
+      "badge": "25%",
+      "verifiedAt": "2026-10-11T14:30:00Z",
+      "success": 88,
+      "uses": 6700,
+      "exclusive": false,
+      "trending": null,
+      "expiresAt": null,
+      "cat": "travel",
+      "slug": "makemytrip-c28"
+    }
+  ],
+  "deals": [
+    {
+      "id": "amz-B0DSKL9MQ8",
+      "store": "amazon-india",
+      "title": "Samsung Galaxy S25 Ultra 5G (Titanium Silverblue, 12GB, 256GB)",
+      "price": 109999,
+      "mrp": 129999,
+      "image": null,
+      "url": "https://www.amazon.in/dp/B0DSKL9MQ8",
+      "rating": 4.3,
+      "reviews": 2841,
+      "cat": "electronics",
+      "endsAt": "2026-10-11T18:29:00Z",
+      "lowest30d": true,
+      "off": 15
+    },
+    {
+      "id": "fk-ACCH9ZXTGZ",
+      "store": "flipkart",
+      "title": "Apple AirPods Pro (2nd generation) with USB-C",
+      "price": 19900,
+      "mrp": 24900,
+      "image": null,
+      "url": "https://www.flipkart.com/",
+      "rating": null,
+      "reviews": null,
+      "cat": "electronics",
+      "endsAt": "2026-10-12T06:30:00Z",
+      "lowest30d": true,
+      "off": 20
+    },
+    {
+      "id": "amz-B0CXF6V8KQ",
+      "store": "amazon-india",
+      "title": "Philips Air Fryer HD9252/90, 4.1 L, Rapid Air Technology",
+      "price": 6499,
+      "mrp": 9995,
+      "image": null,
+      "url": "https://www.amazon.in/",
+      "rating": 4.4,
+      "reviews": 15230,
+      "cat": "home",
+      "endsAt": "2026-10-11T22:00:00Z",
+      "lowest30d": false,
+      "off": 35
+    },
+    {
+      "id": "myntra-nike-pegasus-41-men-s-road-running-shoes",
+      "store": "nike-india",
+      "title": "Nike Pegasus 41 men’s road running shoes",
+      "price": 8796,
+      "mrp": 10995,
+      "image": null,
+      "url": "https://www.myntra.com",
+      "rating": 4.5,
+      "reviews": 912,
+      "cat": "fashion",
+      "endsAt": "2026-10-11T18:29:00Z",
+      "lowest30d": false,
+      "off": 20
+    },
+    {
+      "id": "fk-TVSH8ZQ2XY",
+      "store": "flipkart",
+      "title": "Sony Bravia 2 139 cm (55 inch) 4K Ultra HD Smart Google TV",
+      "price": 57990,
+      "mrp": 99900,
+      "image": null,
+      "url": "https://www.flipkart.com/",
+      "rating": null,
+      "reviews": null,
+      "cat": "electronics",
+      "endsAt": "2026-10-12T18:29:00Z",
+      "lowest30d": true,
+      "off": 42
+    },
+    {
+      "id": "amz-B07K8PS5KM",
+      "store": "amazon-india",
+      "title": "Tata Sampann Unpolished Toor Dal, 2 kg",
+      "price": 389,
+      "mrp": 510,
+      "image": null,
+      "url": "https://www.amazon.in/",
+      "rating": 4.2,
+      "reviews": 40211,
+      "cat": "grocery",
+      "endsAt": "2026-10-12T02:00:00Z",
+      "lowest30d": false,
+      "off": 24
+    }
+  ],
+  "bankOffers": [
+    {
+      "id": "b1",
+      "bank": "HDFC Bank",
+      "art": [
+        "#004c8f",
+        "#0a6fd1"
+      ],
+      "store": "amazon-india",
+      "title": "10% instant off",
+      "terms": "Up to ₹1,750 on credit card EMI. Min spend ₹5,000."
+    },
+    {
+      "id": "b2",
+      "bank": "SBI Card",
+      "art": [
+        "#1b3f8f",
+        "#2d7fd3"
+      ],
+      "store": "amazon-india",
+      "title": "10% instant off",
+      "terms": "Up to ₹1,500 on credit cards. Min spend ₹5,000."
+    },
+    {
+      "id": "b3",
+      "bank": "Axis Bank",
+      "art": [
+        "#7b1f3a",
+        "#ae2b55"
+      ],
+      "store": "flipkart",
+      "title": "10% instant off",
+      "terms": "Up to ₹1,250 on credit and debit cards."
+    },
+    {
+      "id": "b4",
+      "bank": "ICICI Bank",
+      "art": [
+        "#a33a12",
+        "#e26a1c"
+      ],
+      "store": "flipkart",
+      "title": "10% instant off",
+      "terms": "Up to ₹1,500 on credit card EMI."
+    },
+    {
+      "id": "b5",
+      "bank": "Kotak",
+      "art": [
+        "#a01624",
+        "#e33042"
+      ],
+      "store": "myntra",
+      "title": "10% instant off",
+      "terms": "Up to ₹1,000 on orders above ₹3,500."
+    },
+    {
+      "id": "b6",
+      "bank": "HDFC Bank",
+      "art": [
+        "#004c8f",
+        "#0a6fd1"
+      ],
+      "store": "croma",
+      "title": "₹5,000 off",
+      "terms": "On laptops above ₹60,000 with credit cards."
+    },
+    {
+      "id": "b7",
+      "bank": "ICICI Bank",
+      "art": [
+        "#a33a12",
+        "#e26a1c"
+      ],
+      "store": "makemytrip",
+      "title": "15% off on flights",
+      "terms": "Up to ₹3,000. Min booking ₹8,000."
+    },
+    {
+      "id": "b8",
+      "bank": "RBL Bank",
+      "art": [
+        "#1d1d4f",
+        "#3c3c9c"
+      ],
+      "store": "swiggy",
+      "title": "Flat ₹100 off",
+      "terms": "On orders above ₹500 with credit cards, Fridays."
+    }
+  ],
+  "sales": [
+    {
+      "id": "s1",
+      "store": "flipkart",
+      "name": "Big Billion Days",
+      "startAt": "2026-10-01T18:30:00Z",
+      "endAt": "2026-10-15T18:29:00Z",
+      "text": "Phones, TVs and appliances. Axis and ICICI card offers."
+    },
+    {
+      "id": "s2",
+      "store": "amazon-india",
+      "name": "Great Indian Festival",
+      "startAt": "2026-10-02T18:30:00Z",
+      "endAt": "2026-10-17T18:29:00Z",
+      "text": "HDFC and SBI cards get 10% instant off."
+    },
+    {
+      "id": "s3",
+      "store": "myntra",
+      "name": "Big Fashion Festival",
+      "startAt": "2026-10-24T18:30:00Z",
+      "endAt": "2026-10-30T18:29:00Z",
+      "text": "Up to 80% off top brands. Early access for Insiders."
+    },
+    {
+      "id": "s4",
+      "store": "nykaa",
+      "name": "Pink Friday Sale",
+      "startAt": "2026-11-19T18:30:00Z",
+      "endAt": "2026-11-29T18:29:00Z",
+      "text": "Beauty’s biggest sale. Free gifts on every order."
+    },
+    {
+      "id": "s5",
+      "store": "ajio",
+      "name": "Black Friday",
+      "startAt": "2026-11-26T18:30:00Z",
+      "endAt": "2026-11-30T18:29:00Z",
+      "text": "Global brands, extra card and coupon stacks."
+    }
+  ],
+  "banks": [
+    "HDFC Bank",
+    "SBI Card",
+    "Axis Bank",
+    "ICICI Bank",
+    "Kotak",
+    "RBL Bank"
+  ],
+  "festival": {
+    "name": "Diwali",
+    "date": "2026-11-08"
+  },
+  "faq": [
+    {
+      "q": "How do I use a coupon code from Clipupp?",
+      "a": "Tap Show code. We copy the code for you. Open the store, add items to your cart, paste the code in the coupon or promo box at checkout, and the discount applies before you pay."
+    },
+    {
+      "q": "Why did my code not work?",
+      "a": "Most failures come from the minimum order value, a category exclusion, or a code meant for new users. Each coupon lists its conditions. If it still fails, tap No under “Did this code work?” and we re-check it within the hour."
+    },
+    {
+      "q": "Can I use a coupon and a bank offer together?",
+      "a": "Usually yes. Store coupons reduce the cart price, and bank offers apply when you pay with an eligible card. The bank offers section shows which banks stack with each store."
+    },
+    {
+      "q": "Are the Amazon and Flipkart prices live?",
+      "a": "Deal prices come from the stores’ own product feeds and refresh every few minutes. The final price is always the one shown at the store’s checkout."
+    },
+    {
+      "q": "Is Clipupp free?",
+      "a": "Yes. There is no sign-up, wallet or fee. We earn a commission from some stores when you shop through our links. It never changes your price."
+    }
+  ],
+  "popularSearches": [
+    {
+      "label": "Myntra coupons",
+      "href": "/stores/myntra"
+    },
+    {
+      "label": "Swiggy promo code",
+      "href": "/offers"
+    },
+    {
+      "label": "Zomato offers",
+      "href": "/offers"
+    },
+    {
+      "label": "Flipkart Big Billion Days",
+      "href": "/stores/flipkart"
+    },
+    {
+      "label": "Amazon Great Indian Festival",
+      "href": "/stores/amazon-india"
+    },
+    {
+      "label": "Nykaa offers",
+      "href": "/stores/nykaa"
+    },
+    {
+      "label": "Ajio coupons",
+      "href": "/offers"
+    },
+    {
+      "label": "MakeMyTrip flight offers",
+      "href": "/offers"
+    },
+    {
+      "label": "Domino’s coupon",
+      "href": "/stores/dominos-india"
+    },
+    {
+      "label": "Blinkit first order",
+      "href": "/stores/blinkit"
+    },
+    {
+      "label": "Croma laptop offers",
+      "href": "/offers"
+    },
+    {
+      "label": "Lenskart BOGO",
+      "href": "/stores/lenskart"
+    },
+    {
+      "label": "Apollo Pharmacy coupons",
+      "href": "/stores/apollo-pharmacy"
+    },
+    {
+      "label": "Paytm recharge offers",
+      "href": "/stores/paytm"
+    },
+    {
+      "label": "HDFC credit card offers",
+      "href": "/offers"
+    },
+    {
+      "label": "Diwali sale 2026",
+      "href": "/offers"
+    }
+  ],
+  "telegramBot": null,
+  "sectionOrder": [
+    "hero_search",
+    "ticker",
+    "popular_stores",
+    "trending_coupons",
+    "deals",
+    "top_deals",
+    "bank_offers",
+    "sale_calendar",
+    "featured_stores",
+    "verify_band",
+    "alerts",
+    "faq"
+  ],
+  "supportEmail": "help@clipupp.com",
+  "partnerEmail": "partners@clipupp.com",
+  "social": [
+    {
+      "network": "instagram",
+      "url": "https://www.instagram.com"
+    },
+    {
+      "network": "youtube",
+      "url": "https://www.youtube.com"
+    },
+    {
+      "network": "x",
+      "url": "https://x.com"
+    }
+  ]
+}

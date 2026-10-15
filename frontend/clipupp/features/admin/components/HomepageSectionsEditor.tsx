@@ -23,7 +23,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   BadgeCheck,
+  BellRing,
   BookOpen,
+  CalendarDays,
   ChevronUp,
   Clock,
   Eye,
@@ -33,6 +35,7 @@ import {
   GripVertical,
   HelpCircle,
   Images,
+  Landmark,
   LayoutGrid,
   Lightbulb,
   Mail,
@@ -75,6 +78,38 @@ type Theme = {
 };
 
 const THEMES: Record<string, Theme> = {
+  ticker: {
+    Icon: Clock, accent: "accent",
+    description: "Live ticker of recently verified coupons under the hero.",
+  },
+  popular_stores: {
+    Icon: Store, accent: "primary",
+    description: "Round logos of the most popular stores.",
+  },
+  deals: {
+    Icon: Flame, accent: "danger",
+    description: "Live product deals rail with prices and discounts.",
+  },
+  sale_calendar: {
+    Icon: CalendarDays, accent: "accent",
+    description: "Upcoming and live store sales calendar.",
+  },
+  alerts: {
+    Icon: BellRing, accent: "primary",
+    description: "Deal alerts: email signup and Telegram link.",
+  },
+  trending_coupons: {
+    Icon: TrendingUp, accent: "primary",
+    description: "Trending verified coupons rail.",
+  },
+  bank_offers: {
+    Icon: Landmark, accent: "success",
+    description: "Bank offers and festive sales cards.",
+  },
+  verify_band: {
+    Icon: ShieldCheck, accent: "primary",
+    description: "How we verify coupons band.",
+  },
   hero_search: {
     Icon: Search, accent: "primary",
     description: "Top-of-page search hero with category quick-jumps.",
@@ -385,9 +420,14 @@ function SortableSectionRow({
   const styles = ACCENT_STYLES[theme.accent];
 
   const [draft, setDraft] = useState(() => snapshotOf(section));
-  useEffect(() => {
+  // Re-seed the draft when the saved fields change (adjusting state during
+  // render, not in an effect), so unrelated prop churn keeps local edits.
+  const syncKey = JSON.stringify([section.id, section.title, section.subtitle, section.itemLimit, section.enabled]);
+  const [syncedKey, setSyncedKey] = useState(syncKey);
+  if (syncKey !== syncedKey) {
+    setSyncedKey(syncKey);
     setDraft(snapshotOf(section));
-  }, [section.id, section.title, section.subtitle, section.itemLimit, section.enabled]);
+  }
 
   const dirty =
     draft.title !== (section.title ?? "") ||

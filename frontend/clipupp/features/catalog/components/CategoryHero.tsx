@@ -1,5 +1,6 @@
 import { Tag } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type HeroCategory = {
   title: string;
@@ -24,6 +25,7 @@ export function CategoryHero({
   icon?: LucideIcon;
   stats?: Array<{ label: string; value: string | number }>;
 }) {
+  const t = useTranslations("catalog.ui");
   return (
     <section
       aria-labelledby="category-hero-heading"
@@ -35,7 +37,7 @@ export function CategoryHero({
             <Icon className="h-9 w-9 lg:h-11 lg:w-11" aria-hidden strokeWidth={2} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="clipupp-eyebrow-vivid">Category</p>
+            <p className="clipupp-eyebrow-vivid">{t("category")}</p>
             <h1 id="category-hero-heading" className="clipupp-display-hero mt-2">
               {category.title} Coupons &amp; Deals
             </h1>

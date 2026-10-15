@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "Clipupp",
-    "tagline": "Coupon Codes, Cashback & Deals"
+    "tagline": "Coupon Codes & Deals"
   },
   "nav": {
     "stores": "Top Stores",
@@ -14,9 +14,11 @@
   },
   "mobileNav": {
     "home": "Home",
-    "browse": "Browse",
+    "deals": "Deals",
+    "coupons": "Coupons",
+    "stores": "Stores",
     "saved": "Saved",
-    "account": "Account"
+    "aria": "Quick navigation"
   },
   "common": {
     "loading": "Loading…",
@@ -35,12 +37,16 @@
     "deal": "Deal",
     "freeShipping": "Free shipping",
     "inStore": "In-store",
-    "noCouponsYet": "No coupons yet."
+    "noCouponsYet": "No coupons yet.",
+    "scrollLeft": "Scroll left",
+    "scrollRight": "Scroll right",
+    "close": "Close",
+    "showMore": "Show more"
   },
   "stores": {
     "listTitle": "All stores",
-    "listSubtitle": "Discover verified coupons and cashback offers from thousands of brands.",
-    "emptyState": "No stores match your filters yet. Check back soon — we're adding partners every week.",
+    "listSubtitle": "Discover verified coupons and deals from thousands of brands.",
+    "emptyState": "No stores match your filters yet. Check back soon, we're adding partners every week.",
     "loadError": "We couldn't load stores right now. Please try again in a moment.",
     "viewDeals": "View deals",
     "visit": "Visit {brand}",
@@ -76,23 +82,26 @@
   "offers": {
     "listTitle": "Offers & deals",
     "listSubtitle": "Click-through promotions, free-shipping deals, and limited-time discounts.",
-    "emptyState": "No active offers right now — check back tomorrow.",
+    "emptyState": "No active offers right now. Check back tomorrow.",
     "loadError": "We couldn't load offers right now. Please try again in a moment.",
     "activate": "Activate offer at {brand}"
   },
   "categories": {
     "listTitle": "Categories",
     "listSubtitle": "Pick a category to browse the latest coupons and deals.",
-    "emptyState": "No categories yet. The team is curating taxonomies — check back soon.",
+    "emptyState": "No categories yet. The team is curating taxonomies, check back soon.",
     "loadError": "We couldn't load categories right now.",
-    "noCouponsInCategory": "No active coupons in {category} right now."
+    "noCouponsInCategory": "No active coupons in {category} right now.",
+    "sheetTitle": "Categories",
+    "verifiedCount": "{count, plural, one {# verified coupon} other {# verified coupons}}",
+    "festiveSub": "Sale calendar and bank offers"
   },
   "search": {
     "title": "Search",
     "placeholder": "Search stores, coupons, categories…",
     "emptyHelp": "Try searching for a brand, a category, or an offer keyword from the header.",
     "resultsFor": "Results for \"{query}\"",
-    "noMatches": "No matches yet — try a broader keyword.",
+    "noMatches": "No matches yet. Try a broader keyword.",
     "tempUnavailable": "Search is temporarily unavailable. Please try again.",
     "matchesCount": "{count, plural, one {# match} other {# matches}} across stores, coupons, and categories.",
     "kindStore": "Store",
@@ -193,8 +202,6 @@
     },
     "savedTitle": "Saved coupons",
     "savedComingSoon": "Saving coupons opens up in Sprint 5. Until then, click any coupon to jump straight to the merchant.",
-    "cashbackTitle": "Cashback",
-    "cashbackComingSoon": "Cashback rewards land in Phase 2. Your click history is already being recorded so you don't miss any earnings when it does.",
     "profile": {
       "title": "Profile",
       "displayName": "Display name",
@@ -209,7 +216,7 @@
       "title": "Preferences",
       "loading": "Loading preferences…",
       "preferredCurrency": "Preferred currency",
-      "currencyHint": "ISO 4217 — for example INR, USD, GBP. Used for cashback display in Phase 2.",
+      "currencyHint": "ISO 4217, for example INR, USD, GBP.",
       "transactional": "Transactional emails",
       "transactionalDesc": "Verification, password resets, and other essential account messages.",
       "weekly": "Weekly deals digest",
@@ -228,24 +235,24 @@
   },
   "metadata": {
     "homepage": {
-      "title": "Clipupp — Coupon Codes, Cashback & Deals",
-      "description": "Save with verified coupon codes, cashback, and exclusive deals from 1000+ top brands. Updated daily."
+      "title": "Clipupp | Verified coupon codes, deals and bank offers for Indian stores",
+      "description": "Working coupon codes and deals for Indian stores, checked by our team before they go live."
     },
     "stores": {
       "title": "All Stores",
-      "description": "Browse 1000+ verified stores. Find coupon codes, cashback, and exclusive deals from your favorite brands."
+      "description": "Browse verified stores. Find coupon codes and exclusive deals from your favorite brands."
     },
     "coupons": {
       "title": "Coupons & Promo Codes",
-      "description": "Active coupon codes from top stores. Verified daily — copy and paste at checkout to save."
+      "description": "Active coupon codes from top stores. Verified daily, copy and paste at checkout to save."
     },
     "offers": {
       "title": "Offers & Deals",
-      "description": "Live deals, free shipping, and limited-time offers from your favorite stores — no code required."
+      "description": "Live deals, free shipping, and limited-time offers from your favorite stores. No code required."
     },
     "categories": {
       "title": "Browse by Category",
-      "description": "Find coupons by category — fashion, electronics, food, travel, and more."
+      "description": "Find coupons by category: fashion, electronics, food, travel, and more."
     }
   },
   "legacy": {
@@ -292,21 +299,364 @@
     "noCouponsFound": "No coupons found"
   },
   "home": {
-    "howItWorks": {
-      "title": "How it works",
-      "subtitle": "Three simple steps between you and a discount.",
-      "step1": {
-        "title": "Find a coupon",
-        "description": "Browse hundreds of active coupons across 50+ stores. Filter by category or search by brand."
-      },
-      "step2": {
-        "title": "Click through",
-        "description": "Tap the code to copy it, then jump to the store with one click."
-      },
-      "step3": {
-        "title": "Save at checkout",
-        "description": "Paste the code at checkout to apply your discount instantly."
-      }
+    "hero": {
+      "eyebrow": "Coupons tested by people, every day",
+      "title": "Codes that <em>actually work</em> at Indian stores.",
+      "subtitle": "Every code is applied at a real checkout before it reaches you. Copy it, paste it, pay less.",
+      "searchPlaceholder": "Try Myntra, Swiggy or 'HDFC'",
+      "searchCta": "Find codes",
+      "verifiedToday": "codes verified today",
+      "worked7d": "worked last 7 days",
+      "activeCoupons": "active coupons",
+      "stores": "Indian stores",
+      "popular": "Popular",
+      "trustAria": "Clipupp in numbers",
+      "popularAria": "Popular stores",
+      "searchAria": "Search coupons and stores",
+      "verifiedWeek": "codes verified this week"
+    },
+    "verify": {
+      "eyebrow": "How we verify",
+      "title": "Every code is tested before you see it.",
+      "lead": "Most coupon sites scrape codes and hope. We run each one through a real checkout, record the result and show it to you.",
+      "statTodayLabel": "codes checked today",
+      "statRateLabel": "success, last 7 days",
+      "statDaily": "Daily",
+      "statDailyLabel": "checks on every code",
+      "statPullValue": "<1 hr",
+      "statPullLabel": "to pull a failed code",
+      "stepsAria": "How verification works",
+      "step1Title": "We apply it at a real checkout",
+      "step1Body": "A person adds a qualifying cart and enters the code, every 24 hours. Not scraped, not guessed.",
+      "step2Title": "You see when it was last checked",
+      "step2Body": "Each card shows when a code was last verified and how many shoppers used it.",
+      "step3Title": "Failed codes come down fast",
+      "step3Body": "Tell us a code did not work with one tap and we re-check it and hide it until it passes.",
+      "statWeekLabel": "codes checked this week",
+      "statActiveLabel": "active coupons"
+    },
+    "bank": {
+      "eyebrow": "Stack with any coupon",
+      "title": "Bank and card offers",
+      "sub": "Applied when you pay, on top of the code you copy here.",
+      "all": "All",
+      "filterAria": "Filter by bank",
+      "railAria": "Bank offer cards",
+      "on": "On {store}",
+      "onAria": "Show {store} coupons"
+    },
+    "spotlight": {
+      "label": "Festive spotlight offers",
+      "cta": "Get this offer",
+      "till": "Offer till {date}",
+      "prev": "Previous offer",
+      "next": "Next offer",
+      "dot": "{store} offer",
+      "slide": "{i} of {n}",
+      "liveNow": "Live now"
+    },
+    "ticker": {
+      "label": "Live",
+      "verified": "verified {ago}",
+      "aria": "Recently verified coupons"
+    },
+    "popularStores": {
+      "aria": "Popular stores"
+    },
+    "trending": {
+      "eyebrow": "Most copied in the last hour",
+      "title": "Trending coupons",
+      "filterAria": "Filter trending coupons",
+      "all": "All",
+      "railAria": "Trending coupon cards"
+    },
+    "today": {
+      "eyebrow": "All coupons",
+      "title": "Today’s top coupons",
+      "updated": "Updated {ago}",
+      "updating": "Updating...",
+      "refresh": "Refresh coupons",
+      "tabsAria": "Coupon categories",
+      "all": "All",
+      "count": "{count, plural, one {# coupon} other {# coupons}}",
+      "loading": "Loading coupons",
+      "sortLabel": "Sort coupons",
+      "sortPop": "Most used",
+      "sortNew": "Recently verified",
+      "sortEnd": "Ending soon",
+      "sortRate": "Best success rate",
+      "clearStore": "Clear store filter {store}",
+      "showMore": "Show more coupons",
+      "emptyTitle": "No coupons here yet.",
+      "emptyBody": "Try another category, or turn on alerts and we’ll tell you when one lands.",
+      "emptyCta": "Turn on alerts",
+      "loadError": "We could not load more coupons.",
+      "retry": "Try again",
+      "now": "just now"
+    },
+    "deals": {
+      "eyebrow": "Live price drops",
+      "title": "Deals from Amazon, Flipkart and more",
+      "all": "All deals",
+      "filterAria": "Filter deals by store",
+      "railAria": "Live deals",
+      "off": "{pct}% off",
+      "lowest": "Lowest price in 30 days",
+      "buy": "Buy on {store}",
+      "rating": "Rated {rating} out of 5"
+    },
+    "calendar": {
+      "eyebrow": "Plan your cart",
+      "title": "Festive sale calendar",
+      "sub": "Tap Remind me and we’ll tell you the morning a sale opens.",
+      "railAria": "Festive sales",
+      "live": "Live now",
+      "soon": "Coming up",
+      "ended": "Ended",
+      "seeCodes": "See {store} codes",
+      "remind": "Remind me",
+      "reminderSet": "Reminder set",
+      "remindAria": "Remind me when {name} opens",
+      "range": "{start} to {end}"
+    },
+    "stores": {
+      "eyebrow": "{count} stores",
+      "title": "Top stores",
+      "coupons": "{count, plural, =1 {1 coupon} other {# coupons}}",
+      "all": "All stores",
+      "listed": "{count} listed"
+    },
+    "alerts": {
+      "h2": "Deal alerts",
+      "tgEyebrow": "Telegram alerts",
+      "tgTitle": "The day’s 5 best codes, at 9 am.",
+      "tgBody": "One message a day. Send /stop any time.",
+      "tgCta": "Get alerts on Telegram",
+      "tgSoon": "Coming soon",
+      "mailEyebrow": "Weekly email",
+      "mailTitle": "Ten codes worth knowing, every Sunday.",
+      "mailBody": "Plus sale dates before they’re announced. No spam.",
+      "mailLabel": "Email address",
+      "mailPlaceholder": "you@example.com",
+      "mailCta": "Subscribe",
+      "mailOk": "Subscribed. The next digest arrives Sunday morning.",
+      "mailBad": "That email looks incomplete. Check for the @ and the domain.",
+      "mailFail": "Could not subscribe. Try again later."
+    },
+    "faq": {
+      "eyebrow": "Help",
+      "title": "Questions shoppers ask",
+      "stuck": "Still stuck? Write to {email} and a person replies within a day."
+    },
+    "soon": {
+      "deals": "Live price drops from top stores are coming soon.",
+      "bank": "Bank and card offers you can stack with any code are coming soon.",
+      "calendar": "Dates for the big festive sales are coming soon.",
+      "cta": "Get alerts"
+    }
+  },
+  "footer": {
+    "trustVerifyTitle": "Every code tested daily",
+    "trustVerifyBody": "Applied at a real checkout every 24 hours",
+    "trustFreeTitle": "Free, always",
+    "trustFreeBody": "No sign-up, no wallet, no hidden fees",
+    "trustStoresTitle": "{count}+ Indian stores",
+    "trustStoresBody": "Fashion, food, travel, electronics and more",
+    "about": "Verified coupon codes and bank offers for Indian shoppers. Copy a code, paste it at checkout, pay less.",
+    "telegramPill": "Get daily codes on Telegram",
+    "socialAria": "Clipupp on {network}",
+    "topStores": "Top stores",
+    "categories": "Categories",
+    "company": "Clipupp",
+    "helpLegal": "Help and legal",
+    "howWeVerify": "How we verify",
+    "saleCalendar": "Sale calendar",
+    "bankOffers": "Bank offers",
+    "dealAlerts": "Deal alerts",
+    "aboutUs": "About us",
+    "blog": "Blog",
+    "helpFaq": "Help and FAQ",
+    "contact": "Contact us",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "affiliate": "Affiliate disclosure",
+    "cookies": "Cookie policy",
+    "partnerTitle": "Run an online store?",
+    "partnerBody": "List your coupons on Clipupp and reach shoppers who are ready to buy.",
+    "copyEmail": "Copy email",
+    "copied": "Copied",
+    "popularSearches": "Popular searches",
+    "disclosure": "Clipupp is free to use. When you shop through a store link we may earn a commission from the store. It never changes the price you pay or which codes we show. Product prices come from store feeds and can change at checkout. Store names and logos belong to their owners.",
+    "copyright": "© {year} Clipupp · Made in India",
+    "backToTop": "Back to top",
+    "language": "Language"
+  },
+  "header": {
+    "primaryNav": "Primary",
+    "mobileNav": "Mobile navigation",
+    "openAccountMenu": "Open account menu",
+    "stores": "Stores",
+    "categories": "Categories",
+    "saved": "Saved",
+    "themeDark": "Switch to dark theme",
+    "themeLight": "Switch to light theme",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "allCoupons": "All coupons",
+    "blog": "Blog",
+    "topStores": "Top stores",
+    "language": "Language",
+    "overview": "Overview",
+    "savedCoupons": "Saved coupons",
+    "clickHistory": "Click history",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "adminDashboard": "Admin dashboard",
+    "shopByCategory": "Shop by category",
+    "alerts": "Deal alerts",
+    "searchPlaceholder": "Search Myntra, Swiggy, bank offers...",
+    "searchLabel": "Search stores, coupons and deals",
+    "recent": "Recent",
+    "popularStores": "Popular stores",
+    "jumpBank": "Bank and card offers",
+    "jumpBankMeta": "{count} offers",
+    "groupStores": "Stores",
+    "groupCoupons": "Coupons",
+    "groupDeals": "Deals",
+    "kbdHint": "Press / to search",
+    "couponCount": "{count, plural, one {# coupon} other {# coupons}}",
+    "jumpTo": "Jump to",
+    "themeForced": "Theme follows the page",
+    "search": {
+      "clear": "Clear search",
+      "clearRecent": "Clear",
+      "noResults": "No matches for “{q}”",
+      "noResultsHint": "Try a popular store"
+    }
+  },
+  "catalog": {
+    "card": {
+      "endsToday": "Ends today",
+      "verifiedAgo": "✓ Verified {unit, select, now {just now} m {{n}m ago} h {{n}h ago} other {{n}d ago}}",
+      "showCode": "Show code",
+      "getDeal": "Get deal",
+      "copied": "Copied {code}",
+      "showCodeFor": "Show code for {store}",
+      "codeLabelFull": "Code {code}, open details",
+      "verified": "Verified {ago}",
+      "ago": "{unit, select, now {just now} m {{n}m ago} h {{n}h ago} other {{n}d ago}}",
+      "exclusive": "Exclusive",
+      "success": "{rate}% success",
+      "used": "{count} used",
+      "off": "OFF",
+      "deal": "DEAL",
+      "save": "Save {store} coupon",
+      "unsave": "Remove {store} coupon"
+    },
+    "ui": {
+      "copyCode": "Copy code",
+      "visitMerchant": "Visit merchant",
+      "jumpToLetter": "Jump to letter",
+      "category": "Category",
+      "noOffers": "No offers found",
+      "filterRegion": "Filter stores by region",
+      "filterStoreCategory": "Filter stores by category",
+      "filterCategory": "Filter by category",
+      "allCategories": "All categories",
+      "moreCategories": "More categories to explore",
+      "siblingCategories": "Sibling categories"
+    }
+  },
+  "sheet": {
+    "savedTitle": "Saved coupons",
+    "savedCount": "{count, plural, =0 {Nothing saved} other {# saved on this device}}",
+    "savedEmptyTitle": "Nothing saved yet.",
+    "savedEmptyBody": "Tap the heart on any coupon to keep it here.",
+    "couponMeta": "{count} coupons · {category}",
+    "copy": "Copy",
+    "copied": "Copied",
+    "noCode": "No code needed. The price drops at the store.",
+    "openStore": "Copy code and open {store}",
+    "shopNow": "Shop now on {store}",
+    "how1": "Copy the code above.",
+    "how2": "Add items to your {store} cart and go to checkout.",
+    "how3": "Paste it in the coupon box and tap Apply.",
+    "feedbackCode": "Did this code work?",
+    "feedbackDeal": "Did this deal work?",
+    "yes": "Yes",
+    "no": "No",
+    "thanksYes": "Thanks! That helps other shoppers.",
+    "thanksNo": "Thanks for telling us. We’ll re-check this code.",
+    "seeAll": "See all {count} {store} coupons",
+    "rate": "{rate}% of shoppers say it worked",
+    "savedError": "We could not load your saved coupons.",
+    "retry": "Retry",
+    "savedSeeAll": "See all {count, plural, one {# saved coupon} other {# saved coupons}}",
+    "openStoreBar": "Open {store}",
+    "copiedBar": "Copied. Paste at checkout.",
+    "report": "Report not working",
+    "reportWhy": "What went wrong?",
+    "reasonExpired": "Expired",
+    "reasonInvalid": "Code invalid",
+    "reasonMinOrder": "Minimum order not met",
+    "reasonOther": "Something else",
+    "reportThanks": "Thanks, we will re-check this code."
+  },
+  "toast": {
+    "saved": "Saved",
+    "removed": "Removed from saved",
+    "saveFailed": "Could not sync your saved coupons",
+    "codeCopied": "Code {code} copied",
+    "codeSelected": "Code selected, press copy to use it",
+    "emailCopied": "Email copied",
+    "reminderSet": "We’ll remind you when {name} opens",
+    "reminderRemoved": "Reminder removed",
+    "selectEmail": "Select the email to copy it"
+  },
+  "strip": {
+    "seeOffers": "See offers",
+    "dismiss": "Dismiss announcement",
+    "aria": "Announcement",
+    "festival": "{days, plural, =0 {Happy {name}!} =1 {{name} is tomorrow} other {{name} in # days}}"
+  },
+  "chrome": {
+    "language": "Language",
+    "changeLanguage": "Change language",
+    "beta": "Beta",
+    "hindiBeta": {
+      "placeholderNote": "Some pages may show English placeholder text.",
+      "switchToEnglish": "Switch to English"
+    },
+    "cookie": {
+      "aria": "Cookie consent",
+      "dismiss": "Dismiss without saving",
+      "title": "We respect your privacy",
+      "body": "We use cookies to keep the site running, remember your saved coupons, and (with your permission) understand which deals work best.",
+      "policy": "Read our cookie policy",
+      "necessary": "Necessary",
+      "necessaryDesc": "Essential for sign-in, saved coupons, and security.",
+      "analytics": "Analytics",
+      "analyticsDesc": "Helps us see which deals are useful. Never sold.",
+      "marketing": "Marketing",
+      "marketingDesc": "Personalized recommendations and remarketing on partner sites.",
+      "save": "Save preferences",
+      "back": "Back",
+      "acceptAll": "Accept all",
+      "rejectAll": "Reject all",
+      "customize": "Customize"
+    },
+    "firstVisit": {
+      "welcome": "Welcome to Clipupp",
+      "title": "Save smarter. Get the best deals first.",
+      "body": "Drop your email for a weekly digest of the highest-value coupons across 1,000+ stores. One email, hand-curated.",
+      "placeholder": "you@example.com",
+      "emailLabel": "Email address",
+      "submit": "Get the weekly digest",
+      "sending": "Sending…",
+      "skip": "No thanks, I’ll browse first",
+      "fine": "We’ll send a confirmation link first (double opt-in). Unsubscribe anytime in one click. We never sell your email.",
+      "success": "Almost there. Check your inbox to confirm.",
+      "fail": "Could not subscribe right now."
     }
   }
 }

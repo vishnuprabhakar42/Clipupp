@@ -2,20 +2,21 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 
 type Variant = "chevron" | "arrow";
 
 /**
- * Tiny client island — wraps a horizontally-scrolling rail (server-rendered
+ * Tiny client island - wraps a horizontally-scrolling rail (server-rendered
  * children) with optional desktop arrow buttons. The cards inside are pure
  * server HTML; only the arrow tracking is JS. CSS scroll-snap means the rail
  * works fine without JS (the arrows just don't appear until hydration).
  *
  * Variants:
- *   `chevron`  Inline arrows that sit near the rail edges (TrendingStoresRail
- *              pattern).
- *   `arrow`    Floating arrows that overlay the rail edges (TrustedBrandsRail
- *              pattern, includes dot pagination underneath).
+ *   `chevron`  Inline arrows that sit near the rail edges (used by
+ *              RelatedStoresRail and SiblingCategoriesRail).
+ *   `arrow`    Floating arrows that overlay the rail edges, with optional
+ *              dot pagination underneath.
  */
 export function ScrollRail({
   children,
@@ -33,8 +34,8 @@ export function ScrollRail({
   className?: string;
   /** Vertical position of the arrow buttons, measured from the top of the
    *  rail container in pixels. Use it when the rail's children render extra
-   *  content below the visual "tile" (e.g. TrendingStoresRail: 88 px logo
-   *  tile + a deal-label paragraph below) so the arrow centres on the tile,
+   *  content below the visual "tile" (e.g. a store rail with an 88 px logo
+   *  tile plus a deal-label paragraph below) so the arrow centres on the tile,
    *  not the whole item. Defaults to 50% (rail centre). */
   arrowAnchorTop?: number;
   /** When true, applies a CSS mask-image to the SCROLLING div only (not the
@@ -42,6 +43,7 @@ export function ScrollRail({
    *  background. The arrow buttons sit on the parent and are unaffected. */
   edgeFade?: boolean;
 }) {
+  const t = useTranslations("common");
   const railRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
@@ -93,7 +95,7 @@ export function ScrollRail({
     el.scrollTo({ left: p * el.clientWidth, behavior: "smooth" });
   }
 
-  // Buttons strip the white pill / border / shadow — they're just the
+  // Buttons strip the white pill / border / shadow - they're just the
   // chevron icon now. The edge fade behind them does the visual lifting,
   // and the chevron itself is bumped to a larger stroke so it reads clearly
   // without chrome.
@@ -119,7 +121,7 @@ export function ScrollRail({
       <div className="relative">
         <button
           type="button"
-          aria-label="Scroll left"
+          aria-label={t("scrollLeft")}
           onClick={() => scroll("left")}
           disabled={!canLeft}
           className={`${arrowPos.left} ${buttonClass}`}
@@ -143,7 +145,7 @@ export function ScrollRail({
 
         <button
           type="button"
-          aria-label="Scroll right"
+          aria-label={t("scrollRight")}
           onClick={() => scroll("right")}
           disabled={!canRight}
           className={`${arrowPos.right} ${buttonClass}`}

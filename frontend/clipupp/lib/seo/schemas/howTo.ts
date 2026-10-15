@@ -1,9 +1,10 @@
 export type HowToStep = { name: string; text: string };
 
 /**
- * HowTo schema — drives the rich step-by-step Google snippet. Used by the
- * HowItWorksSection on the home page to surface "how to use a coupon" as
- * structured data. Steps should be short instructional sentences.
+ * HowTo schema - drives the rich step-by-step Google snippet for a "how to
+ * use a coupon" walkthrough. Not rendered on the home page since the v2
+ * redesign; kept for an info page that wants it. Steps should be short
+ * instructional sentences.
  */
 export function howToSchema({
   name,

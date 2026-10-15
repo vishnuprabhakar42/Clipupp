@@ -47,6 +47,7 @@ export type HomepageStoreSummary = {
   previousCashbackRate: string | null;
   tagline: string | null;
   featured: boolean;
+  activeCouponCount: number | null;
 };
 
 export type HomepageCouponSummary = {
@@ -64,6 +65,7 @@ export type HomepageCouponSummary = {
   savingsLabel: string | null;
   expiresAt: string | null;
   verified: boolean;
+  verifiedAt: string | null;
   exclusive: boolean;
   usedCount: number;
   popularityScore: number;
@@ -76,6 +78,36 @@ export type HomepageCategoryItem = {
   icon: string | null;
 };
 
+export type HomepageCategoryTab = {
+  slug: string;
+  title: string;
+  coupons: HomepageCouponSummary[];
+};
+
+export type HomepageCampaign = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  startsAt: string;
+  endsAt: string;
+  active: boolean;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+  heroImageUrl: string | null;
+  ctaLabel: string | null;
+  ctaUrl: string | null;
+  themeColor: string | null;
+  /** Store ids the campaign pins; the first one that resolves names the spotlight store. */
+  pinnedStoreIds?: string[];
+};
+
+export type HomepageStats = {
+  verifiedLast7d: number;
+  activeCoupons: number;
+  activeStores: number;
+};
+
 export type HomepageSectionPayload = {
   code: string;
   title: string;
@@ -84,19 +116,29 @@ export type HomepageSectionPayload = {
   stores: HomepageStoreSummary[] | null;
   coupons: HomepageCouponSummary[] | null;
   categories: HomepageCategoryItem[] | null;
+  categoryTabs: HomepageCategoryTab[] | null;
+  campaigns: HomepageCampaign[] | null;
 };
 
-export type HomepageLayout = { sections: HomepageSectionPayload[] };
+export type HomepageLayout = { sections: HomepageSectionPayload[]; stats: HomepageStats };
 
 export const homepageApi = {
-  /** Public read — anonymous, suitable for server components. */
+  /**
+   * Public read, anonymous, suitable for server components. Never throws:
+   * a non-OK status, a network rejection or a malformed body all yield null,
+   * and the page falls back to a hero built from message defaults.
+   */
   getPublic: async (): Promise<HomepageLayout | null> => {
-    const res = await fetch(`${API_BASE}/api/v1/homepage`, {
-      headers: { Accept: "application/json" },
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as HomepageLayout;
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/homepage`, {
+        headers: { Accept: "application/json" },
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) return null;
+      return (await res.json()) as HomepageLayout;
+    } catch {
+      return null;
+    }
   },
 
   // Admin

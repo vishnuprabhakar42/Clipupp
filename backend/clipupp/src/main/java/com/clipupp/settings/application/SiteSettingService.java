@@ -30,7 +30,9 @@ public class SiteSettingService {
             "newsletter.headline", "newsletter.subheadline", "newsletter.cta",
             "seo.default_title_template", "seo.default_description", "seo.og_image",
             // Savings stats strip (V029) — rendered on the public homepage.
-            "stats.coupons", "stats.stores", "stats.verified", "stats.savings"
+            "stats.coupons", "stats.stores", "stats.verified", "stats.savings",
+            // Homepage v2 bank chip row (V036).
+            "bank_offers.banks"
     );
 
     private final SiteSettingRepository repo;
@@ -56,7 +58,7 @@ public class SiteSettingService {
         return result;
     }
 
-    @CacheEvict(cacheNames = "site.settings.public", allEntries = true)
+    @CacheEvict(cacheNames = {"site.settings.public", "homepage.layout"}, allEntries = true)
     @Transactional
     public SiteSetting upsert(String key, Object value) {
         String json = Json.stringify(value);
@@ -70,7 +72,7 @@ public class SiteSettingService {
         return existing;
     }
 
-    @CacheEvict(cacheNames = "site.settings.public", allEntries = true)
+    @CacheEvict(cacheNames = {"site.settings.public", "homepage.layout"}, allEntries = true)
     @Transactional
     public List<SiteSetting> upsertAll(Map<String, Object> values) {
         List<SiteSetting> out = new java.util.ArrayList<>(values.size());

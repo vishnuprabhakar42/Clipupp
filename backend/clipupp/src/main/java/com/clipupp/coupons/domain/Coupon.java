@@ -72,6 +72,10 @@ public class Coupon extends AuditableEntity {
     @Column(name = "verified", nullable = false)
     private boolean verified;
 
+    /** When an admin last marked this coupon verified. Null when not verified. */
+    @Column(name = "verified_at")
+    private OffsetDateTime verifiedAt;
+
     @Column(name = "exclusive", nullable = false)
     private boolean exclusive;
 
@@ -164,7 +168,27 @@ public class Coupon extends AuditableEntity {
     public CouponStatus getStatus() { return status; }
     public void setStatus(CouponStatus status) { this.status = status; }
     public boolean isVerified() { return verified; }
-    public void setVerified(boolean v) { this.verified = v; }
+    public OffsetDateTime getVerifiedAt() { return verifiedAt; }
+
+    /**
+     * Sets verification state from a create or update. The timestamp is stamped
+     * only when the coupon flips from unverified to verified; saving an already
+     * verified coupon (for example to fix a typo) keeps the existing stamp so the
+     * card never claims a fresh check that did not happen. Unverifying clears it
+     * so the UI never shows a stale "Verified 3d ago".
+     */
+    public void applyVerified(boolean verified, OffsetDateTime now) {
+        if (verified && this.verified && this.verifiedAt != null) return;
+        this.verified = verified;
+        this.verifiedAt = verified ? now : null;
+    }
+
+    /** Explicit "re-checked" action (admin bulk VERIFY): always marks verified and re-stamps. */
+    public void reverify(OffsetDateTime now) {
+        this.verified = true;
+        this.verifiedAt = now;
+    }
+
     public boolean isExclusive() { return exclusive; }
     public void setExclusive(boolean e) { this.exclusive = e; }
     public int getUsedCount() { return usedCount; }

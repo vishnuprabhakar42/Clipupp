@@ -115,6 +115,32 @@ const config = {
           800: "rgb(var(--clipupp-neutral-800-rgb) / <alpha-value>)",
           900: "rgb(var(--clipupp-neutral-900-rgb) / <alpha-value>)",
         },
+        "clipupp-deep": {
+          DEFAULT: "rgb(var(--clipupp-deep-rgb) / <alpha-value>)",
+          2:       "rgb(var(--clipupp-deep-2-rgb) / <alpha-value>)",
+        },
+        "clipupp-gold":    "rgb(var(--clipupp-gold-rgb) / <alpha-value>)",
+        "clipupp-ok-bg":   "rgb(var(--clipupp-ok-bg-rgb) / <alpha-value>)",
+        "clipupp-ok-fg":   "rgb(var(--clipupp-ok-fg-rgb) / <alpha-value>)",
+        "clipupp-bad-bg":  "rgb(var(--clipupp-bad-bg-rgb) / <alpha-value>)",
+        "clipupp-warn-bg": "rgb(var(--clipupp-warn-bg-rgb) / <alpha-value>)",
+        "clipupp-skel":    "rgb(var(--clipupp-skel-rgb) / <alpha-value>)",
+        "clipupp-surface": "rgb(var(--clipupp-surface-rgb) / <alpha-value>)",
+        "clipupp-page":    "rgb(var(--clipupp-page-rgb) / <alpha-value>)",
+        "clipupp-logo-bg": "rgb(var(--clipupp-logo-bg-rgb) / <alpha-value>)",
+        "clipupp-ft": {
+          bg:      "rgb(var(--clipupp-ft-bg-rgb) / <alpha-value>)",
+          card:    "rgb(var(--clipupp-ft-card-rgb) / <alpha-value>)",
+          ink:     "rgb(var(--clipupp-ft-ink-rgb) / <alpha-value>)",
+          "ink-2": "rgb(var(--clipupp-ft-ink-2-rgb) / <alpha-value>)",
+          "ink-3": "rgb(var(--clipupp-ft-ink-3-rgb) / <alpha-value>)",
+          accent:  "rgb(var(--clipupp-ft-accent-rgb) / <alpha-value>)",
+        },
+        "clipupp-tint": {
+          50:  "rgb(var(--clipupp-tint-50-rgb) / <alpha-value>)",
+          100: "rgb(var(--clipupp-tint-100-rgb) / <alpha-value>)",
+          200: "rgb(var(--clipupp-tint-200-rgb) / <alpha-value>)",
+        },
       },
       fontFamily: {
         // Inter (body) + Manrope (display) injected as CSS vars by next/font
@@ -173,6 +199,8 @@ const config = {
         "glow-primary": "var(--clipupp-shadow-glow-primary)",
         "glow-accent":  "var(--clipupp-shadow-glow-accent)",
         "glow-success": "var(--clipupp-shadow-glow-success)",
+        "clipupp-hover": "var(--clipupp-shadow-brand-hover)",
+        "clipupp-pop":   "var(--clipupp-shadow-pop)",
         // Legacy aliases kept for back-compat during sweep.
         card:        "var(--clipupp-shadow-resting)",
         "card-hover": "var(--clipupp-shadow-hover)",

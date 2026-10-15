@@ -31,7 +31,8 @@ const CSP_REPORT_ONLY = [
   "form-action 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
-  "upgrade-insecure-requests",
+  // `upgrade-insecure-requests` is ignored in a report-only policy (browsers log
+  // a console error for it); add it back when this switches to enforcement.
 ].join("; ");
 
 /** @type {import('next').NextConfig} */
@@ -74,6 +75,9 @@ const nextConfig = {
       { protocol: "https", hostname: "**.cloudfront.net" },
       // Real brand logos for stores (seeded by the backend)
       { protocol: "https", hostname: "logo.clearbit.com" },
+      // Marketplace product images (live deals)
+      { protocol: "https", hostname: "m.media-amazon.com" },
+      { protocol: "https", hostname: "rukminim2.flixcart.com" },
       // Free editorial / banner photography
       { protocol: "https", hostname: "images.unsplash.com" },
       // Author / generic avatars

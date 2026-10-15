@@ -78,6 +78,8 @@ export type StoreSummary = {
   previousCashbackRate: string | null;
   tagline: string | null;
   featured: boolean;
+  /** Active coupons; null when the endpoint did not compute it. */
+  activeCouponCount: number | null;
 };
 
 export type StoreDetail = {
@@ -141,6 +143,7 @@ export type CouponSummary = {
   savingsLabel: string | null;
   expiresAt: string | null;
   verified: boolean;
+  verifiedAt: string | null;
   exclusive: boolean;
   usedCount: number;
   popularityScore: number;
@@ -162,6 +165,7 @@ export type CouponDetail = {
   startsAt: string | null;
   expiresAt: string | null;
   verified: boolean;
+  verifiedAt: string | null;
   exclusive: boolean;
   usedCount: number;
   popularityScore: number;

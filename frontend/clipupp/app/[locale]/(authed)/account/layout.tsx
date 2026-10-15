@@ -32,10 +32,10 @@ export default async function AccountLayout({
   const initial = (user.name || user.email || "?").slice(0, 1).toUpperCase();
 
   return (
-    <div className="flex min-h-screen flex-col bg-clipupp-neutral-50">
+    <div className="flex min-h-screen flex-col pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 bg-clipupp-neutral-50">
       <Header />
 
-      <main id="main" className="flex-1 pb-16 lg:pb-0" role="main">
+      <main id="main" className="flex-1" role="main">
         {/* Hero — flat neutral background, no gradient. */}
         <section className="border-b border-clipupp-neutral-200 bg-white">
           <div className="clipupp-container py-8 md:py-10">
@@ -135,7 +135,7 @@ export default async function AccountLayout({
       </main>
 
       <Footer />
-      <MobileBottomNav active="account" />
+      <MobileBottomNav />
     </div>
   );
 }
