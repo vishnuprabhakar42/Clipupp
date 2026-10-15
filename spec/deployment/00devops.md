@@ -27,6 +27,7 @@ Decisions taken with Vishnu on 2026-10-15:
 | Observability | Essentials: health checks, log rotation, uptime probe, deploy notifications, backups |
 | Notifications | Telegram bot to a private chat |
 | CD transport | SSH from GitHub-hosted runners as the `deploy` user |
+| Secrets | GitHub Environment secrets are the only store; CD renders the server `.env` from them on every deploy |
 | Pipeline repo | `vishnuprabhakar42/Clipupp`; images under `ghcr.io/vishnuprabhakar42` |
 
 ## 2. Server facts (audit of 2026-10-15)
@@ -91,10 +92,10 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
 ```
 /opt/clipupp/                      owned by deploy:deploy
   docker-compose.prod.yml          copied from deploy/docker-compose.prod.yml by CD
-  .env                             mode 600, the only place runtime secrets live
-  .backup-key                      mode 600, AES-256 passphrase for backups (keep an off-server copy)
+  .env                             mode 600, rendered by CD from GitHub secrets on every deploy, never edited by hand
+  .backup-key                      mode 600, AES-256 passphrase for backups, rendered from the BACKUP_KEY secret
   clipupp.caddy                    the site block, appended to /opt/r2r/Caddyfile once
-  scripts/                         deploy.sh rollback.sh restore.sh backup.sh backup-key.sh env-upsert.sh healthcheck-notify.sh
+  scripts/                         deploy.sh rollback.sh restore.sh backup.sh healthcheck-notify.sh
   backups/                         mode 700, nightly and pre-deploy dumps
   .deploy/current .deploy/previous .deploy/deploy.log .deploy/health-state
 ```
@@ -226,18 +227,24 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
 
 ## 8. Configuration and secrets
 
-### 8.1 Server `.env` (documented in `deploy/.env.production.example`)
+### 8.1 Server `.env`, rendered by CD
 
-`IMAGE_TAG`, `POSTGRES_PASSWORD`, `DB_URL=jdbc:postgresql://db:5432/clipupp_db`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_SIZE`, `JWT_SECRET`, `PUBLIC_SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `EDGE_NETWORK=r2r_default`, `BACKUP_RETAIN_DAYS=30`, `RCLONE_CONFIG_R2_TYPE=s3`, `RCLONE_CONFIG_R2_PROVIDER=Cloudflare`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET=clipupp-backups`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
-
-`scripts/env-upsert.sh KEY VALUE` edits one key in place without printing values.
+GitHub is the only store of secrets.
+The deploy job writes `/opt/clipupp/.env` (mode 600) from the environment secrets listed in 8.2 before every deploy and rollback, so a secret change is "update it in GitHub, run Deploy".
+Nobody edits `.env` on the server; a hand edit is overwritten by the next deploy.
+Keys (documented in `deploy/.env.production.example`): `IMAGE_TAG`, `POSTGRES_PASSWORD`, `DB_URL=jdbc:postgresql://db:5432/clipupp_db`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_SIZE`, `JWT_SECRET`, `PUBLIC_SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `EDGE_NETWORK=r2r_default`, `BACKUP_RETAIN_DAYS=30`, `RCLONE_CONFIG_R2_TYPE=s3`, `RCLONE_CONFIG_R2_PROVIDER=Cloudflare`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET=clipupp-backups`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+`.backup-key` is rendered the same way from `BACKUP_KEY`.
 
 ### 8.2 GitHub
 
 Environment `production` with Vishnu as required reviewer.
-Secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan`), `DEPLOY_USER=deploy`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
-Variables: `SITE_URL` (`https://clipupp.187-127-130-103.sslip.io` before cutover, `https://clipupp.com` after).
+
+Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan`), `DEPLOY_USER`.
+Notification secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+Application secrets, one GitHub secret per `.env` key that is sensitive: `POSTGRES_PASSWORD`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY`.
+Non-sensitive settings are environment variables, not secrets, so they stay readable: `SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS`.
 `GITHUB_TOKEN` with `packages: write` pushes images and performs the registry login on the server.
+The deploy job renders `.env` with a template in `deploy/render-env.sh` that fails if any required key is empty, so a missing secret stops the deploy before the server changes.
 
 ### 8.3 Secrets hygiene
 
@@ -249,9 +256,9 @@ Variables: `SITE_URL` (`https://clipupp.187-127-130-103.sslip.io` before cutover
 ## 9. Cutover plan
 
 1. Run `deploy/server-setup.sh` as root.
-2. Create `/opt/clipupp/.env` from the example with production values; create `.backup-key`.
+2. Add every secret and variable from section 8.2 to the GitHub `production` environment; the first deploy renders `.env` and `.backup-key`.
 3. Append `deploy/clipupp.caddy` to `/opt/r2r/Caddyfile` and reload Caddy; the sslip host gets a certificate.
-4. Create the GitHub environment and secrets; `SITE_URL` points at the sslip host.
+4. `SITE_URL` points at the sslip host for now.
 5. Run `deploy.yml` by hand for the current `main` sha; approve; smoke passes on the sslip host.
 6. Verify by hand: sign in, reveal a coupon, admin login, sitemap, robots, OG image.
 7. Switch `clipupp.com` A record and `www` to `187.127.130.103` (TTL 300 first), wait for propagation, Caddy issues the certificates.
@@ -272,9 +279,9 @@ Every row written since that dump is lost.
 
 Read logs: `docker logs --since 1h clipupp-backend`, `docker logs --since 1h clipupp-web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
-Change a secret: `scripts/env-upsert.sh KEY 'value'` then `docker compose -f docker-compose.prod.yml up -d backend web`.
+Change a secret or setting: update it in the GitHub `production` environment, then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
 
-Rotate the R2 keys: create a new token in Cloudflare, `env-upsert.sh R2_ACCESS_KEY` and `R2_SECRET_KEY`, restart backend, delete the old token.
+Rotate the R2 keys: create a new token in Cloudflare, update `R2_ACCESS_KEY` and `R2_SECRET_KEY` in GitHub, run Deploy, delete the old token.
 
 Rotate the deploy key: generate a new ed25519 pair, append the public half to `authorized_keys`, update `DEPLOY_SSH_KEY`, remove the old line.
 
@@ -287,3 +294,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 ## 11. Log of changes to this document
 
 - 2026-10-15: initial design approved and written (Fable 5.1 with Vishnu).
+- 2026-10-15: secrets live only in GitHub; CD renders the server `.env` on every deploy (Vishnu's call).
