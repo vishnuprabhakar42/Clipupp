@@ -237,6 +237,9 @@ export function TodaysCouponsClient({
   // back (normalised), so a saved tab never appears in the address bar by itself.
   useEffect(() => {
     if (!seeded) return;
+    // The address bar moved on (Back/Forward) before the router handed us the new params:
+    // writing now would strip them from that entry. `applyUrl` catches up on the next commit.
+    if (new URLSearchParams(window.location.search).toString() !== lastSearch.current) return;
     const u = urlView.current;
     const view = dirty.current
       ? { tab: store ? "all" : tab, sort: effectiveSort, store: store || null }
