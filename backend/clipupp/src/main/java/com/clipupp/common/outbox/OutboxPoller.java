@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Drains the {@code outbox} table every 5 seconds, dispatching each entry to
  * the registered {@link OutboxDispatcher} for its topic. Failed dispatches are
  * rescheduled with capped exponential backoff (max 30 minutes).
+ * {@code processOne} claims its row with {@code FOR UPDATE SKIP LOCKED}, so a
+ * second instance polling the same table skips rows this one is dispatching.
  *
  * <p>Self-injection: {@code drain()} calls {@code processOne()} via the
  * Spring-managed proxy ({@code self}). A direct {@code this.processOne(id)}
@@ -65,8 +67,8 @@ public class OutboxPoller {
 
     @Transactional
     public void processOne(Long id) {
-        OutboxEntry e = repo.findById(id).orElse(null);
-        if (e == null || e.getProcessedAt() != null) return;
+        OutboxEntry e = repo.claimForDispatch(id).orElse(null);
+        if (e == null) return;
 
         OutboxDispatcher d = byTopic.get(e.getTopic());
         if (d == null) {
