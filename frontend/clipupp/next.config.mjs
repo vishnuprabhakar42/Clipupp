@@ -38,6 +38,8 @@ const CSP_REPORT_ONLY = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Self-hosted in Docker: emit a minimal server under .next/standalone.
+  output: "standalone",
   poweredByHeader: false,
   compress: true,
   productionBrowserSourceMaps: false,
