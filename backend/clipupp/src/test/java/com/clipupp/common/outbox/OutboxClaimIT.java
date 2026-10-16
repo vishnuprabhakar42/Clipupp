@@ -48,7 +48,7 @@ class OutboxClaimIT extends AbstractPostgresIT {
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void rowHeldByAnotherTransactionIsSkipped() throws Exception {
-        OutboxEntry e = new OutboxEntry("test", "{}", OffsetDateTime.now().minusSeconds(1));
+        OutboxEntry e = new OutboxEntry("test", "{}", OffsetDateTime.now().minusDays(1));
         Long id = new TransactionTemplate(txm).execute(s -> repo.saveAndFlush(e)).getId();
 
         CountDownLatch held = new CountDownLatch(1);
@@ -68,6 +68,18 @@ class OutboxClaimIT extends AbstractPostgresIT {
         holder.join();
         assertThat(firstClaim.get()).isTrue();
         assertThat(secondClaim).isFalse();
+        repo.deleteById(id);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    void rowScheduledForTheFutureIsNotClaimable() {
+        OutboxEntry e = new OutboxEntry("test", "{}", OffsetDateTime.now().plusDays(1));
+        Long id = new TransactionTemplate(txm).execute(s -> repo.saveAndFlush(e)).getId();
+
+        boolean claimed = new TransactionTemplate(txm).execute(s -> repo.claimForDispatch(id).isPresent());
+
+        assertThat(claimed).isFalse();
         repo.deleteById(id);
     }
 }
