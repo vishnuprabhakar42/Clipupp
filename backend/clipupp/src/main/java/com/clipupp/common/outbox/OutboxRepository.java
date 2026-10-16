@@ -22,7 +22,7 @@ public interface OutboxRepository extends JpaRepository<OutboxEntry, Long> {
      * holding the row gets an empty result instead of blocking, so two
      * backends can poll the same table without dispatching twice.
      */
-    @Query(value = "select * from outbox where id = :id and processed_at is null for update skip locked",
+    @Query(value = "select * from outbox where id = :id and processed_at is null and next_attempt_at <= now() for update skip locked",
            nativeQuery = true)
     Optional<OutboxEntry> claimForDispatch(@Param("id") Long id);
 }
