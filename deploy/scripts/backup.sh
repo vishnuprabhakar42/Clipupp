@@ -36,7 +36,7 @@ if [ -n "${PGHOST:-}" ]; then
   # In the container PGHOST, PGUSER, PGPASSWORD and PGDATABASE come from the compose environment.
   dump() { pg_dump --no-owner --no-privileges; }
 else
-  dump() { docker exec "${DB_CONTAINER:-clipupp-db}" pg_dump -U "$DB_USERNAME" --no-owner --no-privileges clipupp_db; }
+  dump() { docker exec "${DB_CONTAINER:-${CONTAINER_PREFIX:-clipupp}-db}" pg_dump -U "$DB_USERNAME" --no-owner --no-privileges clipupp_db; }
 fi
 mkdir -p "$OUT_DIR"
 if dump | gzip -9 | enc > "$FILE" && dec < "$FILE" | gzip -t && [ "$(wc -c < "$FILE")" -gt 1024 ]; then

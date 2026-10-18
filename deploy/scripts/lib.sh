@@ -2,6 +2,9 @@
 # Shared helpers for the deploy scripts. Source only; no side effects beyond defining names.
 # Works under bash 3.2 (macOS, where the stubbed flow test runs) and bash 5 (the server).
 
+# Prefix of the fixed container names (<prefix>-db); the local rehearsal sets its own so it never
+# touches a real stack on the same Docker host.
+CONTAINER_PREFIX="${CONTAINER_PREFIX:-clipupp}"
 STATE_DIR="${STATE_DIR:-.deploy}"
 LOG_FILE="${LOG_FILE:-$STATE_DIR/deploy.log}"
 
