@@ -93,11 +93,13 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
 /opt/clipupp/                      owned by deploy:deploy
   docker-compose.prod.yml          copied from deploy/docker-compose.prod.yml by CD
   .env                             mode 600, rendered by CD from GitHub secrets on every deploy, never edited by hand
+                                   (deploy.sh and rollback.sh rewrite only its IMAGE_TAG line to the running release)
   .backup-key                      mode 600, AES-256 passphrase for backups, rendered from the BACKUP_KEY secret
   clipupp.caddy                    the site block, appended to /opt/r2r/Caddyfile once
   scripts/                         deploy.sh rollback.sh restore.sh backup.sh healthcheck-notify.sh
-  backups/                         mode 700, nightly and pre-deploy dumps
-  .deploy/current .deploy/previous .deploy/deploy.log .deploy/health-state
+  backups/                         mode 700, nightly and pre-deploy dumps, .last-backup-ok (epoch of the last full backup)
+  .deploy/current .deploy/previous .deploy/deploy.log .deploy/lock
+  .deploy/health-state .deploy/health-fails .deploy/backup-state .deploy/backup-watch-since .deploy/health-cron.log
 ```
 
 ### 4.2 Compose services (`deploy/docker-compose.prod.yml`, project name `clipupp`)
@@ -106,11 +108,14 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
 | --- | --- | --- | --- | --- |
 | `clipupp-db` | `postgres:16-alpine` | 512m, shm 128m | `pg_isready` | volume `clipupp-db-data`, `expose 5432` only |
 | `clipupp-backend` | `ghcr.io/vishnuprabhakar42/clipupp-backend:${IMAGE_TAG}` | 896m | `GET /actuator/health/readiness` | `JAVA_OPTS -XX:MaxRAMPercentage=70`, `stop_grace_period 35s`, env from `.env` |
-| `clipupp-web` | `ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}` | 512m | `GET /api/health` | joins `edge` (external `r2r_default`) |
+| `clipupp-web-<n>` | `ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}` | 512m | `GET /api/health` | no `container_name`; joins `edge` (external `r2r_default`) with the alias `clipupp-web` |
 | `clipupp-backup` | `ghcr.io/vishnuprabhakar42/clipupp-backup:${IMAGE_TAG}` | 128m | none | nightly dump at 02:30 UTC, 30-day retention, `rclone` copy to R2, scoped environment only |
 
 Every service uses the `json-file` log driver with `max-size 20m`, `max-file 5`, and `restart: unless-stopped`.
 Service DNS names inside the project are `db`, `backend`, `web`; container names carry the `clipupp-` prefix so they are unambiguous on the shared host.
+`web` has no fixed `container_name`, because `docker rollout` runs a second replica beside the first during a deploy and compose refuses to scale a service with a fixed name.
+Its containers are `clipupp-web-<n>`, and Caddy reaches whichever are running through the `edge` network alias `clipupp-web` (`clipupp-web:3000`).
+Scripts find web containers with `docker compose ps -q web`, never by name.
 
 ### 4.3 Caddy site block (`deploy/clipupp.caddy`)
 
@@ -123,11 +128,14 @@ Service DNS names inside the project are `db`, `backend`, `web`; container names
 
 - 2 GB swapfile with `vm.swappiness=10`.
 - `fail2ban` with the `sshd` jail.
-- `PermitRootLogin prohibit-password` (key-only root; both existing root keys keep working).
-- `/etc/docker/daemon.json` with `json-file` defaults (`20m` x `5`) and a daemon reload.
+- `PermitRootLogin prohibit-password` (key-only root; both existing root keys keep working), written as the drop-in `/etc/ssh/sshd_config.d/50-clipupp.conf`, because Ubuntu reads the drop-ins before `sshd_config` and the first value wins.
+  The script runs `sshd -t`, then asserts with `sshd -T` that the effective value is `prohibit-password` (printed as `without-password` by OpenSSH 9.6), fails if an earlier drop-in overrides it, and only then reloads ssh.
+- `/etc/docker/daemon.json` with `json-file` defaults (`20m` x `5`) when the file does not exist yet; it applies after the next docker restart, which the script does not force because every service sets its own log limits.
+- The `docker rollout` CLI plugin for `deploy`, pinned to release `v0.14` (commit `a72a9632c38187abd6d8799e4a9d5054a67fe615`) and verified against the SHA-256 `cdeaba6ae9eee3b0b606286e585bbda6787283d801a6ad6d9b9d2bc347fda05b` embedded in the script.
+  A mismatch fails the setup and installs nothing; an installed copy with a different hash is replaced.
 - `/opt/clipupp` skeleton with the ownership and modes above.
-- Cron entry for `deploy`: `*/5 * * * * /opt/clipupp/scripts/healthcheck-notify.sh`.
-- Verifies the `deploy` user can run `docker`.
+- Cron entry for `deploy`: `*/5 * * * * /opt/clipupp/scripts/healthcheck-notify.sh >> /opt/clipupp/.deploy/health-cron.log 2>&1`.
+- Verifies first that the `deploy` user exists and is in the `docker` group and that `r2r_default` exists, and last that `deploy` can run `docker`.
 
 ## 5. Images
 
@@ -195,21 +203,27 @@ Jobs:
    - Checks out the sha.
    - Loads `DEPLOY_SSH_KEY` into an agent, pins the host key from `DEPLOY_HOST_KEY`.
    - `scp` `deploy/docker-compose.prod.yml`, `deploy/clipupp.caddy`, and `deploy/scripts/*` to `/opt/clipupp`, so the server always runs the committed version.
-   - Over SSH: `echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin`, then `cd /opt/clipupp && scripts/deploy.sh sha-<sha>`.
+   - Over SSH: `echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin`, then `cd /opt/clipupp` and start `scripts/deploy.sh sha-<sha>` detached with `setsid nohup` as described in 7.1, following its output and returning its exit status.
 3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up`, `/api/v1/homepage` is 200, the HTML contains no `cashback`, the certificate is valid.
 4. `notify-result`: Telegram success or failure, with the rollback command.
 
 ### 7.1 `scripts/deploy.sh <tag>`
 
-1. Refuse to run without `.env`; record `PREVIOUS_TAG` from `.deploy/current`.
-2. `docker compose pull` the backend and web images; if the pull fails but both images exist locally, continue.
-3. `up -d db` and wait for `pg_isready`.
+CD starts it detached from the SSH session, so a dropped connection or a cancelled job cannot kill it halfway and its output never goes to a dead pipe: `setsid nohup scripts/deploy.sh <tag> > .deploy/run.out 2>&1 < /dev/null &`, then `tail --pid` the output and `wait` for the exit status.
+
+1. Validate the tag, take the host lock `.deploy/lock` (`flock`, non-blocking; a second deploy, rollback or restore fails at once with a clear message), refuse to run without `.env`, record `PREVIOUS_TAG` from `.deploy/current`.
+2. `docker compose pull` the backend, web and backup images; if the pull fails but the images exist locally, continue.
+3. `up -d db` and wait up to 60 s for `pg_isready`; after that the deploy fails without touching backend or web.
 4. Pre-migration dump: encrypted `pg_dump` to `backups/pre-deploy-<tag>-<timestamp>.sql.gz.enc`, verified by decrypting and `gzip -t`. A failed dump aborts the deploy before anything changes.
+   From here on the deploy is armed (see step 9).
 5. `up -d backend` (recreate on the new tag; Flyway migrates on boot). Wait up to 180 s for the container to be healthy.
-6. `docker rollout web` if the plugin is installed (starts the new web container, waits for health, removes the old one); otherwise `up -d web`. Wait up to 120 s for health.
-7. `up -d backup` and prune images older than 7 days.
-8. Write `.deploy/previous` and `.deploy/current`, log `== deployed <tag>`.
-9. On any failure after step 2: redeploy `PREVIOUS_TAG` for backend and web, log that the database was not restored and name the dump, exit 1.
+6. `docker rollout -t 120 web` if the plugin is installed (starts the new web container, waits for health, removes the old one; on failure it removes the new one and the old one keeps serving); otherwise `up -d web`. Then wait up to 120 s until every container `compose ps -q web` lists is healthy.
+7. `up -d backup`. If the sidecar does not start, the deploy still succeeds, but the log says so and Telegram gets a notice that nightly backups are not running.
+8. Rewrite `IMAGE_TAG='<tag>'` in `.env`, write `.deploy/previous` (only when the tag changed, so redeploying the current tag keeps the rollback target) and `.deploy/current`, prune dangling images older than 7 days, log `== deployed <tag>`.
+9. Once armed, any non-zero exit, whether a failed compose call, a failed health wait, or SIGINT, SIGTERM or SIGHUP, runs the rollback exactly once from the script's EXIT trap: backend and web are recreated on `PREVIOUS_TAG`, their health is checked, `.env` gets `IMAGE_TAG='<previous>'`, and Telegram gets the true outcome ("rolled back to X and healthy" or "rollback to X FAILED, manual action needed").
+   The database is not restored; the log names the dump and the command to undo the migration (`scripts/rollback.sh <previous> --with-db <dump>`).
+   The exit status is 1.
+   When there is no previous tag, or the failed deploy was a redeploy of the current tag, nothing is rolled back and the message says so.
 
 Known limit: recreating the backend container means roughly 30 seconds of API 502s per deploy on this 1 vCPU host, because two JVMs would not fit comfortably.
 The web container deploys with zero downtime.
@@ -219,18 +233,29 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
 
 - `workflow_dispatch` with optional input `tag`; environment `production` approval; same SSH path; runs `scripts/rollback.sh [tag]`; then the smoke job and a Telegram message.
 - `rollback.sh` with no argument returns to `.deploy/previous`; with a tag it deploys that tag; `--with-db <dump>` additionally restores the database after the operator types `RESTORE`.
-- Rollback never pulls from the registry if the image is present locally, so it works even when the CI token has expired.
+- Rollback checks the local images first with `docker image inspect` and pulls only the ones that are missing, so it works even when the CI token has expired; if an image is neither local nor pullable it stops before touching anything.
+- It takes the same host lock as `deploy.sh`, waits for backend and web to be healthy, then rewrites `IMAGE_TAG` in `.env` and the state files; any failure posts "rollback to X FAILED" to Telegram.
 
 ### 7.3 Backups and restore
 
 - `clipupp-backup` dumps nightly at 02:30 UTC with `pg_dump --no-owner --no-privileges`, gzip, AES-256-CBC with PBKDF2 (passphrase in `.backup-key`), verifies by decrypting, keeps 30 days, and copies the newest file to the R2 bucket `clipupp-backups` with `rclone` (credentials in `.env`).
-- `scripts/backup.sh` runs the same dump by hand.
-- `scripts/restore.sh <dump> --yes` drops and recreates the database from a dump; `rollback.sh --with-db` wraps it with a confirmation.
-- Restore drill: monthly, restore the newest dump into a scratch database on the VPS and run a row-count query; record the date in section 11.
+- `backup.sh` exits 1 when the dump fails and 3 when the dump is fine but the off-site copy failed or `BACKUP_BUCKET` is set and `rclone` is missing.
+  Only a fully successful run writes the epoch seconds to `backups/.last-backup-ok`, which the uptime probe watches (section 7.4).
+- `docker exec clipupp-backup clipupp-backup` runs the same backup by hand; `scripts/backup.sh` on the host does too, but needs `rclone` there for the off-site copy.
+- `scripts/restore.sh <dump> [--yes] [--drop-old]` never drops data before the replacement is proven.
+  It verifies the dump (decrypt, `gzip -t`, pg_dump header), restores into `clipupp_db_restore_<timestamp>` and counts its coupons, stops backend and web, and in one psql transaction terminates the sessions on `clipupp_db`, renames it to `clipupp_db_old_<timestamp>` and renames the restored copy to `clipupp_db`.
+  The old database is kept and the command to drop it is printed; `--drop-old` drops it with `DROP DATABASE ... WITH (FORCE)`.
+  Any failure before the swap drops the scratch copy, leaves `clipupp_db` untouched and starts backend and web again on the tag in `.deploy/current`.
+  After a successful restore backend and web stay stopped so the data can be checked; the last line prints `IMAGE_TAG='<current tag>' docker compose -f docker-compose.prod.yml up -d backend web`.
+  `rollback.sh --with-db` wraps it with a confirmation and starts the chosen release itself.
+- `--target` must match `^[a-z_][a-z0-9_]{0,62}$` and may not be `postgres`, `template0` or `template1`.
+- Restore drill: monthly, `scripts/restore.sh --target clipupp_drill <newest dump>` restores into a scratch database the same way, prints the coupon count and drops the drill database (no prompt, the app is not touched); record the date in section 11.
 
 ### 7.4 Uptime probe
 
 `scripts/healthcheck-notify.sh` runs every 5 minutes from cron as `deploy`, requests `https://clipupp.com/api/health` and `https://clipupp.com/actuator/health`, and posts to Telegram only when the state changes (down, or recovered), with the state kept in `.deploy/health-state`.
+Two consecutive failed probes count as down (`.deploy/health-fails`), so one slow response or the backend restart during a deploy does not page anyone.
+The same probe alerts once when `backups/.last-backup-ok` is older than 36 hours, or still missing a day after the probe first ran, and once more when backups recover (state in `.deploy/backup-state`).
 
 ## 8. Configuration and secrets
 
@@ -283,10 +308,11 @@ Deploy a specific sha: Actions, "Deploy", "Run workflow", enter the sha, approve
 Roll back: Actions, "Rollback", "Run workflow" (optional tag), approve.
 On the server by hand: `cd /opt/clipupp && scripts/rollback.sh`.
 
-Undo a migration: `scripts/rollback.sh --with-db backups/pre-deploy-<tag>-<time>.sql.gz.enc`, type `RESTORE`.
-Every row written since that dump is lost.
+Undo a migration: `scripts/rollback.sh <tag> --with-db backups/pre-deploy-<tag>-<time>.sql.gz.enc`, type `RESTORE`.
+If the failed deploy already rolled back by itself, `<tag>` is the running release (`cat .deploy/current`).
+Every row written since that dump is lost; the replaced database stays as `clipupp_db_old_<timestamp>` until you drop it.
 
-Read logs: `docker logs --since 1h clipupp-backend`, `docker logs --since 1h clipupp-web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
+Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
 Change a secret or setting: update it in the GitHub `production` environment, then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
 
@@ -294,9 +320,12 @@ Rotate the R2 keys: create a new token in Cloudflare, update `R2_ACCESS_KEY` and
 
 Rotate the deploy key: generate a new ed25519 pair, append the public half to `authorized_keys`, update `DEPLOY_SSH_KEY`, remove the old line.
 
-Restore drill: `scripts/restore.sh --target clipupp_drill backups/<newest>` then `docker exec clipupp-db psql -U $DB_USERNAME -d clipupp_drill -c 'select count(*) from coupon'`, then drop the drill database.
+Restore drill: `scripts/restore.sh --target clipupp_drill backups/<newest>`; it prints the coupon count and drops the drill database itself.
 
-Disk pressure: `docker system df`, `docker image prune -a --filter until=168h`, check `backups/` size.
+A deploy or rollback refuses to start because of the lock: another one is running (`pgrep -af 'scripts/(deploy|rollback|restore).sh'`); wait for it.
+
+Disk pressure: `docker system df`, check `backups/` size, then `docker image prune -a --filter until=168h`.
+That prune also removes the previous release's images when they are older than 7 days, so rollback will have to pull them from GHCR (which needs `docker login ghcr.io`).
 
 Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POOL_SIZE`, redeploy; consider the blue-green backend.
 
@@ -304,3 +333,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 
 - 2026-10-15: initial design approved and written (Fable 5.1 with Vishnu).
 - 2026-10-15: secrets live only in GitHub; CD renders the server `.env` on every deploy (Vishnu's call).
+- 2026-10-18: Task 4 review fixes: web has no `container_name` (edge alias `clipupp-web`) so `docker rollout` works; deploy.sh rolls back from an EXIT trap with verified health; host lock; restore swaps a proven copy in by rename; rollback is local-first; backup freshness marker and alert; sshd drop-in and pinned, checksummed plugin.

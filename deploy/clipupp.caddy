@@ -3,7 +3,8 @@
 # holds the inode):
 #   cat /opt/clipupp/clipupp.caddy >> /opt/r2r/Caddyfile
 #   docker compose -f /opt/r2r/docker-compose.prod.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
-# clipupp-web must be on that Caddy's network (EDGE_NETWORK in .env).
+# clipupp-web is the network alias the web service takes on that Caddy's network
+# (EDGE_NETWORK in .env); during a rollout it resolves to both replicas.
 
 # --- Clipupp (app lives in /opt/clipupp) ---
 
