@@ -1876,8 +1876,9 @@ Append `/tmp/clipupp-ci.pub` to `/home/deploy/.ssh/authorized_keys` on the VPS (
 
 - [ ] **Step 2: Vishnu creates the GitHub environment and secrets**
 
-Give Vishnu this list to create under Settings > Environments > `production` (required reviewer: himself).
-Secrets: `DEPLOY_SSH_KEY` (contents of `/tmp/clipupp-ci`), `DEPLOY_HOST=187.127.130.103`, `DEPLOY_HOST_KEY` (contents of `/tmp/clipupp-hostkey`), `POSTGRES_PASSWORD`, `DB_USERNAME=clipupp`, `DB_PASSWORD` (same as `POSTGRES_PASSWORD`), `JWT_SECRET` (`openssl rand -hex 48`), `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY` (`openssl rand -base64 48`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+Give Vishnu this list to create under Settings > Environments > `production` (no required reviewer: not available on GitHub Free private repos; deployment branches: `main` only).
+Secrets: `DEPLOY_SSH_KEY` (contents of `/tmp/clipupp-ci`), `DEPLOY_HOST=187.127.130.103`, `DEPLOY_HOST_KEY` (contents of `/tmp/clipupp-hostkey`), `POSTGRES_PASSWORD`, `DB_USERNAME=clipupp`, `DB_PASSWORD` (same as `POSTGRES_PASSWORD`), `JWT_SECRET` (`openssl rand -hex 48`), `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY` (`openssl rand -base64 48`).
+Repository-level secrets (Settings > Secrets and variables > Actions): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 Variables: `SITE_URL=https://clipupp.187-127-130-103.sslip.io`, `EMAIL_PROVIDER=resend`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION=auto`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET=clipupp-backups`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE=10`, `BACKUP_RETAIN_DAYS=30`.
 Repository variables (used by CI image build): `SITE_URL`, `GOOGLE_CLIENT_ID`, `R2_PUBLIC_BASE_URL`.
 

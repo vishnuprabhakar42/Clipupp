@@ -1,14 +1,10 @@
 name: Deploy
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       sha:
-        description: 'Full 40-character commit sha to deploy (default: head of main)'
+        description: 'Full 40-character commit sha to deploy (default: head of main; must be on main)'
         required: false
 
 concurrency:
@@ -21,20 +17,24 @@ permissions:
 
 jobs:
   resolve:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.s.outputs.sha }}
       short: ${{ steps.s.outputs.short }}
     steps:
+      - name: Run only from main
+        env: { REF: '${{ github.ref }}' }
+        run: '[ "$REF" = refs/heads/main ] || { echo "::error::Deploy runs only from main (got $REF)"; exit 2; }'
+      - uses: actions/checkout@v4
+        with: { ref: main, fetch-depth: 0, persist-credentials: false }
       - id: s
         env:
           INPUT_SHA: ${{ github.event.inputs.sha }}
-          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
           EVENT_SHA: ${{ github.sha }}
         run: |
-          sha="${INPUT_SHA:-${RUN_SHA:-$EVENT_SHA}}"
-          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "not a full 40-hex sha: $sha"; exit 2; }
+          sha="${INPUT_SHA:-$EVENT_SHA}"
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::not a full 40-hex sha: $sha"; exit 2; }
+          git merge-base --is-ancestor "$sha" origin/main || { echo "::error::$sha is not on main"; exit 2; }
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "short=${sha:0:7}" >> "$GITHUB_OUTPUT"
 
@@ -47,7 +47,7 @@ jobs:
         with:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
-          text: "Clipupp deploy requested: ${{ needs.resolve.outputs.short }} by ${{ github.actor }}. Waiting for approval: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          text: "Clipupp deploy started: ${{ needs.resolve.outputs.short }} by ${{ github.actor }}. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
   deploy:
     needs: [resolve, notify-start]
@@ -97,6 +97,9 @@ jobs:
         run: |
           [ -n "$BACKUP_KEY" ] || { echo "BACKUP_KEY secret is empty"; exit 2; }
           umask 077; printf '%s\n' "$BACKUP_KEY" > "$RUNNER_TEMP/backup-key"
+      - name: Preflight (no run in flight, host lock free)
+        run: |
+          ssh vps 'mkdir -p /opt/clipupp/.deploy && cd /opt/clipupp && { if [ -f .deploy/run.pid ] && kill -0 "$(cat .deploy/run.pid)" 2>/dev/null; then echo "::error::a previous run is still going (pid $(cat .deploy/run.pid)); see .deploy/run.out"; exit 3; fi; flock -n .deploy/lock true || { echo "::error::a deploy, rollback or restore holds .deploy/lock"; exit 3; }; }'
       - name: Ship compose, scripts, env
         run: |
           ssh vps 'mkdir -p /opt/clipupp/scripts /opt/clipupp/.deploy'
@@ -112,12 +115,12 @@ jobs:
           printf '%s\n' "$GHCR_TOKEN" | ssh vps "docker login ghcr.io -u '$ACTOR' --password-stdin >/dev/null"
           # Start deploy.sh in its own session so an ssh drop or job cancel cannot kill it mid-deploy.
           # shellcheck disable=SC2029
-          ssh vps "cd /opt/clipupp && rm -f .deploy/run.rc && { setsid nohup bash -c '( scripts/deploy.sh sha-$SHA; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
+          ssh vps "cd /opt/clipupp && rm -f .deploy/run.rc && : > .deploy/run.out && { setsid nohup bash -c '( scripts/deploy.sh sha-$SHA; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
           # Follow the detached run's log until it exits; reconnect if only the ssh link dropped (255).
           rc=1
           for attempt in 1 2 3 4 5; do
             rc=0
-            ssh vps 'cd /opt/clipupp && tail --pid="$(cat .deploy/run.pid)" -f .deploy/run.out; rc="$(cat .deploy/run.rc 2>/dev/null || echo 1)"; exit "$rc"' || rc=$?
+            ssh vps 'cd /opt/clipupp && tail -n +1 --pid="$(cat .deploy/run.pid)" -f .deploy/run.out; rc="$(cat .deploy/run.rc 2>/dev/null || echo 1)"; exit "$rc"' || rc=$?
             [ "$rc" -ne 255 ] || { echo "ssh dropped (attempt $attempt), reconnecting"; sleep 5; continue; }
             break
           done

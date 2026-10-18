@@ -9,7 +9,7 @@ Every deployment-related decision lands here; the runbook sections at the end ar
 
 Goals:
 
-- Every merge to `main` runs the full CI suite for both apps, builds immutable images, and deploys to production after one manual approval.
+- Every merge to `main` runs the full CI suite for both apps, builds immutable images, and production is deployed by a manual run of the Deploy workflow on `main`.
 - One-command rollback that does not touch data, plus a documented path to restore the database.
 - Everything runs in Docker on the existing Hostinger VPS alongside the other projects there.
 - Operators learn about every deploy and every outage from Telegram.
@@ -23,7 +23,7 @@ Decisions taken with Vishnu on 2026-10-15:
 | Domain | `clipupp.com` and `www.clipupp.com` (DNS currently on Vercel, to be moved) |
 | Database | Postgres 16 container on the VPS with a named volume |
 | Environments | Production only; no staging in this phase |
-| Production gate | Manual approval in a GitHub Environment named `production` |
+| Production gate | Manual run only: Actions, Deploy, Run workflow on `main`. The workflow refuses any other ref and any sha that is not on `main`. The GitHub Environment `production` scopes the deploy secrets but has no required reviewer, because required reviewers are not available on private repositories on GitHub Free. Upgrading to GitHub Team restores an approval gate: re-add the reviewer rule on the environment, no workflow change needed. |
 | Observability | Essentials: health checks, log rotation, uptime probe, deploy notifications, backups |
 | Notifications | Telegram bot to a private chat |
 | CD transport | SSH from GitHub-hosted runners as the `deploy` user |
@@ -99,6 +99,7 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
   scripts/                         deploy.sh rollback.sh restore.sh backup.sh healthcheck-notify.sh
   backups/                         mode 700, nightly and pre-deploy dumps, .last-backup-ok (epoch of the last full backup)
   .deploy/current .deploy/previous .deploy/deploy.log .deploy/lock
+  .deploy/run.out .deploy/run.rc .deploy/run.pid     the last detached deploy or rollback: log, exit status, pid
   .deploy/health-state .deploy/health-fails .deploy/backup-state .deploy/backup-watch-since .deploy/health-cron.log
 ```
 
@@ -193,23 +194,35 @@ Removed: `backend-ci.yml`, `frontend-ci.yml`, `backend-deploy.yml`, `openapi-syn
 
 ## 7. CD (`.github/workflows/deploy.yml`)
 
-Trigger: `workflow_run` of "CI" completed with success on `main`, or `workflow_dispatch` with an optional `sha` input.
+Trigger: `workflow_dispatch` only, with an optional `sha` input.
+There is no `workflow_run` trigger, so a merge never deploys by itself and a fork pull request can never reach the production secrets.
+The `resolve` job fails unless `github.ref` is `refs/heads/main`.
+When `sha` is given, `resolve` checks out `main` with full history and fails unless `git merge-base --is-ancestor <sha> origin/main` holds; the default is `github.sha`, which is the head of `main`.
 Concurrency group `deploy-production`, never cancelled.
+The production environment's deployment branches rule should be set to `main` only.
 
 Jobs:
 
-1. `notify-start`: Telegram message with sha, author, commit subject, run link.
-2. `deploy` in environment `production` (required reviewer: Vishnu; environment URL `https://clipupp.com`):
+1. `notify-start`: Telegram message with sha, author, run link.
+2. `deploy` in environment `production` (no required reviewer, see section 1; environment URL `SITE_URL`):
    - Checks out the sha.
    - Loads `DEPLOY_SSH_KEY` into an agent, pins the host key from `DEPLOY_HOST_KEY`.
+   - Preflight over SSH: fail if `.deploy/run.pid` names a live process (`kill -0`) or if `.deploy/lock` is held (`flock -n .deploy/lock true` fails), so nothing on the server is touched while another deploy, rollback or restore runs.
    - `scp` `deploy/docker-compose.prod.yml`, `deploy/clipupp.caddy`, and `deploy/scripts/*` to `/opt/clipupp`, so the server always runs the committed version.
-   - Over SSH: `echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin`, then `cd /opt/clipupp` and start `scripts/deploy.sh sha-<sha>` detached with `setsid nohup` as described in 7.1, following its output and returning its exit status.
-3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up`, `/api/v1/homepage` is 200, the HTML contains no `cashback`, the certificate is valid.
+   - One SSH call runs `docker login ghcr.io -u $GITHUB_ACTOR --password-stdin` with the token on stdin.
+   - A second SSH call starts `scripts/deploy.sh sha-<sha>` detached as described in 7.1, and a third follows its output and returns its exit status.
+3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up` and `"version"` equal to the full sha, `/api/v1/homepage` is 200, the HTML contains no `cashback`, the certificate is valid.
 4. `notify-result`: Telegram success or failure, with the rollback command.
+
+`notify-start`, `smoke` and `notify-result` declare no environment, so they read `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (repository secrets) and `SITE_URL` (repository variable).
 
 ### 7.1 `scripts/deploy.sh <tag>`
 
-CD starts it detached from the SSH session, so a dropped connection or a cancelled job cannot kill it halfway and its output never goes to a dead pipe: `setsid nohup scripts/deploy.sh <tag> > .deploy/run.out 2>&1 < /dev/null &`, then `tail --pid` the output and `wait` for the exit status.
+CD starts it detached from the SSH session, so a dropped connection or a cancelled job cannot kill it halfway and its output never goes to a dead pipe.
+One ssh runs `setsid nohup bash -c '( scripts/deploy.sh <tag>; echo $? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' &` and writes `$!` to `.deploy/run.pid`.
+A second ssh runs `tail -n +1 --pid="$(cat .deploy/run.pid)" -f .deploy/run.out` and exits with the contents of `.deploy/run.rc`, where a missing file counts as 1.
+That follow reconnects only when ssh itself fails with 255; the `wait` builtin cannot be used because the follow is not the parent.
+Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `.deploy/lock` is held.
 
 1. Validate the tag, take the host lock `.deploy/lock` (`flock`, non-blocking; a second deploy, rollback or restore fails at once with a clear message), refuse to run without `.env`, record `PREVIOUS_TAG` from `.deploy/current`.
 2. `docker compose pull` the backend, web and backup images; if the pull fails but the images exist locally, continue.
@@ -262,7 +275,7 @@ The same probe alerts once when `backups/.last-backup-ok` is older than 36 hours
 ### 8.1 Server `.env`, rendered by CD
 
 GitHub is the only store of secrets.
-The deploy job writes `/opt/clipupp/.env` (mode 600) from the environment secrets listed in 8.2 before every deploy and rollback, so a secret change is "update it in GitHub, run Deploy".
+The deploy job writes `/opt/clipupp/.env` (mode 600) from the GitHub secrets and variables listed in 8.2 before every deploy (a rollback reuses the `.env` already on the server), so a secret change is "update it in GitHub, run Deploy".
 Nobody edits `.env` on the server; a hand edit is overwritten by the next deploy.
 Every value is written single-quoted (`KEY='value'`), so docker compose and the bash readers take it literally.
 A secret may therefore not contain a single quote, a newline, or a carriage return; `render-env.sh` rejects such a value with exit 2 naming the key, before writing anything.
@@ -271,12 +284,13 @@ Keys (documented in `deploy/.env.production.example`): `IMAGE_TAG`, `POSTGRES_PA
 
 ### 8.2 GitHub
 
-Environment `production` with Vishnu as required reviewer.
+Environment `production` scopes the deploy and application secrets and variables; it has no required reviewer (section 1) and its deployment branches rule is `main` only.
+The notification secrets and `SITE_URL` live at repository level, because the jobs that use them declare no environment.
 
-Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan`), `DEPLOY_USER`.
-Notification secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan -t ed25519` for exactly the `DEPLOY_HOST` string), `DEPLOY_USER`.
+Notification secrets, repository level: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 Application secrets, one GitHub secret per `.env` key that is sensitive: `POSTGRES_PASSWORD`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY`.
-Non-sensitive settings are environment variables, not secrets, so they stay readable: `SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS`.
+Non-sensitive settings are environment variables, not secrets, so they stay readable: `SITE_URL` (repository level), `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS`.
 `GITHUB_TOKEN` with `packages: write` pushes images and performs the registry login on the server.
 The deploy job renders `.env` with a template in `deploy/render-env.sh` that fails if any required key is empty, so a missing secret stops the deploy before the server changes.
 
@@ -290,10 +304,10 @@ The deploy job renders `.env` with a template in `deploy/render-env.sh` that fai
 ## 9. Cutover plan
 
 1. Run `deploy/server-setup.sh` as root.
-2. Add every secret and variable from section 8.2 to the GitHub `production` environment; the first deploy renders `.env` and `.backup-key`.
+2. Add every secret and variable from section 8.2 at the scope it names (the Telegram secrets and `SITE_URL` at repository level, the rest in the `production` environment); the first deploy renders `.env` and `.backup-key`.
 3. Append `deploy/clipupp.caddy` to `/opt/r2r/Caddyfile` and reload Caddy; the sslip host gets a certificate.
 4. `SITE_URL` points at the sslip host for now.
-5. Run `deploy.yml` by hand for the current `main` sha; approve; smoke passes on the sslip host.
+5. Run `deploy.yml` by hand on `main` (Actions, Deploy, Run workflow); smoke passes on the sslip host.
 6. Verify by hand: sign in, reveal a coupon, admin login, sitemap, robots, OG image.
 7. Switch `clipupp.com` A record and `www` to `187.127.130.103` (TTL 300 first), wait for propagation, Caddy issues the certificates.
 8. Set `SITE_URL` to `https://clipupp.com`; change the sslip block to a redirect; remove the Vercel project.
@@ -301,11 +315,12 @@ The deploy job renders `.env` with a template in `deploy/render-env.sh` that fai
 
 ## 10. Runbooks
 
-Deploy the current `main`: merge a pull request, wait for CI, approve the `production` job in the Actions run.
+Deploy the current `main`: merge a pull request, wait for CI, then Actions, "Deploy", "Run workflow" on `main`.
 
-Deploy a specific sha: Actions, "Deploy", "Run workflow", enter the sha, approve.
+Deploy a specific sha: Actions, "Deploy", "Run workflow" on `main`, enter the sha; it must be an ancestor of `main`.
 
-Roll back: Actions, "Rollback", "Run workflow" (optional tag), approve.
+Roll back: Actions, "Rollback", "Run workflow" (optional tag).
+Rollback has its own concurrency group, so it is never queued behind a deploy run; the server lock still refuses to overlap them.
 On the server by hand: `cd /opt/clipupp && scripts/rollback.sh`.
 
 Undo a migration: `scripts/rollback.sh <tag> --with-db backups/pre-deploy-<tag>-<time>.sql.gz.enc`, type `RESTORE`.
@@ -314,7 +329,7 @@ Every row written since that dump is lost; the replaced database stays as `clipu
 
 Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
-Change a secret or setting: update it in the GitHub `production` environment, then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
+Change a secret or setting: update it in GitHub (environment `production`, or repository level for the Telegram secrets and `SITE_URL`), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
 
 Rotate the R2 keys: create a new token in Cloudflare, update `R2_ACCESS_KEY` and `R2_SECRET_KEY` in GitHub, run Deploy, delete the old token.
 
@@ -335,3 +350,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 - 2026-10-15: secrets live only in GitHub; CD renders the server `.env` on every deploy (Vishnu's call).
 - 2026-10-18: Task 4 review fixes: web has no `container_name` (edge alias `clipupp-web`) so `docker rollout` works; deploy.sh rolls back from an EXIT trap with verified health; host lock; restore swaps a proven copy in by rename; rollback is local-first; backup freshness marker and alert; sshd drop-in and pinned, checksummed plugin.
 - 2026-10-18: local rehearsal passed: isolated from real stacks (own project, container and volume names, preflight refuses to run beside a real one); first deploy on an empty database 27-34 s; second deploy swapped web through the real docker rollout plugin (web container id changed, /api/health answered 85 of 85 polls); rollback, host and in-container backup, and the restore drill (528 coupons) all succeeded. It found and fixed two script bugs (rollout plugin detection, service image resolution).
+- 2026-10-18: Task 7 fix round: production deploys are manual runs on `main` only (no `workflow_run`, no reviewer rule on GitHub Free); Telegram secrets and `SITE_URL` are repository level; launcher preflight; rollback has its own concurrency group.
