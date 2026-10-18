@@ -6,6 +6,15 @@
 # touches a real stack on the same Docker host.
 CONTAINER_PREFIX="${CONTAINER_PREFIX:-clipupp}"
 STATE_DIR="${STATE_DIR:-.deploy}"
+# Clipupp's own docker client config (/opt/clipupp/.docker on the server, created 700 by
+# server-setup.sh): the GHCR login CD performs, and the docker-rollout plugin, live there, so the
+# deploy user's shared ~/.docker (used by other stacks on the host) is never read or written.
+# The scripts run from the app directory; where it has no .docker (the local rehearsal) the
+# caller's own config is used.
+if [ -z "${DOCKER_CONFIG:-}" ] && [ -d .docker ]; then
+  DOCKER_CONFIG="$PWD/.docker"
+  export DOCKER_CONFIG
+fi
 LOG_FILE="${LOG_FILE:-$STATE_DIR/deploy.log}"
 
 # log "<text>": append to the deploy log and echo to stdout. A closed stdout (dropped SSH

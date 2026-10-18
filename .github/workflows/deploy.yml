@@ -111,8 +111,12 @@ jobs:
       - name: Deploy (detached on the server)
         env: { GHCR_TOKEN: '${{ secrets.GITHUB_TOKEN }}', ACTOR: '${{ github.actor }}' }
         run: |
+          # Clipupp's own docker client config, so the deploy user's shared ~/.docker (other stacks
+          # pull from GHCR with it) is never overwritten; deploy.sh uses the same directory.
           # shellcheck disable=SC2029
-          printf '%s\n' "$GHCR_TOKEN" | ssh vps "docker login ghcr.io -u '$ACTOR' --password-stdin >/dev/null"
+          printf '%s\n' "$GHCR_TOKEN" | ssh vps "install -d -m 700 /opt/clipupp/.docker && DOCKER_CONFIG=/opt/clipupp/.docker docker login ghcr.io -u '$ACTOR' --password-stdin >/dev/null"
+          # Only this run's own login is undone at the end; a run refused by the preflight logs nothing out.
+          echo "GHCR_LOGGED_IN=1" >> "$GITHUB_ENV"
           # Start deploy.sh in its own session so an ssh drop or job cancel cannot kill it mid-deploy.
           # shellcheck disable=SC2029
           ssh vps "cd /opt/clipupp && { if [ -f .deploy/run.pid ] && kill -0 \"\$(cat .deploy/run.pid)\" 2>/dev/null; then echo \"::error::a previous run is still going\"; exit 3; fi; flock -n .deploy/lock true || { echo \"::error::lock held\"; exit 3; }; } && rm -f .deploy/run.rc && : > .deploy/run.out && { setsid nohup bash -c '( scripts/deploy.sh sha-$SHA; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
@@ -125,6 +129,9 @@ jobs:
             break
           done
           exit "$rc"
+      - name: Log the server out of GHCR
+        if: always() && env.GHCR_LOGGED_IN == '1'
+        run: ssh vps 'DOCKER_CONFIG=/opt/clipupp/.docker docker logout ghcr.io >/dev/null 2>&1 || true'
 
   smoke:
     needs: [resolve, deploy]

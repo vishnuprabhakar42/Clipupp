@@ -97,6 +97,8 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
   .backup-key                      mode 600, AES-256 passphrase for backups, rendered from the BACKUP_KEY secret
   clipupp.caddy                    the site block, appended to /opt/r2r/Caddyfile once
   scripts/                         deploy.sh rollback.sh restore.sh backup.sh healthcheck-notify.sh
+  .docker/                         mode 700, Clipupp's own docker client config (DOCKER_CONFIG): the GHCR login of the
+                                   running CD job and cli-plugins/docker-rollout; /home/deploy/.docker is never touched
   backups/                         mode 700, nightly and pre-deploy dumps, .last-backup-ok (epoch of the last full backup)
   .deploy/current .deploy/previous .deploy/deploy.log .deploy/lock
   .deploy/run.out .deploy/run.rc .deploy/run.pid     the last detached deploy or rollback: log, exit status, pid
@@ -136,8 +138,9 @@ Scripts find web containers with `docker compose ps -q clipupp-web`, never by na
 - `PermitRootLogin prohibit-password` (key-only root; both existing root keys keep working), written as the drop-in `/etc/ssh/sshd_config.d/50-clipupp.conf`, because Ubuntu reads the drop-ins before `sshd_config` and the first value wins.
   The script runs `sshd -t`, then asserts with `sshd -T` that the effective value is `prohibit-password` (printed as `without-password` by OpenSSH 9.6), fails if an earlier drop-in overrides it, and only then reloads ssh.
 - `/etc/docker/daemon.json` with `json-file` defaults (`20m` x `5`) when the file does not exist yet; it applies after the next docker restart, which the script does not force because every service sets its own log limits.
-- The `docker rollout` CLI plugin for `deploy`, pinned to release `v0.14` (commit `a72a9632c38187abd6d8799e4a9d5054a67fe615`) and verified against the SHA-256 `cdeaba6ae9eee3b0b606286e585bbda6787283d801a6ad6d9b9d2bc347fda05b` embedded in the script.
+- The `docker rollout` CLI plugin in `/opt/clipupp/.docker/cli-plugins` (Clipupp's own `DOCKER_CONFIG`, not the shared `/home/deploy/.docker`), pinned to release `v0.14` (commit `a72a9632c38187abd6d8799e4a9d5054a67fe615`) and verified against the SHA-256 `cdeaba6ae9eee3b0b606286e585bbda6787283d801a6ad6d9b9d2bc347fda05b` embedded in the script.
   A mismatch fails the setup and installs nothing; an installed copy with a different hash is replaced.
+  The script then asserts, as `deploy` with `DOCKER_CONFIG=/opt/clipupp/.docker`, that `docker rollout --version` reports `v0.14` and that `docker compose version` works (compose must come from a system plugin directory).
 - `/opt/clipupp` skeleton with the ownership and modes above.
 - Cron entry for `deploy`: `*/5 * * * * /opt/clipupp/scripts/healthcheck-notify.sh >> /opt/clipupp/.deploy/health-cron.log 2>&1`.
 - Verifies first that the `deploy` user exists and is in the `docker` group and that `r2r_default` exists, and last that `deploy` can run `docker`.
@@ -213,7 +216,9 @@ Jobs:
    - Loads `DEPLOY_SSH_KEY` into an agent, pins the host key from `DEPLOY_HOST_KEY`.
    - Preflight over SSH: fail if `.deploy/run.pid` names a live process (`kill -0`) or if `.deploy/lock` is held (`flock -n .deploy/lock true` fails), so nothing on the server is touched while another deploy, rollback or restore runs.
    - `scp` `deploy/docker-compose.prod.yml`, `deploy/clipupp.caddy`, and `deploy/scripts/*` to `/opt/clipupp`, so the server always runs the committed version.
-   - One SSH call runs `docker login ghcr.io -u $GITHUB_ACTOR --password-stdin` with the token on stdin.
+   - One SSH call runs `docker login ghcr.io -u $GITHUB_ACTOR --password-stdin` with the token on stdin and `DOCKER_CONFIG=/opt/clipupp/.docker`, so the credential lands in Clipupp's own client config and never replaces the `ghcr.io` entry other stacks keep in `/home/deploy/.docker/config.json`.
+     The scripts source `lib.sh`, which exports `DOCKER_CONFIG=/opt/clipupp/.docker` whenever that directory exists, so `pull`, `compose` and `rollout` use the same config.
+   - A final step, `if: always()` once this run has logged in, runs `docker logout ghcr.io` against the same config, so the job token does not outlive the job on the server.
    - A second SSH call starts `scripts/deploy.sh sha-<sha>` detached as described in 7.1, and a third follows its output and returns its exit status.
 3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up` and `"version"` equal to the full sha, `/api/v1/homepage` is 200, the HTML contains no `cashback`, the certificate is valid.
 4. `notify-result`: Telegram success or failure, with the rollback command.
@@ -248,7 +253,8 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
 
 ### 7.2 Rollback (`.github/workflows/rollback.yml` and `scripts/rollback.sh`)
 
-- `workflow_dispatch` with optional input `tag`; environment `production` approval; same SSH path; runs `scripts/rollback.sh [tag]`; then the smoke job and a Telegram message.
+- `workflow_dispatch` with optional input `tag`; environment `production` (deployment branch rule `main` only, no reviewer); same SSH path; runs `scripts/rollback.sh [tag]`; then the smoke job and a Telegram message.
+- It has `packages: read` and logs the server in to GHCR with the job token into `/opt/clipupp/.docker` after the preflight, exactly as Deploy does, so a target whose images are no longer local can still be pulled; it logs out at the end of the job.
 - `rollback.sh` with no argument returns to `.deploy/previous`; with a tag it deploys that tag; `--with-db <dump>` additionally restores the database after the operator types `RESTORE`.
 - Rollback checks the local images first with `docker image inspect` and pulls only the ones that are missing, so it works even when the CI token has expired; if an image is neither local nor pullable it stops before touching anything.
 - It takes the same host lock as `deploy.sh`, waits for backend and web to be healthy, then rewrites `IMAGE_TAG` in `.env` and the state files; any failure posts "rollback to X FAILED" to Telegram.
@@ -298,7 +304,7 @@ Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, pub
 Notification secrets, repository level: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 Application secrets, one GitHub secret per `.env` key that is sensitive: `POSTGRES_PASSWORD`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY`.
 Non-sensitive settings are environment variables, not secrets, so they stay readable: `SITE_URL` (repository level), `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS`.
-`GITHUB_TOKEN` with `packages: write` pushes images and performs the registry login on the server.
+`GITHUB_TOKEN` with `packages: write` pushes images in CI; in Deploy and Rollback the job token with `packages: read` performs the registry login on the server, into `/opt/clipupp/.docker`, and is logged out at the end of the job.
 The deploy job renders `.env` with a template in `deploy/render-env.sh` that fails if any required key is empty, so a missing secret stops the deploy before the server changes.
 
 ### 8.3 Secrets hygiene
