@@ -294,6 +294,7 @@ The deploy job writes `/opt/clipupp/.env` (mode 600) from the GitHub secrets and
 Nobody edits `.env` on the server; a hand edit is overwritten by the next deploy.
 Every value is written single-quoted (`KEY='value'`), so docker compose and the bash readers take it literally.
 A secret may therefore not contain a single quote, a newline, or a carriage return; `render-env.sh` rejects such a value with exit 2 naming the key, before writing anything.
+`POSTGRES_PASSWORD` and `DB_PASSWORD` must be the same password: the first initialises the database role, the backend and the backup sidecar log in with the second, so `render-env.sh` also exits 2 when they differ (without printing either value).
 Keys (documented in `deploy/.env.production.example`): `IMAGE_TAG`, `POSTGRES_PASSWORD`, `DB_URL=jdbc:postgresql://db:5432/clipupp_db`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_SIZE`, `JWT_SECRET`, `PUBLIC_SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `EDGE_NETWORK=r2r_default`, `BACKUP_RETAIN_DAYS=30`, `RCLONE_CONFIG_R2_TYPE=s3`, `RCLONE_CONFIG_R2_PROVIDER=Cloudflare`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET=clipupp-backups`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 `.backup-key` is rendered the same way from `BACKUP_KEY`.
 
@@ -317,12 +318,14 @@ The deploy job renders `.env` with a template in `deploy/render-env.sh` that fai
 - No secret is ever committed; `gitleaks` guards pull requests.
 - `application-dev.yml` loses the R2 keys; dev reads them from the environment with empty defaults.
 - The previously committed R2 access key is rotated in Cloudflare before the first production deploy.
-- Rotation runbook in section 10.
+- `BACKUP_KEY` is kept offline as well, in the team password manager, from the day it is created: GitHub secrets cannot be read back, and without the key no backup, local or in R2, can be decrypted.
+- Rotation runbooks in section 10 ("Secrets that hold state").
 
 ## 9. Cutover plan
 
 1. Run `deploy/server-setup.sh` as root.
 2. Add every secret and variable from section 8.2 at the scope it names (the Telegram secrets and `SITE_URL` at repository level, the rest in the `production` environment); the first deploy renders `.env` and `.backup-key`.
+   `POSTGRES_PASSWORD` and `DB_PASSWORD` get the same value, and `BACKUP_KEY` is stored in the team password manager before it is added to GitHub.
 3. Append `deploy/clipupp.caddy` to `/opt/r2r/Caddyfile` and reload Caddy; the sslip host gets a certificate.
 4. `SITE_URL` points at the sslip host for now.
 5. Run `deploy.yml` by hand on `main` (Actions, Deploy, Run workflow); smoke passes on the sslip host.
@@ -347,7 +350,29 @@ Every row written since that dump is lost; the replaced database stays as `clipu
 
 Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h clipupp-web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
-Change a secret or setting: update it in GitHub (environment `production`, or repository level for the Telegram secrets and `SITE_URL`), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
+Change a stateless secret or a runtime setting (`JWT_SECRET`, `RESEND_API_KEY`, the R2 and rclone keys, the Telegram secrets, `EMAIL_*`, `DB_POOL_SIZE` and the other non-`NEXT_PUBLIC` settings): update it in GitHub (environment `production`, or repository level for the Telegram secrets and `SITE_URL`), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
+Rotating `JWT_SECRET` signs everyone out; nothing else is lost.
+
+Secrets that hold state: `POSTGRES_PASSWORD` with `DB_PASSWORD` (and `DB_USERNAME`), and `BACKUP_KEY`.
+They are not rotated by "update and Deploy".
+
+Rotate the database password:
+1. Pick a new password without a single quote, newline or carriage return.
+2. On the server, change the role's password in the running database first, interactively so it never lands in a shell history: `docker exec -it clipupp-db psql -U <DB_USERNAME> -d clipupp_db`, then `\password <DB_USERNAME>`, type the new password twice, `\q`.
+   The backend keeps its open connections, so the site stays up; do the next two steps right away, because new connections fail until the backend has the new password.
+3. In GitHub, set both `POSTGRES_PASSWORD` and `DB_PASSWORD` to the new password.
+4. Run Deploy for the current sha; the backend and the backup sidecar restart with the new password.
+Never change the GitHub secrets without step 2, and never change only one of the two: `POSTGRES_PASSWORD` only initialises an empty volume, so the role keeps its old password, the new backend cannot log in, and the automatic rollback reuses the same `.env` and fails too.
+`render-env.sh` refuses a deploy where the two secrets differ.
+If it happened anyway, run step 2 with the password now in GitHub, then Deploy again.
+`DB_USERNAME` is not renamed by rotation; renaming the role is a migration of its own.
+
+Rotate `BACKUP_KEY` (only when it may have leaked):
+1. Keep the old key: it stays in the password manager, labelled with the date it was retired.
+2. Store the new key in the password manager, then set `BACKUP_KEY` in GitHub and run Deploy.
+3. A new key only protects new backups; every existing local and R2 backup still needs the old key.
+   To restore one of them, decrypt it with the old key into a plain dump and restore that: `openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass file:<old key file> < <dump>.sql.gz.enc > /tmp/<dump>.sql.gz` (old key file mode 600, removed afterwards), then `scripts/restore.sh /tmp/<dump>.sql.gz ...` (it accepts a plain `.sql.gz`).
+4. Keep the old key until the last backup made with it has aged out of every copy (30 days locally, and whatever the R2 bucket keeps).
 
 Rotate the R2 keys: create a new token in Cloudflare, update `R2_ACCESS_KEY` and `R2_SECRET_KEY` in GitHub, run Deploy, delete the old token.
 
