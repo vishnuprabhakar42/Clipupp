@@ -21,6 +21,7 @@ mk_sandbox() {
   cat > "$sb/bin/docker" <<'STUB'
 #!/usr/bin/env bash
 echo "IMAGE_TAG=${IMAGE_TAG:-} docker $*" >> "$STUB_LOG"
+echo "${DOCKER_CONFIG:-}" >> "$STUB_DIR/docker-config"
 health() {  # health <default>: unhealthy when running the tag under test as the bad one
   if [ -n "${STUB_UNHEALTHY_TAG:-}" ] && [ "${IMAGE_TAG:-}" = "$STUB_UNHEALTHY_TAG" ]; then echo unhealthy; else echo "$1"; fi
 }
@@ -79,6 +80,14 @@ grep -qx "DB_USERNAME='u'" "$sb/app/.env" || fail "1: other .env lines changed"
 grep -qE '^IMAGE_TAG=sha-new docker compose .* up -d --no-deps --pull never backup$' "$STUB_LOG" || fail "1: backup sidecar not started"
 [ ! -e "$sb/app/.deploy/lock.d" ] || fail "1: lock not released"
 ! grep -qE "$ROLLBACK_UP" "$STUB_LOG" || fail "1: rolled back on success"
+
+# 1b. every docker call uses the app's private client config when the app has one
+mk_sandbox; echo old > "$sb/app/.deploy/current"; mkdir -m 700 "$sb/app/.docker"
+run_deploy sha-new
+[ "$code" = 0 ] || fail "1b: deploy exited $code"
+[ "$(sort -u "$sb/docker-config")" = "$sb/app/.docker" ] || fail "1b: docker ran without DOCKER_CONFIG=$sb/app/.docker ($(sort -u "$sb/docker-config" | tr '\n' ' '))"
+( cd "$sb/app" && scripts/rollback.sh >/dev/null 2>&1 ) || fail "1b: rollback failed"
+[ "$(sort -u "$sb/docker-config")" = "$sb/app/.docker" ] || fail "1b: rollback ran docker without the private config"
 
 # 2. failed dump aborts before any container changes
 mk_sandbox; echo old > "$sb/app/.deploy/current"

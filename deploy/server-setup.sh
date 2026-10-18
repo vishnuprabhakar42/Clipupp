@@ -77,11 +77,16 @@ else
   echo "   /etc/docker/daemon.json exists; left unchanged"
 fi
 
+echo "== $APP skeleton"
+install -d -o deploy -g deploy -m 0755 "$APP" "$APP/scripts"
+install -d -o deploy -g deploy -m 0700 "$APP/backups" "$APP/.deploy" "$APP/.docker" "$APP/.docker/cli-plugins"
+
 echo "== docker rollout plugin $ROLLOUT_VERSION (zero-downtime web deploys)"
-PLUGIN_DIR=/home/deploy/.docker/cli-plugins
+# Into Clipupp's own docker client config (DOCKER_CONFIG=$APP/.docker, which CD and the scripts
+# use), never into /home/deploy/.docker, which other stacks on this host share.
+PLUGIN_DIR="$APP/.docker/cli-plugins"
 PLUGIN="$PLUGIN_DIR/docker-rollout"
 if [ "$(sha256sum "$PLUGIN" 2>/dev/null | cut -d' ' -f1)" != "$ROLLOUT_SHA256" ]; then
-  install -d -o deploy -g deploy "/home/deploy/.docker" "$PLUGIN_DIR"
   tmp="$(mktemp)"
   curl -fsSL "https://raw.githubusercontent.com/wowu/docker-rollout/$ROLLOUT_COMMIT/docker-rollout" -o "$tmp"
   if ! echo "$ROLLOUT_SHA256  $tmp" | sha256sum -c --quiet -; then
@@ -92,13 +97,12 @@ if [ "$(sha256sum "$PLUGIN" 2>/dev/null | cut -d' ' -f1)" != "$ROLLOUT_SHA256" ]
   install -o deploy -g deploy -m 0755 "$tmp" "$PLUGIN"
   rm -f "$tmp"
 fi
-rollout_version="$(su -s /bin/sh deploy -c 'docker rollout --version' 2>&1 || true)"
+rollout_version="$(su -s /bin/sh deploy -c "DOCKER_CONFIG=$APP/.docker docker rollout --version" 2>&1 || true)"
 grep -qF "$ROLLOUT_VERSION" <<<"$rollout_version" \
-  || { echo "docker rollout $ROLLOUT_VERSION not usable by deploy" >&2; exit 1; }
-
-echo "== $APP skeleton"
-install -d -o deploy -g deploy -m 0755 "$APP" "$APP/scripts"
-install -d -o deploy -g deploy -m 0700 "$APP/backups" "$APP/.deploy"
+  || { echo "docker rollout $ROLLOUT_VERSION not usable by deploy with DOCKER_CONFIG=$APP/.docker" >&2; exit 1; }
+# compose must come from a system plugin directory, because the private config hides ~/.docker.
+su -s /bin/sh deploy -c "DOCKER_CONFIG=$APP/.docker docker compose version" >/dev/null 2>&1 \
+  || { echo "docker compose is not usable with DOCKER_CONFIG=$APP/.docker (install docker-compose-plugin system-wide)" >&2; exit 1; }
 
 echo "== health probe cron"
 CRON_LINE="*/5 * * * * $APP/scripts/healthcheck-notify.sh >> $APP/.deploy/health-cron.log 2>&1"

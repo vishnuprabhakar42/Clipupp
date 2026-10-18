@@ -13,6 +13,8 @@ concurrency:
 
 permissions:
   contents: read
+  # A rollback target that is no longer local (image retention) is pulled from GHCR.
+  packages: read
 
 jobs:
   rollback:
@@ -26,10 +28,16 @@ jobs:
       - uses: ./.github/actions/ssh-setup
         with: { key: '${{ secrets.DEPLOY_SSH_KEY }}', host: '${{ secrets.DEPLOY_HOST }}', host_key: '${{ secrets.DEPLOY_HOST_KEY }}', user: '${{ secrets.DEPLOY_USER }}' }
       - name: Roll back (detached on the server)
-        env: { TAG: '${{ github.event.inputs.tag }}' }
+        env: { TAG: '${{ github.event.inputs.tag }}', GHCR_TOKEN: '${{ secrets.GITHUB_TOKEN }}', ACTOR: '${{ github.actor }}' }
         run: |
           if [ -n "$TAG" ] && ! [[ "$TAG" =~ ^sha-[0-9a-f]{40}$ ]]; then echo "invalid tag: $TAG"; exit 2; fi
           ssh vps 'mkdir -p /opt/clipupp/.deploy && cd /opt/clipupp && { if [ -f .deploy/run.pid ] && kill -0 "$(cat .deploy/run.pid)" 2>/dev/null; then echo "::error::a previous run is still going (pid $(cat .deploy/run.pid)); see .deploy/run.out"; exit 3; fi; flock -n .deploy/lock true || { echo "::error::a deploy, rollback or restore holds .deploy/lock"; exit 3; }; }'
+          # rollback.sh pulls only images that are missing locally; the login goes to Clipupp's own
+          # docker client config, never the deploy user's shared ~/.docker.
+          # shellcheck disable=SC2029
+          printf '%s\n' "$GHCR_TOKEN" | ssh vps "install -d -m 700 /opt/clipupp/.docker && DOCKER_CONFIG=/opt/clipupp/.docker docker login ghcr.io -u '$ACTOR' --password-stdin >/dev/null"
+          # Only this run's own login is undone at the end; a run refused by the preflight logs nothing out.
+          echo "GHCR_LOGGED_IN=1" >> "$GITHUB_ENV"
           # shellcheck disable=SC2029
           ssh vps "cd /opt/clipupp && { if [ -f .deploy/run.pid ] && kill -0 \"\$(cat .deploy/run.pid)\" 2>/dev/null; then echo \"::error::a previous run is still going\"; exit 3; fi; flock -n .deploy/lock true || { echo \"::error::lock held\"; exit 3; }; } && rm -f .deploy/run.rc && : > .deploy/run.out && { setsid nohup bash -c '( scripts/rollback.sh $TAG; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
           # Follow the detached run's log until it exits; reconnect if only the ssh link dropped (255).
@@ -41,6 +49,9 @@ jobs:
             break
           done
           exit "$rc"
+      - name: Log the server out of GHCR
+        if: always() && env.GHCR_LOGGED_IN == '1'
+        run: ssh vps 'DOCKER_CONFIG=/opt/clipupp/.docker docker logout ghcr.io >/dev/null 2>&1 || true'
       - name: Smoke
         env: { SITE: '${{ vars.SITE_URL }}' }
         run: |
