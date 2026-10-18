@@ -7,8 +7,12 @@
 # CD must start it detached from the SSH session, so a dropped connection or a cancelled job
 # cannot kill it halfway (SIGHUP) and its output never goes to a dead pipe:
 #
-#   setsid nohup scripts/deploy.sh sha-<sha> > .deploy/run.out 2>&1 < /dev/null &
-#   pid=$!; tail --pid="$pid" -f .deploy/run.out; wait "$pid"
+#   setsid nohup bash -c '( scripts/deploy.sh sha-<sha>; echo $? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' &
+#   echo $! > .deploy/run.pid
+#
+# and follows it from a second session (a `wait` cannot span sessions):
+#
+#   tail -n +1 --pid="$(cat .deploy/run.pid)" -f .deploy/run.out; exit "$(cat .deploy/run.rc)"
 #
 # Order of operations:
 #   1. validate the tag, take the host lock (.deploy/lock), read .env, note the current tag
