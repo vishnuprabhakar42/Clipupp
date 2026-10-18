@@ -120,7 +120,7 @@ log "pulling images"
 if ! compose pull --quiet backend web backup; then
   log "registry pull failed; checking local images"
   for svc in backend web backup; do
-    img="$(compose config --images "$svc" | sed -n 1p)"
+    img="$(service_image "$svc")"
     docker image inspect "$img" >/dev/null 2>&1 || fail "$img not available locally"
   done
 fi

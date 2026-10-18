@@ -120,13 +120,27 @@ compose() {
   if [ -n "${COMPOSE_FILE:-}" ]; then docker compose "$@"; else docker compose -f docker-compose.prod.yml "$@"; fi
 }
 
+# service_image <service>: the image the compose file resolves for a service. `compose config
+# --images <service>` ignores its argument and lists every image alphabetically, so the rendered
+# config is read instead.
+service_image() {
+  compose config 2>/dev/null | awk -v s="$1" '
+    /^services:/ { ins = 1; next }
+    /^[^ ]/ { ins = 0 }
+    ins && $0 == "  " s ":" { cur = 1; next }
+    ins && /^  [^ ]/ { cur = 0 }
+    ins && cur && /^    image:/ { print $2; exit }'
+}
+
 # rollout_web <timeout>: zero-downtime replacement of the web service with the docker-rollout
 # plugin (scale to two, wait for the new container's healthcheck, remove the old one). Returns
 # the plugin's status, or 2 when the plugin is not installed so the caller falls back to
 # `compose up`.
 rollout_web() {
   local timeout="$1"
-  docker rollout --help >/dev/null 2>&1 || return 2
+  # `docker rollout --help` exits 0 even when the plugin is missing (docker prints its own
+  # top-level help), so the plugin is detected by its own usage line.
+  docker rollout --help 2>&1 | grep -qi 'usage: *docker rollout' || return 2
   if [ -n "${COMPOSE_FILE:-}" ]; then
     docker rollout -t "$timeout" web
   else
@@ -140,7 +154,7 @@ rollout_web() {
 ensure_local_images() {
   local svc img missing=""
   for svc in "$@"; do
-    img="$(compose config --images "$svc" 2>/dev/null | sed -n 1p)"
+    img="$(service_image "$svc")"
     if [ -z "$img" ]; then log "ERROR: cannot resolve the image of $svc"; return 1; fi
     if docker image inspect "$img" >/dev/null 2>&1; then
       log "$svc: $img present locally"
@@ -153,7 +167,7 @@ ensure_local_images() {
   # shellcheck disable=SC2086 # $missing is a space-separated list of service names
   compose pull --quiet $missing || log "registry pull failed"
   for svc in $missing; do
-    img="$(compose config --images "$svc" 2>/dev/null | sed -n 1p)"
+    img="$(service_image "$svc")"
     if ! docker image inspect "$img" >/dev/null 2>&1; then
       log "ERROR: $img is neither local nor pullable (docker login ghcr.io, or pick another tag)"
       return 1

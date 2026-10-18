@@ -27,7 +27,11 @@ health() {  # health <default>: unhealthy when running the tag under test as the
 case "$*" in
   compose*" pull"*) [ "${STUB_PULL_FAILS:-0}" = 1 ] && exit 1; touch "$STUB_DIR/pulled"; exit 0 ;;
   "image inspect"*) if [ "${STUB_IMAGE_MISSING:-0}" = 1 ] && [ ! -f "$STUB_DIR/pulled" ]; then exit 1; fi; exit 0 ;;
-  compose*" config --images"*) echo "ghcr.io/x/img:${IMAGE_TAG:-}"; exit 0 ;;
+  compose*" config")
+    printf 'name: clipupp\nservices:\n'
+    for s in backup backend db web; do printf '  %s:\n    image: ghcr.io/x/%s:%s\n    restart: unless-stopped\n' "$s" "$s" "${IMAGE_TAG:-}"; done
+    printf 'networks:\n  default:\n    name: clipupp_default\n'
+    exit 0 ;;
   compose*" ps -q backend") echo "cid-backend" ;;
   compose*" ps -q web") echo "${STUB_WEB_IDS:-cid-web}" ;;
   compose*" up -d --no-deps --pull never backend")
@@ -38,7 +42,7 @@ case "$*" in
   "inspect -f {{.State.Health.Status}} cid-backend") health "${STUB_BACKEND_HEALTH:-healthy}" ;;
   "inspect -f {{.State.Health.Status}} cid-web2") health "${STUB_WEB2_HEALTH:-${STUB_WEB_HEALTH:-healthy}}" ;;
   "inspect -f {{.State.Health.Status}} cid-web"*) health "${STUB_WEB_HEALTH:-healthy}" ;;
-  "rollout --help") exit "${STUB_ROLLOUT_PRESENT:-1}" ;;
+  "rollout --help") if [ "${STUB_ROLLOUT_PRESENT:-1}" = 0 ]; then echo "Usage:  docker rollout [OPTIONS] SERVICE"; else echo "Usage:  docker [OPTIONS] COMMAND"; fi; exit 0 ;;
   "rollout"*) exit "${STUB_ROLLOUT_FAILS:-0}" ;;
   *) exit 0 ;;
 esac
