@@ -6,8 +6,12 @@
 #   scripts/rollback.sh               previous release, one command
 #
 # TLS and ports 80/443 belong to the server's shared Caddy (the r2r project).
-# `web` joins that Caddy's network (EDGE_NETWORK) under the alias clipupp-web, reached as
-# clipupp-web:3000. Its containers are named clipupp-web-<n>; use `compose logs web`.
+# Only `clipupp-web` joins that Caddy's network (EDGE_NETWORK); Caddy reaches it by its service
+# name as clipupp-web:3000. Compose registers every service name as a DNS name on every network
+# the service joins, so the service on the shared network carries the project prefix, and web
+# reaches the backend by its unique container name (clipupp-backend), never by a bare name such
+# as `backend` that another stack on that network could also answer to.
+# Web containers are named clipupp-clipupp-web-<n>; use `compose logs clipupp-web`.
 
 name: clipupp
 
@@ -60,19 +64,19 @@ services:
         condition: service_healthy
 
   # No container_name: docker rollout runs a second web replica beside the first during a
-  # deploy, which a fixed name forbids. Caddy reaches it through the edge alias clipupp-web.
-  web:
+  # deploy, which a fixed name forbids. Caddy reaches it by the service name clipupp-web.
+  clipupp-web:
     image: ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}
     restart: unless-stopped
     <<: *logging
     mem_limit: 512m
     environment:
-      BACKEND_URL: http://backend:8080
+      # The backend's container name: unique on the host, and only on this project's network.
+      BACKEND_URL: http://clipupp-backend:8080
     expose: ["3000"]
     networks:
       default: {}
-      edge:
-        aliases: [clipupp-web]
+      edge: {}
     depends_on:
       backend:
         condition: service_healthy

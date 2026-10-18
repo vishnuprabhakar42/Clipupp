@@ -14,8 +14,10 @@ ARG NEXT_PUBLIC_SITE_URL=https://clipupp.com
 ARG NEXT_PUBLIC_API_BASE_URL=
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 ARG NEXT_PUBLIC_MEDIA_ORIGIN=
-# Server-side proxy target; read by next.config.mjs rewrites at build time.
-ARG BACKEND_URL=http://backend:8080
+# Server-side proxy target; read by next.config.mjs rewrites at build time. clipupp-backend is the
+# backend container name, unique on the host; a bare service name such as "backend" could also
+# resolve on the shared edge network the web container joins.
+ARG BACKEND_URL=http://clipupp-backend:8080
 ARG GIT_SHA=unknown
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
     NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
@@ -30,7 +32,7 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
-ARG BACKEND_URL=http://backend:8080
+ARG BACKEND_URL=http://clipupp-backend:8080
 ARG GIT_SHA=unknown
 ENV BACKEND_URL=$BACKEND_URL GIT_SHA=$GIT_SHA
 LABEL org.opencontainers.image.source="https://github.com/vishnuprabhakar42/Clipupp" \

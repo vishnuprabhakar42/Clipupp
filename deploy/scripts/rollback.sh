@@ -66,7 +66,7 @@ STARTED=1
 log "== rollback: ${CURRENT:-none} -> $TARGET${WITH_DB:+ (with database from $WITH_DB)}"
 
 export IMAGE_TAG="$TARGET"
-ensure_local_images backend web || fail "images for $TARGET are not available"
+ensure_local_images backend clipupp-web || fail "images for $TARGET are not available"
 
 if [ -n "$WITH_DB" ]; then
   echo "!!! This REPLACES the database with $WITH_DB. Every change since that dump is lost."
@@ -77,9 +77,9 @@ if [ -n "$WITH_DB" ]; then
   scripts/restore.sh "$WITH_DB" --yes --from-rollback || fail "database restore failed (live database unchanged)"
 fi
 
-compose up -d --no-deps --pull never backend web || fail "compose up backend web failed"
+compose up -d --no-deps --pull never backend clipupp-web || fail "compose up backend web failed"
 wait_service_healthy backend "${HEALTH_TIMEOUT:-180}" || fail "backend on $TARGET not ready"
-wait_service_healthy web "${HEALTH_TIMEOUT:-120}" || fail "web on $TARGET not healthy"
+wait_service_healthy clipupp-web "${HEALTH_TIMEOUT:-120}" || fail "web on $TARGET not healthy"
 
 set_env_image_tag "$TARGET" || fail "running $TARGET, but could not write IMAGE_TAG to .env"
 if [ -n "$CURRENT" ] && [ "$CURRENT" != "$TARGET" ]; then echo "$CURRENT" > "$STATE_DIR/previous"; fi

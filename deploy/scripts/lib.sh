@@ -53,7 +53,7 @@ wait_healthy() {
 
 # wait_service_healthy <service> <timeout-seconds>: 0 when the compose service has at least one
 # running container and every one of them is healthy; 1 when any is unhealthy or on timeout.
-# Resolves the containers through `compose ps -q` on every poll, because `web` has no fixed
+# Resolves the containers through `compose ps -q` on every poll, because `clipupp-web` has no fixed
 # container name (docker rollout runs two replicas side by side while it swaps them).
 wait_service_healthy() {
   local svc="$1" timeout="$2" poll="${HEALTH_POLL:-3}" deadline ids id status all last
@@ -136,7 +136,7 @@ service_image() {
     ins && cur && !found && /^    image:/ { print $2; found = 1 }'
 }
 
-# rollout_web <timeout>: zero-downtime replacement of the web service with the docker-rollout
+# rollout_web <timeout>: zero-downtime replacement of the clipupp-web service with the docker-rollout
 # plugin (scale to two, wait for the new container's healthcheck, remove the old one). Returns
 # the plugin's status, or 2 when the plugin is not installed so the caller falls back to
 # `compose up`.
@@ -149,9 +149,9 @@ rollout_web() {
   help="$(docker rollout --help 2>&1 || true)"
   grep -qi 'usage: *docker rollout' <<<"$help" || return 2
   if [ -n "${COMPOSE_FILE:-}" ]; then
-    docker rollout -t "$timeout" web
+    docker rollout -t "$timeout" clipupp-web
   else
-    docker rollout -f docker-compose.prod.yml -t "$timeout" web
+    docker rollout -f docker-compose.prod.yml -t "$timeout" clipupp-web
   fi
 }
 
