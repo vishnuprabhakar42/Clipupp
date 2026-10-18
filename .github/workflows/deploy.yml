@@ -18,6 +18,8 @@ permissions:
 jobs:
   resolve:
     runs-on: ubuntu-latest
+    # actions: read lists the CI runs; packages: read inspects the image manifests.
+    permissions: { contents: read, packages: read, actions: read }
     outputs:
       sha: ${{ steps.s.outputs.sha }}
       short: ${{ steps.s.outputs.short }}
@@ -37,6 +39,33 @@ jobs:
           git merge-base --is-ancestor "$sha" origin/main || { echo "::error::$sha is not on main"; exit 2; }
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "short=${sha:0:7}" >> "$GITHUB_OUTPUT"
+      # Before any production secret or ssh: the release must have passed CI on main and its three
+      # images must be in GHCR, or nothing on the server changes.
+      - name: CI passed and the images exist
+        env:
+          SHA: ${{ steps.s.outputs.sha }}
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          ok="$(gh run list -R "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$SHA" --event push --branch main \
+            --json conclusion --jq '[.[] | select(.conclusion == "success")] | length')"
+          if [ "${ok:-0}" -lt 1 ]; then
+            echo "::error::no successful CI run on main for $SHA (still running, failed, or cancelled); wait for CI or deploy another sha"
+            exit 2
+          fi
+          export DOCKER_CONFIG="$RUNNER_TEMP/docker-config"
+          printf '%s\n' "$GH_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin >/dev/null
+          missing=""
+          for image in clipupp-backend clipupp-web clipupp-backup; do
+            docker manifest inspect "ghcr.io/vishnuprabhakar42/$image:sha-$SHA" >/dev/null 2>&1 || missing="$missing $image"
+          done
+          docker logout ghcr.io >/dev/null
+          if [ -n "$missing" ]; then
+            echo "::error::not in GHCR for sha-$SHA:$missing (the CI images job did not push them)"
+            exit 2
+          fi
+          echo "CI passed for $SHA and all three images exist"
 
   notify-start:
     needs: resolve

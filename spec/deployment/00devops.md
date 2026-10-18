@@ -207,6 +207,8 @@ Trigger: `workflow_dispatch` only, with an optional `sha` input.
 There is no `workflow_run` trigger, so a merge never deploys by itself and a fork pull request can never reach the production secrets.
 The `resolve` job fails unless `github.ref` is `refs/heads/main`.
 When `sha` is given, `resolve` checks out `main` with full history and fails unless `git merge-base --is-ancestor <sha> origin/main` holds; the default is `github.sha`, which is the head of `main`.
+Then, still before any production secret or ssh is used, `resolve` requires a successful run of the `CI` workflow for that sha on a push to `main` (`gh run list --workflow ci.yml --commit <sha> --event push --branch main`, with `actions: read`), and that all three images `clipupp-backend`, `clipupp-web` and `clipupp-backup` tagged `sha-<sha>` exist in GHCR (`docker manifest inspect` after a login with the job token, `packages: read`).
+A sha whose CI is still running, failed, or was cancelled by the `main` concurrency group (so its images were never pushed) is refused with a message naming the reason, and nothing reaches the server.
 Concurrency group `deploy-production`, never cancelled.
 The deployment branch rule on the `production` environment (`main` only) is a required setup item and is enforced by GitHub, not by the workflow text; the checks above are a second layer.
 
@@ -250,6 +252,9 @@ Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `
    The database is not restored; the log names the dump and the command to undo the migration (`scripts/rollback.sh <previous> --with-db <dump>`).
    The exit status is 1.
    When there is no previous tag, or the failed deploy was a redeploy of the current tag, nothing is rolled back and the message says so.
+10. An abort before the deploy is armed (steps 1 to 4: lock, pull, database, dump) touches neither backend nor web.
+   Because CD rendered `.env` with the new `IMAGE_TAG` before the run, the EXIT trap rewrites that line back to `PREVIOUS_TAG`, the release that is still running, so a hand `compose up`, `restore.sh` and the next rollback start what is really live; on a first deploy (no previous tag) `.env` is left as rendered.
+   Flow test 2b pins it.
 
 Known limit: recreating the backend container means roughly 30 seconds of API 502s per deploy on this 1 vCPU host, because two JVMs would not fit comfortably.
 The web container deploys with zero downtime.
