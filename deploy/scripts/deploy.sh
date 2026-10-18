@@ -25,6 +25,9 @@
 #   8. write IMAGE_TAG to .env and the state files, remove Clipupp's own images older than 7 days
 #      except the current and previous release
 #
+# An abort before that (prepare phase: lock, pull, database, dump) changes no container and sets
+# .env's IMAGE_TAG back to the running release.
+#
 # Once armed, ANY non-zero exit (a failed compose call, a failed health wait, SIGINT, SIGTERM,
 # SIGHUP) runs the rollback exactly once from the EXIT trap: backend and web go back to the
 # previous tag, their health is checked, and Telegram gets the true outcome. The database is
@@ -96,7 +99,13 @@ on_exit() {
         rollback_release "${FAIL_REASON:-aborted (exit $rc)}"
         rc=1 ;;
       prepare)
-        log "deploy $TAG aborted before backend or web changed: ${FAIL_REASON:-exit $rc}" ;;
+        log "deploy $TAG aborted before backend or web changed: ${FAIL_REASON:-exit $rc}"
+        # CD rendered .env with the new IMAGE_TAG before this run; the release that is still
+        # running is PREVIOUS_TAG, so .env names it again (a hand `compose up`, the restore path
+        # and the next rollback then start what is really live).
+        if [ -n "$PREVIOUS_TAG" ] && [ "$PREVIOUS_TAG" != "$TAG" ]; then
+          set_env_image_tag "$PREVIOUS_TAG" && log ".env IMAGE_TAG set back to $PREVIOUS_TAG, the running release"
+        fi ;;
       committed)
         log "!! $TAG is live but a finishing step failed (exit $rc); check .env and $STATE_DIR"
         notify "Clipupp $TAG is live, but deploy.sh failed after the switch (exit $rc). Check .env and $STATE_DIR on the server." ;;

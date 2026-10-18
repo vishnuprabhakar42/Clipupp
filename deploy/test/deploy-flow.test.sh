@@ -100,6 +100,23 @@ grep -q 'docker exec clipupp-db pg_dump' "$STUB_LOG" || fail "2: no dump was att
 grep -q 'pre-deploy dump failed' "$sb/app/.deploy/deploy.log" || fail "2: dump failure not logged"
 ! grep -qE 'up -d .*(backend|web)' "$STUB_LOG" || fail "2: backend or web touched despite dump failure"
 [ "$(cat "$sb/app/.deploy/current")" = "old" ] || fail "2: current changed on failed deploy"
+grep -qx "IMAGE_TAG='old'" "$sb/app/.env" || fail "2: .env still names the release that never ran"
+
+# 2b. images neither pullable nor local (CI never pushed them): abort in prepare, no container
+#     touched, .env names the running release again, other lines kept
+mk_sandbox; echo old > "$sb/app/.deploy/current"
+run_deploy sha-new STUB_PULL_FAILS=1 STUB_IMAGE_MISSING=1
+[ "$code" = 1 ] || fail "2b: expected exit 1 (got $code)"
+! grep -qE 'up -d|pg_dump' "$STUB_LOG" || fail "2b: database or containers touched although the images are missing"
+grep -q 'not available locally' "$sb/app/.deploy/deploy.log" || fail "2b: reason not logged"
+grep -qx "IMAGE_TAG='old'" "$sb/app/.env" || fail "2b: .env IMAGE_TAG not set back to the running release"
+grep -qx "DB_USERNAME='u'" "$sb/app/.env" || fail "2b: other .env lines changed"
+[ "$(cat "$sb/app/.deploy/current")" = "old" ] || fail "2b: current changed"
+# ... and on a first deploy (nothing running yet) .env is left as rendered
+mk_sandbox
+run_deploy sha-new STUB_PULL_FAILS=1 STUB_IMAGE_MISSING=1
+[ "$code" = 1 ] || fail "2b: first deploy without images exited $code"
+grep -qx "IMAGE_TAG='sha-new'" "$sb/app/.env" || fail "2b: first deploy rewrote .env"
 
 # 3. unhealthy backend triggers rollback to the previous tag, which is checked and reported
 mk_sandbox; echo old > "$sb/app/.deploy/current"; echo older > "$sb/app/.deploy/previous"
