@@ -7,7 +7,7 @@
 # GitHub Environment secrets and variables are the only store of configuration;
 # this file is overwritten on every deploy. Every required key must be set and
 # non-empty, or the script exits 2 before writing anything, so a missing secret
-# stops a deploy before the server changes. Values are written verbatim.
+# stops a deploy before the server changes. Values are written verbatim, single-quoted.
 set -euo pipefail
 
 OUT="${1:?usage: render-env.sh <output-file>}"
@@ -41,21 +41,36 @@ for key in "${REQUIRED[@]}"; do
   fi
 done
 
+# Values are written single-quoted so every reader (compose, bash) takes them literally.
+# A single quote, newline or carriage return cannot be represented that way: reject it.
+check_value() {
+  case "$2" in
+    *$'\n'*|*$'\r'*|*"'"*)
+      echo "render-env: key $1 contains a newline, carriage return or single quote" >&2
+      exit 2 ;;
+  esac
+}
+for key in "${REQUIRED[@]}"; do check_value "$key" "${!key}"; done
+for pair in "${OPTIONAL[@]}"; do
+  key="${pair%%=*}"; def="${pair#*=}"
+  check_value "$key" "${!key:-$def}"
+done
+
 umask 077
 tmp="$(mktemp "${OUT}.XXXXXX")"
 {
   echo "# Rendered by deploy/render-env.sh on $(date -u +%FT%TZ). Do not edit; update GitHub and redeploy."
   for key in "${REQUIRED[@]}"; do
-    printf '%s=%s\n' "$key" "${!key}"
+    printf "%s='%s'\n" "$key" "${!key}"
   done
   for pair in "${OPTIONAL[@]}"; do
     key="${pair%%=*}"; def="${pair#*=}"
-    printf '%s=%s\n' "$key" "${!key:-$def}"
+    printf "%s='%s'\n" "$key" "${!key:-$def}"
   done
   # Derived: the database lives in this compose project.
-  echo "DB_URL=jdbc:postgresql://db:5432/clipupp_db"
-  echo "POSTGRES_USER=${DB_USERNAME}"
-  echo "POSTGRES_DB=clipupp_db"
+  echo "DB_URL='jdbc:postgresql://db:5432/clipupp_db'"
+  printf "POSTGRES_USER='%s'\n" "$DB_USERNAME"
+  echo "POSTGRES_DB='clipupp_db'"
 } > "$tmp"
 chmod 600 "$tmp"
 mv "$tmp" "$OUT"

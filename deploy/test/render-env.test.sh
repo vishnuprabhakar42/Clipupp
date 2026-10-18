@@ -16,10 +16,10 @@ required_env() {
 # 1. every required key present: file written, mode 600, derived keys filled
 ( required_env; ./render-env.sh "$tmp/env" )
 [ "$(stat -c %a "$tmp/env" 2>/dev/null || stat -f %Lp "$tmp/env")" = "600" ] || fail "mode is not 600"
-grep -q '^DB_URL=jdbc:postgresql://db:5432/clipupp_db$' "$tmp/env" || fail "DB_URL not derived"
-grep -q '^COOKIE_SECURE=true$' "$tmp/env" || fail "COOKIE_SECURE default missing"
-grep -q '^EDGE_NETWORK=r2r_default$' "$tmp/env" || fail "EDGE_NETWORK default missing"
-grep -q '^IMAGE_TAG=sha-abc$' "$tmp/env" || fail "IMAGE_TAG missing"
+grep -q "^DB_URL='jdbc:postgresql://db:5432/clipupp_db'$" "$tmp/env" || fail "DB_URL not derived"
+grep -q "^COOKIE_SECURE='true'$" "$tmp/env" || fail "COOKIE_SECURE default missing"
+grep -q "^EDGE_NETWORK='r2r_default'$" "$tmp/env" || fail "EDGE_NETWORK default missing"
+grep -q "^IMAGE_TAG='sha-abc'$" "$tmp/env" || fail "IMAGE_TAG missing"
 
 # 2. a missing required key fails with exit 2 and names it, and writes nothing
 set +e
@@ -37,6 +37,16 @@ set -e
 
 # 4. values with spaces and symbols survive verbatim
 ( required_env; export EMAIL_FROM='Clipupp <hello@clipupp.com>'; ./render-env.sh "$tmp/env4" )
-grep -qF 'EMAIL_FROM=Clipupp <hello@clipupp.com>' "$tmp/env4" || fail "value mangled"
+grep -qF "EMAIL_FROM='Clipupp <hello@clipupp.com>'" "$tmp/env4" || fail "value not quoted verbatim"
+
+# 5. a value containing a single quote, newline or CR is rejected with exit 2 and nothing is written
+for bad in "it's" $'a\nb' $'a\rb'; do
+  set +e
+  ( required_env; export JWT_SECRET="$bad"; ./render-env.sh "$tmp/env5" 2>"$tmp/err5" ); code=$?
+  set -e
+  [ "$code" = "2" ] || fail "unsafe value accepted (exit $code)"
+  grep -q 'JWT_SECRET' "$tmp/err5" || fail "unsafe key not named"
+  [ ! -e "$tmp/env5" ] || fail "file written despite unsafe value"
+done
 
 echo "render-env.test.sh: ok"
