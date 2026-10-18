@@ -19,6 +19,7 @@ env:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    permissions: { contents: read, pull-requests: read }
     outputs:
       backend: ${{ steps.f.outputs.backend }}
       frontend: ${{ steps.f.outputs.frontend }}
@@ -107,17 +108,19 @@ jobs:
   gitleaks:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions: { contents: read, pull-requests: read }
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
 
   images:
-    needs: [changes, backend, frontend]
-    # Run when an app or deploy assets changed; backend/frontend may be skipped by the filter, so accept skipped.
-    if: always() && (needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.deploy == 'true') && needs.backend.result != 'failure' && needs.frontend.result != 'failure'
+    needs: [changes, backend, frontend, deploy-assets]
+    # Always on push to main (CD needs the sha tag); on pull requests only when something relevant changed.
+    # Upstream jobs may be skipped by the path filter, so only failure or cancellation blocks.
+    if: ${{ !cancelled() && needs.changes.result == 'success' && (github.event_name == 'push' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.frontend == 'true' || needs.changes.outputs.deploy == 'true') && needs.backend.result != 'failure' && needs.frontend.result != 'failure' && needs.deploy-assets.result != 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -148,13 +151,14 @@ jobs:
           tags: |
             type=sha,format=long,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
-      - uses: docker/build-push-action@v6
+      - name: Build
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
           platforms: linux/amd64
-          push: ${{ github.event_name == 'push' }}
-          load: ${{ github.event_name == 'pull_request' }}
+          push: false
+          load: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.name }}
@@ -165,10 +169,26 @@ jobs:
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
             NEXT_PUBLIC_MEDIA_ORIGIN=${{ vars.R2_PUBLIC_BASE_URL }}
       - name: Trivy (critical, fixed vulnerabilities fail the build)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/${{ matrix.name }}:sha-${{ github.sha }}
           severity: CRITICAL
           ignore-unfixed: true
           exit-code: '1'
           format: table
+      - name: Push (after the scan passes)
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            NEXT_PUBLIC_SITE_URL=${{ vars.SITE_URL || 'https://clipupp.com' }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
+            NEXT_PUBLIC_MEDIA_ORIGIN=${{ vars.R2_PUBLIC_BASE_URL }}
