@@ -224,7 +224,7 @@ Jobs:
      The scripts source `lib.sh`, which exports `DOCKER_CONFIG=/opt/clipupp/.docker` whenever that directory exists, so `pull`, `compose` and `rollout` use the same config.
    - A final step, `if: always()` once this run has logged in, runs `docker logout ghcr.io` against the same config, so the job token does not outlive the job on the server.
    - A second SSH call starts `scripts/deploy.sh sha-<sha>` detached as described in 7.1, and a third follows its output and returns its exit status.
-3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up` and `"version"` equal to the full sha, `/api/v1/homepage` is 200, the HTML contains no `cashback`, the certificate is valid.
+3. `smoke` (from the runner against `https://clipupp.com`, or the sslip host before cutover): `/` is 200, `/hi` is 200, `/api/health` says `backend: up` and `"version"` equal to the full sha, `/api/v1/homepage` is 200, the visible text of `/` contains no `cashback` (scripts, styles and tags are stripped first, because the RSC payload carries the `cashbackRate` field name), the certificate is valid.
 4. `notify-result`: Telegram success or failure, with the rollback command.
 
 `notify-start`, `smoke` and `notify-result` declare no environment, so they read `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (repository secrets) and `SITE_URL` (repository variable).

@@ -178,7 +178,14 @@ jobs:
           curl -fsS -o /dev/null -w "home %{http_code}\n" "$SITE/"
           curl -fsS -o /dev/null -w "hindi %{http_code}\n" "$SITE/hi"
           curl -fsS -o /dev/null -w "homepage api %{http_code}\n" "$SITE/api/v1/homepage"
-          [ "$(curl -s "$SITE/" | grep -ci cashback)" = "0" ]
+          # Copy rule: no visible "cashback". Scripts (the RSC payload carries the cashbackRate field
+          # name), styles and tags are stripped first, so only rendered text is checked.
+          home="$(curl -fsS "$SITE/")"
+          visible="$(perl -0777 -pe 's/<script\b.*?<\/script>//gis; s/<style\b.*?<\/style>//gis; s/<[^>]*>/ /gs' <<<"$home")"
+          if grep -qi cashback <<<"$visible"; then
+            echo "::error::the homepage shows the word cashback:"; grep -oi '.\{0,40\}cashback.\{0,40\}' <<<"$visible" | head -5
+            exit 1
+          fi
 
   notify-result:
     needs: [resolve, deploy, smoke]
