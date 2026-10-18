@@ -55,7 +55,8 @@ EXPOSE 8080
 
 # Readiness, not liveness: the container is "healthy" only once Flyway has
 # run and the DB pool is up, which is what deploy.sh waits for.
+# 127.0.0.1, not localhost: BusyBox wget may resolve localhost to ::1 while the server binds IPv4.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
-  CMD wget -qO- http://localhost:8080/actuator/health/readiness >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:8080/actuator/health/readiness >/dev/null || exit 1
 
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

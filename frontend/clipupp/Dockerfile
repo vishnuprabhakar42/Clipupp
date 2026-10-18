@@ -41,6 +41,7 @@ COPY --from=build --chown=nextjs:nextjs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nextjs /app/public ./public
 USER nextjs
 EXPOSE 3000
+# 127.0.0.1, not localhost: BusyBox wget may resolve localhost to ::1 while the server binds IPv4.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD wget -qO- http://localhost:3000/api/health >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1:3000/api/health >/dev/null || exit 1
 CMD ["node", "server.js"]
