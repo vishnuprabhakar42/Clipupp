@@ -115,7 +115,7 @@ jobs:
           printf '%s\n' "$GHCR_TOKEN" | ssh vps "docker login ghcr.io -u '$ACTOR' --password-stdin >/dev/null"
           # Start deploy.sh in its own session so an ssh drop or job cancel cannot kill it mid-deploy.
           # shellcheck disable=SC2029
-          ssh vps "cd /opt/clipupp && rm -f .deploy/run.rc && : > .deploy/run.out && { setsid nohup bash -c '( scripts/deploy.sh sha-$SHA; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
+          ssh vps "cd /opt/clipupp && { if [ -f .deploy/run.pid ] && kill -0 \"\$(cat .deploy/run.pid)\" 2>/dev/null; then echo \"::error::a previous run is still going\"; exit 3; fi; flock -n .deploy/lock true || { echo \"::error::lock held\"; exit 3; }; } && rm -f .deploy/run.rc && : > .deploy/run.out && { setsid nohup bash -c '( scripts/deploy.sh sha-$SHA; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
           # Follow the detached run's log until it exits; reconnect if only the ssh link dropped (255).
           rc=1
           for attempt in 1 2 3 4 5; do
