@@ -22,7 +22,8 @@
 #   5. recreate backend on the new tag (Flyway migrates on boot), wait for health
 #   6. roll web over with zero downtime (docker rollout) or recreate it, wait for health
 #   7. start the backup sidecar (a failure is a warning and a Telegram notice, not a rollback)
-#   8. write IMAGE_TAG to .env and the state files, prune dangling images
+#   8. write IMAGE_TAG to .env and the state files, remove Clipupp's own images older than 7 days
+#      except the current and previous release
 #
 # Once armed, ANY non-zero exit (a failed compose call, a failed health wait, SIGINT, SIGTERM,
 # SIGHUP) runs the rollback exactly once from the EXIT trap: backend and web go back to the
@@ -173,7 +174,7 @@ fi
 set_env_image_tag "$TAG"
 if [ -n "$PREVIOUS_TAG" ] && [ "$PREVIOUS_TAG" != "$TAG" ]; then echo "$PREVIOUS_TAG" > "$PREVIOUS_FILE"; fi
 echo "$TAG" > "$CURRENT_FILE"
-# Removes dangling layers older than 7 days only; tagged releases stay local, so rollback works
-# without the registry. Old release tags are not removed automatically (review M3).
-docker image prune -f --filter "until=168h" >/dev/null 2>&1 || true
+# Only Clipupp's own images: the current and previous release always stay local, so rollback
+# works without the registry; older ones are pulled again if a rollback ever needs them.
+prune_clipupp_images "$TAG" "$(cat "$PREVIOUS_FILE" 2>/dev/null || true)"
 log "== deployed $TAG"
