@@ -28,9 +28,9 @@ export IMAGE_TAG="$TAG"
 log "== deploy $TAG (previous: ${PREVIOUS_TAG:-none})"
 
 log "pulling images"
-if ! compose pull --quiet backend web 2>/dev/null; then
+if ! compose pull --quiet backend web backup 2>/dev/null; then
   log "registry pull failed; checking local images"
-  for svc in backend web; do
+  for svc in backend web backup; do
     img="$(compose config --images "$svc" | sed -n 1p)"
     docker image inspect "$img" >/dev/null 2>&1 || { log "ERROR: $img not available locally"; exit 1; }
   done

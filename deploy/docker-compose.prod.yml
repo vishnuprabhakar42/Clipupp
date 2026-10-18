@@ -73,28 +73,29 @@ services:
         condition: service_healthy
 
   # Nightly encrypted dump at 02:30 UTC, 30-day retention, newest copied to R2.
+  # Built from deploy/backup/Dockerfile (rclone and the script baked in). It gets only the
+  # variables it needs, never the whole .env.
   backup:
-    image: postgres:16
+    image: ghcr.io/vishnuprabhakar42/clipupp-backup:${IMAGE_TAG}
     container_name: clipupp-backup
     restart: unless-stopped
     <<: *logging
     mem_limit: 128m
-    env_file: .env
     environment:
       PGHOST: db
+      PGUSER: ${DB_USERNAME}
+      PGPASSWORD: ${DB_PASSWORD}
+      PGDATABASE: clipupp_db
+      BACKUP_RETAIN_DAYS: ${BACKUP_RETAIN_DAYS:-30}
+      BACKUP_BUCKET: ${BACKUP_BUCKET}
+      RCLONE_CONFIG_R2_TYPE: ${RCLONE_CONFIG_R2_TYPE}
+      RCLONE_CONFIG_R2_PROVIDER: ${RCLONE_CONFIG_R2_PROVIDER}
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${RCLONE_CONFIG_R2_ACCESS_KEY_ID}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${RCLONE_CONFIG_R2_SECRET_ACCESS_KEY}
+      RCLONE_CONFIG_R2_ENDPOINT: ${RCLONE_CONFIG_R2_ENDPOINT}
     volumes:
       - ./backups:/backups
       - ./.backup-key:/keys/backup.key:ro
-      - ./scripts/backup.sh:/usr/local/bin/clipupp-backup:ro
-    entrypoint: ["/bin/bash", "-c"]
-    command:
-      - |
-        apt-get update -qq >/dev/null && apt-get install -y -qq rclone >/dev/null 2>&1 || echo "[backup] rclone install failed; off-site copy disabled"
-        while true; do
-          now=$$(date +%s); next=$$(( (now / 86400 + 1) * 86400 + 9000 ))   # 02:30 UTC
-          sleep $$(( next - now ))
-          clipupp-backup || echo "[backup] FAILED" >&2
-        done
     depends_on:
       db:
         condition: service_healthy

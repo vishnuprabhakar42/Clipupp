@@ -107,7 +107,7 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
 | `clipupp-db` | `postgres:16-alpine` | 512m, shm 128m | `pg_isready` | volume `clipupp-db-data`, `expose 5432` only |
 | `clipupp-backend` | `ghcr.io/vishnuprabhakar42/clipupp-backend:${IMAGE_TAG}` | 896m | `GET /actuator/health/readiness` | `JAVA_OPTS -XX:MaxRAMPercentage=70`, `stop_grace_period 35s`, env from `.env` |
 | `clipupp-web` | `ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}` | 512m | `GET /api/health` | joins `edge` (external `r2r_default`) |
-| `clipupp-backup` | `postgres:16` | 128m | none | nightly dump at 02:30 UTC, 30-day retention, `rclone` copy to R2 |
+| `clipupp-backup` | `ghcr.io/vishnuprabhakar42/clipupp-backup:${IMAGE_TAG}` | 128m | none | nightly dump at 02:30 UTC, 30-day retention, `rclone` copy to R2, scoped environment only |
 
 Every service uses the `json-file` log driver with `max-size 20m`, `max-file 5`, and `restart: unless-stopped`.
 Service DNS names inside the project are `db`, `backend`, `web`; container names carry the `clipupp-` prefix so they are unambiguous on the shared host.
@@ -156,6 +156,13 @@ It returns 200 even when the backend is down so Caddy keeps routing to the web c
 - Tags `sha-<40-character git sha>` (immutable, what deploys reference) and `latest` (convenience only).
 - `linux/amd64`, buildx with the GitHub Actions cache.
 - Images are never built on the VPS.
+
+### 5.4 Backup image
+
+The backup sidecar is a third image, `ghcr.io/vishnuprabhakar42/clipupp-backup`, built from `deploy/backup/Dockerfile` on `postgres:16-alpine`.
+It bakes in `bash`, `openssl`, `rclone`, `scripts/backup.sh` (as `/usr/local/bin/clipupp-backup`) and an entrypoint loop that runs the backup at 02:30 UTC, so nothing is installed at container start.
+The build context is the `deploy/` directory (`context: deploy`, `file: deploy/backup/Dockerfile`).
+The container does not read `.env`; compose passes it only `PGHOST`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `BACKUP_RETAIN_DAYS`, `BACKUP_BUCKET` and the `RCLONE_CONFIG_R2_*` keys.
 
 ## 6. CI (`.github/workflows/ci.yml`)
 
@@ -232,6 +239,8 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
 GitHub is the only store of secrets.
 The deploy job writes `/opt/clipupp/.env` (mode 600) from the environment secrets listed in 8.2 before every deploy and rollback, so a secret change is "update it in GitHub, run Deploy".
 Nobody edits `.env` on the server; a hand edit is overwritten by the next deploy.
+Every value is written single-quoted (`KEY='value'`), so docker compose and the bash readers take it literally.
+A secret may therefore not contain a single quote, a newline, or a carriage return; `render-env.sh` rejects such a value with exit 2 naming the key, before writing anything.
 Keys (documented in `deploy/.env.production.example`): `IMAGE_TAG`, `POSTGRES_PASSWORD`, `DB_URL=jdbc:postgresql://db:5432/clipupp_db`, `DB_USERNAME`, `DB_PASSWORD`, `DB_POOL_SIZE`, `JWT_SECRET`, `PUBLIC_SITE_URL`, `API_BASE_URL`, `CORS_ALLOWED_ORIGINS`, `COOKIE_SECURE=true`, `EMAIL_PROVIDER`, `EMAIL_FROM`, `RESEND_API_KEY`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `EDGE_NETWORK=r2r_default`, `BACKUP_RETAIN_DAYS=30`, `RCLONE_CONFIG_R2_TYPE=s3`, `RCLONE_CONFIG_R2_PROVIDER=Cloudflare`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET=clipupp-backups`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 `.backup-key` is rendered the same way from `BACKUP_KEY`.
 
