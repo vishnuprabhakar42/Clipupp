@@ -5,8 +5,13 @@
 # "clipupp", with clipupp-postgres and clipupp-adminer).
 name: clipupp-rehearsal
 
+# Fixed container and volume names are renamed so the rehearsal never collides with, or `down -v`
+# removes, a real clipupp stack on the same Docker host (scripts follow via CONTAINER_PREFIX).
 services:
+  db:
+    container_name: clipupp-rehearsal-db
   backend:
+    container_name: clipupp-rehearsal-backend
     image: clipupp-backend:${IMAGE_TAG}
   web:
     image: clipupp-web:${IMAGE_TAG}
@@ -14,8 +19,12 @@ services:
     # shared; the rehearsal looks the port up with `compose port web 3000`.
     ports: ["3300-3301:3000"]
   backup:
+    container_name: clipupp-rehearsal-backup
     image: clipupp-backup:${IMAGE_TAG}
 networks:
   edge:
     external: false
     name: clipupp-local-edge
+volumes:
+  clipupp-db-data:
+    name: clipupp-rehearsal-db-data

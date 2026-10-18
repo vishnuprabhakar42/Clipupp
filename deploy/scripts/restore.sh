@@ -44,7 +44,7 @@ cd "$(dirname "$0")/.."
 . scripts/lib.sh
 
 LIVE_DB=clipupp_db
-DB_CONTAINER="${DB_CONTAINER:-clipupp-db}"
+DB_CONTAINER="${DB_CONTAINER:-${CONTAINER_PREFIX}-db}"
 if ! [[ "$TARGET" =~ ^[a-z_][a-z0-9_]{0,62}$ ]]; then
   echo "restore.sh: --target must match ^[a-z_][a-z0-9_]{0,62}\$" >&2; exit 2
 fi

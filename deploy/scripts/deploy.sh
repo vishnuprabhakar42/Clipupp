@@ -128,14 +128,14 @@ fi
 log "starting the database"
 compose up -d --quiet-pull db || fail "database container did not start"
 deadline=$(( $(date +%s) + DB_TIMEOUT ))
-until docker exec clipupp-db pg_isready -q -U "$DB_USERNAME" -d clipupp_db 2>/dev/null; do
+until docker exec "${CONTAINER_PREFIX}-db" pg_isready -q -U "$DB_USERNAME" -d clipupp_db 2>/dev/null; do
   [ "$(date +%s)" -lt "$deadline" ] || fail "database not accepting connections after ${DB_TIMEOUT}s"
   sleep 1
 done
 
 DUMP="backups/pre-deploy-$TAG-$(date -u +%Y%m%d-%H%M%S).sql.gz.enc"
 log "pre-migration dump -> $DUMP"
-if docker exec clipupp-db pg_dump -U "$DB_USERNAME" --no-owner --no-privileges clipupp_db \
+if docker exec "${CONTAINER_PREFIX}-db" pg_dump -U "$DB_USERNAME" --no-owner --no-privileges clipupp_db \
      | gzip -9 | openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:.backup-key > "$DUMP" \
    && openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass file:.backup-key < "$DUMP" | gzip -t; then
   chmod 600 "$DUMP"; log "dump ok ($(du -h "$DUMP" | cut -f1))"
