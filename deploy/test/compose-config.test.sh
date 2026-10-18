@@ -8,9 +8,16 @@ printf "IMAGE_TAG='sha-test'\nPOSTGRES_PASSWORD='x'\nDB_USERNAME='u'\nDB_PASSWOR
 # env_file: .env resolves next to the compose file, so validate a copy beside a stub .env.
 cp docker-compose.prod.yml "$tmp/docker-compose.prod.yml"
 cfg="$(docker compose --env-file "$tmp/.env" -f "$tmp/docker-compose.prod.yml" config)"
-for name in clipupp-db clipupp-backend clipupp-web clipupp-backup; do
+for name in clipupp-db clipupp-backend clipupp-backup; do
   grep -q "container_name: $name" <<<"$cfg" || fail "missing $name"
 done
+# docker rollout scales web to two replicas, so web must not have a fixed container name;
+# Caddy finds it through the edge network alias instead.
+! grep -q 'container_name: clipupp-web' <<<"$cfg" || fail "web must not set container_name (docker rollout)"
+web_cfg="$(docker compose --env-file "$tmp/.env" -f "$tmp/docker-compose.prod.yml" config --format json \
+  | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["services"]["web"]["networks"]))')"
+grep -q '"edge": {"aliases": \["clipupp-web"\]}' <<<"$web_cfg" || fail "web needs the edge alias clipupp-web (got $web_cfg)"
+grep -q '"default"' <<<"$web_cfg" || fail "web must stay on the default network to reach backend"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-backend:sha-test' <<<"$cfg" || fail "backend image tag not applied"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-web:sha-test' <<<"$cfg" || fail "web image tag not applied"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-backup:sha-test' <<<"$cfg" || fail "backup image tag not applied"

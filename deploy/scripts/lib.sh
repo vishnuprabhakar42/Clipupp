@@ -1,18 +1,36 @@
 #!/usr/bin/env bash
-# Shared helpers for the deploy scripts. Source only; no side effects.
+# Shared helpers for the deploy scripts. Source only; no side effects beyond defining names.
+# Works under bash 3.2 (macOS, where the stubbed flow test runs) and bash 5 (the server).
 
 STATE_DIR="${STATE_DIR:-.deploy}"
 LOG_FILE="${LOG_FILE:-$STATE_DIR/deploy.log}"
 
-log() { mkdir -p "$STATE_DIR"; echo "[$(date -u +%FT%TZ)] $*" | tee -a "$LOG_FILE"; }
+# log "<text>": append to the deploy log and echo to stdout. A closed stdout (dropped SSH
+# session) must never abort a deploy or a rollback, so the console write is best effort.
+log() {
+  local line
+  line="[$(date -u +%FT%TZ)] $*"
+  mkdir -p "$STATE_DIR" 2>/dev/null || true
+  printf '%s\n' "$line" >> "$LOG_FILE" 2>/dev/null || true
+  printf '%s\n' "$line" 2>/dev/null || true
+}
 
-# notify "<text>": Telegram message when the bot is configured, silent otherwise. Never fails the caller.
+# notify "<text>": record the message in the log, then post it to Telegram when the bot is
+# configured. Never fails the caller.
+# The bot token is part of the URL, so it is visible in curl's argv to local users for the
+# duration of the call (review M2); accepted for now.
 notify() {
   local text="$1"
+  log "notify: $text"
   [ -n "${TELEGRAM_BOT_TOKEN:-}" ] && [ -n "${TELEGRAM_CHAT_ID:-}" ] || return 0
   curl -fsS -m 10 -o /dev/null -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
     --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text=${text}" \
-    --data-urlencode "disable_web_page_preview=true" || log "notify failed (ignored)"
+    --data-urlencode "disable_web_page_preview=true" 2>/dev/null || log "notify failed (ignored)"
+}
+
+# valid_tag <tag>: 0 when the string is a legal docker image tag.
+valid_tag() {
+  [[ "$1" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]
 }
 
 # wait_healthy <container> <timeout-seconds>: 0 when healthy, 1 on timeout or unhealthy.
@@ -25,7 +43,35 @@ wait_healthy() {
       healthy) return 0 ;;
       unhealthy) log "$name is unhealthy"; return 1 ;;
     esac
-    [ "$(date +%s)" -lt "$deadline" ] || { log "$name not healthy after ${timeout}s (last: $status)"; return 1; }
+    if [ "$(date +%s)" -ge "$deadline" ]; then log "$name not healthy after ${timeout}s (last: $status)"; return 1; fi
+    sleep "$poll"
+  done
+}
+
+# wait_service_healthy <service> <timeout-seconds>: 0 when the compose service has at least one
+# running container and every one of them is healthy; 1 when any is unhealthy or on timeout.
+# Resolves the containers through `compose ps -q` on every poll, because `web` has no fixed
+# container name (docker rollout runs two replicas side by side while it swaps them).
+wait_service_healthy() {
+  local svc="$1" timeout="$2" poll="${HEALTH_POLL:-3}" deadline ids id status all last
+  deadline=$(( $(date +%s) + timeout ))
+  while :; do
+    ids="$(compose ps -q "$svc" 2>/dev/null || true)"
+    if [ -n "$ids" ]; then
+      all=1; last=""
+      for id in $ids; do
+        status="$(docker inspect -f '{{.State.Health.Status}}' "$id" 2>/dev/null || echo missing)"
+        case "$status" in
+          healthy) ;;
+          unhealthy) log "$svc container ${id:0:12} is unhealthy"; return 1 ;;
+          *) all=0; last="$status" ;;
+        esac
+      done
+      if [ "$all" = 1 ]; then return 0; fi
+    else
+      last="no running container"
+    fi
+    if [ "$(date +%s)" -ge "$deadline" ]; then log "$svc not healthy after ${timeout}s (last: $last)"; return 1; fi
     sleep "$poll"
   done
 }
@@ -47,15 +93,102 @@ load_env() {
   done < .env
 }
 
+# set_env_image_tag <tag>: rewrite the IMAGE_TAG line of .env in place (temp file + mv, mode
+# 600, single-quoted like render-env.sh writes it) so a later `docker compose up` by hand
+# starts the release that is actually running. Touches no other line.
+set_env_image_tag() {
+  local tag="$1" tmp
+  valid_tag "$tag" || { log "ERROR: refusing to write invalid tag to .env"; return 1; }
+  [ -f .env ] || { log "ERROR: .env missing"; return 1; }
+  tmp="$(mktemp .env.XXXXXX)" || return 1
+  if awk -v t="$tag" '
+      BEGIN { q = sprintf("%c", 39) }
+      /^IMAGE_TAG=/ { if (!done) print "IMAGE_TAG=" q t q; done = 1; next }
+      { print }
+      END { if (!done) print "IMAGE_TAG=" q t q }
+    ' .env > "$tmp" && chmod 600 "$tmp" && mv -f "$tmp" .env; then
+    return 0
+  fi
+  rm -f "$tmp"
+  log "ERROR: could not rewrite IMAGE_TAG in .env"
+  return 1
+}
+
 # compose: docker compose on the production file, unless COMPOSE_FILE already names the files
 # (the local rehearsal sets it to prod + local override).
 compose() {
   if [ -n "${COMPOSE_FILE:-}" ]; then docker compose "$@"; else docker compose -f docker-compose.prod.yml "$@"; fi
 }
 
-# rollout_web: zero-downtime replacement of the web container when the docker-rollout plugin is
-# installed (0), or 2 when the plugin is missing so the caller falls back to compose up.
+# rollout_web <timeout>: zero-downtime replacement of the web service with the docker-rollout
+# plugin (scale to two, wait for the new container's healthcheck, remove the old one). Returns
+# the plugin's status, or 2 when the plugin is not installed so the caller falls back to
+# `compose up`.
 rollout_web() {
+  local timeout="$1"
   docker rollout --help >/dev/null 2>&1 || return 2
-  if [ -n "${COMPOSE_FILE:-}" ]; then docker rollout web; else docker rollout -f docker-compose.prod.yml web; fi
+  if [ -n "${COMPOSE_FILE:-}" ]; then
+    docker rollout -t "$timeout" web
+  else
+    docker rollout -f docker-compose.prod.yml -t "$timeout" web
+  fi
+}
+
+# ensure_local_images <service>...: make sure the images of the given services (at the exported
+# IMAGE_TAG) are present locally. Local images are used as they are; the registry is contacted
+# only for the ones that are missing. Returns 1 when any is still missing.
+ensure_local_images() {
+  local svc img missing=""
+  for svc in "$@"; do
+    img="$(compose config --images "$svc" 2>/dev/null | sed -n 1p)"
+    if [ -z "$img" ]; then log "ERROR: cannot resolve the image of $svc"; return 1; fi
+    if docker image inspect "$img" >/dev/null 2>&1; then
+      log "$svc: $img present locally"
+    else
+      missing="$missing $svc"
+    fi
+  done
+  [ -n "$missing" ] || return 0
+  log "not present locally:$missing; pulling from the registry"
+  # shellcheck disable=SC2086 # $missing is a space-separated list of service names
+  compose pull --quiet $missing || log "registry pull failed"
+  for svc in $missing; do
+    img="$(compose config --images "$svc" 2>/dev/null | sed -n 1p)"
+    if ! docker image inspect "$img" >/dev/null 2>&1; then
+      log "ERROR: $img is neither local nor pullable (docker login ghcr.io, or pick another tag)"
+      return 1
+    fi
+  done
+}
+
+# acquire_lock: one deploy, rollback or restore at a time on this host. Uses flock(1) on
+# $STATE_DIR/lock when available (the server), else an atomic mkdir of $STATE_DIR/lock.d (macOS,
+# where the flow test runs). Fails at once, never waits. Child scripts inherit the lock through
+# CLIPUPP_LOCK_HELD (rollback.sh calling restore.sh). The caller's EXIT trap must call
+# release_lock.
+LOCK_KIND=""
+acquire_lock() {
+  if [ "${CLIPUPP_LOCK_HELD:-}" = 1 ]; then return 0; fi
+  mkdir -p "$STATE_DIR"
+  if command -v flock >/dev/null 2>&1; then
+    exec 9>>"$STATE_DIR/lock"
+    if ! flock -n 9; then
+      log "ERROR: another deploy, rollback or restore is running (flock on $STATE_DIR/lock is held); try again when it finishes"
+      exit 1
+    fi
+    LOCK_KIND=flock
+  else
+    if ! mkdir "$STATE_DIR/lock.d" 2>/dev/null; then
+      log "ERROR: another deploy, rollback or restore is running ($STATE_DIR/lock.d exists, pid $(cat "$STATE_DIR/lock.d/pid" 2>/dev/null || echo unknown)); if that process is gone, remove $STATE_DIR/lock.d"
+      exit 1
+    fi
+    echo "$$" > "$STATE_DIR/lock.d/pid"
+    LOCK_KIND=dir
+  fi
+  export CLIPUPP_LOCK_HELD=1
+}
+
+release_lock() {
+  if [ "$LOCK_KIND" = dir ]; then rm -rf "$STATE_DIR/lock.d"; fi
+  LOCK_KIND=""
 }

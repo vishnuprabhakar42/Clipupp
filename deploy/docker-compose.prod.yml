@@ -6,7 +6,8 @@
 #   scripts/rollback.sh               previous release, one command
 #
 # TLS and ports 80/443 belong to the server's shared Caddy (the r2r project).
-# `web` joins that Caddy's network (EDGE_NETWORK) and is reached as clipupp-web:3000.
+# `web` joins that Caddy's network (EDGE_NETWORK) under the alias clipupp-web, reached as
+# clipupp-web:3000. Its containers are named clipupp-web-<n>; use `compose logs web`.
 
 name: clipupp
 
@@ -58,16 +59,20 @@ services:
       db:
         condition: service_healthy
 
+  # No container_name: docker rollout runs a second web replica beside the first during a
+  # deploy, which a fixed name forbids. Caddy reaches it through the edge alias clipupp-web.
   web:
     image: ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}
-    container_name: clipupp-web
     restart: unless-stopped
     <<: *logging
     mem_limit: 512m
     environment:
       BACKEND_URL: http://backend:8080
     expose: ["3000"]
-    networks: [default, edge]
+    networks:
+      default: {}
+      edge:
+        aliases: [clipupp-web]
     depends_on:
       backend:
         condition: service_healthy
