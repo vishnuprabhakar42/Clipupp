@@ -23,7 +23,7 @@ Decisions taken with Vishnu on 2026-10-15:
 | Domain | `clipupp.com` and `www.clipupp.com` (DNS currently on Vercel, to be moved) |
 | Database | Postgres 16 container on the VPS with a named volume |
 | Environments | Production only; no staging in this phase |
-| Production gate | Manual run only: Actions, Deploy, Run workflow on `main`. The workflow refuses any other ref and any sha that is not on `main`. The GitHub Environment `production` scopes the deploy secrets but has no required reviewer, because required reviewers are not available on private repositories on GitHub Free. Upgrading to GitHub Team restores an approval gate: re-add the reviewer rule on the environment, no workflow change needed. |
+| Production gate | Manual run only: Actions, Deploy, Run workflow on `main`. The environment `production` has a deployment branch rule of `main` only, enforced by GitHub, so a job that declares the environment can run only from `main`. Environment secrets are readable only by jobs that declare `environment: production`. The `resolve` job's ref check and ancestor check are a second layer. Required reviewers are unavailable on this repository's plan, so there is no approval click. A paid plan that supports environment required reviewers restores the approval gate: re-add the reviewer rule on the environment, no workflow change needed. |
 | Observability | Essentials: health checks, log rotation, uptime probe, deploy notifications, backups |
 | Notifications | Telegram bot to a private chat |
 | CD transport | SSH from GitHub-hosted runners as the `deploy` user |
@@ -199,12 +199,12 @@ There is no `workflow_run` trigger, so a merge never deploys by itself and a for
 The `resolve` job fails unless `github.ref` is `refs/heads/main`.
 When `sha` is given, `resolve` checks out `main` with full history and fails unless `git merge-base --is-ancestor <sha> origin/main` holds; the default is `github.sha`, which is the head of `main`.
 Concurrency group `deploy-production`, never cancelled.
-The production environment's deployment branches rule should be set to `main` only.
+The deployment branch rule on the `production` environment (`main` only) is a required setup item and is enforced by GitHub, not by the workflow text; the checks above are a second layer.
 
 Jobs:
 
 1. `notify-start`: Telegram message with sha, author, run link.
-2. `deploy` in environment `production` (no required reviewer, see section 1; environment URL `SITE_URL`):
+2. `deploy` in environment `production` (no required reviewer, see section 1; deployment branch rule `main` only; environment URL `SITE_URL`):
    - Checks out the sha.
    - Loads `DEPLOY_SSH_KEY` into an agent, pins the host key from `DEPLOY_HOST_KEY`.
    - Preflight over SSH: fail if `.deploy/run.pid` names a live process (`kill -0`) or if `.deploy/lock` is held (`flock -n .deploy/lock true` fails), so nothing on the server is touched while another deploy, rollback or restore runs.
@@ -222,7 +222,7 @@ CD starts it detached from the SSH session, so a dropped connection or a cancell
 One ssh runs `setsid nohup bash -c '( scripts/deploy.sh <tag>; echo $? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' &` and writes `$!` to `.deploy/run.pid`.
 A second ssh runs `tail -n +1 --pid="$(cat .deploy/run.pid)" -f .deploy/run.out` and exits with the contents of `.deploy/run.rc`, where a missing file counts as 1.
 That follow reconnects only when ssh itself fails with 255; the `wait` builtin cannot be used because the follow is not the parent.
-Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `.deploy/lock` is held.
+Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `.deploy/lock` is held, and the launcher's own ssh repeats both checks before it touches any `.deploy/run.*` file.
 
 1. Validate the tag, take the host lock `.deploy/lock` (`flock`, non-blocking; a second deploy, rollback or restore fails at once with a clear message), refuse to run without `.env`, record `PREVIOUS_TAG` from `.deploy/current`.
 2. `docker compose pull` the backend, web and backup images; if the pull fails but the images exist locally, continue.
@@ -284,7 +284,10 @@ Keys (documented in `deploy/.env.production.example`): `IMAGE_TAG`, `POSTGRES_PA
 
 ### 8.2 GitHub
 
-Environment `production` scopes the deploy and application secrets and variables; it has no required reviewer (section 1) and its deployment branches rule is `main` only.
+Environment `production` scopes the deploy and application secrets and variables; it has no required reviewer (section 1).
+Its deployment branch rule is `main` only; this is a required setup item, enforced by GitHub as a protection rule.
+Environment secrets are readable only by jobs that declare `environment: production`, and the branch rule limits those jobs to `main`.
+Required reviewers are unavailable on this plan; a paid plan that supports environment required reviewers is the upgrade path.
 The notification secrets and `SITE_URL` live at repository level, because the jobs that use them declare no environment.
 
 Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan -t ed25519` for exactly the `DEPLOY_HOST` string), `DEPLOY_USER`.
@@ -351,3 +354,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 - 2026-10-18: Task 4 review fixes: web has no `container_name` (edge alias `clipupp-web`) so `docker rollout` works; deploy.sh rolls back from an EXIT trap with verified health; host lock; restore swaps a proven copy in by rename; rollback is local-first; backup freshness marker and alert; sshd drop-in and pinned, checksummed plugin.
 - 2026-10-18: local rehearsal passed: isolated from real stacks (own project, container and volume names, preflight refuses to run beside a real one); first deploy on an empty database 27-34 s; second deploy swapped web through the real docker rollout plugin (web container id changed, /api/health answered 85 of 85 polls); rollback, host and in-container backup, and the restore drill (528 coupons) all succeeded. It found and fixed two script bugs (rollout plugin detection, service image resolution).
 - 2026-10-18: Task 7 fix round: production deploys are manual runs on `main` only (no `workflow_run`, no reviewer rule on GitHub Free); Telegram secrets and `SITE_URL` are repository level; launcher preflight; rollback has its own concurrency group.
+- 2026-10-18: Task 7 fix round 2: the launcher rechecks the pid and lock; the spec states the deployment branch rule as enforced by GitHub.
