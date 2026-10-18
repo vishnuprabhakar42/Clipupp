@@ -1931,7 +1931,7 @@ In the DNS provider for `clipupp.com`: `A @ 187.127.130.103` (TTL 300), `A www 1
 
 - [ ] **Step 3: Flip SITE_URL and the sslip block**
 
-Set the `production` variable `SITE_URL=https://clipupp.com` and the repository variable `SITE_URL` the same; edit `deploy/clipupp.caddy` so the sslip block is `redir https://clipupp.com{uri} permanent`; commit; on the server apply the same edit in place with `sed -i` on `/opt/r2r/Caddyfile` and reload; run Deploy so the web image is rebuilt with the final `NEXT_PUBLIC_SITE_URL`.
+Set the repository variable `SITE_URL=https://clipupp.com` (repository level only; there is no `production` environment copy, which would shadow it in the deploy job and make `.env` disagree with the image); edit `deploy/clipupp.caddy` so the sslip block is `redir https://clipupp.com{uri} permanent`; commit and push to `main`, which makes CI build a new web image with the final `NEXT_PUBLIC_SITE_URL` (Deploy never rebuilds an image); on the server apply the same edit in place with `sed -i` on `/opt/r2r/Caddyfile` and reload; when CI is green for that commit, run Deploy on `main`.
 
 - [ ] **Step 4: Verify**
 
@@ -1942,7 +1942,7 @@ curl -s https://clipupp.com/api/health
 curl -s -o /dev/null -w "%{http_code}\n" https://clipupp.com/hi
 curl -s -o /dev/null -w "%{http_code}\n" https://clipupp.com/sitemap.xml
 curl -s -o /dev/null -w "%{http_code}\n" https://clipupp.com/robots.txt
-curl -s https://clipupp.com | grep -ci cashback
+curl -s https://clipupp.com | perl -0777 -pe 's/<script\b.*?<\/script>//gis; s/<style\b.*?<\/style>//gis; s/<[^>]*>/ /gs' | grep -ci cashback
 ```
 
 Expected: 200, redirect to `https://clipupp.com/`, backend up with the deployed sha, 200, 200, 200, `0`.
