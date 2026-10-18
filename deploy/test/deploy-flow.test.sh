@@ -29,11 +29,11 @@ case "$*" in
   "image inspect"*) if [ "${STUB_IMAGE_MISSING:-0}" = 1 ] && [ ! -f "$STUB_DIR/pulled" ]; then exit 1; fi; exit 0 ;;
   compose*" config")
     printf 'name: clipupp\nservices:\n'
-    for s in backup backend db web; do printf '  %s:\n    image: ghcr.io/x/%s:%s\n    restart: unless-stopped\n' "$s" "$s" "${IMAGE_TAG:-}"; done
+    for s in backup backend clipupp-web db; do printf '  %s:\n    image: ghcr.io/x/%s:%s\n    restart: unless-stopped\n' "$s" "$s" "${IMAGE_TAG:-}"; done
     printf 'networks:\n  default:\n    name: clipupp_default\n'
     exit 0 ;;
   compose*" ps -q backend") echo "cid-backend" ;;
-  compose*" ps -q web") echo "${STUB_WEB_IDS:-cid-web}" ;;
+  compose*" ps -q clipupp-web") echo "${STUB_WEB_IDS:-cid-web}" ;;
   compose*" up -d --no-deps --pull never backend")
     if [ "${STUB_UP_FAILS:-0}" = 1 ]; then echo "stub: compose up backend fails" >&2; exit 1; fi
     if [ "${STUB_SIGTERM_PARENT:-0}" = 1 ]; then kill -TERM "$PPID"; fi ;;
@@ -58,7 +58,7 @@ run_deploy() {
   set +e; ( cd "$sb/app" && env "$@" scripts/deploy.sh "$tag" >/dev/null 2>&1 ); code=$?; set -e
 }
 line_of() { { grep -nE "$1" "$STUB_LOG" || true; } | head -1 | cut -d: -f1; }
-ROLLBACK_UP='^IMAGE_TAG=old docker compose -f docker-compose.prod.yml up -d --no-deps --pull never backend web$'
+ROLLBACK_UP='^IMAGE_TAG=old docker compose -f docker-compose.prod.yml up -d --no-deps --pull never backend clipupp-web$'
 NEW_BACKEND_UP='^IMAGE_TAG=sha-new docker compose -f docker-compose.prod.yml up -d --no-deps --pull never backend$'
 
 # 1. happy path: dump happens before backend up; state files, .env and lock updated
@@ -123,7 +123,7 @@ grep -qx "IMAGE_TAG='old'" "$sb/app/.env" || fail "4: .env IMAGE_TAG not rewritt
 # 4b. rollback pulls only when an image is missing locally, and fails clearly when it cannot
 mk_sandbox; echo sha-new > "$sb/app/.deploy/current"; echo old > "$sb/app/.deploy/previous"
 ( cd "$sb/app" && STUB_IMAGE_MISSING=1 scripts/rollback.sh >/dev/null 2>&1 ) || fail "4b: rollback after pulling missing images failed"
-grep -qE '^IMAGE_TAG=old docker compose .* pull --quiet backend web$' "$STUB_LOG" || fail "4b: missing images not pulled"
+grep -qE '^IMAGE_TAG=old docker compose .* pull --quiet backend clipupp-web$' "$STUB_LOG" || fail "4b: missing images not pulled"
 mk_sandbox; echo sha-new > "$sb/app/.deploy/current"; echo old > "$sb/app/.deploy/previous"
 set +e; ( cd "$sb/app" && STUB_IMAGE_MISSING=1 STUB_PULL_FAILS=1 scripts/rollback.sh >/dev/null 2>&1 ); code=$?; set -e
 [ "$code" != 0 ] || fail "4b: rollback succeeded without images"
@@ -135,12 +135,12 @@ grep -q 'rollback to old FAILED' "$sb/app/.deploy/deploy.log" || fail "4b: failu
 mk_sandbox; echo old > "$sb/app/.deploy/current"
 run_deploy sha-new STUB_ROLLOUT_PRESENT=0
 [ "$code" = 0 ] || fail "5: deploy with rollout exited $code"
-grep -qE '^IMAGE_TAG=sha-new docker rollout -f docker-compose.prod.yml -t [0-9]+ web$' "$STUB_LOG" || fail "5: rollout plugin not used when present"
-! grep -qE 'up -d --no-deps --pull never web$' "$STUB_LOG" || fail "5: web recreated by compose although rollout ran"
+grep -qE '^IMAGE_TAG=sha-new docker rollout -f docker-compose.prod.yml -t [0-9]+ clipupp-web$' "$STUB_LOG" || fail "5: rollout plugin not used when present"
+! grep -qE 'up -d --no-deps --pull never clipupp-web$' "$STUB_LOG" || fail "5: web recreated by compose although rollout ran"
 mk_sandbox; echo old > "$sb/app/.deploy/current"
 run_deploy sha-new
 [ "$code" = 0 ] || fail "5: deploy without rollout exited $code"
-grep -qE '^IMAGE_TAG=sha-new docker compose .* up -d --no-deps --pull never web$' "$STUB_LOG" || fail "5: compose up fallback for web missing"
+grep -qE '^IMAGE_TAG=sha-new docker compose .* up -d --no-deps --pull never clipupp-web$' "$STUB_LOG" || fail "5: compose up fallback for web missing"
 ! grep -qE "$ROLLBACK_UP" "$STUB_LOG" || fail "5: missing plugin caused a rollback"
 
 # 5b. a failed rollout (new web never healthy) rolls back
@@ -153,7 +153,7 @@ grep -qE "$ROLLBACK_UP" "$STUB_LOG" || fail "5b: rollout failure did not roll ba
 mk_sandbox; echo old > "$sb/app/.deploy/current"
 run_deploy sha-new STUB_WEB_IDS="cid-web1 cid-web2" STUB_WEB2_HEALTH=starting
 [ "$code" = 1 ] || fail "5c: a web container still starting was accepted (exit $code)"
-grep -q 'web not healthy after' "$sb/app/.deploy/deploy.log" || fail "5c: timeout on second web container not logged"
+grep -q 'clipupp-web not healthy after' "$sb/app/.deploy/deploy.log" || fail "5c: timeout on second web container not logged"
 
 # 6. a failing compose up of the new backend triggers the rollback and exit 1
 mk_sandbox; echo old > "$sb/app/.deploy/current"
@@ -172,7 +172,7 @@ run_deploy sha-new STUB_SIGTERM_PARENT=1
 [ "$code" = 1 ] || fail "6b: expected exit 1 after SIGTERM (got $code)"
 [ "$(grep -cE "$ROLLBACK_UP" "$STUB_LOG")" = 1 ] || fail "6b: SIGTERM did not roll back exactly once"
 grep -q 'interrupted (SIGTERM)' "$sb/app/.deploy/deploy.log" || fail "6b: interrupt reason not logged"
-! grep -qE '^IMAGE_TAG=sha-new docker (rollout|compose .* up -d --no-deps --pull never web$)' "$STUB_LOG" || fail "6b: kept deploying after SIGTERM"
+! grep -qE '^IMAGE_TAG=sha-new docker (rollout|compose .* up -d --no-deps --pull never clipupp-web$)' "$STUB_LOG" || fail "6b: kept deploying after SIGTERM"
 
 # 7. redeploying the current tag leaves .deploy/previous untouched
 mk_sandbox; echo sha-new > "$sb/app/.deploy/current"; echo old > "$sb/app/.deploy/previous"

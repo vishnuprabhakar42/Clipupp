@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # End-to-end rehearsal of deploy, rollback, backup and restore on this machine with real containers.
 # Needs port 3300 or 3301 free, and the images clipupp-backend:local, clipupp-web:local (built with
-# --build-arg BACKEND_URL=http://backend:8080) and clipupp-backup:local.
+# the Dockerfile's default BACKEND_URL, http://clipupp-backend:8080) and clipupp-backup:local.
 #   bash deploy/test/local-rehearsal.sh
 set -euo pipefail
 
@@ -47,7 +47,7 @@ resolved="$(docker compose config --format json | python3 -c 'import json,sys; p
 BACKUP_UID="$(id -u)"; BACKUP_GID="$(id -g)"; export BACKUP_UID BACKUP_GID
 cleanup() { docker compose down -v >/dev/null 2>&1 || true; docker rmi clipupp-backend:local-v2 clipupp-web:local-v2 clipupp-backup:local-v2 >/dev/null 2>&1 || true; cd /; rm -rf "$work"; }
 trap cleanup EXIT
-web_url() { echo "http://localhost:$(docker compose port web 3000 | head -1 | sed 's/.*://')"; }
+web_url() { echo "http://localhost:$(docker compose port clipupp-web 3000 | head -1 | sed 's/.*://')"; }
 step() { echo; echo "=== $* ($(date +%T))"; }
 
 docker tag clipupp-backend:local clipupp-backend:local-v2
@@ -57,9 +57,9 @@ docker tag clipupp-backup:local clipupp-backup:local-v2
 step "image resolution"
 # shellcheck source=/dev/null disable=SC1091
 ( . scripts/lib.sh; export IMAGE_TAG=local
-  for svc in backend web backup; do
+  for svc in backend clipupp-web backup; do
     img="$(service_image "$svc")"; echo "$svc -> $img"
-    [ "$img" = "clipupp-$svc:local" ] || { echo "service_image $svc resolved wrong"; exit 1; }
+    [ "$img" = "clipupp-${svc#clipupp-}:local" ] || { echo "service_image $svc resolved wrong"; exit 1; }
   done )
 
 step "first deploy (empty database, Flyway)"
@@ -71,7 +71,7 @@ grep -q '"backend":"up"' <<<"$health" || { echo "health after first deploy faile
 curl -fsSL -o /dev/null -w "homepage %{http_code} (after redirects)\n" "$(web_url)/en"
 
 step "second deploy local-v2 (web through docker rollout, health polled throughout)"
-web_before="$(docker compose ps -q web)"
+web_before="$(docker compose ps -q clipupp-web)"
 : > "$work/health.fail"; : > "$work/health.ok"
 ( while :; do
     # Caddy reaches web through the edge alias; here a replica may sit on either published port.
@@ -81,8 +81,8 @@ web_before="$(docker compose ps -q web)"
 poller=$!
 scripts/deploy.sh local-v2 | tee "$work/deploy2.out"
 kill "$poller" 2>/dev/null || true; wait "$poller" 2>/dev/null || true
-web_after="$(docker compose ps -q web)"
-grep -q "Scaling 'web' to '2' instances" "$work/deploy2.out" || { echo "docker rollout did not run"; exit 1; }
+web_after="$(docker compose ps -q clipupp-web)"
+grep -q "Scaling 'clipupp-web' to '2' instances" "$work/deploy2.out" || { echo "docker rollout did not run"; exit 1; }
 [ -n "$web_after" ] && [ "$web_before" != "$web_after" ] || { echo "web container id did not change"; exit 1; }
 fails="$(wc -l < "$work/health.fail" | tr -d ' ')"; oks="$(wc -l < "$work/health.ok" | tr -d ' ')"
 echo "health polls during deploy: $oks ok, $fails failed"

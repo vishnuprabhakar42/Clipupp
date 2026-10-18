@@ -13,10 +13,15 @@ services:
   backend:
     container_name: clipupp-rehearsal-backend
     image: clipupp-backend:${IMAGE_TAG}
-  web:
+    # The web image reaches the backend as clipupp-backend (its production container name); the
+    # renamed rehearsal container keeps answering to it on the rehearsal's own network only.
+    networks:
+      default:
+        aliases: [clipupp-backend]
+  clipupp-web:
     image: clipupp-web:${IMAGE_TAG}
     # A range, because docker rollout runs two replicas side by side and one host port cannot be
-    # shared; the rehearsal looks the port up with `compose port web 3000`.
+    # shared; the rehearsal looks the port up with `compose port clipupp-web 3000`.
     ports: ["3300-3301:3000"]
   backup:
     container_name: clipupp-rehearsal-backup

@@ -59,7 +59,7 @@ Backend (`backend/clipupp`):
 Frontend (`frontend/clipupp`):
 
 - No Dockerfile, no `output: "standalone"`, no health route.
-- `next.config.mjs` reads `BACKEND_URL` at build time for the `/api/v1/*`, `/r/*`, `/postback/*`, `/actuator/*` rewrites, so the image is built with `BACKEND_URL=http://backend:8080`.
+- `next.config.mjs` reads `BACKEND_URL` at build time for the `/api/v1/*`, `/r/*`, `/postback/*`, `/actuator/*` rewrites, so the image is built with `BACKEND_URL=http://clipupp-backend:8080` (the backend's container name, see 4.2).
 - `NEXT_PUBLIC_*` values are inlined at build time: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_BASE_URL` (empty string so the browser stays same-origin), `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_MEDIA_ORIGIN`.
 - The root layout reads cookies, so pages render per request; fetch-level revalidation still applies.
 - OG image routes use the edge runtime, which `next start` supports in a self-hosted build.
@@ -75,7 +75,7 @@ r2r-caddy-1 (shared Caddy, :80/:443, TLS via Let's Encrypt)   network r2r_defaul
   |  clipupp.com, www.clipupp.com, clipupp.187-127-130-103.sslip.io
   v
 clipupp-web (Next.js standalone, :3000)                       networks r2r_default + clipupp_default
-  |  next.config.mjs rewrites /api/v1, /r, /postback, /actuator -> http://backend:8080
+  |  next.config.mjs rewrites /api/v1, /r, /postback, /actuator -> http://clipupp-backend:8080
   v
 clipupp-backend (Spring Boot, :8080)                          network clipupp_default
   |
@@ -109,14 +109,18 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
 | --- | --- | --- | --- | --- |
 | `clipupp-db` | `postgres:16-alpine` | 512m, shm 128m | `pg_isready` | volume `clipupp-db-data`, `expose 5432` only |
 | `clipupp-backend` | `ghcr.io/vishnuprabhakar42/clipupp-backend:${IMAGE_TAG}` | 896m | `GET /actuator/health/readiness` | `JAVA_OPTS -XX:MaxRAMPercentage=70`, `stop_grace_period 35s`, env from `.env` |
-| `clipupp-web-<n>` | `ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}` | 512m | `GET /api/health` | no `container_name`; joins `edge` (external `r2r_default`) with the alias `clipupp-web` |
+| `clipupp-clipupp-web-<n>` | `ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}` | 512m | `GET /api/health` | service `clipupp-web`, no `container_name`; the only service that joins `edge` (external `r2r_default`) |
 | `clipupp-backup` | `ghcr.io/vishnuprabhakar42/clipupp-backup:${IMAGE_TAG}` | 128m | none | nightly dump at 02:30 UTC, 30-day retention, `rclone` copy to R2, scoped environment only |
 
 Every service uses the `json-file` log driver with `max-size 20m`, `max-file 5`, and `restart: unless-stopped`.
-Service DNS names inside the project are `db`, `backend`, `web`; container names carry the `clipupp-` prefix so they are unambiguous on the shared host.
-`web` has no fixed `container_name`, because `docker rollout` runs a second replica beside the first during a deploy and compose refuses to scale a service with a fixed name.
-Its containers are `clipupp-web-<n>`, and Caddy reaches whichever are running through the `edge` network alias `clipupp-web` (`clipupp-web:3000`).
-Scripts find web containers with `docker compose ps -q web`, never by name.
+Compose service names are `db`, `backend`, `clipupp-web` and `backup`; fixed container names carry the `clipupp-` prefix so they are unambiguous on the shared host.
+Compose registers a service's name as a DNS name on every network the service joins, and `r2r_default` is shared with the other stacks on the host.
+So the one service that joins it is named `clipupp-web`, never a bare `web`, and no other Clipupp service joins it; `db`, `backend` and `backup` stay on `clipupp_default` only.
+The web container reaches the backend as `http://clipupp-backend:8080`, the backend's container name, which is unique on the host, instead of the bare service name `backend` that a container of another stack on `r2r_default` could also answer to.
+`deploy/test/compose-config.test.sh` pins all of this: no service named `web`, only `clipupp-web` on `edge`, and that `BACKEND_URL`.
+`clipupp-web` has no fixed `container_name`, because `docker rollout` runs a second replica beside the first during a deploy and compose refuses to scale a service with a fixed name.
+Its containers are `clipupp-clipupp-web-<n>`, and Caddy reaches whichever are running by the service name (`clipupp-web:3000`).
+Scripts find web containers with `docker compose ps -q clipupp-web`, never by name.
 
 ### 4.3 Caddy site block (`deploy/clipupp.caddy`)
 
@@ -152,11 +156,11 @@ Scripts find web containers with `docker compose ps -q web`, never by name.
 New `frontend/clipupp/Dockerfile`, three stages on `node:20-alpine`:
 
 1. `deps`: `npm ci --omit=dev=false` with the lockfile only.
-2. `build`: copies the source, receives build args `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_BASE_URL` (default empty), `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_MEDIA_ORIGIN`, `BACKEND_URL` (default `http://backend:8080`), `GIT_SHA`; runs `npm run build` with `NEXT_TELEMETRY_DISABLED=1`.
+2. `build`: copies the source, receives build args `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_API_BASE_URL` (default empty), `NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `NEXT_PUBLIC_MEDIA_ORIGIN`, `BACKEND_URL` (default `http://clipupp-backend:8080`, also the runner stage default), `GIT_SHA`; runs `npm run build` with `NEXT_TELEMETRY_DISABLED=1`.
 3. `runner`: non-root `nextjs` user, copies `.next/standalone`, `.next/static`, `public`, installs `sharp` for linux-x64-musl, `HEALTHCHECK` on `/api/health`, `CMD ["node", "server.js"]`, `PORT=3000`, `HOSTNAME=0.0.0.0`.
 
 `next.config.mjs` gains `output: "standalone"`.
-A new route `app/api/health/route.ts` returns `{ ok: true, version, backend: "up" | "down" }` with a 2-second probe of `http://backend:8080/actuator/health/readiness`.
+A new route `app/api/health/route.ts` returns `{ ok: true, version, backend: "up" | "down" }` with a 2-second probe of `$BACKEND_URL/actuator/health/readiness` (`http://clipupp-backend:8080` in production).
 It returns 200 even when the backend is down so Caddy keeps routing to the web container; the smoke test reads the `backend` field.
 
 ### 5.3 Tags and registry
@@ -230,7 +234,7 @@ Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `
 4. Pre-migration dump: encrypted `pg_dump` to `backups/pre-deploy-<tag>-<timestamp>.sql.gz.enc`, verified by decrypting and `gzip -t`. A failed dump aborts the deploy before anything changes.
    From here on the deploy is armed (see step 9).
 5. `up -d backend` (recreate on the new tag; Flyway migrates on boot). Wait up to 180 s for the container to be healthy.
-6. `docker rollout -t 120 web` if the plugin is installed (starts the new web container, waits for health, removes the old one; on failure it removes the new one and the old one keeps serving); otherwise `up -d web`. Then wait up to 120 s until every container `compose ps -q web` lists is healthy.
+6. `docker rollout -t 120 clipupp-web` if the plugin is installed (starts the new web container, waits for health, removes the old one; on failure it removes the new one and the old one keeps serving); otherwise `up -d clipupp-web`. Then wait up to 120 s until every container `compose ps -q clipupp-web` lists is healthy.
 7. `up -d backup`. If the sidecar does not start, the deploy still succeeds, but the log says so and Telegram gets a notice that nightly backups are not running.
 8. Rewrite `IMAGE_TAG='<tag>'` in `.env`, write `.deploy/previous` (only when the tag changed, so redeploying the current tag keeps the rollback target) and `.deploy/current`, prune dangling images older than 7 days, log `== deployed <tag>`.
 9. Once armed, any non-zero exit, whether a failed compose call, a failed health wait, or SIGINT, SIGTERM or SIGHUP, runs the rollback exactly once from the script's EXIT trap: backend and web are recreated on `PREVIOUS_TAG`, their health is checked, `.env` gets `IMAGE_TAG='<previous>'`, and Telegram gets the true outcome ("rolled back to X and healthy" or "rollback to X FAILED, manual action needed").
@@ -259,7 +263,7 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
   It verifies the dump (decrypt, `gzip -t`, pg_dump header), restores into `clipupp_db_restore_<timestamp>` and counts its coupons, stops backend and web, and in one psql transaction terminates the sessions on `clipupp_db`, renames it to `clipupp_db_old_<timestamp>` and renames the restored copy to `clipupp_db`.
   The old database is kept and the command to drop it is printed; `--drop-old` drops it with `DROP DATABASE ... WITH (FORCE)`.
   Any failure before the swap drops the scratch copy, leaves `clipupp_db` untouched and starts backend and web again on the tag in `.deploy/current`.
-  After a successful restore backend and web stay stopped so the data can be checked; the last line prints `IMAGE_TAG='<current tag>' docker compose -f docker-compose.prod.yml up -d backend web`.
+  After a successful restore backend and web stay stopped so the data can be checked; the last line prints `IMAGE_TAG='<current tag>' docker compose -f docker-compose.prod.yml up -d backend clipupp-web`.
   `rollback.sh --with-db` wraps it with a confirmation and starts the chosen release itself.
 - `--target` must match `^[a-z_][a-z0-9_]{0,62}$` and may not be `postgres`, `template0` or `template1`.
 - Restore drill: monthly, `scripts/restore.sh --target clipupp_drill <newest dump>` restores into a scratch database the same way, prints the coupon count and drops the drill database (no prompt, the app is not touched); record the date in section 11.
@@ -330,7 +334,7 @@ Undo a migration: `scripts/rollback.sh <tag> --with-db backups/pre-deploy-<tag>-
 If the failed deploy already rolled back by itself, `<tag>` is the running release (`cat .deploy/current`).
 Every row written since that dump is lost; the replaced database stays as `clipupp_db_old_<timestamp>` until you drop it.
 
-Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
+Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h clipupp-web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
 Change a secret or setting: update it in GitHub (environment `production`, or repository level for the Telegram secrets and `SITE_URL`), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
 

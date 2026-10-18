@@ -11,13 +11,28 @@ cfg="$(docker compose --env-file "$tmp/.env" -f "$tmp/docker-compose.prod.yml" c
 for name in clipupp-db clipupp-backend clipupp-backup; do
   grep -q "container_name: $name" <<<"$cfg" || fail "missing $name"
 done
-# docker rollout scales web to two replicas, so web must not have a fixed container name;
-# Caddy finds it through the edge network alias instead.
-! grep -q 'container_name: clipupp-web' <<<"$cfg" || fail "web must not set container_name (docker rollout)"
-web_cfg="$(docker compose --env-file "$tmp/.env" -f "$tmp/docker-compose.prod.yml" config --format json \
-  | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["services"]["web"]["networks"]))')"
-grep -q '"edge": {"aliases": \["clipupp-web"\]}' <<<"$web_cfg" || fail "web needs the edge alias clipupp-web (got $web_cfg)"
-grep -q '"default"' <<<"$web_cfg" || fail "web must stay on the default network to reach backend"
+# docker rollout scales clipupp-web to two replicas, so it must not have a fixed container name;
+# Caddy finds it by its service name on the edge network instead.
+! grep -q 'container_name: clipupp-web' <<<"$cfg" || fail "clipupp-web must not set container_name (docker rollout)"
+# The edge network is shared with other stacks: compose registers each service name as a DNS name
+# on every network the service joins. Only clipupp-web may join it, no service may carry a bare
+# name such as web, and web reaches the backend by its unique container name.
+json_cfg="$(docker compose --env-file "$tmp/.env" -f "$tmp/docker-compose.prod.yml" config --format json)"
+edge_report="$(python3 -c '
+import json, sys
+c = json.load(sys.stdin)
+svcs = c["services"]
+print("services=" + ",".join(sorted(svcs)))
+print("on_edge=" + ",".join(sorted(n for n, s in svcs.items() if "edge" in (s.get("networks") or {}))))
+w = svcs.get("clipupp-web", {})
+print("web_networks=" + ",".join(sorted(w.get("networks") or {})))
+print("web_backend_url=" + str((w.get("environment") or {}).get("BACKEND_URL")))
+' <<<"$json_cfg")"
+grep -qx 'on_edge=clipupp-web' <<<"$edge_report" || fail "only clipupp-web may join the shared edge network ($edge_report)"
+grep -qx 'web_networks=default,edge' <<<"$edge_report" || fail "clipupp-web must be on default (backend) and edge (Caddy) ($edge_report)"
+! grep -qE '^services=(.*,)?web(,|$)' <<<"$edge_report" || fail "no service may be named web ($edge_report)"
+grep -qE '^services=(.*,)?clipupp-web(,|$)' <<<"$edge_report" || fail "service clipupp-web missing ($edge_report)"
+grep -qx 'web_backend_url=http://clipupp-backend:8080' <<<"$edge_report" || fail "web must reach the backend by its container name ($edge_report)"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-backend:sha-test' <<<"$cfg" || fail "backend image tag not applied"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-web:sha-test' <<<"$cfg" || fail "web image tag not applied"
 grep -q 'ghcr.io/vishnuprabhakar42/clipupp-backup:sha-test' <<<"$cfg" || fail "backup image tag not applied"

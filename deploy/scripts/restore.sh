@@ -86,7 +86,7 @@ on_exit() {
       tag="$(cat "$STATE_DIR/current" 2>/dev/null || true)"
       log "starting backend and web again on ${tag:-the .env tag}"
       if [ -n "$tag" ]; then export IMAGE_TAG="$tag"; fi
-      compose up -d --no-deps --pull never backend web
+      compose up -d --no-deps --pull never backend clipupp-web
     fi
   fi
   release_lock
@@ -127,7 +127,7 @@ log "scratch database holds $coupons coupons"
 if [ "$LIVE" = 1 ]; then
   log "stopping backend and web"
   APP_STOPPED=1
-  compose stop backend web
+  compose stop backend clipupp-web
 fi
 
 exists="$(psql_admin -d postgres -tAc "select 1 from pg_database where datname = '$TARGET'")"
@@ -163,7 +163,7 @@ if [ "$LIVE" = 1 ]; then
   if [ "$FROM_ROLLBACK" != 1 ]; then
     tag="$(cat "$STATE_DIR/current" 2>/dev/null || echo '<tag>')"
     log "backend and web are STOPPED. Start them on the running release:"
-    log "  IMAGE_TAG='$tag' docker compose -f docker-compose.prod.yml up -d backend web"
+    log "  IMAGE_TAG='$tag' docker compose -f docker-compose.prod.yml up -d backend clipupp-web"
   fi
 elif [ "$KEEP" = 1 ]; then
   log "drill database $TARGET kept ($coupons coupons)"

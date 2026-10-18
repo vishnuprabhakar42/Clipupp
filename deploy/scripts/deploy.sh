@@ -68,13 +68,13 @@ rollback_release() {
   fi
   log "rolling backend and web back to $target"
   export IMAGE_TAG="$target"
-  if ! compose up -d --no-deps --pull never backend web; then
+  if ! compose up -d --no-deps --pull never backend clipupp-web; then
     log "!! rollback to $target FAILED: compose up failed"
     notify "Clipupp deploy $TAG FAILED: $reason. Rollback to $target FAILED (compose up), manual action needed."
     return 0
   fi
   set_env_image_tag "$target" || true
-  if wait_service_healthy backend "$BACKEND_TIMEOUT" && wait_service_healthy web "$WEB_TIMEOUT"; then
+  if wait_service_healthy backend "$BACKEND_TIMEOUT" && wait_service_healthy clipupp-web "$WEB_TIMEOUT"; then
     echo "$target" > "$CURRENT_FILE"
     log "rolled back to $target and healthy. The database was NOT restored; to undo the migration: scripts/rollback.sh $target --with-db $DUMP"
     notify "Clipupp deploy $TAG FAILED: $reason. Rolled back to $target and healthy. Database not restored (pre-deploy dump $DUMP)."
@@ -121,9 +121,9 @@ export IMAGE_TAG="$TAG"
 log "== deploy $TAG (current: ${PREVIOUS_TAG:-none})"
 
 log "pulling images"
-if ! compose pull --quiet backend web backup; then
+if ! compose pull --quiet backend clipupp-web backup; then
   log "registry pull failed; checking local images"
-  for svc in backend web backup; do
+  for svc in backend clipupp-web backup; do
     img="$(service_image "$svc")"
     docker image inspect "$img" >/dev/null 2>&1 || fail "$img not available locally"
   done
@@ -157,11 +157,11 @@ log "rolling web over to $TAG"
 rc=0; rollout_web "$WEB_TIMEOUT" || rc=$?
 if [ "$rc" = 2 ]; then
   log "docker rollout not installed; recreating web"
-  compose up -d --no-deps --pull never web || fail "compose up web failed"
+  compose up -d --no-deps --pull never clipupp-web || fail "compose up web failed"
 elif [ "$rc" != 0 ]; then
   fail "web rollout failed (exit $rc)"
 fi
-wait_service_healthy web "$WEB_TIMEOUT" || fail "web did not become healthy"
+wait_service_healthy clipupp-web "$WEB_TIMEOUT" || fail "web did not become healthy"
 
 PHASE=committed
 
