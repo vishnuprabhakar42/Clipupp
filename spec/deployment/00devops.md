@@ -334,3 +334,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 - 2026-10-15: initial design approved and written (Fable 5.1 with Vishnu).
 - 2026-10-15: secrets live only in GitHub; CD renders the server `.env` on every deploy (Vishnu's call).
 - 2026-10-18: Task 4 review fixes: web has no `container_name` (edge alias `clipupp-web`) so `docker rollout` works; deploy.sh rolls back from an EXIT trap with verified health; host lock; restore swaps a proven copy in by rename; rollback is local-first; backup freshness marker and alert; sshd drop-in and pinned, checksummed plugin.
+- 2026-10-18: local rehearsal passed (deploy, second deploy through docker rollout, rollback, backup, restore drill; first deploy on an empty database took 27 s); it found and fixed two script bugs (rollout plugin detection, service image resolution).
