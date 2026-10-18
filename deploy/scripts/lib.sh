@@ -191,6 +191,44 @@ ensure_local_images() {
   done
 }
 
+# epoch_of <RFC 3339 time>: seconds since the epoch (GNU date on the server, BSD date on macOS
+# where the flow test runs); prints nothing when the time cannot be parsed.
+epoch_of() {
+  local t="$1" base
+  date -u -d "$t" +%s 2>/dev/null && return 0
+  base="${t%%.*}"; base="${base%Z}"
+  date -u -j -f '%Y-%m-%dT%H:%M:%S' "$base" +%s 2>/dev/null || true
+}
+
+# Image repositories Clipupp owns; housekeeping never looks at any other image on the host.
+IMAGE_REPO_PREFIX="${IMAGE_REPO_PREFIX:-ghcr.io/vishnuprabhakar42/clipupp-}"
+IMAGE_SOURCE_LABEL="org.opencontainers.image.source=https://github.com/vishnuprabhakar42/Clipupp"
+
+# prune_clipupp_images <keep-tag>...: remove Clipupp's own images older than RETAIN_DAYS (default
+# 7) except the given tags (the current and the previous release):
+#   - tagged images of the ghcr.io/vishnuprabhakar42/clipupp-* repositories, by reference with a
+#     plain `docker rmi` (an image still used by a container, or by a kept tag, stays);
+#   - untagged (dangling) images that carry Clipupp's OCI source label.
+# Never a host-wide prune: the other stacks on this host keep their previous releases locally for
+# their own rollbacks. Never fails the caller.
+prune_clipupp_images() {
+  local days="${RETAIN_DAYS:-7}" cutoff ref tag keep created created_s skip removed=0
+  cutoff=$(( $(date +%s) - days * 86400 ))
+  while IFS= read -r ref; do
+    case "$ref" in "$IMAGE_REPO_PREFIX"*:*) ;; *) continue ;; esac
+    tag="${ref##*:}"; skip=0
+    [ "$tag" != "<none>" ] || continue
+    for keep in "$@"; do [ -n "$keep" ] && [ "$tag" = "$keep" ] && skip=1; done
+    [ "$skip" = 0 ] || continue
+    created="$(docker image inspect -f '{{.Created}}' "$ref" 2>/dev/null || true)"
+    created_s="$(epoch_of "$created")"
+    [ -n "$created_s" ] && [ "$created_s" -lt "$cutoff" ] || continue
+    if docker rmi "$ref" >/dev/null 2>&1; then removed=$((removed + 1)); log "pruned image $ref"; fi
+  done <<<"$(docker image ls --filter "reference=${IMAGE_REPO_PREFIX}*" --format '{{.Repository}}:{{.Tag}}' 2>/dev/null || true)"
+  docker image prune -f --filter "until=$(( days * 24 ))h" --filter "label=$IMAGE_SOURCE_LABEL" >/dev/null 2>&1 || true
+  log "image housekeeping: removed $removed old Clipupp release tag(s), kept $*"
+}
+
 # acquire_lock: one deploy, rollback or restore at a time on this host. Uses flock(1) on
 # $STATE_DIR/lock when available (the server), else an atomic mkdir of $STATE_DIR/lock.d (macOS,
 # where the flow test runs). Fails at once, never waits. Child scripts inherit the lock through

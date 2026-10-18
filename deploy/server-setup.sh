@@ -105,8 +105,14 @@ su -s /bin/sh deploy -c "DOCKER_CONFIG=$APP/.docker docker compose version" >/de
   || { echo "docker compose is not usable with DOCKER_CONFIG=$APP/.docker (install docker-compose-plugin system-wide)" >&2; exit 1; }
 
 echo "== health probe cron"
-CRON_LINE="*/5 * * * * $APP/scripts/healthcheck-notify.sh >> $APP/.deploy/health-cron.log 2>&1"
-{ crontab -u deploy -l 2>/dev/null | grep -v healthcheck-notify || true; echo "$CRON_LINE"; } | crontab -u deploy -
+CRON_SCRIPT="$APP/scripts/healthcheck-notify.sh"
+CRON_LINE="*/5 * * * * $CRON_SCRIPT >> $APP/.deploy/health-cron.log 2>&1"
+# Other stacks on this host keep their own entries in the deploy user's crontab (some with a script
+# of the same name), so only lines naming Clipupp's full script path are replaced.
+crontab_before="$(crontab -u deploy -l 2>/dev/null || true)"
+echo "   deploy crontab before:"; printf '%s\n' "${crontab_before:-(empty)}"
+{ if [ -n "$crontab_before" ]; then grep -vF "$CRON_SCRIPT" <<<"$crontab_before" || true; fi; echo "$CRON_LINE"; } | crontab -u deploy -
+echo "   deploy crontab after:"; crontab -u deploy -l | sed 's/^/     /'
 
 echo "== checks"
 su -s /bin/sh deploy -c 'docker info >/dev/null' || { echo "deploy cannot run docker" >&2; exit 1; }

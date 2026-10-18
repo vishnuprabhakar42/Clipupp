@@ -102,7 +102,7 @@ The `clipupp_rt` refresh cookie therefore keeps its same-origin behaviour.
   backups/                         mode 700, nightly and pre-deploy dumps, .last-backup-ok (epoch of the last full backup)
   .deploy/current .deploy/previous .deploy/deploy.log .deploy/lock
   .deploy/run.out .deploy/run.rc .deploy/run.pid     the last detached deploy or rollback: log, exit status, pid
-  .deploy/health-state .deploy/health-fails .deploy/backup-state .deploy/backup-watch-since .deploy/health-cron.log
+  .deploy/health-state .deploy/health-fails .deploy/backup-state .deploy/backup-watch-since .deploy/disk-state .deploy/health-cron.log
 ```
 
 ### 4.2 Compose services (`deploy/docker-compose.prod.yml`, project name `clipupp`)
@@ -127,7 +127,8 @@ Scripts find web containers with `docker compose ps -q clipupp-web`, never by na
 ### 4.3 Caddy site block (`deploy/clipupp.caddy`)
 
 - `clipupp.com`: `encode zstd gzip`, `request_body max_size 12MB` (backend multipart ceiling), headers `-Server`, HSTS `max-age=63072000; includeSubDomains; preload`, `X-Content-Type-Options nosniff`, `Referrer-Policy strict-origin-when-cross-origin`; the CSP stays in Next.
-  `reverse_proxy clipupp-web:3000` with `health_uri /api/health`, `health_interval 30s`, `header_up X-Forwarded-Proto {scheme}`; JSON access log to stdout.
+  `reverse_proxy clipupp-web:3000` with `health_uri /api/health`, `health_interval 30s`, `header_up X-Forwarded-Proto {scheme}`.
+  No `log` directive: an access log would add one line per Clipupp request to the shared `r2r-caddy-1` container's log, which may not be rotated, on the disk every stack shares.
 - `www.clipupp.com`: permanent redirect to `https://clipupp.com{uri}`.
 - `clipupp.187-127-130-103.sslip.io`: serves the site before the DNS cutover, then becomes a permanent redirect to `clipupp.com`.
 
@@ -143,6 +144,7 @@ Scripts find web containers with `docker compose ps -q clipupp-web`, never by na
   The script then asserts, as `deploy` with `DOCKER_CONFIG=/opt/clipupp/.docker`, that `docker rollout --version` reports `v0.14` and that `docker compose version` works (compose must come from a system plugin directory).
 - `/opt/clipupp` skeleton with the ownership and modes above.
 - Cron entry for `deploy`: `*/5 * * * * /opt/clipupp/scripts/healthcheck-notify.sh >> /opt/clipupp/.deploy/health-cron.log 2>&1`.
+  Only lines that contain the full path `/opt/clipupp/scripts/healthcheck-notify.sh` are replaced, because other stacks keep entries in the same crontab (some with a script of the same name); the crontab is printed before and after.
 - Verifies first that the `deploy` user exists and is in the `docker` group and that `r2r_default` exists, and last that `deploy` can run `docker`.
 
 ## 5. Images
@@ -241,7 +243,9 @@ Before launching, the workflow refuses to run if `.deploy/run.pid` is alive or `
 5. `up -d backend` (recreate on the new tag; Flyway migrates on boot). Wait up to 180 s for the container to be healthy.
 6. `docker rollout -t 120 clipupp-web` if the plugin is installed (starts the new web container, waits for health, removes the old one; on failure it removes the new one and the old one keeps serving); otherwise `up -d clipupp-web`. Then wait up to 120 s until every container `compose ps -q clipupp-web` lists is healthy.
 7. `up -d backup`. If the sidecar does not start, the deploy still succeeds, but the log says so and Telegram gets a notice that nightly backups are not running.
-8. Rewrite `IMAGE_TAG='<tag>'` in `.env`, write `.deploy/previous` (only when the tag changed, so redeploying the current tag keeps the rollback target) and `.deploy/current`, prune dangling images older than 7 days, log `== deployed <tag>`.
+8. Rewrite `IMAGE_TAG='<tag>'` in `.env`, write `.deploy/previous` (only when the tag changed, so redeploying the current tag keeps the rollback target) and `.deploy/current`, remove Clipupp's own old images, log `== deployed <tag>`.
+   Image housekeeping only looks at the `ghcr.io/vishnuprabhakar42/clipupp-*` repositories: tags other than the current and the previous release whose image is older than 7 days are removed with a plain `docker rmi` (never `-f`), and dangling images are pruned only when they carry Clipupp's `org.opencontainers.image.source` label.
+   It never runs a host-wide `prune -a`, because the other stacks keep their previous releases locally for their own rollbacks.
 9. Once armed, any non-zero exit, whether a failed compose call, a failed health wait, or SIGINT, SIGTERM or SIGHUP, runs the rollback exactly once from the script's EXIT trap: backend and web are recreated on `PREVIOUS_TAG`, their health is checked, `.env` gets `IMAGE_TAG='<previous>'`, and Telegram gets the true outcome ("rolled back to X and healthy" or "rollback to X FAILED, manual action needed").
    The database is not restored; the log names the dump and the command to undo the migration (`scripts/rollback.sh <previous> --with-db <dump>`).
    The exit status is 1.
@@ -279,6 +283,7 @@ A blue-green backend becomes the upgrade when the VPS grows; the outbox lock add
 `scripts/healthcheck-notify.sh` runs every 5 minutes from cron as `deploy`, requests `https://clipupp.com/api/health` and `https://clipupp.com/actuator/health`, and posts to Telegram only when the state changes (down, or recovered), with the state kept in `.deploy/health-state`.
 Two consecutive failed probes count as down (`.deploy/health-fails`), so one slow response or the backend restart during a deploy does not page anyone.
 The same probe alerts once when `backups/.last-backup-ok` is older than 36 hours, or still missing a day after the probe first ran, and once more when backups recover (state in `.deploy/backup-state`).
+It also alerts once when the root filesystem, which every stack on the host shares, is more than 85 percent used (`DISK_ALERT_PERCENT`), and once more when it is back under the limit (state in `.deploy/disk-state`).
 
 ## 8. Configuration and secrets
 
@@ -352,8 +357,10 @@ Restore drill: `scripts/restore.sh --target clipupp_drill backups/<newest>`; it 
 
 A deploy or rollback refuses to start because of the lock: another one is running (`pgrep -af 'scripts/(deploy|rollback|restore).sh'`); wait for it.
 
-Disk pressure: `docker system df`, check `backups/` size, then `docker image prune -a --filter until=168h`.
-That prune also removes the previous release's images when they are older than 7 days, so rollback will have to pull them from GHCR (which needs `docker login ghcr.io`).
+Disk pressure (the probe alerts above 85 percent of `/`): `df -h /`, `docker system df`, `du -sh /opt/clipupp/backups`.
+Every deploy already removes Clipupp's own images older than 7 days except the current and previous release; to do it by hand, list them with `docker image ls 'ghcr.io/vishnuprabhakar42/clipupp-*'` and `docker rmi` the old tags, never the ones in `.deploy/current` and `.deploy/previous`.
+Never run `docker image prune -a` or `docker system prune` on this host: they also delete the other stacks' previous releases, which their rollbacks rely on.
+A rollback to a tag that is no longer local pulls it from GHCR; the Rollback workflow logs in for that.
 
 Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POOL_SIZE`, redeploy; consider the blue-green backend.
 

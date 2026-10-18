@@ -7,6 +7,8 @@
 # Backups: alerts once when backups/.last-backup-ok (written by a fully successful nightly
 # backup) is older than 36 hours, or still missing a day after this probe first ran, and once
 # more when backups recover.
+# Disk: alerts once when the root filesystem, which every stack on this host shares, is more than
+# DISK_ALERT_PERCENT (default 85) percent used, and once more when it is back under the limit.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # shellcheck source=lib.sh source-path=SCRIPTDIR
@@ -65,3 +67,23 @@ if [ "$bcur" != "$bprev" ]; then
   fi
   echo "$bcur" > "$BSTATE_FILE"
 fi
+
+# --- disk -------------------------------------------------------------------------------------
+DISK_LIMIT="${DISK_ALERT_PERCENT:-85}"
+DSTATE_FILE="$STATE_DIR/disk-state"
+dprev="$(cat "$DSTATE_FILE" 2>/dev/null || echo ok)"
+df_out="$(df -P / 2>/dev/null || true)"
+used="$(awk 'NR == 2 { sub(/%/, "", $5); print $5 }' <<<"$df_out")"
+case "$used" in
+  ''|*[!0-9]*) log "healthcheck: cannot read the disk usage of /" ;;
+  *)
+    if [ "$used" -gt "$DISK_LIMIT" ]; then dcur=full; else dcur=ok; fi
+    if [ "$dcur" != "$dprev" ]; then
+      if [ "$dcur" = full ]; then
+        notify "Clipupp host disk / is ${used}% used (alert above ${DISK_LIMIT}%). Check: docker system df; du -sh /opt/clipupp/backups. Runbook: Disk pressure."
+      else
+        notify "Clipupp host disk / is back to ${used}% used."
+      fi
+      echo "$dcur" > "$DSTATE_FILE"
+    fi ;;
+esac

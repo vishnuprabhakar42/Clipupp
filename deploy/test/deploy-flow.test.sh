@@ -27,6 +27,9 @@ health() {  # health <default>: unhealthy when running the tag under test as the
 }
 case "$*" in
   compose*" pull"*) [ "${STUB_PULL_FAILS:-0}" = 1 ] && exit 1; touch "$STUB_DIR/pulled"; exit 0 ;;
+  "image ls"*) for r in ${STUB_IMAGES:-}; do echo "$r"; done; exit 0 ;;
+  "image inspect -f {{.Created}} "*)
+    case "$*" in *fresh*) date -u +%Y-%m-%dT%H:%M:%S.123456789Z ;; *) echo 2020-01-01T00:00:00.123456789Z ;; esac; exit 0 ;;
   "image inspect"*) if [ "${STUB_IMAGE_MISSING:-0}" = 1 ] && [ ! -f "$STUB_DIR/pulled" ]; then exit 1; fi; exit 0 ;;
   compose*" config")
     printf 'name: clipupp\nservices:\n'
@@ -215,5 +218,32 @@ mk_sandbox
 run_deploy 'bad tag;rm'
 [ "$code" = 2 ] || fail "9: invalid tag accepted (exit $code)"
 [ ! -s "$STUB_LOG" ] || fail "9: docker called for an invalid tag"
+
+# 10. image housekeeping removes only Clipupp's own release tags older than 7 days, keeps the
+#     current and previous release, and never prunes host-wide
+mk_sandbox; echo old > "$sb/app/.deploy/current"
+G=ghcr.io/vishnuprabhakar42
+run_deploy sha-new STUB_IMAGES="$G/clipupp-backend:old $G/clipupp-backend:sha-new $G/clipupp-web:sha-ancient $G/clipupp-web:sha-fresh $G/clipupp-web:<none> $G/telegram-engagement-bot/web:sha-ancient"
+[ "$code" = 0 ] || fail "10: deploy exited $code"
+grep -qx "IMAGE_TAG=sha-new docker rmi $G/clipupp-web:sha-ancient" "$STUB_LOG" || fail "10: old Clipupp image not removed"
+[ "$(grep -c ' docker rmi ' "$STUB_LOG")" = 1 ] || fail "10: removed more than the one old Clipupp image: $(grep ' docker rmi ' "$STUB_LOG" | tr '\n' ';')"
+grep -qE "docker image ls --filter reference=$G/clipupp-\*" "$STUB_LOG" || fail "10: image listing not scoped to Clipupp repositories"
+grep -qE 'docker image prune -f --filter until=168h --filter label=org.opencontainers.image.source=https://github.com/vishnuprabhakar42/Clipupp$' "$STUB_LOG" || fail "10: dangling prune not scoped by the Clipupp label"
+! grep -qE 'docker (image|system) prune .*(-a|--all)' "$STUB_LOG" || fail "10: host-wide prune -a"
+
+# 11. the probe alerts once when / passes 85 percent and once when it recovers
+mk_sandbox
+cat > "$sb/bin/df" <<'DF'
+#!/usr/bin/env bash
+echo "Filesystem 1024-blocks Used Available Capacity Mounted on"
+echo "/dev/sda1 100 $STUB_DISK_USED 0 $STUB_DISK_USED% /"
+DF
+chmod +x "$sb/bin/df"
+probe() { ( cd "$sb/app" && STUB_DISK_USED="$1" scripts/healthcheck-notify.sh >/dev/null 2>&1 ) || fail "11: probe failed at $1%"; }
+probe 80; probe 86; probe 90; probe 84; probe 70
+[ "$(grep -c 'notify: Clipupp host disk / is 86% used' "$sb/app/.deploy/deploy.log")" = 1 ] || fail "11: no single alert at 86%"
+[ "$(grep -c 'notify: Clipupp host disk' "$sb/app/.deploy/deploy.log")" = 2 ] || fail "11: expected one alert and one recovery: $(grep 'notify:' "$sb/app/.deploy/deploy.log")"
+grep -q 'notify: Clipupp host disk / is back to 84% used' "$sb/app/.deploy/deploy.log" || fail "11: recovery not reported"
+[ "$(cat "$sb/app/.deploy/disk-state")" = ok ] || fail "11: disk state not ok after recovery"
 
 echo "deploy-flow.test.sh: ok"
