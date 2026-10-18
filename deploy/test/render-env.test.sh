@@ -49,4 +49,13 @@ for bad in "it's" $'a\nb' $'a\rb'; do
   [ ! -e "$tmp/env5" ] || fail "file written despite unsafe value"
 done
 
+# 6. POSTGRES_PASSWORD and DB_PASSWORD must be equal: a mismatch exits 2, names both, writes nothing
+set +e
+( required_env; export DB_PASSWORD=other; ./render-env.sh "$tmp/env6" 2>"$tmp/err6" ); code=$?
+set -e
+[ "$code" = "2" ] || fail "password mismatch accepted (exit $code)"
+grep -q 'POSTGRES_PASSWORD and DB_PASSWORD differ' "$tmp/err6" || fail "mismatch not explained"
+[ ! -e "$tmp/env6" ] || fail "file written despite password mismatch"
+! grep -q 'other' "$tmp/err6" || fail "a password value was printed"
+
 echo "render-env.test.sh: ok"

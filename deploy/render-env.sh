@@ -41,6 +41,14 @@ for key in "${REQUIRED[@]}"; do
   fi
 done
 
+# POSTGRES_PASSWORD initialises the database role; the backend (DB_PASSWORD) and the backup
+# sidecar must log in with that same password. Two secrets that drift apart break one of them, so
+# a mismatch stops the deploy here. Rotation is a coordinated runbook (spec section 10).
+if [ "$POSTGRES_PASSWORD" != "$DB_PASSWORD" ]; then
+  echo "render-env: POSTGRES_PASSWORD and DB_PASSWORD differ; they must be the same password (see the database password runbook)" >&2
+  exit 2
+fi
+
 # Values are written single-quoted so every reader (compose, bash) takes them literally.
 # A single quote, newline or carriage return cannot be represented that way: reject it.
 check_value() {
