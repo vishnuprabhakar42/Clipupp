@@ -86,7 +86,12 @@ services:
     restart: unless-stopped
     <<: *logging
     mem_limit: 128m
+    # Runs as the host's deploy user (uid/gid 1000 on the VPS), so dumps in ./backups are
+    # deploy-owned and restore.sh, run as deploy, can read them; .backup-key (deploy, 600) stays
+    # readable. Override BACKUP_UID/BACKUP_GID in the environment where deploy has other ids.
+    user: "${BACKUP_UID:-1000}:${BACKUP_GID:-1000}"
     environment:
+      HOME: /tmp
       PGHOST: db
       PGUSER: ${DB_USERNAME}
       PGPASSWORD: ${DB_PASSWORD}
