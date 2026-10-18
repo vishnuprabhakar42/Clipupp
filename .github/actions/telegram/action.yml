@@ -1,0 +1,15 @@
+name: Telegram message
+description: Posts one message to the operators chat; never fails the job.
+inputs:
+  token: { required: true, description: Bot token }
+  chat_id: { required: true, description: Target chat id }
+  text: { required: true, description: Message text; must not contain secret values }
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env: { T: '${{ inputs.token }}', C: '${{ inputs.chat_id }}', X: '${{ inputs.text }}' }
+      run: |
+        curl -fsS -m 10 -o /dev/null -X POST "https://api.telegram.org/bot${T}/sendMessage" \
+          --data-urlencode "chat_id=${C}" --data-urlencode "text=${X}" --data-urlencode "disable_web_page_preview=true" \
+          || echo "::warning::telegram notification failed"

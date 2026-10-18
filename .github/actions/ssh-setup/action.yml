@@ -1,0 +1,17 @@
+name: SSH setup
+description: Loads the deploy key and pins the server host key; defines the ssh alias "vps".
+inputs:
+  key: { required: true, description: Private key for the deploy user }
+  host: { required: true, description: Server address }
+  host_key: { required: true, description: Pinned known_hosts line(s) for the server }
+  user: { required: true, description: SSH user }
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env: { KEY: '${{ inputs.key }}', HOST: '${{ inputs.host }}', HOSTKEY: '${{ inputs.host_key }}', SSH_USER: '${{ inputs.user }}' }
+      run: |
+        mkdir -p ~/.ssh && chmod 700 ~/.ssh
+        printf '%s\n' "$KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+        printf '%s\n' "$HOSTKEY" > ~/.ssh/known_hosts
+        printf 'Host vps\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n  StrictHostKeyChecking yes\n  ServerAliveInterval 15\n  ServerAliveCountMax 4\n' "$HOST" "$SSH_USER" > ~/.ssh/config
