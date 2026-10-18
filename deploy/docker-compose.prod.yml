@@ -1,0 +1,110 @@
+# Production stack for the Hostinger VPS. Lives at /opt/clipupp with .env
+# (rendered by CD from GitHub secrets) and scripts/. Images are built by
+# GitHub Actions and pulled from GHCR; nothing is built on the server.
+#
+#   scripts/deploy.sh sha-<git sha>   what CD runs; safe by hand
+#   scripts/rollback.sh               previous release, one command
+#
+# TLS and ports 80/443 belong to the server's shared Caddy (the r2r project).
+# `web` joins that Caddy's network (EDGE_NETWORK) and is reached as clipupp-web:3000.
+
+name: clipupp
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "20m"
+      max-file: "5"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: clipupp-db
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 512m
+    shm_size: 128m
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: clipupp_db
+    # Not published: only reachable inside this compose network.
+    expose: ["5432"]
+    volumes:
+      - clipupp-db-data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d clipupp_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    image: ghcr.io/vishnuprabhakar42/clipupp-backend:${IMAGE_TAG}
+    container_name: clipupp-backend
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 896m
+    stop_grace_period: 35s
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: "8080"
+      JAVA_OPTS: "-XX:+UseG1GC -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8 -Duser.timezone=UTC"
+    expose: ["8080"]
+    # Flyway runs on boot; the image HEALTHCHECK is the readiness probe.
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    image: ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}
+    container_name: clipupp-web
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 512m
+    environment:
+      BACKEND_URL: http://backend:8080
+    expose: ["3000"]
+    networks: [default, edge]
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Nightly encrypted dump at 02:30 UTC, 30-day retention, newest copied to R2.
+  backup:
+    image: postgres:16
+    container_name: clipupp-backup
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 128m
+    env_file: .env
+    environment:
+      PGHOST: db
+    volumes:
+      - ./backups:/backups
+      - ./.backup-key:/keys/backup.key:ro
+      - ./scripts/backup.sh:/usr/local/bin/clipupp-backup:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        apt-get update -qq >/dev/null && apt-get install -y -qq rclone >/dev/null 2>&1 || echo "[backup] rclone install failed; off-site copy disabled"
+        while true; do
+          now=$$(date +%s); next=$$(( (now / 86400 + 1) * 86400 + 9000 ))   # 02:30 UTC
+          sleep $$(( next - now ))
+          clipupp-backup || echo "[backup] FAILED" >&2
+        done
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  default: {}
+  edge:
+    external: true
+    name: ${EDGE_NETWORK:-r2r_default}
+
+volumes:
+  clipupp-db-data:
+    name: clipupp-db-data
