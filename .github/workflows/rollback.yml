@@ -1,0 +1,56 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag to roll back to (sha-<40 hex>); empty = previous release
+        required: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ssh-setup
+        with: { key: '${{ secrets.DEPLOY_SSH_KEY }}', host: '${{ secrets.DEPLOY_HOST }}', host_key: '${{ secrets.DEPLOY_HOST_KEY }}', user: '${{ secrets.DEPLOY_USER }}' }
+      - name: Roll back (detached on the server)
+        env: { TAG: '${{ github.event.inputs.tag }}' }
+        run: |
+          if [ -n "$TAG" ] && ! [[ "$TAG" =~ ^sha-[0-9a-f]{40}$ ]]; then echo "invalid tag: $TAG"; exit 2; fi
+          ssh vps 'mkdir -p /opt/clipupp/.deploy'
+          # shellcheck disable=SC2029
+          ssh vps "cd /opt/clipupp && rm -f .deploy/run.rc && { setsid nohup bash -c '( scripts/rollback.sh $TAG; echo \$? > .deploy/run.rc ) > .deploy/run.out 2>&1 < /dev/null' > /dev/null 2>&1 < /dev/null & echo \$! > .deploy/run.pid; }"
+          # Follow the detached run's log until it exits; reconnect if only the ssh link dropped (255).
+          rc=1
+          for attempt in 1 2 3 4 5; do
+            rc=0
+            ssh vps 'cd /opt/clipupp && tail --pid="$(cat .deploy/run.pid)" -f .deploy/run.out; rc="$(cat .deploy/run.rc 2>/dev/null || echo 1)"; exit "$rc"' || rc=$?
+            [ "$rc" -ne 255 ] || { echo "ssh dropped (attempt $attempt), reconnecting"; sleep 5; continue; }
+            break
+          done
+          exit "$rc"
+      - name: Smoke
+        env: { SITE: '${{ vars.SITE_URL }}' }
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 20); do curl -fsS -o /dev/null "$SITE/api/health" && break; sleep 3; done
+          curl -fsS "$SITE/api/health" | grep -q '"backend":"up"'
+          curl -fsS -o /dev/null "$SITE/"
+      - uses: ./.github/actions/telegram
+        if: always()
+        with:
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          text: "Clipupp rollback ${{ job.status }} (target: ${{ github.event.inputs.tag || 'previous' }}) by ${{ github.actor }}. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
