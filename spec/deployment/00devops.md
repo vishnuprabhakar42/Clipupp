@@ -1,7 +1,7 @@
 # Clipupp DevOps: CI/CD, containers, and the Hostinger VPS
 
 Status: approved design, implementation in progress (branch `devops-cicd`).
-Last updated: 2026-10-15.
+Last updated: 2026-10-18.
 This file is the single source of truth for how Clipupp is built, shipped, run, backed up, and rolled back.
 Every deployment-related decision lands here; the runbook sections at the end are what an operator follows at 2 a.m.
 
@@ -172,6 +172,7 @@ It returns 200 even when the backend is down so Caddy keeps routing to the web c
 
 - `ghcr.io/vishnuprabhakar42/clipupp-backend` and `ghcr.io/vishnuprabhakar42/clipupp-web`.
 - Tags `sha-<40-character git sha>` (immutable, what deploys reference) and `latest` (convenience only).
+- CI has no `workflow_dispatch`, so an image is only ever built for a push to `main`; nobody re-runs the `images` job of a sha that already pushed, because that would push a different image under the same `sha-` tag.
 - `linux/amd64`, buildx with the GitHub Actions cache.
 - Images are never built on the VPS.
 
@@ -309,12 +310,15 @@ Environment `production` scopes the deploy and application secrets and variables
 Its deployment branch rule is `main` only; this is a required setup item, enforced by GitHub as a protection rule.
 Environment secrets are readable only by jobs that declare `environment: production`, and the branch rule limits those jobs to `main`.
 Required reviewers are unavailable on this plan; a paid plan that supports environment required reviewers is the upgrade path.
-The notification secrets and `SITE_URL` live at repository level, because the jobs that use them declare no environment.
+The notification secrets and the build-time variables `SITE_URL`, `GOOGLE_CLIENT_ID` and `R2_PUBLIC_BASE_URL` live at repository level, because the jobs that use them (the notification and smoke jobs, and CI's image build) declare no environment.
 
 Deploy access secrets: `DEPLOY_SSH_KEY` (a new ed25519 key generated for CI, public half appended to `/home/deploy/.ssh/authorized_keys`), `DEPLOY_HOST`, `DEPLOY_HOST_KEY` (output of `ssh-keyscan -t ed25519` for exactly the `DEPLOY_HOST` string), `DEPLOY_USER`.
 Notification secrets, repository level: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 Application secrets, one GitHub secret per `.env` key that is sensitive: `POSTGRES_PASSWORD`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `RESEND_API_KEY`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`, `RCLONE_CONFIG_R2_ACCESS_KEY_ID`, `RCLONE_CONFIG_R2_SECRET_ACCESS_KEY`, `BACKUP_KEY`.
-Non-sensitive settings are environment variables, not secrets, so they stay readable: `SITE_URL` (repository level), `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_PUBLIC_BASE_URL`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `GOOGLE_CLIENT_ID`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS`.
+Non-sensitive settings are variables, not secrets, so they stay readable: `SITE_URL`, `GOOGLE_CLIENT_ID` and `R2_PUBLIC_BASE_URL` at repository level, and `EMAIL_PROVIDER`, `EMAIL_FROM`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_REGION`, `RCLONE_CONFIG_R2_ENDPOINT`, `BACKUP_BUCKET`, `DB_POOL_SIZE`, `BACKUP_RETAIN_DAYS` in the `production` environment.
+Build-time settings: CI bakes `SITE_URL`, `GOOGLE_CLIENT_ID` and `R2_PUBLIC_BASE_URL` into the web image as `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_GOOGLE_CLIENT_ID` and `NEXT_PUBLIC_MEDIA_ORIGIN` when it builds a commit on `main`.
+CI declares no environment, so these three must live at repository level, with no `production` copy: a copy would shadow them in the deploy job only, and the runtime `.env` would then disagree with the image.
+A Deploy re-renders only the runtime `.env`; it never changes what the image baked in.
 `GITHUB_TOKEN` with `packages: write` pushes images in CI; in Deploy and Rollback the job token with `packages: read` performs the registry login on the server, into `/opt/clipupp/.docker`, and is logged out at the end of the job.
 The deploy job renders `.env` with a template in `deploy/render-env.sh` that fails if any required key is empty, so a missing secret stops the deploy before the server changes.
 
@@ -329,14 +333,16 @@ The deploy job renders `.env` with a template in `deploy/render-env.sh` that fai
 ## 9. Cutover plan
 
 1. Run `deploy/server-setup.sh` as root.
-2. Add every secret and variable from section 8.2 at the scope it names (the Telegram secrets and `SITE_URL` at repository level, the rest in the `production` environment); the first deploy renders `.env` and `.backup-key`.
+2. Add every secret and variable from section 8.2 at the scope it names (the Telegram secrets, `SITE_URL`, `GOOGLE_CLIENT_ID` and `R2_PUBLIC_BASE_URL` at repository level, the rest in the `production` environment); the first deploy renders `.env` and `.backup-key`.
    `POSTGRES_PASSWORD` and `DB_PASSWORD` get the same value, and `BACKUP_KEY` is stored in the team password manager before it is added to GitHub.
 3. Append `deploy/clipupp.caddy` to `/opt/r2r/Caddyfile` and reload Caddy; the sslip host gets a certificate.
 4. `SITE_URL` points at the sslip host for now.
 5. Run `deploy.yml` by hand on `main` (Actions, Deploy, Run workflow); smoke passes on the sslip host.
 6. Verify by hand: sign in, reveal a coupon, admin login, sitemap, robots, OG image.
 7. Switch `clipupp.com` A record and `www` to `187.127.130.103` (TTL 300 first), wait for propagation, Caddy issues the certificates.
-8. Set `SITE_URL` to `https://clipupp.com`; change the sslip block to a redirect; remove the Vercel project.
+8. Set the repository variable `SITE_URL` to `https://clipupp.com`; change the sslip block to a redirect (commit it to `deploy/clipupp.caddy` and apply the same edit in place on the server); remove the Vercel project.
+   `SITE_URL` is baked into the web image, so the change takes effect only with a new commit on `main` (the Caddy commit is one): wait for CI to build it, then run Deploy on `main`.
+   Redeploying an older sha would still serve the sslip canonical URLs, sitemap and OG links.
 9. Run the rollback workflow once to prove it, then redeploy `main`.
 
 ## 10. Runbooks
@@ -355,7 +361,10 @@ Every row written since that dump is lost; the replaced database stays as `clipu
 
 Read logs: `docker logs --since 1h clipupp-backend`, `docker compose -f docker-compose.prod.yml logs --since 1h clipupp-web`, `docker logs --since 1h r2r-caddy-1 | grep clipupp.com`.
 
-Change a stateless secret or a runtime setting (`JWT_SECRET`, `RESEND_API_KEY`, the R2 and rclone keys, the Telegram secrets, `EMAIL_*`, `DB_POOL_SIZE` and the other non-`NEXT_PUBLIC` settings): update it in GitHub (environment `production`, or repository level for the Telegram secrets and `SITE_URL`), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
+Change a stateless secret or a runtime setting (`JWT_SECRET`, `RESEND_API_KEY`, the R2 and rclone keys, the Telegram secrets, `EMAIL_*`, `DB_POOL_SIZE` and the other settings that are not baked into the web image): update it in GitHub (environment `production`, or repository level for the Telegram secrets), then run Deploy for the current sha; the job re-renders `.env` and restarts what changed.
+
+Change a build-time setting (`SITE_URL`, `GOOGLE_CLIENT_ID`, `R2_PUBLIC_BASE_URL`, baked into the web image as `NEXT_PUBLIC_*`): update the repository variable, then push a new commit to `main` (an empty commit is fine) so CI builds a new web image with it, wait for CI, then run Deploy on `main`.
+Deploy alone, or a re-run of CI on an existing sha, does not do it: Deploy never rebuilds an image, and `sha-` tags are never rebuilt.
 Rotating `JWT_SECRET` signs everyone out; nothing else is lost.
 
 Secrets that hold state: `POSTGRES_PASSWORD` with `DB_PASSWORD` (and `DB_USERNAME`), and `BACKUP_KEY`.
@@ -402,3 +411,4 @@ Resize the VPS: after upgrading, raise `mem_limit` values in compose and `DB_POO
 - 2026-10-18: local rehearsal passed: isolated from real stacks (own project, container and volume names, preflight refuses to run beside a real one); first deploy on an empty database 27-34 s; second deploy swapped web through the real docker rollout plugin (web container id changed, /api/health answered 85 of 85 polls); rollback, host and in-container backup, and the restore drill (528 coupons) all succeeded. It found and fixed two script bugs (rollout plugin detection, service image resolution).
 - 2026-10-18: Task 7 fix round: production deploys are manual runs on `main` only (no `workflow_run`, no reviewer rule on GitHub Free); Telegram secrets and `SITE_URL` are repository level; launcher preflight; rollback has its own concurrency group.
 - 2026-10-18: Task 7 fix round 2: the launcher rechecks the pid and lock; the spec states the deployment branch rule as enforced by GitHub.
+- 2026-10-18: final review fixes: the web service is `clipupp-web` and reaches the backend as `clipupp-backend` (no bare names on the shared network); Clipupp's own docker client config for the GHCR login and the rollout plugin; crontab, image housekeeping and Caddy logging scoped to Clipupp, with a disk alert; database password and `BACKUP_KEY` runbooks; Deploy requires green CI and pushed images; build-time settings need a new commit on `main`; the smoke checks visible text only; the local rehearsal passed again with the renamed service.
