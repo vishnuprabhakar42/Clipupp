@@ -122,14 +122,15 @@ compose() {
 
 # service_image <service>: the image the compose file resolves for a service. `compose config
 # --images <service>` ignores its argument and lists every image alphabetically, so the rendered
-# config is read instead.
+# config is read instead. awk reads to the end (no early exit) so compose never hits a closed
+# pipe, which would fail the pipeline under pipefail.
 service_image() {
   compose config 2>/dev/null | awk -v s="$1" '
     /^services:/ { ins = 1; next }
     /^[^ ]/ { ins = 0 }
     ins && $0 == "  " s ":" { cur = 1; next }
     ins && /^  [^ ]/ { cur = 0 }
-    ins && cur && /^    image:/ { print $2; exit }'
+    ins && cur && !found && /^    image:/ { print $2; found = 1 }'
 }
 
 # rollout_web <timeout>: zero-downtime replacement of the web service with the docker-rollout
@@ -140,7 +141,10 @@ rollout_web() {
   local timeout="$1"
   # `docker rollout --help` exits 0 even when the plugin is missing (docker prints its own
   # top-level help), so the plugin is detected by its own usage line.
-  docker rollout --help 2>&1 | grep -qi 'usage: *docker rollout' || return 2
+  # The help text is captured first: piping it into grep -q under pipefail can fail at random.
+  local help
+  help="$(docker rollout --help 2>&1 || true)"
+  grep -qi 'usage: *docker rollout' <<<"$help" || return 2
   if [ -n "${COMPOSE_FILE:-}" ]; then
     docker rollout -t "$timeout" web
   else

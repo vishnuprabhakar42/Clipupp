@@ -26,6 +26,8 @@ unset JWT_SECRET POSTGRES_PASSWORD DB_PASSWORD
 head -c 32 /dev/urandom | base64 > .backup-key; chmod 600 .backup-key
 
 export COMPOSE_FILE=docker-compose.prod.yml:docker-compose.local.yml
+# The backup sidecar runs as this user, as it runs as deploy on the VPS.
+BACKUP_UID="$(id -u)"; BACKUP_GID="$(id -g)"; export BACKUP_UID BACKUP_GID
 cleanup() { docker compose down -v >/dev/null 2>&1 || true; docker rmi clipupp-backend:local-v2 clipupp-web:local-v2 clipupp-backup:local-v2 >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 web_url() { echo "http://localhost:$(docker compose port web 3000 | head -1 | sed 's/.*://')"; }
@@ -48,7 +50,7 @@ t0=$(date +%s)
 scripts/deploy.sh local
 echo "first deploy took $(( $(date +%s) - t0 ))s"
 health="$(curl -fsS "$(web_url)/api/health")"; echo "health: $health"
-echo "$health" | grep -q '"backend":"up"' || { echo "health after first deploy failed"; exit 1; }
+grep -q '"backend":"up"' <<<"$health" || { echo "health after first deploy failed"; exit 1; }
 curl -fsSL -o /dev/null -w "homepage %{http_code} (after redirects)\n" "$(web_url)/en"
 
 step "second deploy local-v2"
@@ -57,16 +59,27 @@ scripts/deploy.sh local-v2
 ls backups/pre-deploy-local-v2-* >/dev/null
 grep -q "^IMAGE_TAG='local-v2'" .env || { echo ".env tag not updated"; exit 1; }
 
+running_backup="$(docker compose ps -q --status running backup)"
+[ -n "$running_backup" ] || { echo "backup sidecar not running after deploy"; exit 1; }
+[ "$(docker exec clipupp-backup id -u)" = "$BACKUP_UID" ] || { echo "backup sidecar does not run as uid $BACKUP_UID"; exit 1; }
+
 step "rollback"
 scripts/rollback.sh
 [ "$(cat .deploy/current)" = "local" ] || { echo "rollback state wrong"; exit 1; }
 health="$(curl -fsS "$(web_url)/api/health")"; echo "health: $health"
-echo "$health" | grep -q '"backend":"up"' || { echo "health after rollback failed"; exit 1; }
+grep -q '"backend":"up"' <<<"$health" || { echo "health after rollback failed"; exit 1; }
 
 step "backup (host mode and in-container)"
 scripts/backup.sh
+before="$(find backups -name 'clipupp-*.sql.gz.enc' | sort)"
+sleep 1   # backup file names have one-second resolution
 docker exec clipupp-backup clipupp-backup
-ls backups/clipupp-*.sql.gz.enc >/dev/null
+after="$(find backups -name 'clipupp-*.sql.gz.enc' | sort)"
+sidecar_dump="$(comm -13 <(echo "$before") <(echo "$after") | tail -1)"
+[ -n "$sidecar_dump" ] || { echo "in-container backup wrote no new file"; exit 1; }
+owner="$(stat -c %u "$sidecar_dump" 2>/dev/null || stat -f %u "$sidecar_dump")"
+[ "$owner" = "$(id -u)" ] || { echo "in-container dump owned by uid $owner, not $(id -u)"; exit 1; }
+echo "in-container dump $sidecar_dump owned by uid $owner"
 [ -f backups/.last-backup-ok ] || { echo ".last-backup-ok missing"; exit 1; }
 
 step "restore drill"

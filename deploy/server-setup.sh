@@ -16,11 +16,15 @@ ROLLOUT_SHA256=cdeaba6ae9eee3b0b606286e585bbda6787283d801a6ad6d9b9d2bc347fda05b
 
 echo "== preflight"
 id deploy >/dev/null 2>&1 || { echo "user deploy does not exist; create it first" >&2; exit 1; }
-id -nG deploy | tr ' ' '\n' | grep -qx docker || { echo "deploy is not in the docker group" >&2; exit 1; }
+# Command output is captured before grep -q reads it: under pipefail, grep -q closing the pipe
+# early can kill the writer with SIGPIPE and fail the check at random.
+groups_of_deploy="$(id -nG deploy)"
+grep -qw docker <<<"$groups_of_deploy" || { echo "deploy is not in the docker group" >&2; exit 1; }
 docker network inspect r2r_default >/dev/null || { echo "shared Caddy network r2r_default missing" >&2; exit 1; }
 
 echo "== swap"
-if ! swapon --show | grep -q /swapfile; then
+swaps="$(swapon --show)"
+if ! grep -q /swapfile <<<"$swaps"; then
   if [ ! -f /swapfile ]; then
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -56,7 +60,8 @@ fi
 install -d -m 0755 /run/sshd   # sshd -t needs it; absent while ssh is socket-activated and idle
 sshd -t
 # sshd -T prints the canonical name, which older OpenSSH spells without-password.
-if ! sshd -T 2>/dev/null | grep -Eqi '^permitrootlogin (prohibit-password|without-password)$'; then
+sshd_effective="$(sshd -T 2>/dev/null)"
+if ! grep -Eqi '^permitrootlogin (prohibit-password|without-password)$' <<<"$sshd_effective"; then
   echo "sshd still allows root password login; an earlier file in /etc/ssh/sshd_config.d overrides $SSHD_DROPIN:" >&2
   grep -ri permitrootlogin /etc/ssh/sshd_config /etc/ssh/sshd_config.d/ >&2 || true
   exit 1
@@ -87,7 +92,8 @@ if [ "$(sha256sum "$PLUGIN" 2>/dev/null | cut -d' ' -f1)" != "$ROLLOUT_SHA256" ]
   install -o deploy -g deploy -m 0755 "$tmp" "$PLUGIN"
   rm -f "$tmp"
 fi
-su -s /bin/sh deploy -c 'docker rollout --version' | grep -q "$ROLLOUT_VERSION" \
+rollout_version="$(su -s /bin/sh deploy -c 'docker rollout --version' 2>&1 || true)"
+grep -qF "$ROLLOUT_VERSION" <<<"$rollout_version" \
   || { echo "docker rollout $ROLLOUT_VERSION not usable by deploy" >&2; exit 1; }
 
 echo "== $APP skeleton"
