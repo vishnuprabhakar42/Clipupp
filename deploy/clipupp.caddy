@@ -1,0 +1,50 @@
+# Site block for the SHARED Caddy on the server (/opt/r2r/Caddyfile).
+# Append once, then reload in place (never replace the file, the container
+# holds the inode):
+#   cat /opt/clipupp/clipupp.caddy >> /opt/r2r/Caddyfile
+#   docker compose -f /opt/r2r/docker-compose.prod.yml exec caddy caddy reload --config /etc/caddy/Caddyfile
+# clipupp-web must be on that Caddy's network (EDGE_NETWORK in .env).
+
+# --- Clipupp (app lives in /opt/clipupp) ---
+
+(clipupp_site) {
+	encode zstd gzip
+
+	# Admin CSV and media uploads: the backend accepts 12 MB per request.
+	request_body {
+		max_size 12MB
+	}
+
+	header {
+		-Server
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	reverse_proxy clipupp-web:3000 {
+		health_uri /api/health
+		health_interval 30s
+		health_timeout 5s
+		header_up X-Forwarded-Proto {scheme}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}
+
+clipupp.com {
+	import clipupp_site
+}
+
+www.clipupp.com {
+	redir https://clipupp.com{uri} permanent
+}
+
+# Pre-cutover hostname. After DNS moves, replace the import with:
+#   redir https://clipupp.com{uri} permanent
+clipupp.187-127-130-103.sslip.io {
+	import clipupp_site
+}
