@@ -4,7 +4,10 @@
 # CI builds with `context: deploy`, `file: deploy/backup/Dockerfile`.
 FROM postgres:16-alpine
 
-RUN apk add --no-cache bash openssl rclone
+# gosu ships in the base image for the official entrypoint's root-to-postgres drop. This sidecar
+# runs as uid 1000 with its own entrypoint and never calls it, and its Go build carries CVEs
+# (crypto/tls, CVE-2025-68121) that Trivy rightly fails the build on, so it goes.
+RUN apk add --no-cache bash openssl rclone && rm -f /usr/local/bin/gosu
 
 COPY scripts/backup.sh /usr/local/bin/clipupp-backup
 COPY backup/entrypoint.sh /usr/local/bin/clipupp-backup-loop
