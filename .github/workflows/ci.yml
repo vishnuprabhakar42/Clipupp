@@ -128,6 +128,8 @@ jobs:
       contents: read
       packages: write
     strategy:
+      # Every image reports its own scan result; one failure must not cancel the others.
+      fail-fast: false
       matrix:
         include:
           - name: clipupp-backend
