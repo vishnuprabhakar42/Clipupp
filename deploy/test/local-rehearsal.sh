@@ -83,11 +83,11 @@ scripts/deploy.sh local-v2 | tee "$work/deploy2.out"
 kill "$poller" 2>/dev/null || true; wait "$poller" 2>/dev/null || true
 web_after="$(docker compose ps -q clipupp-web)"
 grep -q "Scaling 'clipupp-web' to '2' instances" "$work/deploy2.out" || { echo "docker rollout did not run"; exit 1; }
-[ -n "$web_after" ] && [ "$web_before" != "$web_after" ] || { echo "web container id did not change"; exit 1; }
+if [ -z "$web_after" ] || [ "$web_before" = "$web_after" ]; then echo "web container id did not change"; exit 1; fi
 fails="$(wc -l < "$work/health.fail" | tr -d ' ')"; oks="$(wc -l < "$work/health.ok" | tr -d ' ')"
 echo "health polls during deploy: $oks ok, $fails failed"
-[ "$fails" = 0 ] && [ "$oks" -gt 5 ] || { echo "health endpoint was not answering throughout"; exit 1; }
-[ "$(cat .deploy/current)" = "local-v2" ] && [ "$(cat .deploy/previous)" = "local" ] || { echo "state files wrong"; exit 1; }
+if [ "$fails" != 0 ] || [ "$oks" -le 5 ]; then echo "health endpoint was not answering throughout"; exit 1; fi
+if [ "$(cat .deploy/current)" != "local-v2" ] || [ "$(cat .deploy/previous)" != "local" ]; then echo "state files wrong"; exit 1; fi
 ls backups/pre-deploy-local-v2-* >/dev/null
 grep -q "^IMAGE_TAG='local-v2'" .env || { echo ".env tag not updated"; exit 1; }
 

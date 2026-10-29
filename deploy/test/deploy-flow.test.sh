@@ -73,7 +73,7 @@ run_deploy sha-new
 [ "$code" = 0 ] || fail "1: happy deploy exited $code"
 dump_line=$(line_of 'docker exec clipupp-db pg_dump')
 up_line=$(line_of "$NEW_BACKEND_UP")
-[ -n "$dump_line" ] && [ -n "$up_line" ] && [ "$dump_line" -lt "$up_line" ] || fail "1: dump must precede backend start"
+if [ -z "$dump_line" ] || [ -z "$up_line" ] || [ "$dump_line" -ge "$up_line" ]; then fail "1: dump must precede backend start"; fi
 [ "$(cat "$sb/app/.deploy/current")" = "sha-new" ] || fail "1: current not updated"
 [ "$(cat "$sb/app/.deploy/previous")" = "old" ] || fail "1: previous not recorded"
 ls "$sb/app/backups"/pre-deploy-sha-new-*.sql.gz.enc >/dev/null 2>&1 || fail "1: pre-deploy dump file missing"
@@ -124,7 +124,7 @@ run_deploy sha-new STUB_UNHEALTHY_TAG=sha-new
 [ "$code" = 1 ] || fail "3: deploy should exit 1 on unhealthy backend (got $code)"
 bad_line=$(line_of '^IMAGE_TAG=sha-new docker inspect -f \{\{.State.Health.Status\}\} cid-backend$')
 rb_line=$(line_of "$ROLLBACK_UP")
-[ -n "$bad_line" ] && [ -n "$rb_line" ] && [ "$rb_line" -gt "$bad_line" ] || fail "3: no compose up of backend web on old after the unhealthy signal"
+if [ -z "$bad_line" ] || [ -z "$rb_line" ] || [ "$rb_line" -le "$bad_line" ]; then fail "3: no compose up of backend web on old after the unhealthy signal"; fi
 [ "$(grep -cE "$ROLLBACK_UP" "$STUB_LOG")" = 1 ] || fail "3: rollback ran more than once"
 grep -qE '^IMAGE_TAG=old docker inspect .* cid-backend$' "$STUB_LOG" || fail "3: rollback health not checked"
 grep -q 'Rolled back to old and healthy' "$sb/app/.deploy/deploy.log" || fail "3: success of rollback not reported"
@@ -189,7 +189,7 @@ mk_sandbox; echo old > "$sb/app/.deploy/current"
 run_deploy sha-new STUB_UP_FAILS=1
 [ "$code" = 1 ] || fail "6: expected exit 1 (got $code)"
 up_line=$(line_of "$NEW_BACKEND_UP"); rb_line=$(line_of "$ROLLBACK_UP")
-[ -n "$up_line" ] && [ -n "$rb_line" ] && [ "$rb_line" -gt "$up_line" ] || fail "6: no rollback after failed compose up"
+if [ -z "$up_line" ] || [ -z "$rb_line" ] || [ "$rb_line" -le "$up_line" ]; then fail "6: no rollback after failed compose up"; fi
 [ "$(grep -cE "$ROLLBACK_UP" "$STUB_LOG")" = 1 ] || fail "6: rollback ran more than once"
 grep -q 'compose up backend failed' "$sb/app/.deploy/deploy.log" || fail "6: reason not logged"
 [ "$(cat "$sb/app/.deploy/current")" = "old" ] || fail "6: current changed"
@@ -226,7 +226,7 @@ else
   run_deploy sha-new; set +e; ( cd "$sb/app" && scripts/rollback.sh old >/dev/null 2>&1 ); rcode=$?; set -e
   [ -d "$sb/app/.deploy/lock.d" ] || fail "8: someone else's lock was removed"
 fi
-[ "$code" = 1 ] && [ "$rcode" = 1 ] || fail "8: ran despite a held lock (deploy $code, rollback $rcode)"
+if [ "$code" != 1 ] || [ "$rcode" != 1 ]; then fail "8: ran despite a held lock (deploy $code, rollback $rcode)"; fi
 [ ! -s "$STUB_LOG" ] || fail "8: docker called despite a held lock"
 grep -q 'another deploy, rollback or restore is running' "$sb/app/.deploy/deploy.log" || fail "8: lock message missing"
 

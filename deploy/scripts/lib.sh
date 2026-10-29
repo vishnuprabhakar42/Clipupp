@@ -222,7 +222,7 @@ prune_clipupp_images() {
     [ "$skip" = 0 ] || continue
     created="$(docker image inspect -f '{{.Created}}' "$ref" 2>/dev/null || true)"
     created_s="$(epoch_of "$created")"
-    [ -n "$created_s" ] && [ "$created_s" -lt "$cutoff" ] || continue
+    if [ -z "$created_s" ] || [ "$created_s" -ge "$cutoff" ]; then continue; fi
     if docker rmi "$ref" >/dev/null 2>&1; then removed=$((removed + 1)); log "pruned image $ref"; fi
   done <<<"$(docker image ls --filter "reference=${IMAGE_REPO_PREFIX}*" --format '{{.Repository}}:{{.Tag}}' 2>/dev/null || true)"
   docker image prune -f --filter "until=$(( days * 24 ))h" --filter "label=$IMAGE_SOURCE_LABEL" >/dev/null 2>&1 || true
