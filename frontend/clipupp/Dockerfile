@@ -31,6 +31,8 @@ RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
+# Pick up Alpine security fixes published after the base image was built (Trivy gates on them).
+RUN apk upgrade --no-cache
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 ARG BACKEND_URL=http://clipupp-backend:8080
 ARG GIT_SHA=unknown

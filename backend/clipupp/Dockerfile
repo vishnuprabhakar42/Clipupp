@@ -33,7 +33,10 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Non-root user — BusyBox -S = system account, GID/UID auto-assigned.
+# Pick up Alpine security fixes published after the base image was built (Trivy gates on them).
+RUN apk upgrade --no-cache
+
+# Non-root user - BusyBox -S = system account, GID/UID auto-assigned.
 RUN addgroup -S clipupp && adduser -S clipupp -G clipupp
 
 # build.gradle pins archiveFileName = 'app.jar', so the path is deterministic.
