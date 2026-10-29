@@ -11,8 +11,6 @@ APP=/opt/clipupp
 # https://raw.githubusercontent.com/wowu/docker-rollout/<commit>/docker-rollout, read it, and
 # update all three values.
 ROLLOUT_VERSION=v0.14
-ROLLOUT_COMMIT=a72a9632c38187abd6d8799e4a9d5054a67fe615
-ROLLOUT_SHA256=cdeaba6ae9eee3b0b606286e585bbda6787283d801a6ad6d9b9d2bc347fda05b
 
 echo "== preflight"
 id deploy >/dev/null 2>&1 || { echo "user deploy does not exist; create it first" >&2; exit 1; }
@@ -86,17 +84,12 @@ echo "== docker rollout plugin $ROLLOUT_VERSION (zero-downtime web deploys)"
 # use), never into /home/deploy/.docker, which other stacks on this host share.
 PLUGIN_DIR="$APP/.docker/cli-plugins"
 PLUGIN="$PLUGIN_DIR/docker-rollout"
-if [ "$(sha256sum "$PLUGIN" 2>/dev/null | cut -d' ' -f1)" != "$ROLLOUT_SHA256" ]; then
-  tmp="$(mktemp)"
-  curl -fsSL "https://raw.githubusercontent.com/wowu/docker-rollout/$ROLLOUT_COMMIT/docker-rollout" -o "$tmp"
-  if ! echo "$ROLLOUT_SHA256  $tmp" | sha256sum -c --quiet -; then
-    rm -f "$tmp"
-    echo "docker-rollout checksum mismatch; refusing to install it" >&2
-    exit 1
-  fi
-  install -o deploy -g deploy -m 0755 "$tmp" "$PLUGIN"
-  rm -f "$tmp"
-fi
+# The plugin is vendored at deploy/docker-rollout (upstream v0.14 plus a one-line patch: Compose v5
+# exits non-zero on a bare "docker compose", which upstream uses to detect Compose). It ships next
+# to this script, so nothing is downloaded at bootstrap time.
+SRC="$(cd "$(dirname "$0")" && pwd)/docker-rollout"
+[ -f "$SRC" ] || { echo "docker-rollout not found next to this script at $SRC" >&2; exit 1; }
+install -o deploy -g deploy -m 0755 "$SRC" "$PLUGIN"
 rollout_version="$(su -s /bin/sh deploy -c "DOCKER_CONFIG=$APP/.docker docker rollout --version" 2>&1 || true)"
 grep -qF "$ROLLOUT_VERSION" <<<"$rollout_version" \
   || { echo "docker rollout $ROLLOUT_VERSION not usable by deploy with DOCKER_CONFIG=$APP/.docker" >&2; exit 1; }
