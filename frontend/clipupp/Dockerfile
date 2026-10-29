@@ -31,8 +31,12 @@ RUN npm run build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
-# Pick up Alpine security fixes published after the base image was built (Trivy gates on them).
-RUN apk upgrade --no-cache
+# Pick up Alpine security fixes published after the base image was built (Trivy gates on them),
+# and drop the package managers the base image bundles: the standalone server needs only node,
+# and npm's own dependency tree carries CVEs the app never loads.
+RUN apk upgrade --no-cache \
+ && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /opt/yarn* \
+           /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 ARG BACKEND_URL=http://clipupp-backend:8080
 ARG GIT_SHA=unknown
