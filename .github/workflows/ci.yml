@@ -56,9 +56,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     defaults: { run: { working-directory: frontend/clipupp } }
-    env:
-      NEXT_PUBLIC_HOME_DEMO_FEED: 'true'
-      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    # Unit tests run with a clean environment. The demo feed and site URL
+    # apply only to the production build and the browser tests against it.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,7 +68,9 @@ jobs:
       - run: npm run test
       - run: npx playwright install --with-deps chromium
       - run: npm run build
+        env: { NEXT_PUBLIC_HOME_DEMO_FEED: 'true', NEXT_PUBLIC_SITE_URL: 'http://localhost:3000' }
       - name: Start server
+        env: { NEXT_PUBLIC_HOME_DEMO_FEED: 'true', NEXT_PUBLIC_SITE_URL: 'http://localhost:3000' }
         run: |
           npx next start -p 3000 > next-start.log 2>&1 &
           for _ in $(seq 1 60); do
