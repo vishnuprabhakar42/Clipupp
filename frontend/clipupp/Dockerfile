@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1.7
 # Clipupp web, Next.js 15 standalone. Built only in GitHub Actions.
 
-FROM node:20-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
-FROM node:20-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 # Public values are inlined into the client bundle at build time.
@@ -29,7 +29,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:25-alpine AS runner
 WORKDIR /app
 # Pick up Alpine security fixes published after the base image was built (Trivy gates on them),
 # and drop the package managers the base image bundles: the standalone server needs only node,
