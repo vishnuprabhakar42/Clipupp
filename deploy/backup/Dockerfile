@@ -2,7 +2,7 @@
 # The build context is the deploy/ directory (not the repo root), so COPY paths are relative to it:
 #   docker build -f deploy/backup/Dockerfile -t clipupp-backup:local deploy
 # CI builds with `context: deploy`, `file: deploy/backup/Dockerfile`.
-FROM postgres:16-alpine
+FROM postgres:18-alpine
 
 # gosu ships in the base image for the official entrypoint's root-to-postgres drop. This sidecar
 # runs as uid 1000 with its own entrypoint and never calls it, and its Go build carries CVEs
