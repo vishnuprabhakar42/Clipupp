@@ -25,7 +25,7 @@ jobs:
       frontend: ${{ steps.f.outputs.frontend }}
       deploy: ${{ steps.f.outputs.deploy }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: f
         uses: dorny/paths-filter@v3
         with:
@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 20
     defaults: { run: { working-directory: backend/clipupp } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       - uses: gradle/actions/setup-gradle@v4
@@ -59,7 +59,7 @@ jobs:
     # Unit tests run with a clean environment. The demo feed and site URL
     # apply only to the production build and the browser tests against it.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with: { node-version: '20', cache: npm, cache-dependency-path: frontend/clipupp/package-lock.json }
       - run: npm ci
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: sudo apt-get install -y -qq shellcheck
       - run: shellcheck -x deploy/scripts/*.sh deploy/server-setup.sh deploy/render-env.sh deploy/backup/entrypoint.sh deploy/test/*.sh
       - run: bash deploy/test/render-env.test.sh
@@ -112,7 +112,7 @@ jobs:
     permissions: { contents: read, pull-requests: read }
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { fetch-depth: 0 }
       - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env: { GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
@@ -142,7 +142,7 @@ jobs:
             context: deploy
             file: deploy/backup/Dockerfile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         if: github.event_name == 'push'
