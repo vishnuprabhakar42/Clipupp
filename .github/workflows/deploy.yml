@@ -27,7 +27,7 @@ jobs:
       - name: Run only from main
         env: { REF: '${{ github.ref }}' }
         run: '[ "$REF" = refs/heads/main ] || { echo "::error::Deploy runs only from main (got $REF)"; exit 2; }'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { ref: main, fetch-depth: 0, persist-credentials: false }
       - id: s
         env:
@@ -71,7 +71,7 @@ jobs:
     needs: resolve
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/telegram
         with:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -88,7 +88,7 @@ jobs:
     env:
       SHA: ${{ needs.resolve.outputs.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { ref: '${{ needs.resolve.outputs.sha }}' }
       - uses: ./.github/actions/ssh-setup
         with: { key: '${{ secrets.DEPLOY_SSH_KEY }}', host: '${{ secrets.DEPLOY_HOST }}', host_key: '${{ secrets.DEPLOY_HOST_KEY }}', user: '${{ secrets.DEPLOY_USER }}' }
@@ -192,7 +192,7 @@ jobs:
     if: always() && needs.resolve.result == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/telegram
         with:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
