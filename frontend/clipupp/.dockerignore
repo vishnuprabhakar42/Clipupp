@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+.git
+.env*
+!.env.production.example
+node_modules/.cache
+tests
+scripts
+dev-docs
+*.md
+.lighthouseci

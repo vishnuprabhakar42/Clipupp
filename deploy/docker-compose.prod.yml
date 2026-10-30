@@ -1,0 +1,125 @@
+# Production stack for the Hostinger VPS. Lives at /opt/clipupp with .env
+# (rendered by CD from GitHub secrets) and scripts/. Images are built by
+# GitHub Actions and pulled from GHCR; nothing is built on the server.
+#
+#   scripts/deploy.sh sha-<git sha>   what CD runs; safe by hand
+#   scripts/rollback.sh               previous release, one command
+#
+# TLS and ports 80/443 belong to the server's shared Caddy (the r2r project).
+# Only `clipupp-web` joins that Caddy's network (EDGE_NETWORK); Caddy reaches it by its service
+# name as clipupp-web:3000. Compose registers every service name as a DNS name on every network
+# the service joins, so the service on the shared network carries the project prefix, and web
+# reaches the backend by its unique container name (clipupp-backend), never by a bare name such
+# as `backend` that another stack on that network could also answer to.
+# Web containers are named clipupp-clipupp-web-<n>; use `compose logs clipupp-web`.
+
+name: clipupp
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "20m"
+      max-file: "5"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: clipupp-db
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 512m
+    shm_size: 128m
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: clipupp_db
+    # Not published: only reachable inside this compose network.
+    expose: ["5432"]
+    volumes:
+      - clipupp-db-data:/var/lib/postgresql/data
+      - ./backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d clipupp_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    image: ghcr.io/vishnuprabhakar42/clipupp-backend:${IMAGE_TAG}
+    container_name: clipupp-backend
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 896m
+    stop_grace_period: 35s
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: "8080"
+      JAVA_OPTS: "-XX:+UseG1GC -XX:MaxRAMPercentage=70 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8 -Duser.timezone=UTC"
+    expose: ["8080"]
+    # Flyway runs on boot; the image HEALTHCHECK is the readiness probe.
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # No container_name: docker rollout runs a second web replica beside the first during a
+  # deploy, which a fixed name forbids. Caddy reaches it by the service name clipupp-web.
+  clipupp-web:
+    image: ghcr.io/vishnuprabhakar42/clipupp-web:${IMAGE_TAG}
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 512m
+    environment:
+      # The backend's container name: unique on the host, and only on this project's network.
+      BACKEND_URL: http://clipupp-backend:8080
+    expose: ["3000"]
+    networks:
+      default: {}
+      edge: {}
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Nightly encrypted dump at 02:30 UTC, 30-day retention, newest copied to R2.
+  # Built from deploy/backup/Dockerfile (rclone and the script baked in). It gets only the
+  # variables it needs, never the whole .env.
+  backup:
+    image: ghcr.io/vishnuprabhakar42/clipupp-backup:${IMAGE_TAG}
+    container_name: clipupp-backup
+    restart: unless-stopped
+    <<: *logging
+    mem_limit: 128m
+    # Runs as the host's deploy user (uid/gid 1000 on the VPS), so dumps in ./backups are
+    # deploy-owned and restore.sh, run as deploy, can read them; .backup-key (deploy, 600) stays
+    # readable. Override BACKUP_UID/BACKUP_GID in the environment where deploy has other ids.
+    user: "${BACKUP_UID:-1000}:${BACKUP_GID:-1000}"
+    environment:
+      HOME: /tmp
+      PGHOST: db
+      PGUSER: ${DB_USERNAME}
+      PGPASSWORD: ${DB_PASSWORD}
+      PGDATABASE: clipupp_db
+      BACKUP_RETAIN_DAYS: ${BACKUP_RETAIN_DAYS:-30}
+      BACKUP_BUCKET: ${BACKUP_BUCKET}
+      RCLONE_CONFIG_R2_TYPE: ${RCLONE_CONFIG_R2_TYPE}
+      RCLONE_CONFIG_R2_PROVIDER: ${RCLONE_CONFIG_R2_PROVIDER}
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${RCLONE_CONFIG_R2_ACCESS_KEY_ID}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${RCLONE_CONFIG_R2_SECRET_ACCESS_KEY}
+      RCLONE_CONFIG_R2_ENDPOINT: ${RCLONE_CONFIG_R2_ENDPOINT}
+    volumes:
+      - ./backups:/backups
+      - ./.backup-key:/keys/backup.key:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  default: {}
+  edge:
+    external: true
+    name: ${EDGE_NETWORK:-r2r_default}
+
+volumes:
+  clipupp-db-data:
+    name: clipupp-db-data

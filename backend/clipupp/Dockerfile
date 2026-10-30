@@ -33,7 +33,10 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Non-root user — BusyBox -S = system account, GID/UID auto-assigned.
+# Pick up Alpine security fixes published after the base image was built (Trivy gates on them).
+RUN apk upgrade --no-cache
+
+# Non-root user - BusyBox -S = system account, GID/UID auto-assigned.
 RUN addgroup -S clipupp && adduser -S clipupp -G clipupp
 
 # build.gradle pins archiveFileName = 'app.jar', so the path is deterministic.
@@ -41,16 +44,22 @@ COPY --from=builder --chown=clipupp:clipupp /app/build/libs/app.jar /app/app.jar
 
 USER clipupp
 
-# Default to the prod profile so a misconfigured Railway service still boots
-# safely. Override via env if needed.
+ARG GIT_SHA=unknown
+LABEL org.opencontainers.image.source="https://github.com/vishnuprabhakar42/Clipupp" \
+      org.opencontainers.image.revision="${GIT_SHA}"
+
 ENV SPRING_PROFILES_ACTIVE=prod
 
 # Container-aware JVM: heap auto-sizes to the container memory limit.
-# Railway's default 512 MB container → ~384 MB heap.
+# The compose file caps the container at 896m and sets MaxRAMPercentage=70.
 ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError -Djava.security.egd=file:/dev/./urandom -Dfile.encoding=UTF-8 -Duser.timezone=UTC"
 
 EXPOSE 8080
 
-# Spring picks up $PORT via ${PORT:8080} in application.yml when Railway
-# injects it; falls back to 8080 locally.
+# Readiness, not liveness: the container is "healthy" only once Flyway has
+# run and the DB pool is up, which is what deploy.sh waits for.
+# 127.0.0.1, not localhost: BusyBox wget may resolve localhost to ::1 while the server binds IPv4.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:8080/actuator/health/readiness >/dev/null || exit 1
+
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

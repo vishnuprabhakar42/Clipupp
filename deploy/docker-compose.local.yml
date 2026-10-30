@@ -1,0 +1,35 @@
+# Local rehearsal on a developer machine: real images, throwaway database,
+# no shared Caddy. Use together with docker-compose.prod.yml:
+#   COMPOSE_FILE=docker-compose.prod.yml:docker-compose.local.yml
+# A distinct project name keeps `down -v` away from the repo's dev stack (also project
+# "clipupp", with clipupp-postgres and clipupp-adminer).
+name: clipupp-rehearsal
+
+# Fixed container and volume names are renamed so the rehearsal never collides with, or `down -v`
+# removes, a real clipupp stack on the same Docker host (scripts follow via CONTAINER_PREFIX).
+services:
+  db:
+    container_name: clipupp-rehearsal-db
+  backend:
+    container_name: clipupp-rehearsal-backend
+    image: clipupp-backend:${IMAGE_TAG}
+    # The web image reaches the backend as clipupp-backend (its production container name); the
+    # renamed rehearsal container keeps answering to it on the rehearsal's own network only.
+    networks:
+      default:
+        aliases: [clipupp-backend]
+  clipupp-web:
+    image: clipupp-web:${IMAGE_TAG}
+    # A range, because docker rollout runs two replicas side by side and one host port cannot be
+    # shared; the rehearsal looks the port up with `compose port clipupp-web 3000`.
+    ports: ["3300-3301:3000"]
+  backup:
+    container_name: clipupp-rehearsal-backup
+    image: clipupp-backup:${IMAGE_TAG}
+networks:
+  edge:
+    external: false
+    name: clipupp-local-edge
+volumes:
+  clipupp-db-data:
+    name: clipupp-rehearsal-db-data

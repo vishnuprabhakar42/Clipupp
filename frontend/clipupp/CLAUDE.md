@@ -26,7 +26,7 @@ npm run lint         # ESLint
 npm run typecheck    # tsc --noEmit (explicit - next.config.mjs suppresses build-time errors)
 npm run test         # Vitest unit tests
 npm run test:e2e     # Playwright (tests/e2e), desktop 1440x900 + Pixel 7; runs against :3000 locally, CI builds and starts with the demo feed and no backend
-npm run lhci         # Lighthouse CI mobile with lighthouserc.cjs on / and /hi: LCP 2500, CLS 0.05, TBT 610 (ratchet toward 200), script bytes 230000 (ratchet toward 170000), SEO 1, accessibility 0.95, best-practices 0.95 (warn)
+npm run lhci         # Lighthouse CI mobile with lighthouserc.cjs on / and /hi: LCP 5800 (ratchet toward 2500, set from the GitHub runner), CLS 0.05, TBT 610 (ratchet toward 200), script bytes 230000 (ratchet toward 170000), SEO 1, accessibility 0.95, best-practices 0.95 (warn)
 ```
 
 Playwright artifacts live under `node_modules/.cache/playwright`, never `test-results/` at the project root: `next dev` recompiles on writes there and truncates in-flight chunks.

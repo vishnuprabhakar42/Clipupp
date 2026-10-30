@@ -1,0 +1,14 @@
+# Gitleaks configuration. Extends the default rules and allowlists the
+# documented test fixtures, which are placeholders and never real secrets.
+title = "clipupp"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known placeholder values used by tests and docs"
+regexTarget = "line"
+regexes = [
+  '''JWT_SECRET=0123456789abcdef0123456789abcdef[0-9a-f]*''',
+  '''JWT_SECRET=REPLACE_[A-Z_]+''',
+]
