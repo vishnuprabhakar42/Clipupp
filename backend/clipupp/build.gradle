@@ -21,7 +21,7 @@ ext {
     jjwtVersion = '0.12.6'
     bucket4jVersion = '8.10.1'
     awsSdkVersion = '2.30.0'
-    flywayVersion = '11.1.0'
+    flywayVersion = '13.11.1'
 }
 
 dependencies {
