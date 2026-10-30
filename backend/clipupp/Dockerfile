@@ -8,7 +8,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ── Stage 1: Build ──────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM eclipse-temurin:24-jdk-alpine AS builder
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ RUN ./gradlew bootJar --no-daemon -x test
 
 
 # ── Stage 2: Runtime ─────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:24-jre-alpine
 
 WORKDIR /app
 
